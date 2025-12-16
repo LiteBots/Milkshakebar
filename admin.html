@@ -343,7 +343,7 @@
       font-weight:800;
     }
 
-    /* Responsive */
+    /* Responsive base */
     @media (max-width: 1180px){
       .kpis{grid-template-columns: repeat(2, 1fr)}
     }
@@ -353,6 +353,75 @@
       .sidebar{position:sticky;top:0;z-index:50}
       .main{height:auto; overflow:visible}
       .modalgrid{grid-template-columns: 1fr}
+    }
+
+    /* ============ MOBILE/TABLET UX (drawer sidebar) ============ */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      z-index:80;
+      display:none;
+    }
+    .overlay.show{display:block}
+
+    @media (max-width: 920px){
+      body{overflow:auto}
+      .app{grid-template-columns:1fr}
+
+      /* Sidebar as drawer */
+      .sidebar{
+        position:fixed;
+        top:0; left:0; bottom:0;
+        width:min(86vw, 340px);
+        transform: translateX(-110%);
+        transition: transform .22s ease;
+        z-index:90;
+        border-right:1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+      }
+      .sidebar.open{transform: translateX(0)}
+
+      /* Main full width */
+      .main{
+        padding:14px;
+        height:auto;
+        overflow:visible;
+      }
+
+      /* Topbar: sticky + stacked */
+      .topbar{
+        position:sticky;
+        top:0;
+        z-index:40;
+        padding:12px;
+        margin:-14px -14px 14px;
+        border-radius:18px;
+        background: rgba(0,0,0,0.25);
+        border:1px solid rgba(255,255,255,0.10);
+        backdrop-filter: blur(14px);
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .actions{
+        justify-content:space-between;
+        gap:10px;
+      }
+
+      /* Show menu button on mobile */
+      #menuBtn{display:inline-flex !important}
+
+      /* KPI grid on mobile */
+      .kpis{grid-template-columns:1fr}
+
+      /* Tables: safe horizontal scroll */
+      table{min-width: 760px}
+      .card{padding:14px}
+    }
+
+    /* Tablet: keep 2 columns for KPI */
+    @media (min-width: 921px) and (max-width: 1180px){
+      .kpis{grid-template-columns: repeat(2, 1fr)}
     }
   </style>
 </head>
@@ -414,6 +483,9 @@
   </div>
 
   <div class="app" id="app" style="display:none">
+    <!-- OVERLAY (mobile drawer) -->
+    <div class="overlay" id="overlay"></div>
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
@@ -455,6 +527,7 @@
         </div>
 
         <div class="actions">
+          <button class="btn" id="menuBtn" style="display:none"><i class="fa-solid fa-bars"></i> Menu</button>
           <button class="btn" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Odśwież</button>
           <button class="btn danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
         </div>
@@ -616,13 +689,13 @@
           <div class="modalgrid" style="margin-top:6px">
             <div class="field" style="grid-column:span 2">
               <label>PIN dostępu</label>
-              <input class="input" id="cPin" type="password" placeholder="5100">
+              <input class="input" id="cPin" type="password" placeholder="••••">
             </div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
             <button class="btn primary" id="cUnlock"><i class="fa-solid fa-unlock"></i> Odblokuj</button>
           </div>
-          <div class="hint">PIN: <b>5100</b></div>
+          <!-- USUNIĘTO podpowiedź PIN: 5100 -->
         </div>
 
         <div id="clientsContent" style="display:none">
@@ -899,7 +972,6 @@
         $("#kProducts").textContent = data.products ?? 0;
         $("#kReservations").textContent = data.reservations ?? 0;
 
-        // nowe staty (jeśli backend ich nie zwraca — pokaże "—")
         $("#kMilkos").textContent = (data.milkosTotal ?? "—");
         $("#kUsersWithPoints").textContent = (data.usersWithPoints ?? "—");
         $("#kEmployees").textContent = (data.employees ?? "—");
@@ -1403,6 +1475,42 @@
       const client = (state.app.clients || []).find(x => x.id === id);
       renderClientActivity(client);
       showToast("Podgląd klienta ✅");
+    });
+
+    // ==========================
+    // Mobile drawer sidebar
+    // ==========================
+    const sidebar = document.querySelector(".sidebar");
+    const overlay = document.getElementById("overlay");
+    const menuBtn = document.getElementById("menuBtn");
+
+    function openMenu(){
+      sidebar?.classList.add("open");
+      overlay?.classList.add("show");
+    }
+    function closeMenu(){
+      sidebar?.classList.remove("open");
+      overlay?.classList.remove("show");
+    }
+
+    menuBtn?.addEventListener("click", ()=>{
+      if(sidebar?.classList.contains("open")) closeMenu();
+      else openMenu();
+    });
+    overlay?.addEventListener("click", closeMenu);
+
+    // po kliknięciu zakładki na mobile zamykaj menu
+    document.querySelectorAll(".navbtn").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        if(window.matchMedia("(max-width: 920px)").matches) closeMenu();
+      });
+    });
+
+    // przy zmianie rozmiaru ekranu ogarnij stan
+    window.addEventListener("resize", ()=>{
+      if(!window.matchMedia("(max-width: 920px)").matches){
+        closeMenu();
+      }
     });
 
     // ==========================
