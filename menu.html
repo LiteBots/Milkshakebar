@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu MilkShake Bar Słupsk | Shakes, desery, burgery</title>
+    <meta name="description" content="Pełne menu MilkShake Bar w Słupsku – milkshake’i, desery, pancakes, gofry, burgery, śniadania i napoje. Sprawdź wszystkie nasze kompozycje smakowe.">
+    <meta name="keywords" content="menu milkshake bar słupsk, milkshake menu słupsk, desery menu słupsk, burgery menu słupsk">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.milkshakebar.pl/menu.html">
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <meta property="og:title" content="Menu MilkShake Bar Słupsk | Shakes, desery, burgery">
+    <meta property="og:description" content="Poznaj pełne menu MilkShake Bar w Słupsku: milkshake’i, desery, burgery, śniadania i napoje.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.milkshakebar.pl/menu.html">
+    <meta property="og:image" content="https://i.imgur.com/kfE4j7j.jpeg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Menu MilkShake Bar Słupsk | Shakes, desery, burgery">
+    <meta name="twitter:description" content="Pełne menu MilkShake Bar w Słupsku – od milkshake’ów po burgery.">
+    <meta name="twitter:image" content="https://i.imgur.com/kfE4j7j.jpeg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --secondary-color: #FF9100;
+            --accent-color: #FFE0B2;
+            --background-light: #FFF6EC;
+            --background-dark: #22100A;
+            --text-color-dark: #2B1300;
+            --text-color-light: #FFFFFF;
+            --gradient-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --shadow: 0px 10px 30px rgba(0, 0, 0, 0.12);
+            --border-radius: 20px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color-dark);
+            background-color: var(--background-light);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+        }
+
+        .section {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        h2.section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 40px;
+            text-align: center;
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .header.scrolled {
+            background: rgba(255, 246, 236, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo:hover img {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item { margin: 0 20px; }
+
+        .nav-link {
+            color: var(--text-color-dark);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-bg);
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-bg);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 106, 0, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 106, 0, 0.7);
+        }
+
+        .hamburger { display: none; }
+
+        .menu-hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding-top: 110px;
+            position: relative;
+        }
+
+        .menu-hero-inner {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .menu-hero-text h1 {
+            font-size: clamp(2.8rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .menu-hero-text p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 550px;
+            margin-bottom: 25px;
+        }
+
+        .menu-hero-text .highlight {
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            background-color: rgba(255, 106, 0, 0.08);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .menu-hero-visual {
+            position: relative;
+            justify-self: center;
+        }
+
+        .menu-hero-visual img {
+            width: 100%;
+            max-width: 380px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-hero-tag {
+            position: absolute;
+            bottom: 10%;
+            left: -10px;
+            background-color: #fff;
+            padding: 10px 18px;
+            border-radius: 999px;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+        }
+
+        .menu-filters {
+            margin: 40px 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .menu-subfilters {
+            margin-top: 10px;
+        }
+
+        .filter-btn {
+            border-radius: 999px;
+            border: 1px solid rgba(255, 106, 0, 0.4);
+            background-color: #fff;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn i {
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--gradient-bg);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.5);
+            border-color: transparent;
+        }
+
+        .menu-section-subtitle {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: rgba(43, 19, 0, 0.8);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .menu-item-card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition:
+                transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+        }
+
+        .menu-item-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .menu-item-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .menu-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .menu-item-card:hover .menu-item-image img {
+            transform: scale(1.08);
+        }
+
+        .menu-item-content {
+            padding: 22px 22px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .menu-item-category-pill {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            background-color: rgba(255, 106, 0, 0.1);
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .menu-item-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: rgba(43, 19, 0, 0.9);
+        }
+
+        .menu-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .menu-item-price {
+            font-size: 1.3rem;
+            font-weight: 900;
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-item-extra {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .menu-empty {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.95rem;
+            color: rgba(43, 19, 0, 0.7);
+        }
+
+        .footer {
+            background-color: var(--background-dark);
+            color: #ccc;
+            padding: 60px 0 35px;
+            margin-top: 80px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient-bg);
+            border-radius: 2px;
+        }
+
+        .footer-col p, .footer-col li {
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 8px;
+        }
+
+        .footer-col a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease, padding-left 0.3s ease;
+        }
+
+        .footer-col a:hover {
+            color: #fff;
+            padding-left: 4px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 15px;
+        }
+
+        .footer-socials a {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .footer-socials a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-4px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 992px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: white;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+                flex-direction: column;
+                justify-content: center;
+                gap: 40px;
+                transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            }
+
+            .nav-menu.active { right: 0; }
+
+            .nav-link {
+                font-size: 1.4rem;
+            }
+
+            .nav-btn {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+                z-index: 1001;
+                cursor: pointer;
+            }
+
+            .menu-hero-inner {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .menu-hero-text p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .menu-hero-visual {
+                order: -1;
+            }
+
+            .menu-hero-tag {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 90px 0;
+            }
+
+            .footer-grid {
+                text-align: center;
+            }
+
+            .footer-col h4::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .footer-socials {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header" id="header">
+    <div class="container">
+        <nav class="navbar">
+            <a href="index.html#home" class="logo">
+                <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar Słupsk">
+                <span>MilkShake Bar</span>
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html#about" class="nav-link">O nas</a></li>
+                <li class="nav-item"><a href="menu.html" class="nav-link active">Menu</a></li>
+                <li class="nav-item"><a href="index.html#reservation" class="nav-link">Rezerwacja</a></li>
+                <li class="nav-item"><a href="index.html#location" class="nav-link">Lokal</a></li>
+            </ul>
+            <a href="index.html#reservation" class="btn btn-primary nav-btn">Rezerwuj stolik <i class="fas fa-arrow-right"></i></a>
+            <div class="hamburger">
+                <i class="fas fa-bars fa-2x"></i>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="menu-hero">
+        <div class="container">
+            <div class="menu-hero-inner">
+                <div class="menu-hero-text">
+                    <div class="menu-hero-badge">
+                        <i class="fas fa-star"></i> Pełna karta smaków
+                    </div>
+                    <h1>Menu <span class="highlight">MilkShake Bar w Słupsku</span></h1>
+                    <p>Od kremowych milkshake’ów, przez autorskie desery, aż po soczyste burgery. 
+                        Wybierz swój nastrój i znajdź idealną pozycję na dziś w MilkShake Bar w Słupsku.</p>
+                    <p class="menu-section-subtitle">Shakes – koktajl na bazie lodów włoskich 300 ml.</p>
+                </div>
+                <div class="menu-hero-visual">
+                    <img src="https://i.imgur.com/kfE4j7j.jpeg" alt="Milkshake w MilkShake Bar Słupsk dekorowany słodkościami">
+                    <div class="menu-hero-tag">
+                        <strong>30+ pozycji</strong><br>
+                        Desery • Shakes • Burgery
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="full-menu">
+        <div class="container">
+            <h2 class="section-title">Wybierz kategorię</h2>
+
+            <div class="menu-filters" id="mainFilters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-layer-group"></i> Wszystko
+                </button>
+                <button class="filter-btn" data-filter="sniadania">
+                    <i class="fas fa-egg"></i> Śniadania
+                </button>
+                <button class="filter-btn" data-filter="shake">
+                    <i class="fas fa-blender"></i> Shakes
+                </button>
+                <button class="filter-btn" data-filter="deser">
+                    <i class="fas fa-ice-cream"></i> Desery
+                </button>
+                <button class="filter-btn" data-filter="texmex">
+                    <i class="fas fa-pepper-hot"></i> Tex Mex
+                </button>
+                <button class="filter-btn" data-filter="kanapki">
+                    <i class="fas fa-bread-slice"></i> Kanapki
+                </button>
+                <button class="filter-btn" data-filter="burger">
+                    <i class="fas fa-burger"></i> Burgery
+                </button>
+                <button class="filter-btn" data-filter="kawa-herbata">
+                    <i class="fas fa-mug-hot"></i> Kawa i herbata
+                </button>
+                <button class="filter-btn" data-filter="napoje-soki">
+                    <i class="fas fa-glass-water"></i> Napoje i świeże soki
+                </button>
+            </div>
+
+            <div class="menu-filters menu-subfilters" id="subFilters"></div>
+
+            <div class="menu-grid" id="menuGrid">
+                <!-- renderuje JS -->
+            </div>
+
+            <p class="menu-empty" id="menuEmpty" style="display:none;">
+                Brak pozycji w tej kategorii (wkrótce dodamy więcej!).
+            </p>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="index.html#home" class="logo">
+                    <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar Słupsk">
+                    <span>MilkShake Bar</span>
+                </a>
+                <p>Każdy łyk i każdy kęs to małe dzieło sztuki – wybierz coś z menu i daj się zaskoczyć.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Nawigacja</h4>
+                <ul>
+                    <li><a href="index.html#about">O nas</a></li>
+                    <li><a href="menu.html">Pełne menu MilkShake Bar Słupsk</a></li>
+                    <li><a href="index.html#gallery">Galeria</a></li>
+                    <li><a href="index.html#reservation">Rezerwacja</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontakt</h4>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Szczecińska 17, 76-200 Słupsk, Wydmowa 2, 76-212 Rowy</li>
+                    <li><i class="fas fa-phone"></i> +48 733 033 100</li>
+                    <li><i class="fas fa-clock"></i> Otwarte: Pn-PT 8–22, Sb-Nd 10–22</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Znajdź nas</h4>
+                <div class="footer-socials">
+                    <a href="https://www.facebook.com/milkshakebar" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/milkshake_slupsk" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 MilkShake Bar. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('.nav-menu');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const toggleMenu = () => navMenu.classList.toggle('active');
+  const closeMenu = () => navMenu.classList.remove('active');
+  if (hamburger) hamburger.addEventListener('click', toggleMenu);
+  navLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+  const filterButtons = document.querySelectorAll('.filter-btn[data-filter]');
+  const subFiltersContainer = document.getElementById('subFilters');
+  const menuGrid = document.getElementById('menuGrid');
+  const emptyState = document.getElementById('menuEmpty');
+
+  let currentMainFilter = 'all';
+  let currentSubFilter = 'all';
+
+  const subFiltersConfig = {
+    shake: [
+      { value: 'klasyka', label: 'Klasyka' },
+      { value: 'best-of', label: 'Best of' },
+      { value: 'owocowe', label: 'Owocowe' },
+      { value: 'proteinowe', label: 'Proteinowe' },
+      { value: 'vip', label: 'Tylko dla VIPów' }
+    ],
+    deser: [
+      { value: 'lody-wloskie', label: 'Lody włoskie' },
+      { value: 'desery-lodowe', label: 'Desery lodowe' },
+      { value: 'gofry-amerykanskie', label: 'Gofry amerykańskie' },
+      { value: 'pancakes', label: 'Pancakes' }
+    ],
+    texmex: [
+      { value: 'fajita', label: 'Fajita' },
+      { value: 'quesadillas', label: 'Quesadillas' },
+      { value: 'pasta', label: 'Pasta' },
+      { value: 'stir-fry', label: 'Stir Fry' },  // dodane
+      { value: 'churros', label: 'Churros' },
+      { value: 'salaty', label: 'Sałaty' }
+    ],
+    kanapki: [
+      { value: 'kanapki', label: 'Kanapki' },
+      { value: 'startery', label: 'Startery' },
+      { value: 'dania-glowne', label: 'Dania główne' },
+      { value: 'zestawy', label: 'Zestawy' }
+    ],
+    sniadania: [
+      { value: 'sniadania', label: 'Śniadania' },
+      { value: 'kanapki-sniadaniowe', label: 'Kanapki' },
+      { value: 'chiquita', label: 'Chiquita' },
+      { value: 'sniadania-keto', label: 'Śniadania keto' },
+      { value: 'zestaw-sniadaniowy', label: 'Zestaw' }
+    ]
+  };
+
+  function createSubFilters(mainCategory) {
+    subFiltersContainer.innerHTML = '';
+    currentSubFilter = 'all';
+
+    const config = subFiltersConfig[mainCategory];
+    if (!config) return;
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'filter-btn subfilter-btn active';
+    allBtn.dataset.subfilter = 'all';
+    allBtn.textContent = 'Wszystkie';
+    subFiltersContainer.appendChild(allBtn);
+
+    allBtn.addEventListener('click', () => {
+      document.querySelectorAll('.subfilter-btn').forEach(b => b.classList.remove('active'));
+      allBtn.classList.add('active');
+      currentSubFilter = 'all';
+      applyFilters();
+    });
+
+    config.forEach(sub => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn subfilter-btn';
+      btn.dataset.subfilter = sub.value;
+      btn.textContent = sub.label;
+      subFiltersContainer.appendChild(btn);
+
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.subfilter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSubFilter = sub.value;
+        applyFilters();
+      });
+    });
+  }
+
+  function renderMenuItems(items) {
+    menuGrid.innerHTML = '';
+
+    items.forEach(p => {
+      const article = document.createElement('article');
+      article.className = 'menu-item-card';
+      article.dataset.category = p.category || 'all';
+      article.dataset.subcategory = p.tag || 'all';
+
+      article.innerHTML = `
+        <div class="menu-item-content">
+          <div class="menu-item-header">
+            <h3 class="menu-item-title">${p.title || 'Produkt'}</h3>
+            <span class="menu-item-category-pill">
+              ${(p.categoryLabel || p.category || '').toString()}
+              ${p.tag ? ' • ' + p.tag : ''}
+            </span>
+          </div>
+          <p class="menu-item-desc">${p.desc || ''}</p>
+          <div class="menu-item-footer">
+            <span class="menu-item-price">${p.price ?? ''} PLN</span>
+            <span class="menu-item-extra">${p.descSmall || p.tag || ''}</span>
+          </div>
+        </div>
+      `;
+      menuGrid.appendChild(article);
+    });
+  }
+
+  function applyFilters() {
+    const cards = menuGrid.querySelectorAll('.menu-item-card');
+    let visibleCount = 0;
+
+    cards.forEach(item => {
+      const category = item.dataset.category;
+      const subcategory = item.dataset.subcategory || 'all';
+      let show = true;
+
+      if (currentMainFilter !== 'all' && category !== currentMainFilter) show = false;
+      if (show && currentSubFilter !== 'all' && subcategory !== currentSubFilter) show = false;
+
+      item.style.display = show ? 'flex' : 'none';
+      if (show) visibleCount++;
+    });
+
+    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      currentMainFilter = filter || 'all';
+
+      if (currentMainFilter === 'all') {
+        subFiltersContainer.innerHTML = '';
+        currentSubFilter = 'all';
+      } else {
+        createSubFilters(currentMainFilter);
+      }
+
+      applyFilters();
+    });
+  });
+
+  // ========= NOWE MENU =========
+  const products = [
+    // =========================
+    // KAWA-HERBATA / KAWA
+    // =========================
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Espresso", price:11, desc:"35 ml", tag:"espresso" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Podwójne espresso", price:16, desc:"70 ml", tag:"espresso" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Affogato (espresso z lodami)", price:"22/27", desc:"", tag:"deser kawowy" },
+
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Kawa czarna", price:"12/17", desc:"200/300 ml", tag:"klasyka" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Kawa biała", price:"12/17", desc:"200/300 ml", tag:"klasyka" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Cappuccino", price:"13/18", desc:"200/300 ml", tag:"klasyka" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Latte", price:"13/18", desc:"200/300 ml", tag:"klasyka" },
+
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Kawa mrożona", price:26, desc:"300 ml", tag:"na zimno" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Frappe słony karmel", price:27, desc:"Podwójne espresso, kostki lodu, mleko, słony karmel", tag:"na zimno" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Gorąca czekolada", price:21, desc:"200 ml", tag:"na ciepło" },
+    { category:"kawa-herbata", categoryLabel:"Kawa", title:"Dodatkowe espresso", price:5, desc:"", tag:"dodatek" },
+
+    // =========================
+    // KAWA-HERBATA / HERBATA
+    // =========================
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"Zielona", price:15, desc:"", tag:"klasyka" },
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"English breakfast", price:15, desc:"", tag:"klasyka" },
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"Piekielna herbata", price:22, desc:"", tag:"rozgrzewająca" },
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"Czort", price:22, desc:"", tag:"rozgrzewająca" },
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"Mon Cheri", price:22, desc:"", tag:"rozgrzewająca" },
+    { category:"kawa-herbata", categoryLabel:"Herbata", title:"Domowa herbata mrożona", price:26, desc:"500 ml", tag:"na zimno" },
+
+    // =========================
+    // KAWA-HERBATA / MATCHA
+    // =========================
+    { category:"kawa-herbata", categoryLabel:"Matcha", title:"Matcha latte", price:20, desc:"", tag:"matcha" },
+    { category:"kawa-herbata", categoryLabel:"Matcha", title:"Iced matcha", price:25, desc:"", tag:"matcha" },
+
+    // =========================
+    // NAPOJE-SOKI / LEMONIADY
+    // =========================
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Cytrusowa", price:"15/30", desc:"400/1200 ml", tag:"lemoniada" },
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Arbuzowa", price:"17/35", desc:"400/1200 ml", tag:"lemoniada" },
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Ananasowa", price:"17/35", desc:"400/1200 ml", tag:"lemoniada" },
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Gruszkowa", price:"17/35", desc:"400/1200 ml", tag:"lemoniada" },
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Malinowa zimna", price:"17/35", desc:"400/1200 ml", tag:"lemoniada" },
+    { category:"napoje-soki", categoryLabel:"Lemoniada", title:"Malinowa ciepła", price:"17/35", desc:"400/1200 ml", tag:"lemoniada" },
+
+    { category:"napoje-soki", categoryLabel:"Napoje", title:"Woda z kranu", price:0, desc:"", tag:"" },
+    { category:"napoje-soki", categoryLabel:"Napoje", title:"Woda niegazowana", price:8, desc:"500 ml", tag:"" },
+    { category:"napoje-soki", categoryLabel:"Napoje", title:"Woda gazowana", price:8, desc:"500 ml", tag:"" },
+    { category:"napoje-soki", categoryLabel:"Napoje", title:"Pepsi", price:9, desc:"330 ml", tag:"" },
+    { category:"napoje-soki", categoryLabel:"Napoje", title:"Pepsi Max", price:9, desc:"330 ml", tag:"" },
+
+    // =========================
+    // NAPOJE-SOKI / ŚWIEŻE SOKI
+    // =========================
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Pomarańczowy", price:19, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Grejpfrutowy", price:22, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Pomarańczowo-grejpfrutowy", price:22, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Jabłkowy", price:19, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Jabłkowo-gruszkowy", price:19, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Marchewka-jabłko-pomarańcza", price:19, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Burak-jabłko-pomarańcza-seler", price:22, desc:"300 ml", tag:"świeży sok" },
+    { category:"napoje-soki", categoryLabel:"Świeże soki", title:"Jabłko-seler-kiwi", price:22, desc:"300 ml", tag:"świeży sok" },
+
+    // =========================
+    // NAPOJE-SOKI / SMOOTHIES
+    // =========================
+    { category:"napoje-soki", categoryLabel:"Smoothies", title:"Zielony", price:29, desc:"350 ml • szpinak, kiwi, pomarańcza, gruszka", tag:"smoothies" },
+    { category:"napoje-soki", categoryLabel:"Smoothies", title:"Żółty", price:29, desc:"350 ml • banan, jabłko, ananas, mango", tag:"smoothies" },
+    { category:"napoje-soki", categoryLabel:"Smoothies", title:"Pomarańczowy", price:29, desc:"350 ml • banan, pomarańcza, mango, nerkowce, limonka", tag:"smoothies" },
+    { category:"napoje-soki", categoryLabel:"Smoothies", title:"Czerwony", price:29, desc:"350 ml • truskawki, maliny, banan, ananas", tag:"smoothies" },
+
+    // =========================
+    // NAPOJE-SOKI / PIWO
+    // =========================
+    { category:"napoje-soki", categoryLabel:"Piwo", title:"Corona", price:15, desc:"330 ml", tag:"piwo" },
+    { category:"napoje-soki", categoryLabel:"Piwo", title:"Piwo bezalkoholowe", price:14, desc:"", tag:"piwo" },
+    { category:"napoje-soki", categoryLabel:"Piwo", title:"IPA", price:19, desc:"0,5 l", tag:"piwo" },
+    { category:"napoje-soki", categoryLabel:"Piwo", title:"Lager", price:17, desc:"Zapytaj o dostępność", tag:"piwo" },
+
+    // =========================
+    // NAPOJE-SOKI / WINO & APERITIFF
+    // =========================
+    { category:"napoje-soki", categoryLabel:"Wino & Aperitiff", title:"Sauvignon blanc (białe wytrawne) – Skarby Mołdawii", price:"22/64/89", desc:"170/500/700 ml", tag:"wino-aperitiff" },
+    { category:"napoje-soki", categoryLabel:"Wino & Aperitiff", title:"Cabernet sauvignon (czerwone wytrawne) – Skarby Mołdawii", price:"22/64/89", desc:"170/500/700 ml", tag:"wino-aperitiff" },
+    { category:"napoje-soki", categoryLabel:"Wino & Aperitiff", title:"Hugo", price:35, desc:"Prosecco, woda gazowana, syrop z czarnego bzu, mięta i limonka", tag:"wino-aperitiff" },
+    { category:"napoje-soki", categoryLabel:"Wino & Aperitiff", title:"Prosecco (wytrawne wino musujące)", price:26, desc:"", tag:"wino-aperitiff" },
+
+    // =========================
+    // SHAKE / KLASYKA
+    // =========================
+    { category:"shake", categoryLabel:"Shakes", title:"Śmietankowy", price:18, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Waniliowy", price:19, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Czekoladowy", price:19, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Straciatella", price:19, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Chałwa", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Krówka", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Daim", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Milky Way", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Oreo", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Snickers", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Ptasie mleczko waniliowe", price:22, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kinder Bueno", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Reese's Peanut Butter", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Nutella", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Raffaello", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Skittles", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Ferrero Rocher", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Maxi King", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Masło orzechowe", price:24, desc:"", tag:"klasyka" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kawowy", price:24, desc:"", tag:"klasyka" },
+
+    // =========================
+    // SHAKE / TYLKO DLA VIPÓW
+    // =========================
+    { category:"shake", categoryLabel:"Shakes", title:"Ciasteczkowy Potwór", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Pistacjusz", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Marshall", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Cringe", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Cheesecake", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Gonzo", price:37, desc:"", tag:"vip" },
+    { category:"shake", categoryLabel:"Shakes", title:"Johny Pierniczony", price:37, desc:"", tag:"vip" },
+
+    // =========================
+    // SHAKE / BEST OF
+    // =========================
+    { category:"shake", categoryLabel:"Shakes", title:"Banan + maliny", price:26, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Mango + truskawki", price:26, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kiwi + mango", price:26, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kinder bueno + maliny", price:28, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Oreo + masło orzechowe", price:28, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kawa + słony karmel", price:29, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Kawa + Nutella", price:29, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Ptasie mleczko + maliny", price:28, desc:"", tag:"best-of" },
+    { category:"shake", categoryLabel:"Shakes", title:"Raffaello + jagody", price:28, desc:"", tag:"best-of" },
+
+    // =========================
+    // SHAKE / OWOCOWE
+    // =========================
+    { category:"shake", categoryLabel:"Shakes", title:"Bananowy", price:22, desc:"", tag:"owocowe" },
+    { category:"shake", categoryLabel:"Shakes", title:"Czarna porzeczka", price:22, desc:"", tag:"owocowe" },
+    { category:"shake", categoryLabel:"Shakes", title:"Malinowy", price:22, desc:"", tag:"owocowe" },
+    { category:"shake", categoryLabel:"Shakes", title:"Mango", price:22, desc:"", tag:"owocowe" },
+    { category:"shake", categoryLabel:"Shakes", title:"Truskawkowy", price:22, desc:"", tag:"owocowe" },
+    { category:"shake", categoryLabel:"Shakes", title:"Jagodowy", price:22, desc:"", tag:"owocowe" },
+
+    // =========================
+    // SHAKE / PROTEINOWE
+    // =========================
+    { category:"shake", categoryLabel:"Shakes proteinowe", title:"Jagodowy muffin", price:32, desc:"", tag:"proteinowe" },
+    { category:"shake", categoryLabel:"Shakes proteinowe", title:"Słony karmel", price:28, desc:"", tag:"proteinowe" },
+    { category:"shake", categoryLabel:"Shakes proteinowe", title:"Truskawkowe love", price:28, desc:"", tag:"proteinowe" },
+
+    // =========================
+    // DESERY / LODY WŁOSKIE
+    // =========================
+    { category:"deser", categoryLabel:"Lody włoskie", title:"Lody włoskie śmietankowe (małe)", price:11, desc:"150 g", tag:"lody-wloskie" },
+    { category:"deser", categoryLabel:"Lody włoskie", title:"Lody włoskie śmietankowe (duże)", price:16, desc:"250 g", tag:"lody-wloskie" },
+
+    { category:"deser", categoryLabel:"Dodatki", title:"Mus owocowy lub polewa", price:6, desc:"", tag:"lody-wloskie" },
+    { category:"deser", categoryLabel:"Dodatki", title:"M&Ms", price:6, desc:"", tag:"lody-wloskie" },
+    { category:"deser", categoryLabel:"Dodatki", title:"Owoce", price:14, desc:"", tag:"lody-wloskie" },
+    { category:"deser", categoryLabel:"Dodatki", title:"Bita śmietana", price:6, desc:"", tag:"lody-wloskie" },
+
+    // =========================
+    // DESERY / DESERY LODOWE
+    // =========================
+    { category:"deser", categoryLabel:"Desery lodowe", title:"Troll", price:24, desc:"", tag:"desery-lodowe" },
+    { category:"deser", categoryLabel:"Desery lodowe", title:"Owocowa aleja", price:38, desc:"", tag:"desery-lodowe" },
+    { category:"deser", categoryLabel:"Desery lodowe", title:"Grzeszna truskawka", price:38, desc:"", tag:"desery-lodowe" },
+    { category:"deser", categoryLabel:"Desery lodowe", title:"Oreo Sundae", price:29, desc:"", tag:"desery-lodowe" },
+
+    // =========================
+    // DESERY / GOFRY AMERYKAŃSKIE
+    // =========================
+    { category:"deser", categoryLabel:"Gofry amerykańskie", title:"Z syropem klonowym, jajkiem sadzonym i bekonem", price:"28/44", desc:"pół / cały", tag:"gofry-amerykanskie" },
+    { category:"deser", categoryLabel:"Gofry amerykańskie", title:"American Pie z pieczonymi jabłkami, cynamonem, domową kruszonką i lodami", price:"27/49", desc:"pół / cały", tag:"gofry-amerykanskie" },
+    { category:"deser", categoryLabel:"Gofry amerykańskie", title:"Z dżemem z czarnej porzeczki i polewą Lotus Biscoff", price:"26/48", desc:"pół / cały", tag:"gofry-amerykanskie" },
+    { category:"deser", categoryLabel:"Gofry amerykańskie", title:"Dubajski z truskawkami", price:"32/54", desc:"pół / cały", tag:"gofry-amerykanskie" },
+    { category:"deser", categoryLabel:"Gofry amerykańskie", title:"Cheesecake z serkiem Philadelphia, masą ciasteczkową, kruszonką i truskawkami", price:"28/50", desc:"pół / cały", tag:"gofry-amerykanskie" },
+
+    // =========================
+    // DESERY / PANCAKES
+    // =========================
+    { category:"deser", categoryLabel:"Pancakes", title:"Z syropem klonowym i lodami", price:29, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Z owocami, musem truskawkowym i lodami", price:36, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Z Nutellą, truskawkami i lodami", price:36, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Z masą Kinder Bueno, malinami i lodami", price:39, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Z masą Raffaello, truskawkami i lodami", price:39, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Z dubajską pistacją i truskawkami", price:39, desc:"3 szt.", tag:"pancakes" },
+    { category:"deser", categoryLabel:"Pancakes", title:"Hello USA", price:39, desc:"syrop klonowy, bekon, 2 jaja sadzone", tag:"pancakes" },
+
+    // =========================
+    // TEX MEX / QUESADILLAS
+    // =========================
+    { category:"texmex", categoryLabel:"Quesadillas", title:"Pollo", price:45, desc:"", tag:"quesadillas" },
+    { category:"texmex", categoryLabel:"Quesadillas", title:"Torro", price:46, desc:"", tag:"quesadillas" },
+    { category:"texmex", categoryLabel:"Quesadillas", title:"Camaron", price:49, desc:"", tag:"quesadillas" },
+    { category:"texmex", categoryLabel:"Quesadillas", title:"Verduras", price:42, desc:"", tag:"quesadillas" },
+
+    // =========================
+    // TEX MEX / FAJITA
+    // =========================
+    { category:"texmex", categoryLabel:"Fajita", title:"Fajita z kurczakiem", price:59, desc:"", tag:"fajita" },
+    { category:"texmex", categoryLabel:"Fajita", title:"Fajita z krewetkami", price:69, desc:"", tag:"fajita" },
+    { category:"texmex", categoryLabel:"Fajita", title:"Fajita z polędwicą wołową", price:79, desc:"", tag:"fajita" },
+
+    // =========================
+    // TEX MEX / CHURROS
+    // =========================
+    { category:"texmex", categoryLabel:"Churros", title:"Churros (6 szt.) z sosem czekoladowym i truskawkami", price:33, desc:"", tag:"churros" },
+    { category:"texmex", categoryLabel:"Churros", title:"Churros (6 szt.) ze słonym karmelem i precelkami", price:32, desc:"", tag:"churros" },
+
+    // =========================
+    // TEX MEX / PASTA
+    // =========================
+    { category:"texmex", categoryLabel:"Pasta", title:"Tagiatelle z krewetkami", price:51, desc:"", tag:"pasta" },
+    { category:"texmex", categoryLabel:"Pasta", title:"Vege Pasta", price:44, desc:"", tag:"pasta" },
+
+    // =========================
+    // TEX MEX / STIR FRY
+    // =========================
+    { category:"texmex", categoryLabel:"NY Chinatown Stir Fry", title:"Vege (z nerkowcami)", price:39, desc:"", tag:"stir-fry" },
+    { category:"texmex", categoryLabel:"NY Chinatown Stir Fry", title:"Z kurczakiem 90g", price:47, desc:"", tag:"stir-fry" },
+    { category:"texmex", categoryLabel:"NY Chinatown Stir Fry", title:"Z wołowiną 90g", price:55, desc:"", tag:"stir-fry" },
+    { category:"texmex", categoryLabel:"NY Chinatown Stir Fry", title:"Z krewetkami (16/20) 7 szt.", price:51, desc:"", tag:"stir-fry" },
+    { category:"texmex", categoryLabel:"Dodatki", title:"Dodatkowe nerkowce 20g", price:8, desc:"", tag:"stir-fry" },
+
+    // =========================
+    // TEX MEX / SAŁATY
+    // =========================
+    { category:"texmex", categoryLabel:"Sałaty", title:"Cezar", price:49, desc:"", tag:"salaty" },
+    { category:"texmex", categoryLabel:"Sałaty", title:"Vege Cezar", price:42, desc:"", tag:"salaty" },
+    { category:"texmex", categoryLabel:"Sałaty", title:"Ale burak", price:44, desc:"", tag:"salaty" },
+    { category:"texmex", categoryLabel:"Sałaty", title:"Alabama", price:51, desc:"", tag:"salaty" },
+
+    // =========================
+    // KANAPKI / STARTERY
+    // =========================
+    { category:"kanapki", categoryLabel:"Startery", title:"Frytki", price:15, desc:"150 g", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Frytki z batatów", price:19, desc:"150 g", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Frytki z serem, bekonem i majonezem sriracha", price:30, desc:"", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Krążki cebulowe (5 szt.) z sosem sweet chili", price:18, desc:"", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Krewetki w tempurze (3 szt.) z sosem sweet chili", price:21, desc:"", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Krewetki w tempurze (6 szt.) z sosem sweet chili", price:39, desc:"", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Nachos z serem, guacamole, śmietaną, salsą i jalapeno", price:41, desc:"", tag:"startery" },
+    { category:"kanapki", categoryLabel:"Startery", title:"Nachos z chili con carne, serem, śmietaną, guacamole i jalapeno", price:49, desc:"", tag:"startery" },
+
+    // =========================
+    // KANAPKI / KANAPKI
+    // =========================
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Rostbef", price:"42/58", desc:"60 g / 100 g", tag:"kanapki" },
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Cotto", price:"37/49", desc:"70 g / 120 g", tag:"kanapki" },
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Kura", price:46, desc:"", tag:"kanapki" },
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Club sandwich", price:38, desc:"", tag:"kanapki" },
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Cotto club", price:36, desc:"", tag:"kanapki" },
+    { category:"kanapki", categoryLabel:"Kanapki", title:"Vege club", price:36, desc:"", tag:"kanapki" },
+
+    // =========================
+    // KANAPKI / DANIA GŁÓWNE
+    // =========================
+    { category:"kanapki", categoryLabel:"Dania główne", title:"Tatar z polędwicy wołowej", price:51, desc:"100 g", tag:"dania-glowne" },
+    { category:"kanapki", categoryLabel:"Dania główne", title:"Żebro wieprzowe", price:75, desc:"450 g", tag:"dania-glowne" },
+    { category:"kanapki", categoryLabel:"Dania główne", title:"Stek", price:125, desc:"", tag:"dania-glowne" },
+    { category:"kanapki", categoryLabel:"Dania główne", title:"Kurczak supreme", price:65, desc:"", tag:"dania-glowne" },
+
+    // =========================
+    // KANAPKI / ZESTAWY
+    // =========================
+    { category:"kanapki", categoryLabel:"Zestawy", title:"Burger + frytki lub sałatka", price:"+12", desc:"oszczędzasz 5 PLN", tag:"zestawy" },
+    { category:"kanapki", categoryLabel:"Zestawy", title:"Burger + frytki/sałatka + lemoniada cytrusowa", price:"+22", desc:"oszczędzasz 10 PLN", tag:"zestawy" },
+    { category:"kanapki", categoryLabel:"Zestawy", title:"Zamień frytki na krążki cebulowe", price:15, desc:"", tag:"zestawy" },
+    { category:"kanapki", categoryLabel:"Zestawy", title:"Zamień frytki na mini nachos", price:18, desc:"", tag:"zestawy" },
+    { category:"kanapki", categoryLabel:"Zestawy", title:"Zamień frytki na bataty", price:14, desc:"", tag:"zestawy" },
+
+    // =========================
+    // BURGERY / WOŁOWE
+    // =========================
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Prostak", price:"30/38/46", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Sergio", price:"32/40/48", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Boston", price:"34/42/50", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Pleśniak", price:"38/46/54", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Bajpas", price:"36/44/52", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Burakoza", price:"38/46/54", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"New York", price:"38/46/54", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Złodziej", price:"38/46/54", desc:"mały / średni / duży", tag:"wolowy" },
+    { category:"burger", categoryLabel:"Burgery wołowe Black Angus", title:"Missisipi", price:"38/46/54", desc:"mały / średni / duży", tag:"wolowy" },
+
+    // =========================
+    // BURGERY / KURCZAK
+    // =========================
+    { category:"burger", categoryLabel:"Burgery z kurczakiem", title:"Kura", price:43, desc:"", tag:"kurczak" },
+    { category:"burger", categoryLabel:"Burgery z kurczakiem", title:"Żółtodziób", price:43, desc:"", tag:"kurczak" },
+
+    // =========================
+    // ŚNIADANIA / NAPOJE I DODATKI
+    // =========================
+    { category:"sniadania", categoryLabel:"Napoje do śniadania", title:"Kawa filtrowana (z dolewką)", price:12, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Napoje do śniadania", title:"Herbata śniadaniowa", price:9, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Napoje do śniadania", title:"Świeży sok", price:18, desc:"0,2 l", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Napoje do śniadania", title:"Mimoza", price:31, desc:"", tag:"sniadania" },
+
+    // =========================
+    // ŚNIADANIA / ŚNIADANIA
+    // =========================
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Granola", price:44, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Tost francuski w panko", price:44, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Jajito burrito", price:37, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Czerwona szakszuka", price:39, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Egg royal", price:45, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Jajecznica", price:33, desc:"", tag:"sniadania" },
+    { category:"sniadania", categoryLabel:"Śniadania", title:"Omlet francuski", price:37, desc:"", tag:"sniadania" },
+
+    // =========================
+    // ŚNIADANIA / KANAPKI ŚNIADANIOWE
+    // =========================
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Rostbef", price:"42/58", desc:"60 g / 100 g", tag:"kanapki-sniadaniowe" },
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Cotto", price:"37/49", desc:"70 g / 120 g", tag:"kanapki-sniadaniowe" },
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Kura", price:46, desc:"", tag:"kanapki-sniadaniowe" },
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Club sandwich", price:38, desc:"", tag:"kanapki-sniadaniowe" },
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Cotto club", price:36, desc:"", tag:"kanapki-sniadaniowe" },
+    { category:"sniadania", categoryLabel:"Kanapki śniadaniowe", title:"Vege club", price:36, desc:"", tag:"kanapki-sniadaniowe" },
+
+    // =========================
+    // ŚNIADANIA / FULL MILKSHAKE BREAKFAST
+    // =========================
+    { category:"sniadania", categoryLabel:"Full milkshake breakfast", title:"Duży full milkshake breakfast", price:53, desc:"", tag:"zestaw-sniadaniowy" },
+    { category:"sniadania", categoryLabel:"Full milkshake breakfast", title:"Mały full milkshake breakfast", price:42, desc:"", tag:"zestaw-sniadaniowy" },
+
+    // =========================
+    // ŚNIADANIA / CHIQUITA
+    // =========================
+    { category:"sniadania", categoryLabel:"Chiquita", title:"Chiquita", price:41, desc:"", tag:"chiquita" },
+    { category:"sniadania", categoryLabel:"Chiquita", title:"Chiquita z chorizo", price:39, desc:"80 g", tag:"chiquita" },
+
+    // =========================
+    // ŚNIADANIA / KETO DODATKI
+    // =========================
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Frankfurterka", price:7, desc:"", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Chorizo", price:8, desc:"70 g", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"½ awokado", price:9, desc:"", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Twarożek", price:7, desc:"80 g", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Ogórek zielony", price:5, desc:"7 plastrów", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Pomidorki koktajlowe", price:5, desc:"80 g", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Bekon", price:4, desc:"2 plastry", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Jajo", price:4, desc:"", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Masło", price:2, desc:"10 g", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Chleb maślany", price:6, desc:"80 g", tag:"sniadania-keto" },
+    { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Gravlax", price:15, desc:"50 g", tag:"sniadania-keto" },
+  ];
+
+  renderMenuItems(products);
+  applyFilters();
+});
+</script>
+
+</body>
+</html>
+
