@@ -39,11 +39,7 @@
       overflow:hidden;
     }
 
-    .app{
-      height:100%;
-      display:grid;
-      grid-template-columns: 290px 1fr;
-    }
+    .app{height:100%;display:grid;grid-template-columns: 290px 1fr;}
 
     /* Sidebar */
     .sidebar{
@@ -54,11 +50,8 @@
       backdrop-filter: blur(14px);
     }
     .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      padding:14px 14px;
-      border-radius:18px;
+      display:flex;align-items:center;gap:14px;
+      padding:14px 14px;border-radius:18px;
       background: rgba(255,255,255,0.06);
       border:1px solid rgba(255,255,255,0.10);
       box-shadow: 0 10px 35px rgba(0,0,0,0.35);
@@ -69,25 +62,14 @@
     }
     .brand .t1{font-weight:900;letter-spacing:.2px}
     .brand .t2{font-size:.86rem;color:var(--muted)}
-    .nav{
-      margin-top:18px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    .nav{margin-top:18px;display:flex;flex-direction:column;gap:10px;}
     .navbtn{
       width:100%;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px 14px;
-      border-radius:16px;
+      display:flex;align-items:center;gap:12px;
+      padding:12px 14px;border-radius:16px;
       border:1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.04);
-      color:#fff;
-      cursor:pointer;
-      transition:.18s ease;
-      text-align:left;
+      color:#fff;cursor:pointer;transition:.18s ease;text-align:left;
     }
     .navbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.06)}
     .navbtn.active{
@@ -98,35 +80,24 @@
     .navbtn i{width:18px;opacity:.95}
     .navsep{
       margin:12px 0 6px;
-      font-size:.82rem;
-      color: rgba(255,255,255,0.55);
-      padding:0 6px;
-      letter-spacing:.4px;
-      text-transform:uppercase;
+      font-size:.82rem;color: rgba(255,255,255,0.55);
+      padding:0 6px;letter-spacing:.4px;text-transform:uppercase;
     }
     .sidefoot{
       margin-top:14px;
-      padding:12px 14px;
-      border-radius:16px;
+      padding:12px 14px;border-radius:16px;
       background: rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.10);
       color:var(--muted);
       font-size:.9rem;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
     }
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
       background: rgba(0,0,0,0.35);
       border:1px solid rgba(255,255,255,0.12);
-      font-size:.82rem;
-      color:rgba(255,255,255,0.9);
+      font-size:.82rem;color:rgba(255,255,255,0.9);
       white-space:nowrap;
     }
     .dot{
@@ -136,50 +107,29 @@
     .dot.ok{background:var(--good); box-shadow: 0 0 0 3px rgba(22,163,74,0.18);}
 
     /* Main */
-    .main{
-      height:100%;
-      overflow:auto;
-      padding:22px;
-    }
+    .main{height:100%;overflow:auto;padding:22px;}
     .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-      margin-bottom:18px;
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:14px;margin-bottom:18px;
     }
     .topbar h1{
-      font-size:1.9rem;
-      line-height:1.15;
-      font-weight:900;
-      margin-bottom:6px;
-      letter-spacing:.2px;
+      font-size:1.9rem;line-height:1.15;font-weight:900;
+      margin-bottom:6px;letter-spacing:.2px;
       background: linear-gradient(135deg, #fff, rgba(255,255,255,0.65));
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
     .topbar p{color:var(--muted);max-width:720px}
     .actions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
     }
     .btn{
-      border:none;
-      cursor:pointer;
-      font-weight:800;
-      padding:12px 14px;
-      border-radius:999px;
-      color:#fff;
+      border:none;cursor:pointer;font-weight:800;
+      padding:12px 14px;border-radius:999px;color:#fff;
       background: rgba(255,255,255,0.07);
       border:1px solid rgba(255,255,255,0.12);
       transition:.18s ease;
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      white-space:nowrap;
+      display:inline-flex;gap:10px;align-items:center;white-space:nowrap;
     }
     .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
     .btn.primary{
@@ -187,17 +137,10 @@
       border-color: rgba(255,145,0,0.45);
       box-shadow: 0 14px 35px rgba(255,106,0,0.18);
     }
-    .btn.danger{
-      background: rgba(220,38,38,0.14);
-      border-color: rgba(220,38,38,0.35);
-    }
+    .btn.danger{background: rgba(220,38,38,0.14);border-color: rgba(220,38,38,0.35);}
 
     /* Cards / grid */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:14px;
-    }
+    .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:14px;}
     .card{
       grid-column: span 12;
       background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.05));
@@ -207,113 +150,75 @@
       padding:16px;
       backdrop-filter: blur(14px);
     }
-    .card h2{
-      font-size:1.1rem;
-      margin-bottom:10px;
-      font-weight:900;
-      letter-spacing:.2px;
-    }
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:14px;
-      margin-top:10px;
-    }
+    .card h2{font-size:1.1rem;margin-bottom:10px;font-weight:900;letter-spacing:.2px;}
+    .kpis{display:grid;grid-template-columns: repeat(4, 1fr);gap:14px;margin-top:10px;}
     .kpi{
       background: rgba(255,255,255,0.06);
       border:1px solid rgba(255,255,255,0.10);
       border-radius:18px;
       padding:14px;
-      display:flex;
-      gap:12px;
-      align-items:center;
+      display:flex;gap:12px;align-items:center;
     }
     .kpi i{font-size:1.05rem;opacity:.95}
     .kpi .num{font-weight:900;font-size:1.35rem}
     .kpi .lbl{font-size:.86rem;color:var(--muted)}
 
     /* Table */
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0 10px;
-    }
+    table{width:100%;border-collapse:separate;border-spacing:0 10px;}
     th{
-      text-align:left;
-      font-size:.82rem;
-      color:rgba(255,255,255,0.7);
-      font-weight:800;
-      padding:0 10px 6px;
-      letter-spacing:.35px;
-      text-transform:uppercase;
+      text-align:left;font-size:.82rem;color:rgba(255,255,255,0.7);
+      font-weight:800;padding:0 10px 6px;letter-spacing:.35px;text-transform:uppercase;
     }
     td{
-      padding:12px 10px;
-      background: rgba(255,255,255,0.06);
+      padding:12px 10px;background: rgba(255,255,255,0.06);
       border-top:1px solid rgba(255,255,255,0.10);
       border-bottom:1px solid rgba(255,255,255,0.10);
     }
     tr td:first-child{
       border-left:1px solid rgba(255,255,255,0.10);
-      border-top-left-radius:16px;
-      border-bottom-left-radius:16px;
+      border-top-left-radius:16px;border-bottom-left-radius:16px;
     }
     tr td:last-child{
       border-right:1px solid rgba(255,255,255,0.10);
-      border-top-right-radius:16px;
-      border-bottom-right-radius:16px;
+      border-top-right-radius:16px;border-bottom-right-radius:16px;
     }
     .tag{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
       background: rgba(0,0,0,0.35);
       border:1px solid rgba(255,255,255,0.12);
-      font-weight:800;
-      font-size:.84rem;
-      white-space:nowrap;
+      font-weight:800;font-size:.84rem;white-space:nowrap;
     }
     .tag small{font-weight:700;color:rgba(255,255,255,0.7)}
-    .row-actions{
-      display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;
-    }
+    .row-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
     .iconbtn{
       width:40px;height:40px;border-radius:14px;
       border:1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
       color:#fff;cursor:pointer;
-      display:grid;place-items:center;
-      transition:.15s ease;
+      display:grid;place-items:center;transition:.15s ease;
     }
     .iconbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
     .iconbtn.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
     .iconbtn.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
 
     /* Inputs */
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-top:10px;
-    }
+    .field{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
     .field label{font-weight:800;font-size:.9rem}
     .input, .textarea{
       width:100%;
-      padding:12px 14px;
-      border-radius:16px;
+      padding:12px 14px;border-radius:16px;
       border:1px solid rgba(255,255,255,0.14);
       background: rgba(0,0,0,0.30);
-      color:#fff;
-      outline:none;
-      font-family:Poppins;
+      color:#fff;outline:none;font-family:Poppins;
     }
     .textarea{min-height:130px;resize:vertical}
+    .hint{margin-top:8px;color:var(--muted);font-size:.92rem}
 
     /* Modals */
     .modal, .lock{
       position:fixed; inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
+      display:none;align-items:center;justify-content:center;
       z-index:9999;
       background: rgba(0,0,0,0.60);
       backdrop-filter: blur(14px);
@@ -328,19 +233,13 @@
       box-shadow: var(--shadow);
       padding:18px;
     }
-    .modalhead{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;
-    }
+    .modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
     .modalhead h3{font-size:1.2rem;font-weight:900}
-    .modalgrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
+    .modalgrid{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
     .modalgrid .field{margin-top:0}
     .modalfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
 
-    /* LOCKSCREEN (PIN + keypad) */
+    /* LOCKSCREEN */
     .lockbox{
       width:min(520px, 100%);
       border-radius:30px;
@@ -349,20 +248,11 @@
       box-shadow: var(--shadow);
       padding:18px;
     }
-    .locktop{
-      display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;
-    }
-    .locktop .title{
-      display:flex;flex-direction:column;gap:2px
-    }
+    .locktop{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;}
+    .locktop .title{display:flex;flex-direction:column;gap:2px}
     .locktop .title b{font-weight:900;font-size:1.1rem}
     .locktop .title span{color:var(--muted);font-size:.92rem}
-    .pin{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      margin:14px 0 10px;
-    }
+    .pin{display:flex;gap:10px;justify-content:center;margin:14px 0 10px;}
     .pin .dotpin{
       width:14px;height:14px;border-radius:99px;
       background: rgba(255,255,255,0.22);
@@ -374,43 +264,25 @@
       border-color: rgba(255,145,0,0.55);
       box-shadow: 0 10px 25px rgba(255,106,0,0.18);
     }
-    .keypad{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-      margin-top:12px;
-    }
+    .keypad{display:grid;grid-template-columns: repeat(3, 1fr);gap:12px;margin-top:12px;}
     .key{
-      height:56px;
-      border-radius:18px;
+      height:56px;border-radius:18px;
       border:1px solid rgba(255,255,255,0.16);
       background: rgba(0,0,0,0.25);
-      color:#fff;
-      font-weight:900;
-      font-size:1.15rem;
-      cursor:pointer;
-      transition:.15s ease;
-      display:grid;place-items:center;
+      color:#fff;font-weight:900;font-size:1.15rem;
+      cursor:pointer;transition:.15s ease;display:grid;place-items:center;
     }
     .key:hover{transform: translateY(-1px); background: rgba(0,0,0,0.35)}
     .key.small{font-size:1rem}
     .key.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
     .key.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
-    .lockmsg{
-      text-align:center;
-      color:rgba(255,255,255,0.85);
-      font-size:.92rem;
-      min-height:22px;
-      margin-top:10px;
-    }
+    .lockmsg{text-align:center;color:rgba(255,255,255,0.85);font-size:.92rem;min-height:22px;margin-top:10px;}
 
-    /* FULLSCREEN ALERT (migawka + OK) */
+    /* FULLSCREEN ALERT */
     .alarm{
       position:fixed; inset:0;
       z-index:10000;
-      display:none;
-      align-items:center;
-      justify-content:center;
+      display:none;align-items:center;justify-content:center;
       padding:22px;
       background: rgba(0,0,0,0.65);
       backdrop-filter: blur(6px);
@@ -423,10 +295,7 @@
       animation: flash 0.55s infinite alternate;
       opacity:0.95;
     }
-    @keyframes flash{
-      from{opacity:.20}
-      to{opacity:.85}
-    }
+    @keyframes flash{from{opacity:.20}to{opacity:.85}}
     .alarmbox{
       position:relative;
       width:min(640px, 100%);
@@ -437,11 +306,7 @@
       padding:18px;
       text-align:center;
     }
-    .alarmbox h3{
-      font-size:1.35rem;
-      font-weight:900;
-      margin:8px 0 6px;
-    }
+    .alarmbox h3{font-size:1.35rem;font-weight:900;margin:8px 0 6px;}
     .alarmbox p{color:rgba(255,255,255,0.85)}
     .alarmbox .preview{
       margin-top:12px;
@@ -453,11 +318,33 @@
       font-size:.95rem;
       line-height:1.6;
     }
+    .alarmbox .preview .line{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 10px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      margin-bottom:8px;
+    }
+    .alarmbox .preview .line i{width:18px;color:rgba(255,145,0,0.95)}
+    .alarmbox .preview .muted{color:rgba(255,255,255,0.72)}
     .alarmbox .preview b{color:#fff}
     .alarmbox .okwrap{margin-top:14px;display:flex;justify-content:center}
 
+    /* Toast */
+    #toast{
+      position:fixed;bottom:18px;right:18px;z-index:12000;
+      display:none;align-items:center;gap:10px;
+      padding:12px 14px;border-radius:999px;
+      background: rgba(22,163,74,0.22);
+      border:1px solid rgba(22,163,74,0.35);
+      color:#fff;backdrop-filter: blur(12px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+      font-weight:800;
+    }
+
     /* Responsive */
-    @media (max-width: 1080px){
+    @media (max-width: 1180px){
       .kpis{grid-template-columns: repeat(2, 1fr)}
     }
     @media (max-width: 920px){
@@ -545,12 +432,12 @@
         <div class="navsep">Zarządzanie</div>
         <button class="navbtn" data-tab="users"><i class="fa-solid fa-users"></i> Użytkownicy</button>
         <button class="navbtn" data-tab="employees"><i class="fa-solid fa-user-tie"></i> Pracownicy</button>
-        <button class="navbtn" data-tab="future"><i class="fa-solid fa-layer-group"></i> Przyszłościowe zakładki</button>
 
-        <div class="navsep">Milk / Zamówienia</div>
+        <div class="navsep">Milki Aplikacja</div>
         <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
         <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
         <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
+        <button class="navbtn" data-tab="clients"><i class="fa-solid fa-address-book"></i> Baza klientów</button>
 
         <div class="sidefoot">
           <span class="pill"><span class="dot" id="apiDot"></span> API</span>
@@ -564,7 +451,7 @@
       <div class="topbar">
         <div>
           <h1 id="title">Rezerwacje</h1>
-          <p id="subtitle">Zarządzaj rezerwacjami i paskiem informacyjnym. Realtime działa przez Socket.IO.</p>
+          <p id="subtitle"></p>
         </div>
 
         <div class="actions">
@@ -575,13 +462,22 @@
 
       <!-- KPIs -->
       <section class="card" id="kpiCard">
-        <h2>Podgląd</h2>
+        <h2>Statystyki</h2>
         <div class="kpis">
           <div class="kpi"><i class="fa-solid fa-users"></i><div><div class="num" id="kUsers">—</div><div class="lbl">Użytkownicy</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-calendar-check"></i><div><div class="num" id="kReservations">—</div><div class="lbl">Rezerwacje</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-user-tie"></i><div><div class="num" id="kEmployees">—</div><div class="lbl">Pracownicy</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-coins"></i><div><div class="num" id="kMilkos">—</div><div class="lbl">Milkosy łącznie</div></div></div>
+        </div>
+
+        <div class="kpis" style="margin-top:14px">
+          <div class="kpi"><i class="fa-solid fa-user-check"></i><div><div class="num" id="kUsersWithPoints">—</div><div class="lbl">Użytkownicy z punktami</div></div></div>
           <div class="kpi"><i class="fa-solid fa-bag-shopping"></i><div><div class="num" id="kOrders">—</div><div class="lbl">Zamówienia</div></div></div>
           <div class="kpi"><i class="fa-solid fa-utensils"></i><div><div class="num" id="kProducts">—</div><div class="lbl">Produkty</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-calendar-check"></i><div><div class="num" id="kReservations">—</div><div class="lbl">Rezerwacje</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-bolt"></i><div><div class="num" id="kAppOps">STATYCZNE</div><div class="lbl">Milki Aplikacja</div></div></div>
         </div>
+
+        <p class="hint">Sekcja „Milki Aplikacja” jest teraz w pełni statyczna (bez backendu).</p>
       </section>
 
       <!-- TAB: RESERVATIONS -->
@@ -606,7 +502,7 @@
 
       <!-- TAB: HAPPY -->
       <section class="card" id="tab-happy" style="display:none">
-        <h2>Pasek info (Happy Bar)</h2>
+        <h2>Pasek info</h2>
 
         <div class="field">
           <label>Tekst paska</label>
@@ -617,42 +513,145 @@
           <button class="btn" id="happyLoad"><i class="fa-solid fa-download"></i> Wczytaj</button>
           <button class="btn primary" id="happySave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
         </div>
-
-        <p style="margin-top:10px;color:var(--muted);font-size:.92rem">
-          Zapis wywołuje <b>POST /api/happy</b> i robi realtime update na stronie (event: <b>happy-updated</b>).
-        </p>
       </section>
 
-      <!-- PLACEHOLDER TABS -->
+      <!-- TAB: USERS -->
       <section class="card" id="tab-users" style="display:none">
         <h2>Użytkownicy</h2>
-        <p style="color:var(--muted)">Placeholder — Twój server.js ma kolekcję <b>users</b>, ale nie ma jeszcze endpointów do listowania. Dodamy, gdy będziesz chciał.</p>
+        <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
+      <!-- TAB: EMPLOYEES -->
       <section class="card" id="tab-employees" style="display:none">
         <h2>Pracownicy</h2>
-        <p style="color:var(--muted)">Placeholder — brak endpointów w minimalnym server.js. Zakładka gotowa pod przyszłość.</p>
+        <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <section class="card" id="tab-future" style="display:none">
-        <h2>Przyszłościowe zakładki</h2>
-        <p style="color:var(--muted)">Placeholder — miejsce na nowe moduły (np. raporty, eksport, ustawienia).</p>
-      </section>
-
+      <!-- TAB: PICKUP (STATIC) -->
       <section class="card" id="tab-pickup" style="display:none">
         <h2>Zamówienie z odbiorem</h2>
-        <p style="color:var(--muted)">Placeholder — kolekcja <b>orders</b> istnieje, ale brak endpointów w tym minimalnym server.js.</p>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Klient</th>
+                <th>Zamówienie</th>
+                <th>Odbiór</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody"></tbody>
+          </table>
+        </div>
+        <p class="hint">To jest statyczny podgląd — backend podłączymy później.</p>
       </section>
 
+      <!-- TAB: POINTS (STATIC) -->
       <section class="card" id="tab-points" style="display:none">
         <h2>Punkty Milk</h2>
-        <p style="color:var(--muted)">Placeholder — do podpięcia API punktów (w przyszłości).</p>
+
+        <div class="modalgrid" style="margin-top:6px">
+          <div class="field">
+            <label>Milk ID</label>
+            <input class="input" id="pMilkId" placeholder="np. MILK-10293">
+          </div>
+          <div class="field">
+            <label>Kwota wydana (zł)</label>
+            <input class="input" id="pAmount" type="number" min="0" step="0.01" placeholder="np. 49.99">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+          <button class="btn primary" id="pAdd"><i class="fa-solid fa-plus"></i> Dodaj punkty</button>
+        </div>
+
+        <div class="card" style="margin-top:14px; background: rgba(255,255,255,0.05)">
+          <h2 style="margin-bottom:6px">Podgląd punktów (lokalnie)</h2>
+          <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są liczone i trzymane tylko w pamięci przeglądarki.</p>
+          <div id="pointsPreview" style="margin-top:10px;color:rgba(255,255,255,0.9)"></div>
+        </div>
       </section>
 
+      <!-- TAB: REWARDS (STATIC) -->
       <section class="card" id="tab-rewards" style="display:none">
         <h2>Nagrody</h2>
-        <p style="color:var(--muted)">Placeholder — do podpięcia API nagród (w przyszłości).</p>
+
+        <div class="modalgrid" style="margin-top:6px">
+          <div class="field">
+            <label>Nazwa nagrody</label>
+            <input class="input" id="rName" placeholder="np. Darmowy shake 500 ml">
+          </div>
+          <div class="field">
+            <label>Koszt (Milkosy)</label>
+            <input class="input" id="rCost" type="number" min="0" step="1" placeholder="np. 20">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+          <button class="btn primary" id="rAdd"><i class="fa-solid fa-plus"></i> Dodaj nagrodę</button>
+        </div>
+
+        <div style="margin-top:12px;overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Nagroda</th>
+                <th>Koszt</th>
+                <th style="text-align:right">Akcje</th>
+              </tr>
+            </thead>
+            <tbody id="rewardsTbody"></tbody>
+          </table>
+        </div>
+
+        <p class="hint">To jest statyczna baza nagród — backend podłączymy później.</p>
       </section>
+
+      <!-- TAB: CLIENTS (STATIC + PIN 5100) -->
+      <section class="card" id="tab-clients" style="display:none">
+        <h2>Baza klientów</h2>
+
+        <div id="clientsLocked" style="display:block">
+          <p style="color:var(--muted)">Dostęp wymaga PIN.</p>
+          <div class="modalgrid" style="margin-top:6px">
+            <div class="field" style="grid-column:span 2">
+              <label>PIN dostępu</label>
+              <input class="input" id="cPin" type="password" placeholder="5100">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+            <button class="btn primary" id="cUnlock"><i class="fa-solid fa-unlock"></i> Odblokuj</button>
+          </div>
+          <div class="hint">PIN: <b>5100</b></div>
+        </div>
+
+        <div id="clientsContent" style="display:none">
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Klient</th>
+                  <th>Email</th>
+                  <th>Telefon</th>
+                  <th>Milk ID</th>
+                  <th style="text-align:right">Akcje</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="card" style="margin-top:14px; background: rgba(255,255,255,0.05)">
+            <h2 style="margin-bottom:8px">Aktywność konta</h2>
+            <div id="clientActivity" style="color:rgba(255,255,255,0.9)">
+              Wybierz klienta, aby zobaczyć aktywność.
+            </div>
+          </div>
+
+          <p class="hint">To jest statyczny widok — backend podłączymy później.</p>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -684,16 +683,7 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" style="
-    position:fixed;bottom:18px;right:18px;z-index:12000;
-    display:none;align-items:center;gap:10px;
-    padding:12px 14px;border-radius:999px;
-    background: rgba(22,163,74,0.22);
-    border:1px solid rgba(22,163,74,0.35);
-    color:#fff;backdrop-filter: blur(12px);
-    box-shadow: 0 18px 45px rgba(0,0,0,0.35);
-    font-weight:800;
-  ">
+  <div id="toast">
     <i class="fa-solid fa-circle-check"></i>
     <span id="toastText"></span>
   </div>
@@ -710,11 +700,51 @@
       pin: "",
       okPin: "0051",
       unlocked: false,
+
       reservations: [],
       editingId: null,
+
       alarmActive: false,
       audioCtx: null,
-      beepInterval: null
+      beepInterval: null,
+
+      // STATIC: Milki Aplikacja
+      app: {
+        pointsByMilkId: {},  // { MILK-xxx: number }
+        rewards: [
+          { id: "r1", name: "Darmowy shake 500 ml", cost: 20 },
+          { id: "r2", name: "Zniżka -10% na zamówienie", cost: 12 }
+        ],
+        orders: [
+          { id:"o1", date:"2025-12-16", name:"Klaudia Nowak", items:"2x Shake Mango, 1x Fries", pickup:"18:20" },
+          { id:"o2", date:"2025-12-16", name:"Mateusz K.", items:"1x Shake Oreo", pickup:"19:05" }
+        ],
+        clientsPinOk: false,
+        clients: [
+          {
+            id:"c1",
+            name:"Anna Kowalska",
+            email:"anna@example.com",
+            phone:"+48 500 111 222",
+            milkId:"MILK-10293",
+            activity:[
+              { t:"Doładowanie", d:"2025-12-12 14:22", v:"+5 Milkosów (50 zł)" },
+              { t:"Nagroda", d:"2025-12-13 19:08", v:"-20 Milkosów — Darmowy shake 500 ml" },
+              { t:"Rezerwacja", d:"2025-12-15 12:01", v:"Stolik 3 os. • 18:00" }
+            ]
+          },
+          {
+            id:"c2",
+            name:"Piotr Zieliński",
+            email:"piotr@example.com",
+            phone:"+48 501 333 444",
+            milkId:"MILK-88401",
+            activity:[
+              { t:"Doładowanie", d:"2025-12-10 11:40", v:"+3 Milkosy (30 zł)" }
+            ]
+          }
+        ]
+      }
     };
 
     function showToast(msg, bad=false){
@@ -811,7 +841,6 @@
       }
     });
 
-    // (opcjonalnie) blokujemy wpisywanie z fizycznej klawiatury: tylko keypad
     window.addEventListener("keydown", (e)=>{
       if(!$("#lock").classList.contains("show")) return;
       e.preventDefault();
@@ -823,14 +852,14 @@
     // Tabs
     // ==========================
     const tabMeta = {
-      reservations: { title:"Rezerwacje", subtitle:"Lista rezerwacji z DB. Realtime przez Socket.IO." },
-      happy: { title:"Pasek info", subtitle:"Tekst paska (Happy Bar) + realtime update na stronie." },
-      users: { title:"Użytkownicy", subtitle:"Placeholder (brak endpointów w minimalnym server.js)." },
-      employees: { title:"Pracownicy", subtitle:"Placeholder (brak endpointów w minimalnym server.js)." },
-      future: { title:"Przyszłościowe zakładki", subtitle:"Miejsce na nowe moduły." },
-      pickup: { title:"Zamówienie z odbiorem", subtitle:"Placeholder — kolekcja orders istnieje, brak endpointów." },
-      points: { title:"Punkty Milk", subtitle:"Placeholder — do podpięcia API punktów." },
-      rewards: { title:"Nagrody", subtitle:"Placeholder — do podpięcia API nagród." },
+      reservations: { title:"Rezerwacje" },
+      happy: { title:"Pasek info" },
+      users: { title:"Użytkownicy" },
+      employees: { title:"Pracownicy" },
+      pickup: { title:"Zamówienie z odbiorem" },
+      points: { title:"Punkty Milk" },
+      rewards: { title:"Nagrody" },
+      clients: { title:"Baza klientów" },
     };
 
     function showTab(key){
@@ -840,13 +869,13 @@
         if(sec) sec.style.display = (k === key) ? "block" : "none";
       });
       $("#title").textContent = tabMeta[key]?.title || "Panel";
-      $("#subtitle").textContent = tabMeta[key]?.subtitle || "";
+      $("#subtitle").textContent = ""; // usunięte opisy
     }
 
     $$(".navbtn").forEach(b => b.addEventListener("click", ()=> showTab(b.dataset.tab)));
 
     // ==========================
-    // API
+    // API (panel / backend)
     // ==========================
     async function apiHealth(){
       try{
@@ -864,15 +893,25 @@
         const res = await fetch("/api/admin/stats", {cache:"no-store"});
         const data = await res.json();
         if(!data?.ok) throw new Error("no ok");
+
         $("#kUsers").textContent = data.users ?? 0;
         $("#kOrders").textContent = data.orders ?? 0;
         $("#kProducts").textContent = data.products ?? 0;
         $("#kReservations").textContent = data.reservations ?? 0;
+
+        // nowe staty (jeśli backend ich nie zwraca — pokaże "—")
+        $("#kMilkos").textContent = (data.milkosTotal ?? "—");
+        $("#kUsersWithPoints").textContent = (data.usersWithPoints ?? "—");
+        $("#kEmployees").textContent = (data.employees ?? "—");
+
       }catch{
         $("#kUsers").textContent = "—";
         $("#kOrders").textContent = "—";
         $("#kProducts").textContent = "—";
         $("#kReservations").textContent = "—";
+        $("#kMilkos").textContent = "—";
+        $("#kUsersWithPoints").textContent = "—";
+        $("#kEmployees").textContent = "—";
       }
     }
 
@@ -907,7 +946,6 @@
 
       for(const r of state.reservations){
         const tr = document.createElement("tr");
-
         const src = (r.source || "index");
         const created = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
 
@@ -930,7 +968,6 @@
             </div>
           </td>
         `;
-
         tb.appendChild(tr);
       }
     }
@@ -981,18 +1018,14 @@
       $("#editModal").classList.add("show");
       $("#editModal").setAttribute("aria-hidden","false");
     }
-
     function closeEdit(){
       state.editingId = null;
       $("#editModal").classList.remove("show");
       $("#editModal").setAttribute("aria-hidden","true");
     }
-
     $("#editClose").addEventListener("click", closeEdit);
     $("#editCancel").addEventListener("click", closeEdit);
-    $("#editModal").addEventListener("click", (e)=>{
-      if(e.target.id === "editModal") closeEdit();
-    });
+    $("#editModal").addEventListener("click", (e)=>{ if(e.target.id === "editModal") closeEdit(); });
 
     $("#editSave").addEventListener("click", async ()=>{
       const id = state.editingId;
@@ -1050,7 +1083,7 @@
         });
         const data = await res.json().catch(()=>({}));
         if(!res.ok || data?.ok === false) throw new Error(data?.message || "save");
-        showToast("Zapisano + realtime ✅");
+        showToast("Zapisano ✅");
       }catch(e){
         console.error(e);
         showToast("Błąd zapisu paska", true);
@@ -1064,11 +1097,8 @@
     // ==========================
     function ensureAudio(){
       if(state.audioCtx) return;
-      try{
-        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }catch(e){
-        state.audioCtx = null;
-      }
+      try{ state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e){ state.audioCtx = null; }
     }
 
     function beepOnce(){
@@ -1086,28 +1116,40 @@
     }
 
     function startAlarm(reservation){
-      if(state.alarmActive) return; // już aktywny
+      if(state.alarmActive) return;
       state.alarmActive = true;
 
-      // preview
       $("#alarmPreview").innerHTML = `
-        <div><b>${escapeHtml(reservation?.name || "—")}</b> • ${escapeHtml(reservation?.phone || "—")}</div>
-        <div>📅 ${escapeHtml(reservation?.date || "—")} • 🕒 ${escapeHtml(reservation?.time || "—")}</div>
-        <div>👥 ${escapeHtml(reservation?.guests || "—")} • 🚪 ${escapeHtml(reservation?.room || "—")}</div>
-        <div style="margin-top:8px;color:rgba(255,255,255,0.75)">${escapeHtml(reservation?.notes || "")}</div>
+        <div class="line">
+          <i class="fa-solid fa-user"></i>
+          <div><b>${escapeHtml(reservation?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(reservation?.phone || "—")}</div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-calendar-day"></i>
+          <div>${escapeHtml(reservation?.date || "—")} <span class="muted">•</span> ${escapeHtml(reservation?.time || "—")}</div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-user-group"></i>
+          <div>${escapeHtml(reservation?.guests || "—")} <span class="muted">os.</span></div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-door-open"></i>
+          <div>${escapeHtml(reservation?.room || "—")}</div>
+        </div>
+        <div class="line" style="margin-bottom:0">
+          <i class="fa-solid fa-note-sticky"></i>
+          <div class="muted">${escapeHtml(reservation?.notes || "—")}</div>
+        </div>
       `;
 
       const alarm = $("#alarm");
       alarm.classList.add("show");
       alarm.classList.add("flash");
 
-      // audio beep loop
       ensureAudio();
       if(state.audioCtx && state.audioCtx.state === "suspended"){
-        // próba resume (zwykle działa po pierwszej interakcji z panelem)
         state.audioCtx.resume().catch(()=>{});
       }
-
       beepOnce();
       state.beepInterval = setInterval(beepOnce, 650);
     }
@@ -1125,7 +1167,7 @@
 
     $("#alarmOk").addEventListener("click", ()=>{
       stopAlarm();
-      showToast("Potwierdzono powiadomienie ✅");
+      showToast("Potwierdzono ✅");
     });
 
     // ==========================
@@ -1138,27 +1180,230 @@
         socket = io();
 
         socket.on("new-reservation", async (reservation)=>{
-          // 1) alarm + beep + migawka do OK
           startAlarm(reservation);
-
-          // 2) aktualizacja listy
           await loadReservations();
           await loadStats();
         });
 
         socket.on("happy-updated", (text)=>{
-          // jeżeli jesteśmy w zakładce "pasek info", aktualizuj pole
           if($("#tab-happy").style.display !== "none"){
             $("#happyText").value = text || "";
           }
-          showToast("Pasek info zaktualizowany (realtime) ✅");
+          showToast("Pasek zaktualizowany ✅");
         });
 
-        socket.on("connect_error", ()=>{});
       }catch(e){
         console.error("Socket init error", e);
       }
     }
+
+    // ==========================
+    // STATIC: Milki Aplikacja
+    // ==========================
+    function renderOrders(){
+      const tb = $("#ordersTbody");
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      const list = state.app.orders || [];
+      if(list.length === 0){
+        tb.innerHTML = `
+          <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+            Brak zamówień
+          </td></tr>
+        `;
+        return;
+      }
+
+      for(const o of list){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(o.date)}</span></td>
+          <td style="font-weight:900">${escapeHtml(o.name)}</td>
+          <td>${escapeHtml(o.items)}</td>
+          <td><span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(o.pickup)}</span></td>
+        `;
+        tb.appendChild(tr);
+      }
+    }
+
+    function calcPointsFromAmount(amount){
+      const a = Number(amount);
+      if(!isFinite(a) || a <= 0) return 0;
+      return Math.floor(a / 10);
+    }
+
+    function renderPointsPreview(){
+      const box = $("#pointsPreview");
+      if(!box) return;
+      const entries = Object.entries(state.app.pointsByMilkId || {});
+      if(entries.length === 0){
+        box.innerHTML = `<span class="muted">Brak danych.</span>`;
+        return;
+      }
+      box.innerHTML = entries
+        .sort((a,b)=> b[1]-a[1])
+        .map(([id, pts]) => `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(id)} <small>•</small> ${escapeHtml(pts)} pkt</div>`)
+        .join("");
+    }
+
+    $("#pAdd").addEventListener("click", ()=>{
+      const milkId = ($("#pMilkId").value || "").trim();
+      const amount = $("#pAmount").value;
+
+      if(!milkId){
+        showToast("Podaj Milk ID", true);
+        return;
+      }
+      const pts = calcPointsFromAmount(amount);
+      if(pts <= 0){
+        showToast("Kwota za mała (min. 10 zł = 1 pkt)", true);
+        return;
+      }
+
+      const cur = state.app.pointsByMilkId[milkId] || 0;
+      state.app.pointsByMilkId[milkId] = cur + pts;
+
+      $("#pMilkId").value = "";
+      $("#pAmount").value = "";
+
+      renderPointsPreview();
+      showToast(`Dodano +${pts} pkt ✅`);
+    });
+
+    function renderRewards(){
+      const tb = $("#rewardsTbody");
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      const list = state.app.rewards || [];
+      if(list.length === 0){
+        tb.innerHTML = `
+          <tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+            Brak nagród
+          </td></tr>
+        `;
+        return;
+      }
+
+      for(const r of list){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="font-weight:900">${escapeHtml(r.name)}</td>
+          <td><span class="tag"><i class="fa-solid fa-coins"></i> ${escapeHtml(r.cost)} <small>Milkosów</small></span></td>
+          <td style="text-align:right">
+            <button class="iconbtn danger" data-rid="${escapeHtml(r.id)}" title="Usuń"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      }
+    }
+
+    $("#rAdd").addEventListener("click", ()=>{
+      const name = ($("#rName").value || "").trim();
+      const cost = Number($("#rCost").value);
+
+      if(!name){
+        showToast("Podaj nazwę nagrody", true);
+        return;
+      }
+      if(!isFinite(cost) || cost <= 0){
+        showToast("Podaj poprawny koszt", true);
+        return;
+      }
+
+      state.app.rewards.push({ id: "r" + Math.random().toString(16).slice(2), name, cost: Math.floor(cost) });
+      $("#rName").value = "";
+      $("#rCost").value = "";
+      renderRewards();
+      showToast("Dodano nagrodę ✅");
+    });
+
+    $("#rewardsTbody").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const id = btn.getAttribute("data-rid");
+      if(!id) return;
+      state.app.rewards = state.app.rewards.filter(x => x.id !== id);
+      renderRewards();
+      showToast("Usunięto ✅");
+    });
+
+    function renderClients(){
+      const tb = $("#clientsTbody");
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      const list = state.app.clients || [];
+      if(list.length === 0){
+        tb.innerHTML = `
+          <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+            Brak klientów
+          </td></tr>
+        `;
+        return;
+      }
+
+      for(const c of list){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="font-weight:900">${escapeHtml(c.name)}</td>
+          <td>${escapeHtml(c.email)}</td>
+          <td>${escapeHtml(c.phone)}</td>
+          <td><span class="tag"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(c.milkId)}</span></td>
+          <td style="text-align:right">
+            <button class="iconbtn ok" data-cid="${escapeHtml(c.id)}" title="Podgląd"><i class="fa-solid fa-eye"></i></button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      }
+    }
+
+    function renderClientActivity(client){
+      const box = $("#clientActivity");
+      if(!box) return;
+      if(!client){
+        box.textContent = "Wybierz klienta, aby zobaczyć aktywność.";
+        return;
+      }
+
+      const items = client.activity || [];
+      if(items.length === 0){
+        box.innerHTML = `<span class="muted">Brak aktywności.</span>`;
+        return;
+      }
+
+      box.innerHTML = items.map(a => `
+        <div class="tag" style="display:flex;justify-content:space-between;gap:10px;width:100%;margin-top:10px">
+          <span><i class="fa-solid fa-circle-dot"></i> ${escapeHtml(a.t)} <small>•</small> ${escapeHtml(a.v)}</span>
+          <small class="muted" style="opacity:.9">${escapeHtml(a.d)}</small>
+        </div>
+      `).join("");
+    }
+
+    $("#cUnlock").addEventListener("click", ()=>{
+      const pin = ($("#cPin").value || "").trim();
+      if(pin !== "5100"){
+        showToast("Błędny PIN", true);
+        return;
+      }
+      state.app.clientsPinOk = true;
+      $("#clientsLocked").style.display = "none";
+      $("#clientsContent").style.display = "block";
+      renderClients();
+      renderClientActivity(null);
+      showToast("Odblokowano ✅");
+    });
+
+    $("#clientsTbody").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const id = btn.getAttribute("data-cid");
+      if(!id) return;
+      const client = (state.app.clients || []).find(x => x.id === id);
+      renderClientActivity(client);
+      showToast("Podgląd klienta ✅");
+    });
 
     // ==========================
     // Init
@@ -1166,10 +1411,17 @@
     async function initApp(){
       showTab("reservations");
       initSocket();
+
+      // backend części panelu:
       await apiHealth();
       await loadStats();
       await loadReservations();
       await loadHappy();
+
+      // statyczna aplikacja:
+      renderOrders();
+      renderPointsPreview();
+      renderRewards();
     }
 
     $("#refreshBtn").addEventListener("click", async ()=>{
