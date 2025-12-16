@@ -185,6 +185,25 @@ app.delete("/api/rezerwacje/:id", async (req, res) => {
 // API — HAPPY BAR
 // ==========================
 
+// ✅ DODANE: kompatybilny endpoint dla index.html, jeśli woła /api/data
+// Zwracamy kilka nazw pól, żeby pasowało do różnych wersji frontu.
+app.get("/api/data", async (_req, res) => {
+  try {
+    const doc = await HappyBar.findOne().sort({ updatedAt: -1 });
+    const text = doc?.text || "";
+    res.json({
+      ok: true,
+      happy: text,
+      happyBarText: text,
+      text: text,
+      updatedAt: doc?.updatedAt || null,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, happy: "", happyBarText: "", text: "", updatedAt: null });
+  }
+});
+
 // index/admin: pobranie aktualnego tekstu
 app.get("/api/happy", async (_req, res) => {
   try {
