@@ -258,29 +258,6 @@
         }
         .reservation-toast i { font-size: 1rem; }
 
-        /* ✅ BLOKADA REZERWACJI – INFO BOX */
-        .reservation-disabled-notice{
-            display:flex;
-            gap:12px;
-            align-items:flex-start;
-            padding:14px 16px;
-            margin: 0 0 16px 0;
-            border-radius: 14px;
-            background: rgba(220,38,38,0.08);
-            border: 2px solid rgba(220,38,38,0.25);
-            color: var(--text-color-dark);
-        }
-        .reservation-disabled-notice i{
-            font-size: 1.2rem;
-            margin-top: 2px;
-            color: var(--error-color);
-        }
-        .reservation-disabled-notice a{
-            color: inherit;
-            font-weight: 800;
-            text-decoration: underline;
-        }
-
         @media(max-width: 992px) {
             .nav-menu {
                 position: fixed; top: 0; right: -100%; width: 70%; height: 100vh;
@@ -511,15 +488,6 @@
             <div class="reservation-wrapper grid-two-col fade-in" id="reservation-wrapper">
               <div class="form-container">
                 <h3>Wypełnij swoje dane</h3>
-
-                <!-- ✅ INFO: rezerwacje online wyłączone -->
-                <div id="reservationDisabledNotice" class="reservation-disabled-notice" role="alert" aria-live="polite">
-                  <i class="fas fa-circle-exclamation"></i>
-                  <div>
-                    <strong>Rezerwacje online są chwilowo niedostępne.</strong><br>
-                    Prosimy składać rezerwacje telefonicznie: <a href="tel:+48733033100">733 033 100</a>.
-                  </div>
-                </div>
 
                 <form id="bookingForm" class="booking-form" aria-label="Formularz rezerwacji">
                   <div class="form-row">
@@ -790,20 +758,6 @@
                 const bookingForm = document.getElementById('bookingForm');
                 if (!bookingForm) return;
 
-                // ✅ TYMCZASOWA BLOKADA REZERWACJI ONLINE
-                const RESERVATIONS_DISABLED = true; // <- ustaw na false, gdy znowu ma działać
-                const RESERVATIONS_PHONE = "733 033 100";
-
-                if (RESERVATIONS_DISABLED) {
-                    // Zablokuj pola i przycisk
-                    bookingForm.querySelectorAll("input, select, textarea, button").forEach(el => {
-                        el.disabled = true;
-                    });
-
-                    // Pokaż komunikat toast
-                    showReservationToast(`Rezerwacje online chwilowo nie działają. Zadzwoń: ${RESERVATIONS_PHONE}`, true);
-                }
-
                 const inputs = {
                   name: document.getElementById('name'),
                   phone: document.getElementById('phone'),
@@ -859,12 +813,6 @@
 
                 bookingForm.addEventListener('submit', async (e) => {
                   e.preventDefault();
-
-                  // ✅ jeżeli blokada aktywna — nie wysyłaj
-                  if (RESERVATIONS_DISABLED) {
-                    showReservationToast(`Rezerwacje online chwilowo nie działają. Zadzwoń: ${RESERVATIONS_PHONE}`, true);
-                    return;
-                  }
 
                   const submitButton = bookingForm.querySelector('button[type="submit"]');
                   const originalText = submitButton.innerHTML;
