@@ -2,1069 +2,1194 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MilkShake Bar — Panel Administratora</title>
 
-  <meta name="theme-color" content="#FF6A00" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
   <style>
     :root{
       --primary:#FF6A00;
       --secondary:#FF9100;
-      --bg:#FFF6EC;
-      --text:#2B1300;
-      --white:#fff;
-      --grad:linear-gradient(135deg,var(--primary),var(--secondary));
-      --shadow:0 14px 40px rgba(0,0,0,.12);
-      --shadow-soft:0 8px 22px rgba(0,0,0,.08);
+      --bg:#0e0a08;
+      --card:rgba(255,255,255,0.08);
+      --card2:rgba(255,255,255,0.10);
+      --border:rgba(255,255,255,0.14);
+      --text:#fff;
+      --muted:rgba(255,255,255,0.75);
+      --shadow:0 18px 60px rgba(0,0,0,0.45);
       --radius:20px;
-      --glass:rgba(255,255,255,.88);
-      --glass-strong:rgba(255,255,255,.96);
-      --line:rgba(0,0,0,.06);
-      --success:#16A34A;
-      --danger:#DC2626;
-      --muted:rgba(43,19,0,.70);
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --good:#16A34A;
+      --bad:#DC2626;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
     body{
-      font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;
-      background:var(--bg);
+      font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif;
       color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      min-height:100vh;
-      overflow-x:hidden;
-    }
-
-    .wrap{max-width:1180px;margin:0 auto;padding: calc(14px + var(--safe-top)) 14px calc(16px + var(--safe-bottom));}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      background:var(--glass);border:1px solid rgba(255,255,255,.98);
-      border-radius:24px;box-shadow:var(--shadow);
-      padding:14px 16px;margin-bottom:12px;
-    }
-    .brand{display:flex;align-items:center;gap:12px;}
-    .logo{
-      width:46px;height:46px;border-radius:18px;background:var(--grad);color:#fff;
-      display:grid;place-items:center;box-shadow:0 10px 24px rgba(255,106,0,.30);
-      flex:0 0 auto;
-    }
-    .brand h1{font-size:1.05rem;font-weight:900;line-height:1.1}
-    .brand p{font-size:.84rem;opacity:.78;font-weight:800;margin-top:2px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(0,0,0,.06);
-      padding:10px 12px;border-radius:999px;font-weight:900;
-      display:flex;gap:8px;align-items:center;
-    }
-
-    .btn{
-      border:none; cursor:pointer;
-      font-weight:900;
-      border-radius:16px;
-      padding:12px 14px;
-      display:inline-flex;align-items:center;gap:8px;
-      transition:.15s;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      justify-content:center;
-      color: var(--text);
-      background: rgba(255,255,255,.92);
-      border:1px solid rgba(0,0,0,.06);
-      text-decoration:none;
-    }
-    .btn:active{transform:translateY(1px)}
-    .btn-primary{
-      background: var(--grad);
-      color:#fff;
-      border-color: rgba(255,255,255,.18);
-      box-shadow:0 10px 24px rgba(255,106,0,.30);
-    }
-    .btn-danger{
-      background: linear-gradient(135deg, #ff3b3b, #ff7a3b);
-      color:#fff;border-color: rgba(255,255,255,.18);
-      box-shadow:0 10px 24px rgba(255,59,59,.18);
-    }
-    .btn-small{ padding:9px 10px; border-radius:14px; font-size:.92rem; }
-
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tabbtn{
-      border:none;cursor:pointer;
-      padding:12px 12px;border-radius:18px;
-      background:rgba(255,255,255,.90);
-      border:1px solid rgba(0,0,0,.06);
-      font-weight:900;
-      opacity:.86;
-      display:flex;gap:8px;align-items:center;
-    }
-    .tabbtn.active{
-      background:var(--grad);color:#fff;opacity:1;
-      box-shadow:0 12px 26px rgba(255,106,0,.22);
-      border-color:rgba(255,255,255,.2);
-    }
-
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-    .card{
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,.98);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      padding:16px;
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.35), transparent 60%),
+        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.25), transparent 60%),
+        radial-gradient(800px 500px at 50% 90%, rgba(255,255,255,0.06), transparent 60%),
+        var(--bg);
       overflow:hidden;
     }
-    .section-title{
-      font-size:1.05rem;
-      font-weight:900;
-      background: var(--grad);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      margin-bottom:10px;
-    }
-    .muted{opacity:.82;color:var(--muted);font-weight:750;line-height:1.55;font-size:.95rem}
 
-    .table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
+    .app{
+      height:100%;
+      display:grid;
+      grid-template-columns: 290px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      height:100%;
+      padding:22px;
+      border-right:1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      backdrop-filter: blur(14px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:14px 14px;
       border-radius:18px;
-      border:1px solid rgba(0,0,0,.06);
-      background: rgba(255,255,255,.94);
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.35);
     }
-    .table th, .table td{
-      padding:12px 12px;
-      text-align:left;
-      font-size:.92rem;
-      border-bottom:1px solid rgba(0,0,0,.06);
-      vertical-align:top;
+    .brand img{
+      width:44px;height:44px;border-radius:999px;object-fit:cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
-    .table th{font-weight:900;background:rgba(255,106,0,.08)}
-    .table tr:last-child td{border-bottom:none}
-    .right{text-align:right}
-    .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum";}
-
-    label{ font-size:.9rem; font-weight:900; margin:8px 0 6px; display:block; }
-    input,select,textarea{
+    .brand .t1{font-weight:900;letter-spacing:.2px}
+    .brand .t2{font-size:.86rem;color:var(--muted)}
+    .nav{
+      margin-top:18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .navbtn{
       width:100%;
+      display:flex;
+      align-items:center;
+      gap:12px;
       padding:12px 14px;
-      border-radius:14px;
-      border:2px solid #eee;
-      background: var(--white);
-      font-size:1rem;
-      outline:none;
-      transition:.15s;
-      font-family:inherit;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color:#fff;
+      cursor:pointer;
+      transition:.18s ease;
+      text-align:left;
     }
-    textarea{min-height:92px;resize:vertical}
-    input:focus,select:focus,textarea:focus{
-      border-color: var(--primary);
-      box-shadow:0 8px 20px rgba(255,106,0,.10);
+    .navbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.06)}
+    .navbtn.active{
+      background: linear-gradient(135deg, rgba(255,106,0,0.35), rgba(255,145,0,0.18));
+      border-color: rgba(255,145,0,0.35);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
     }
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
-
-    .tag{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      font-weight:900;font-size:.78rem;
-      background: rgba(0,0,0,.06);
+    .navbtn i{width:18px;opacity:.95}
+    .navsep{
+      margin:12px 0 6px;
+      font-size:.82rem;
+      color: rgba(255,255,255,0.55);
+      padding:0 6px;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+    }
+    .sidefoot{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.10);
+      color:var(--muted);
+      font-size:.9rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.12);
+      font-size:.82rem;
+      color:rgba(255,255,255,0.9);
       white-space:nowrap;
     }
-    .tag.ok{background: rgba(22,163,74,.12); color:#0e6b2f;}
-    .tag.pending{background: rgba(255,106,0,.12); color:#8a3d00;}
-    .tag.bad{background: rgba(220,38,38,.12); color:#8a1010;}
+    .dot{
+      width:8px;height:8px;border-radius:99px;background:var(--bad);
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.18);
+    }
+    .dot.ok{background:var(--good); box-shadow: 0 0 0 3px rgba(22,163,74,0.18);}
 
-    .overlay{
-      position:fixed; inset:0; z-index:90;
-      display:none;
-      background: rgba(0,0,0,.32);
-      backdrop-filter: blur(2px);
-      padding: calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
+    /* Main */
+    .main{
+      height:100%;
+      overflow:auto;
+      padding:22px;
     }
-    .overlay.show{ display:grid; place-items:center; }
-    .modal{
-      width:min(920px, 100%);
-      background: var(--glass-strong);
-      border-radius:26px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.28);
-      border:1px solid rgba(255,255,255,.98);
-      overflow:hidden;
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
     }
-    .modal-head{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:14px 16px;
-      background: rgba(255,246,236,.94);
-      border-bottom:1px solid rgba(0,0,0,.06);
-    }
-    .modal-head h3{
-      font-size:1.1rem;font-weight:900;
-      background: var(--grad);
+    .topbar h1{
+      font-size:1.9rem;
+      line-height:1.15;
+      font-weight:900;
+      margin-bottom:6px;
+      letter-spacing:.2px;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,0.65));
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
-    .modal-body{ padding:16px; display:grid; gap:12px; }
-    .close{
-      width:42px;height:42px;border-radius:14px;
-      border:none; cursor:pointer;
-      background:#fff;
-      box-shadow: var(--shadow-soft);
-      display:grid;place-items:center;
+    .topbar p{color:var(--muted);max-width:720px}
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(10px);
-      background: var(--success);
-      color:#fff;
-      font-weight:900;
-      padding:10px 14px;
+    .btn{
+      border:none;
+      cursor:pointer;
+      font-weight:800;
+      padding:12px 14px;
       border-radius:999px;
-      box-shadow:0 14px 34px rgba(0,0,0,.25);
-      opacity:0;
-      pointer-events:none;
-      transition:.2s;
-      z-index:200;
-      display:flex; gap:8px; align-items:center;
-      max-width: calc(100% - 28px);
+      color:#fff;
+      background: rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.12);
+      transition:.18s ease;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      white-space:nowrap;
     }
-    .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
-    .toast.danger{ background: var(--danger); }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(255,106,0,0.95), rgba(255,145,0,0.95));
+      border-color: rgba(255,145,0,0.45);
+      box-shadow: 0 14px 35px rgba(255,106,0,0.18);
+    }
+    .btn.danger{
+      background: rgba(220,38,38,0.14);
+      border-color: rgba(220,38,38,0.35);
+    }
 
-    @keyframes alarmFlash{0%{background:#FF6A00}50%{background:#fff}100%{background:#FF6A00}}
-    .alarm{
-      position:fixed; inset:0; z-index:400;
-      display:none;
-      padding: calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
-      animation: alarmFlash .55s infinite;
+    /* Cards / grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
     }
-    .alarm.show{display:grid;place-items:center}
-    .alarm-card{
-      width:min(720px,100%);
-      background: rgba(255,255,255,.96);
-      border:1px solid rgba(0,0,0,.08);
+    .card{
+      grid-column: span 12;
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.05));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      backdrop-filter: blur(14px);
+    }
+    .card h2{
+      font-size:1.1rem;
+      margin-bottom:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:14px;
+      margin-top:10px;
+    }
+    .kpi{
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:18px;
+      padding:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .kpi i{font-size:1.05rem;opacity:.95}
+    .kpi .num{font-weight:900;font-size:1.35rem}
+    .kpi .lbl{font-size:.86rem;color:var(--muted)}
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0 10px;
+    }
+    th{
+      text-align:left;
+      font-size:.82rem;
+      color:rgba(255,255,255,0.7);
+      font-weight:800;
+      padding:0 10px 6px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+    }
+    td{
+      padding:12px 10px;
+      background: rgba(255,255,255,0.06);
+      border-top:1px solid rgba(255,255,255,0.10);
+      border-bottom:1px solid rgba(255,255,255,0.10);
+    }
+    tr td:first-child{
+      border-left:1px solid rgba(255,255,255,0.10);
+      border-top-left-radius:16px;
+      border-bottom-left-radius:16px;
+    }
+    tr td:last-child{
+      border-right:1px solid rgba(255,255,255,0.10);
+      border-top-right-radius:16px;
+      border-bottom-right-radius:16px;
+    }
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background: rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.12);
+      font-weight:800;
+      font-size:.84rem;
+      white-space:nowrap;
+    }
+    .tag small{font-weight:700;color:rgba(255,255,255,0.7)}
+    .row-actions{
+      display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;
+    }
+    .iconbtn{
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color:#fff;cursor:pointer;
+      display:grid;place-items:center;
+      transition:.15s ease;
+    }
+    .iconbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
+    .iconbtn.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
+    .iconbtn.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
+
+    /* Inputs */
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:10px;
+    }
+    .field label{font-weight:800;font-size:.9rem}
+    .input, .textarea{
+      width:100%;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.30);
+      color:#fff;
+      outline:none;
+      font-family:Poppins;
+    }
+    .textarea{min-height:130px;resize:vertical}
+
+    /* Modals */
+    .modal, .lock{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      background: rgba(0,0,0,0.60);
+      backdrop-filter: blur(14px);
+      padding:22px;
+    }
+    .modal.show, .lock.show{display:flex}
+    .modalbox{
+      width:min(920px, 100%);
       border-radius:28px;
-      box-shadow:0 20px 70px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      box-shadow: var(--shadow);
       padding:18px;
     }
-    .alarm-head{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      margin-bottom:10px;
+    .modalhead{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;
     }
-    .alarm-title{
-      font-weight:900;font-size:1.25rem;
-      background:var(--grad);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+    .modalhead h3{font-size:1.2rem;font-weight:900}
+    .modalgrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
     }
-    .alarm-body{display:grid;gap:10px}
-    .alarm-box{
-      background:#fff;border:1px solid rgba(0,0,0,.08);
-      border-radius:18px;padding:12px;
-      font-weight:800;
-      line-height:1.45;
-    }
-    .alarm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
-    .alarm-actions .btn{flex:1 1 160px}
+    .modalgrid .field{margin-top:0}
+    .modalfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
 
-    @media (max-width: 760px){
-      .row{grid-template-columns:1fr}
-      .row3{grid-template-columns:1fr}
-      .actions{justify-content:stretch}
+    /* LOCKSCREEN (PIN + keypad) */
+    .lockbox{
+      width:min(520px, 100%);
+      border-radius:30px;
+      border:1px solid rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .locktop{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;
+    }
+    .locktop .title{
+      display:flex;flex-direction:column;gap:2px
+    }
+    .locktop .title b{font-weight:900;font-size:1.1rem}
+    .locktop .title span{color:var(--muted);font-size:.92rem}
+    .pin{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin:14px 0 10px;
+    }
+    .pin .dotpin{
+      width:14px;height:14px;border-radius:99px;
+      background: rgba(255,255,255,0.22);
+      border:1px solid rgba(255,255,255,0.18);
+      box-shadow: inset 0 6px 12px rgba(0,0,0,0.25);
+    }
+    .pin .dotpin.filled{
+      background: linear-gradient(135deg, rgba(255,106,0,1), rgba(255,145,0,1));
+      border-color: rgba(255,145,0,0.55);
+      box-shadow: 0 10px 25px rgba(255,106,0,0.18);
+    }
+    .keypad{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .key{
+      height:56px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.25);
+      color:#fff;
+      font-weight:900;
+      font-size:1.15rem;
+      cursor:pointer;
+      transition:.15s ease;
+      display:grid;place-items:center;
+    }
+    .key:hover{transform: translateY(-1px); background: rgba(0,0,0,0.35)}
+    .key.small{font-size:1rem}
+    .key.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
+    .key.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
+    .lockmsg{
+      text-align:center;
+      color:rgba(255,255,255,0.85);
+      font-size:.92rem;
+      min-height:22px;
+      margin-top:10px;
+    }
+
+    /* FULLSCREEN ALERT (migawka + OK) */
+    .alarm{
+      position:fixed; inset:0;
+      z-index:10000;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+    }
+    .alarm.show{display:flex}
+    .alarm.flash::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(700px 500px at 50% 30%, rgba(255,106,0,0.75), transparent 65%);
+      animation: flash 0.55s infinite alternate;
+      opacity:0.95;
+    }
+    @keyframes flash{
+      from{opacity:.20}
+      to{opacity:.85}
+    }
+    .alarmbox{
+      position:relative;
+      width:min(640px, 100%);
+      border-radius:30px;
+      border:1px solid rgba(255,255,255,0.20);
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
+      box-shadow: var(--shadow);
+      padding:18px;
+      text-align:center;
+    }
+    .alarmbox h3{
+      font-size:1.35rem;
+      font-weight:900;
+      margin:8px 0 6px;
+    }
+    .alarmbox p{color:rgba(255,255,255,0.85)}
+    .alarmbox .preview{
+      margin-top:12px;
+      background: rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:18px;
+      padding:12px;
+      text-align:left;
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    .alarmbox .preview b{color:#fff}
+    .alarmbox .okwrap{margin-top:14px;display:flex;justify-content:center}
+
+    /* Responsive */
+    @media (max-width: 1080px){
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+    }
+    @media (max-width: 920px){
+      body{overflow:auto}
+      .app{grid-template-columns: 1fr}
+      .sidebar{position:sticky;top:0;z-index:50}
+      .main{height:auto; overflow:visible}
+      .modalgrid{grid-template-columns: 1fr}
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ALARM -->
-  <section class="alarm" id="alarm">
-    <div class="alarm-card">
-      <div class="alarm-head">
-        <div class="alarm-title" id="alarmTitle">Nowe zdarzenie</div>
-        <button class="btn btn-small" id="alarmOk"><i class="fa-solid fa-check"></i> OK</button>
+  <!-- LOCKSCREEN -->
+  <div class="lock show" id="lock">
+    <div class="lockbox">
+      <div class="locktop">
+        <div class="title">
+          <b>MilkShake Bar — Panel</b>
+          <span>Wpisz PIN na klawiaturze ekranowej</span>
+        </div>
+        <span class="pill"><i class="fa-solid fa-lock"></i> PIN</span>
       </div>
-      <div class="alarm-body">
-        <div class="alarm-box" id="alarmBox">—</div>
-        <div class="alarm-actions" id="alarmActions"></div>
+
+      <div class="pin" aria-label="PIN">
+        <div class="dotpin" id="p1"></div>
+        <div class="dotpin" id="p2"></div>
+        <div class="dotpin" id="p3"></div>
+        <div class="dotpin" id="p4"></div>
+      </div>
+
+      <div class="keypad" id="keypad">
+        <button class="key" data-k="1">1</button>
+        <button class="key" data-k="2">2</button>
+        <button class="key" data-k="3">3</button>
+        <button class="key" data-k="4">4</button>
+        <button class="key" data-k="5">5</button>
+        <button class="key" data-k="6">6</button>
+        <button class="key" data-k="7">7</button>
+        <button class="key" data-k="8">8</button>
+        <button class="key" data-k="9">9</button>
+        <button class="key danger small" data-act="back"><i class="fa-solid fa-delete-left"></i></button>
+        <button class="key" data-k="0">0</button>
+        <button class="key ok small" data-act="ok"><i class="fa-solid fa-check"></i></button>
+      </div>
+
+      <div class="lockmsg" id="lockMsg"></div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN ALARM -->
+  <div class="alarm" id="alarm">
+    <div class="alarmbox">
+      <div class="pill" style="margin:0 auto 8px; width:max-content;">
+        <i class="fa-solid fa-bell"></i> Nowa rezerwacja
+      </div>
+      <h3>Przyszła nowa rezerwacja!</h3>
+      <p>Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.</p>
+
+      <div class="preview" id="alarmPreview"></div>
+
+      <div class="okwrap">
+        <button class="btn primary" id="alarmOk"><i class="fa-solid fa-check"></i> OK</button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <div class="wrap" id="app">
-
-    <header class="topbar">
+  <div class="app" id="app" style="display:none">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
       <div class="brand">
-        <div class="logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo">
         <div>
-          <h1>MilkShake Bar — Admin</h1>
-          <p id="who">tryb awaryjny • bez logowania</p>
+          <div class="t1">MilkShake Bar</div>
+          <div class="t2">Panel Administratora</div>
         </div>
       </div>
 
-      <div class="actions">
-        <a class="btn" href="appadmin.html" id="goAppAdmin"><i class="fa-solid fa-mobile-screen"></i> Panel aplikacji</a>
-        <button class="btn" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Odśwież</button>
-        <!-- usunięto wyloguj -->
+      <div class="nav">
+        <div class="navsep">Główne</div>
+        <button class="navbtn active" data-tab="reservations"><i class="fa-solid fa-calendar-check"></i> Rezerwacje</button>
+        <button class="navbtn" data-tab="happy"><i class="fa-solid fa-bullhorn"></i> Pasek info</button>
+
+        <div class="navsep">Zarządzanie</div>
+        <button class="navbtn" data-tab="users"><i class="fa-solid fa-users"></i> Użytkownicy</button>
+        <button class="navbtn" data-tab="employees"><i class="fa-solid fa-user-tie"></i> Pracownicy</button>
+        <button class="navbtn" data-tab="future"><i class="fa-solid fa-layer-group"></i> Przyszłościowe zakładki</button>
+
+        <div class="navsep">Milk / Zamówienia</div>
+        <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
+        <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
+        <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
+
+        <div class="sidefoot">
+          <span class="pill"><span class="dot" id="apiDot"></span> API</span>
+          <span class="pill" id="clock"><i class="fa-regular fa-clock"></i> —</span>
+        </div>
       </div>
-    </header>
+    </aside>
 
-    <div class="tabs">
-      <button class="tabbtn active" data-tab="new"><i class="fa-solid fa-bell"></i> Nowe</button>
-      <button class="tabbtn" data-tab="all"><i class="fa-solid fa-list"></i> Wszystkie</button>
-      <button class="tabbtn" data-tab="happy"><i class="fa-solid fa-bullhorn"></i> Pasek info</button>
-      <button class="tabbtn" data-tab="staff"><i class="fa-solid fa-users"></i> Pracownicy</button>
-      <button class="tabbtn" data-tab="orders"><i class="fa-solid fa-bag-shopping"></i> Zamówienia</button>
-    </div>
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="title">Rezerwacje</h1>
+          <p id="subtitle">Zarządzaj rezerwacjami i paskiem informacyjnym. Realtime działa przez Socket.IO.</p>
+        </div>
 
-    <!-- TAB: NEW -->
-    <section class="tab" id="tab-new">
-      <div class="grid">
-        <div class="card" style="grid-column: span 12;">
-          <div class="section-title">Nowe rezerwacje (ostatnie)</div>
-          <table class="table">
+        <div class="actions">
+          <button class="btn" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Odśwież</button>
+          <button class="btn danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <section class="card" id="kpiCard">
+        <h2>Podgląd</h2>
+        <div class="kpis">
+          <div class="kpi"><i class="fa-solid fa-users"></i><div><div class="num" id="kUsers">—</div><div class="lbl">Użytkownicy</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-bag-shopping"></i><div><div class="num" id="kOrders">—</div><div class="lbl">Zamówienia</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-utensils"></i><div><div class="num" id="kProducts">—</div><div class="lbl">Produkty</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-calendar-check"></i><div><div class="num" id="kReservations">—</div><div class="lbl">Rezerwacje</div></div></div>
+        </div>
+      </section>
+
+      <!-- TAB: RESERVATIONS -->
+      <section class="card" id="tab-reservations">
+        <h2>Rezerwacje</h2>
+        <div style="overflow:auto">
+          <table>
             <thead>
               <tr>
-                <th>Data zgłoszenia</th>
+                <th>Data / Godzina</th>
                 <th>Klient</th>
-                <th>Termin</th>
-                <th>Szczegóły</th>
-                <th class="right">Akcje</th>
+                <th>Ilość</th>
+                <th>Strefa</th>
+                <th>Źródło</th>
+                <th style="text-align:right">Akcje</th>
               </tr>
             </thead>
-            <tbody id="newBody">
-              <tr><td colspan="5" class="muted">Ładowanie…</td></tr>
-            </tbody>
+            <tbody id="resTbody"></tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- TAB: ALL -->
-    <section class="tab" id="tab-all" style="display:none">
-      <div class="grid">
-        <div class="card" style="grid-column: span 12;">
-          <div class="section-title">Wszystkie rezerwacje</div>
-          <div class="row" style="margin-bottom:10px">
-            <div>
-              <label>Szukaj</label>
-              <input id="resSearch" placeholder="Imię, tel, data, sala…" autocomplete="off">
-            </div>
-            <div>
-              <label>Źródło</label>
-              <select id="resSource">
-                <option value="">Wszystkie</option>
-                <option value="index">index.html</option>
-                <option value="app">app.html</option>
-              </select>
-            </div>
-          </div>
+      <!-- TAB: HAPPY -->
+      <section class="card" id="tab-happy" style="display:none">
+        <h2>Pasek info (Happy Bar)</h2>
 
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Data zgłoszenia</th>
-                <th>Klient</th>
-                <th>Termin</th>
-                <th>Szczegóły</th>
-                <th class="right">Akcje</th>
-              </tr>
-            </thead>
-            <tbody id="allBody">
-              <tr><td colspan="5" class="muted">Ładowanie…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB: HAPPY -->
-    <section class="tab" id="tab-happy" style="display:none">
-      <div class="grid">
-        <div class="card" style="grid-column: span 12;">
-          <div class="section-title">Pasek informacji (Happy Bar)</div>
-          <label>Treść</label>
-          <textarea id="happyText" placeholder="Wpisz tekst paska informacji…"></textarea>
-          <div style="height:10px"></div>
-          <button class="btn btn-primary" id="saveHappy"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
-          <div class="muted" style="margin-top:10px" id="happyState">—</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB: STAFF -->
-    <section class="tab" id="tab-staff" style="display:none">
-      <div class="grid">
-        <div class="card" style="grid-column: span 5;">
-          <div class="section-title">Dodaj pracownika</div>
-
-          <label>Imię</label>
-          <input id="empName" placeholder="np. Kasia">
-
-          <div class="row" style="margin-top:8px">
-            <div>
-              <label>PIN (4 cyfry)</label>
-              <input id="empPin" placeholder="np. 1234" inputmode="numeric" autocomplete="off">
-            </div>
-            <div>
-              <label>Rola</label>
-              <select id="empRole">
-                <option value="employee">Pracownik</option>
-                <option value="manager">Manager</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="height:10px"></div>
-          <button class="btn btn-primary" id="addEmp"><i class="fa-solid fa-user-plus"></i> Dodaj</button>
-
-          <div class="muted" style="margin-top:10px" id="empState">—</div>
+        <div class="field">
+          <label>Tekst paska</label>
+          <textarea class="textarea" id="happyText" placeholder="np. Happy Hour 12:00–16:00 • -20% na shake'i"></textarea>
         </div>
 
-        <div class="card" style="grid-column: span 7;">
-          <div class="section-title">Lista pracowników</div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Imię</th>
-                <th>PIN</th>
-                <th>Rola</th>
-                <th class="right">Akcja</th>
-              </tr>
-            </thead>
-            <tbody id="empBody">
-              <tr><td colspan="4" class="muted">Ładowanie…</td></tr>
-            </tbody>
-          </table>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+          <button class="btn" id="happyLoad"><i class="fa-solid fa-download"></i> Wczytaj</button>
+          <button class="btn primary" id="happySave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
         </div>
-      </div>
-    </section>
 
-    <!-- TAB: ORDERS -->
-    <section class="tab" id="tab-orders" style="display:none">
-      <div class="grid">
-        <div class="card" style="grid-column: span 12;">
-          <div class="section-title">Zamówienia “Zamów i odbierz” (podgląd)</div>
-          <div class="muted" style="margin-bottom:10px">
-            Pełne zarządzanie zamówieniami jest w <b>Panelu aplikacji</b>. Tutaj masz podgląd + alarm jak przy rezerwacjach.
-          </div>
+        <p style="margin-top:10px;color:var(--muted);font-size:.92rem">
+          Zapis wywołuje <b>POST /api/happy</b> i robi realtime update na stronie (event: <b>happy-updated</b>).
+        </p>
+      </section>
 
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Milk ID</th>
-                <th>Lokal</th>
-                <th class="right">Suma</th>
-                <th class="right">Status</th>
-                <th class="right">Akcja</th>
-              </tr>
-            </thead>
-            <tbody id="ordersBody">
-              <tr><td colspan="6" class="muted">Ładowanie…</td></tr>
-            </tbody>
-          </table>
+      <!-- PLACEHOLDER TABS -->
+      <section class="card" id="tab-users" style="display:none">
+        <h2>Użytkownicy</h2>
+        <p style="color:var(--muted)">Placeholder — Twój server.js ma kolekcję <b>users</b>, ale nie ma jeszcze endpointów do listowania. Dodamy, gdy będziesz chciał.</p>
+      </section>
 
-          <div style="height:10px"></div>
-          <a class="btn btn-primary" href="appadmin.html?tab=orders">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Otwórz Panel aplikacji (Zamówienia)
-          </a>
-        </div>
-      </div>
-    </section>
+      <section class="card" id="tab-employees" style="display:none">
+        <h2>Pracownicy</h2>
+        <p style="color:var(--muted)">Placeholder — brak endpointów w minimalnym server.js. Zakładka gotowa pod przyszłość.</p>
+      </section>
 
+      <section class="card" id="tab-future" style="display:none">
+        <h2>Przyszłościowe zakładki</h2>
+        <p style="color:var(--muted)">Placeholder — miejsce na nowe moduły (np. raporty, eksport, ustawienia).</p>
+      </section>
+
+      <section class="card" id="tab-pickup" style="display:none">
+        <h2>Zamówienie z odbiorem</h2>
+        <p style="color:var(--muted)">Placeholder — kolekcja <b>orders</b> istnieje, ale brak endpointów w tym minimalnym server.js.</p>
+      </section>
+
+      <section class="card" id="tab-points" style="display:none">
+        <h2>Punkty Milk</h2>
+        <p style="color:var(--muted)">Placeholder — do podpięcia API punktów (w przyszłości).</p>
+      </section>
+
+      <section class="card" id="tab-rewards" style="display:none">
+        <h2>Nagrody</h2>
+        <p style="color:var(--muted)">Placeholder — do podpięcia API nagród (w przyszłości).</p>
+      </section>
+    </main>
   </div>
 
-  <!-- MODAL -->
-  <div class="overlay" id="overlay">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="modalTitle">Szczegóły</h3>
-        <button class="close" id="modalClose" aria-label="Zamknij"><i class="fa-solid fa-xmark"></i></button>
+  <!-- EDIT MODAL -->
+  <div class="modal" id="editModal" aria-hidden="true">
+    <div class="modalbox">
+      <div class="modalhead">
+        <h3>Edycja rezerwacji</h3>
+        <button class="iconbtn" id="editClose" title="Zamknij"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="modal-body" id="modalBody"></div>
+
+      <div class="modalgrid">
+        <div class="field"><label>Imię i nazwisko</label><input class="input" id="eName"></div>
+        <div class="field"><label>Telefon</label><input class="input" id="ePhone"></div>
+        <div class="field"><label>Data</label><input class="input" id="eDate" type="date"></div>
+        <div class="field"><label>Godzina</label><input class="input" id="eTime" type="time"></div>
+        <div class="field"><label>Ilość osób</label><input class="input" id="eGuests"></div>
+        <div class="field"><label>Strefa</label><input class="input" id="eRoom"></div>
+        <div class="field" style="grid-column:span 2"><label>Uwagi</label><input class="input" id="eNotes"></div>
+        <div class="field"><label>Źródło</label><input class="input" id="eSource" disabled></div>
+        <div class="field"><label>Utworzono</label><input class="input" id="eCreated" disabled></div>
+      </div>
+
+      <div class="modalfoot">
+        <button class="btn" id="editCancel"><i class="fa-regular fa-circle-xmark"></i> Anuluj</button>
+        <button class="btn primary" id="editSave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
+      </div>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastText"></span></div>
+  <!-- Toast -->
+  <div id="toast" style="
+    position:fixed;bottom:18px;right:18px;z-index:12000;
+    display:none;align-items:center;gap:10px;
+    padding:12px 14px;border-radius:999px;
+    background: rgba(22,163,74,0.22);
+    border:1px solid rgba(22,163,74,0.35);
+    color:#fff;backdrop-filter: blur(12px);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+    font-weight:800;
+  ">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastText"></span>
+  </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
+    // ==========================
+    // Helpers
+    // ==========================
     const $ = (q, el=document) => el.querySelector(q);
     const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
 
-    // ---------------- Toast
-    const toastEl = $("#toast");
-    const toastText = $("#toastText");
-    function toast(msg, danger=false){
-      toastText.textContent = msg;
-      toastEl.classList.toggle("danger", danger);
-      toastEl.classList.add("show");
-      clearTimeout(toastEl._t);
-      toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 2600);
-    }
-
-    // ---------------- Modal
-    const overlay = $("#overlay");
-    const modalTitle = $("#modalTitle");
-    const modalBody = $("#modalBody");
-    $("#modalClose").addEventListener("click", ()=> overlay.classList.remove("show"));
-    overlay.addEventListener("click", (e)=>{ if(e.target === overlay) overlay.classList.remove("show"); });
-    function openModal(title, html){
-      modalTitle.textContent = title;
-      modalBody.innerHTML = html;
-      overlay.classList.add("show");
-    }
-
-    // ---------------- Helpers
-    function esc(s){
-      return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-    function formatDateTime(dt){
-      if(!dt) return "—";
-      try{ return new Date(dt).toLocaleString("pl-PL"); }
-      catch{ return String(dt); }
-    }
-    function statusTag(s){
-      const v = String(s||"").toLowerCase();
-      if(v.includes("wydane")) return `<span class="tag ok"><i class="fa-solid fa-check"></i> Wydane</span>`;
-      if(v.includes("gotowe")) return `<span class="tag ok"><i class="fa-solid fa-bell"></i> Gotowe</span>`;
-      if(v.includes("anul")) return `<span class="tag bad"><i class="fa-solid fa-xmark"></i> Anulowane</span>`;
-      if(v.includes("real")) return `<span class="tag pending"><i class="fa-solid fa-hourglass-half"></i> W realizacji</span>`;
-      return `<span class="tag pending"><i class="fa-solid fa-inbox"></i> ${esc(s||"Przyjęte")}</span>`;
-    }
-
-    // ---------------- Alarm (miganie + głośny pisk aż do OK)
-    const alarmEl = $("#alarm");
-    const alarmTitle = $("#alarmTitle");
-    const alarmBox = $("#alarmBox");
-    const alarmActions = $("#alarmActions");
-    const alarmOk = $("#alarmOk");
-
-    let audioCtx = null;
-    let osc = null;
-    let gain = null;
-
-    function startSiren(){
-      try{
-        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if(audioCtx.state === "suspended") audioCtx.resume();
-
-        osc = audioCtx.createOscillator();
-        gain = audioCtx.createGain();
-        osc.type = "square";
-        osc.frequency.value = 1600;
-        gain.gain.value = 0.25;
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start();
-
-        let up = true;
-        const t = setInterval(()=>{
-          if(!osc) return clearInterval(t);
-          osc.frequency.value = up ? 1750 : 1450;
-          up = !up;
-        }, 180);
-        alarmEl._t = t;
-      }catch(e){}
-    }
-
-    function stopSiren(){
-      try{ clearInterval(alarmEl._t); }catch{}
-      try{ osc && osc.stop(); }catch{}
-      osc = null;
-      try{ gain && gain.disconnect(); }catch{}
-      gain = null;
-    }
-
-    function showAlarm({title, html, actionsHtml}){
-      alarmTitle.textContent = title;
-      alarmBox.innerHTML = html;
-      alarmActions.innerHTML = actionsHtml || "";
-      alarmEl.classList.add("show");
-      startSiren();
-    }
-
-    function hideAlarm(){
-      alarmEl.classList.remove("show");
-      stopSiren();
-    }
-    alarmOk.addEventListener("click", hideAlarm);
-
-    // ---------------- Tabs
-    const tabMap = {
-      new: $("#tab-new"),
-      all: $("#tab-all"),
-      happy: $("#tab-happy"),
-      staff: $("#tab-staff"),
-      orders: $("#tab-orders"),
+    const state = {
+      pin: "",
+      okPin: "0051",
+      unlocked: false,
+      reservations: [],
+      editingId: null,
+      alarmActive: false,
+      audioCtx: null,
+      beepInterval: null
     };
-    function setTab(name){
-      $$(".tabbtn").forEach(b=> b.classList.toggle("active", b.dataset.tab===name));
-      Object.entries(tabMap).forEach(([k,el])=> el.style.display = (k===name) ? "block" : "none");
-      hideAlarm();
-      window.scrollTo({top:0, behavior:"smooth"});
-    }
-    $$(".tabbtn").forEach(btn=> btn.addEventListener("click", ()=> setTab(btn.dataset.tab)));
 
-    // ---------------- API (bez zmian)
-    const API = {
-      async data(){
-        const r = await fetch("/api/data", { cache:"no-store" });
-        if(!r.ok) throw new Error("Błąd /api/data");
-        return await r.json();
-      },
-      async reservations(){
-        const r = await fetch("/api/rezerwacje", { cache:"no-store" });
-        if(!r.ok) throw new Error("Błąd rezerwacji");
-        return await r.json();
-      },
-      async deleteReservation(id){
-        const r = await fetch(`/api/rezerwacje/${encodeURIComponent(id)}`, { method:"DELETE" });
-        if(!r.ok) throw new Error("Błąd usuwania");
-        return await r.json();
-      },
-      async updateReservation(id, payload){
-        const r = await fetch(`/api/rezerwacje/${encodeURIComponent(id)}`,{
+    function showToast(msg, bad=false){
+      const t = $("#toast");
+      const tt = $("#toastText");
+      tt.textContent = msg;
+      t.style.display = "flex";
+      t.style.background = bad ? "rgba(220,38,38,0.20)" : "rgba(22,163,74,0.22)";
+      t.style.borderColor = bad ? "rgba(220,38,38,0.35)" : "rgba(22,163,74,0.35)";
+      setTimeout(()=> t.style.display="none", 3200);
+    }
+
+    function fmtDateTime(r){
+      const d = (r?.date || "—");
+      const t = (r?.time || "—");
+      return `${d} • ${t}`;
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // ==========================
+    // Lock screen PIN
+    // ==========================
+    function renderPin(){
+      const dots = [$("#p1"), $("#p2"), $("#p3"), $("#p4")];
+      dots.forEach((d,i)=> d.classList.toggle("filled", i < state.pin.length));
+    }
+
+    function setLockMsg(msg, bad=false){
+      const el = $("#lockMsg");
+      el.textContent = msg || "";
+      el.style.color = bad ? "rgba(255,200,200,0.95)" : "rgba(255,255,255,0.85)";
+    }
+
+    function unlock(){
+      state.unlocked = true;
+      $("#lock").classList.remove("show");
+      $("#app").style.display = "grid";
+      showToast("Zalogowano ✅");
+      initApp();
+    }
+
+    function lock(){
+      state.unlocked = false;
+      state.pin = "";
+      renderPin();
+      $("#app").style.display = "none";
+      $("#lock").classList.add("show");
+      setLockMsg("");
+      stopAlarm();
+    }
+
+    $("#keypad").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+
+      const k = btn.getAttribute("data-k");
+      const act = btn.getAttribute("data-act");
+
+      if(k){
+        if(state.pin.length >= 4) return;
+        state.pin += k;
+        renderPin();
+        setLockMsg("");
+        if(state.pin.length === 4){
+          if(state.pin === state.okPin){
+            unlock();
+          }else{
+            setLockMsg("Błędny PIN", true);
+            state.pin = "";
+            renderPin();
+          }
+        }
+        return;
+      }
+
+      if(act === "back"){
+        state.pin = state.pin.slice(0, -1);
+        renderPin();
+        setLockMsg("");
+      }
+      if(act === "ok"){
+        if(state.pin === state.okPin){
+          unlock();
+        }else{
+          setLockMsg("Błędny PIN", true);
+          state.pin = "";
+          renderPin();
+        }
+      }
+    });
+
+    // (opcjonalnie) blokujemy wpisywanie z fizycznej klawiatury: tylko keypad
+    window.addEventListener("keydown", (e)=>{
+      if(!$("#lock").classList.contains("show")) return;
+      e.preventDefault();
+    }, {passive:false});
+
+    $("#logoutBtn").addEventListener("click", lock);
+
+    // ==========================
+    // Tabs
+    // ==========================
+    const tabMeta = {
+      reservations: { title:"Rezerwacje", subtitle:"Lista rezerwacji z DB. Realtime przez Socket.IO." },
+      happy: { title:"Pasek info", subtitle:"Tekst paska (Happy Bar) + realtime update na stronie." },
+      users: { title:"Użytkownicy", subtitle:"Placeholder (brak endpointów w minimalnym server.js)." },
+      employees: { title:"Pracownicy", subtitle:"Placeholder (brak endpointów w minimalnym server.js)." },
+      future: { title:"Przyszłościowe zakładki", subtitle:"Miejsce na nowe moduły." },
+      pickup: { title:"Zamówienie z odbiorem", subtitle:"Placeholder — kolekcja orders istnieje, brak endpointów." },
+      points: { title:"Punkty Milk", subtitle:"Placeholder — do podpięcia API punktów." },
+      rewards: { title:"Nagrody", subtitle:"Placeholder — do podpięcia API nagród." },
+    };
+
+    function showTab(key){
+      $$(".navbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+      Object.keys(tabMeta).forEach(k=>{
+        const sec = $("#tab-" + k);
+        if(sec) sec.style.display = (k === key) ? "block" : "none";
+      });
+      $("#title").textContent = tabMeta[key]?.title || "Panel";
+      $("#subtitle").textContent = tabMeta[key]?.subtitle || "";
+    }
+
+    $$(".navbtn").forEach(b => b.addEventListener("click", ()=> showTab(b.dataset.tab)));
+
+    // ==========================
+    // API
+    // ==========================
+    async function apiHealth(){
+      try{
+        const res = await fetch("/api/health", {cache:"no-store"});
+        const ok = res.ok;
+        $("#apiDot").classList.toggle("ok", ok);
+        $("#apiDot").classList.toggle("dot", true);
+      }catch{
+        $("#apiDot").classList.remove("ok");
+      }
+    }
+
+    async function loadStats(){
+      try{
+        const res = await fetch("/api/admin/stats", {cache:"no-store"});
+        const data = await res.json();
+        if(!data?.ok) throw new Error("no ok");
+        $("#kUsers").textContent = data.users ?? 0;
+        $("#kOrders").textContent = data.orders ?? 0;
+        $("#kProducts").textContent = data.products ?? 0;
+        $("#kReservations").textContent = data.reservations ?? 0;
+      }catch{
+        $("#kUsers").textContent = "—";
+        $("#kOrders").textContent = "—";
+        $("#kProducts").textContent = "—";
+        $("#kReservations").textContent = "—";
+      }
+    }
+
+    async function loadReservations(){
+      try{
+        const res = await fetch("/api/rezerwacje", {cache:"no-store"});
+        const list = await res.json();
+        state.reservations = Array.isArray(list) ? list : [];
+        renderReservations();
+        $("#kReservations").textContent = state.reservations.length;
+      }catch(e){
+        console.error(e);
+        showToast("Nie udało się pobrać rezerwacji", true);
+      }
+    }
+
+    function renderReservations(){
+      const tb = $("#resTbody");
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      if(state.reservations.length === 0){
+        tb.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+              Brak rezerwacji
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      for(const r of state.reservations){
+        const tr = document.createElement("tr");
+
+        const src = (r.source || "index");
+        const created = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
+
+        tr.innerHTML = `
+          <td>
+            <div class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(fmtDateTime(r))}</div>
+            <div style="color:rgba(255,255,255,0.68);font-size:.82rem;margin-top:6px">Utworzono: ${escapeHtml(created)}</div>
+          </td>
+          <td>
+            <div style="font-weight:900">${escapeHtml(r.name || "—")}</div>
+            <div style="color:rgba(255,255,255,0.75);font-size:.9rem;margin-top:4px"><i class="fa-solid fa-phone"></i> ${escapeHtml(r.phone || "—")}</div>
+          </td>
+          <td><span class="tag"><i class="fa-solid fa-user-group"></i> ${escapeHtml(r.guests || "—")} <small>os.</small></span></td>
+          <td><span class="tag"><i class="fa-solid fa-door-open"></i> ${escapeHtml(r.room || "—")}</span></td>
+          <td><span class="tag"><i class="fa-solid fa-globe"></i> ${escapeHtml(src)}</span></td>
+          <td>
+            <div class="row-actions">
+              <button class="iconbtn ok" title="Edytuj" data-act="edit" data-id="${r._id}"><i class="fa-solid fa-pen"></i></button>
+              <button class="iconbtn danger" title="Usuń" data-act="del" data-id="${r._id}"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        `;
+
+        tb.appendChild(tr);
+      }
+    }
+
+    $("#resTbody").addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const id = btn.getAttribute("data-id");
+      const act = btn.getAttribute("data-act");
+      if(!id || !act) return;
+
+      const r = state.reservations.find(x => x._id === id);
+      if(!r) return;
+
+      if(act === "edit"){
+        openEdit(r);
+      }
+      if(act === "del"){
+        if(!confirm("Usunąć rezerwację?")) return;
+        try{
+          const res = await fetch(`/api/rezerwacje/${id}`, { method:"DELETE" });
+          const data = await res.json().catch(()=>({}));
+          if(!res.ok || data?.ok === false) throw new Error(data?.message || "delete");
+          showToast("Usunięto ✅");
+          await loadReservations();
+          await loadStats();
+        }catch(err){
+          console.error(err);
+          showToast("Błąd usuwania", true);
+        }
+      }
+    });
+
+    // ==========================
+    // Edit modal
+    // ==========================
+    function openEdit(r){
+      state.editingId = r._id;
+      $("#eName").value = r.name || "";
+      $("#ePhone").value = r.phone || "";
+      $("#eDate").value = r.date || "";
+      $("#eTime").value = r.time || "";
+      $("#eGuests").value = r.guests || "";
+      $("#eRoom").value = r.room || "";
+      $("#eNotes").value = r.notes || "";
+      $("#eSource").value = r.source || "index";
+      $("#eCreated").value = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
+      $("#editModal").classList.add("show");
+      $("#editModal").setAttribute("aria-hidden","false");
+    }
+
+    function closeEdit(){
+      state.editingId = null;
+      $("#editModal").classList.remove("show");
+      $("#editModal").setAttribute("aria-hidden","true");
+    }
+
+    $("#editClose").addEventListener("click", closeEdit);
+    $("#editCancel").addEventListener("click", closeEdit);
+    $("#editModal").addEventListener("click", (e)=>{
+      if(e.target.id === "editModal") closeEdit();
+    });
+
+    $("#editSave").addEventListener("click", async ()=>{
+      const id = state.editingId;
+      if(!id) return;
+
+      const payload = {
+        name: $("#eName").value,
+        phone: $("#ePhone").value,
+        date: $("#eDate").value,
+        time: $("#eTime").value,
+        guests: $("#eGuests").value,
+        room: $("#eRoom").value,
+        notes: $("#eNotes").value
+      };
+
+      try{
+        const res = await fetch(`/api/rezerwacje/${id}`, {
           method:"PUT",
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify(payload)
         });
-        if(!r.ok){
-          const e = await r.json().catch(()=>({}));
-          throw new Error(e.message || "Błąd edycji");
-        }
-        return await r.json();
-      },
-      async saveHappy(text){
-        const r = await fetch("/api/happy", {
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok || data?.ok === false) throw new Error(data?.message || "edit");
+        showToast("Zapisano ✅");
+        closeEdit();
+        await loadReservations();
+      }catch(err){
+        console.error(err);
+        showToast("Błąd zapisu", true);
+      }
+    });
+
+    // ==========================
+    // Happy bar
+    // ==========================
+    async function loadHappy(){
+      try{
+        const res = await fetch("/api/happy", {cache:"no-store"});
+        const data = await res.json();
+        if(!data?.ok) throw new Error("happy");
+        $("#happyText").value = data.happy || "";
+        showToast("Wczytano ✅");
+      }catch(e){
+        console.error(e);
+        showToast("Błąd wczytywania paska", true);
+      }
+    }
+    async function saveHappy(){
+      try{
+        const text = $("#happyText").value || "";
+        const res = await fetch("/api/happy", {
           method:"POST",
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ happy: text })
         });
-        if(!r.ok) throw new Error("Błąd zapisu paska");
-        return await r.json();
-      },
-      async employees(){
-        const r = await fetch("/api/pracownicy", { cache:"no-store" });
-        if(!r.ok) throw new Error("Błąd pracowników");
-        return await r.json();
-      },
-      async addEmployee({name,pin,role}){
-        const r = await fetch("/api/pracownicy", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ name, pin, role })
-        });
-        if(!r.ok){
-          const e = await r.json().catch(()=>({}));
-          throw new Error(e.message || "Błąd dodawania");
-        }
-        return await r.json();
-      },
-      async deleteEmployee(id){
-        const r = await fetch(`/api/pracownicy/${encodeURIComponent(id)}`, { method:"DELETE" });
-        if(!r.ok) throw new Error("Błąd usuwania");
-        return await r.json();
-      },
-      async orders(){
-        const r = await fetch("/api/admin/orders", { cache:"no-store" });
-        if(!r.ok) throw new Error("Błąd zamówień");
-        return await r.json();
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok || data?.ok === false) throw new Error(data?.message || "save");
+        showToast("Zapisano + realtime ✅");
+      }catch(e){
+        console.error(e);
+        showToast("Błąd zapisu paska", true);
       }
-    };
+    }
+    $("#happyLoad").addEventListener("click", loadHappy);
+    $("#happySave").addEventListener("click", saveHappy);
 
-    // ---------------- State
-    const state = {
-      reservations: [],
-      orders: [],
-      happy: "",
-      employees: []
-    };
-
-    // ---------------- Render Reservations
-    function renderNew(){
-      const body = $("#newBody");
-      const list = (state.reservations || []).slice(0, 12);
-      if(!list.length){
-        body.innerHTML = `<tr><td colspan="5" class="muted">Brak rezerwacji.</td></tr>`;
-        return;
+    // ==========================
+    // Alarm: migawka + beep do OK
+    // ==========================
+    function ensureAudio(){
+      if(state.audioCtx) return;
+      try{
+        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }catch(e){
+        state.audioCtx = null;
       }
-      body.innerHTML = list.map(r => rowRes(r)).join("");
-      wireResActions(body);
     }
 
-    function rowRes(r){
-      const src = (r.source === "app") ? `<span class="tag pending"><i class="fa-solid fa-mobile-screen"></i> app</span>` : `<span class="tag ok"><i class="fa-solid fa-globe"></i> index</span>`;
-      return `
-        <tr>
-          <td>${esc(formatDateTime(r.createdAt))}<div style="margin-top:6px">${src}</div></td>
-          <td><b>${esc(r.name)}</b><div class="muted">${esc(r.phone)}</div></td>
-          <td><b>${esc(r.date)} • ${esc(r.time)}</b></td>
-          <td>${esc(r.guests)} os. • ${esc(r.room)}${r.notes ? `<div class="muted" style="margin-top:6px">Uwagi: ${esc(r.notes)}</div>` : ""}</td>
-          <td class="right">
-            <button class="btn btn-small" data-view="${esc(r._id)}"><i class="fa-solid fa-eye"></i></button>
-            <button class="btn btn-small" data-edit="${esc(r._id)}"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn btn-small btn-danger" data-del="${esc(r._id)}"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>
+    function beepOnce(){
+      if(!state.audioCtx) return;
+      const ctx = state.audioCtx;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "square";
+      o.frequency.value = 880;
+      g.gain.value = 0.06;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(()=>{ try{o.stop();}catch(e){} }, 160);
+    }
+
+    function startAlarm(reservation){
+      if(state.alarmActive) return; // już aktywny
+      state.alarmActive = true;
+
+      // preview
+      $("#alarmPreview").innerHTML = `
+        <div><b>${escapeHtml(reservation?.name || "—")}</b> • ${escapeHtml(reservation?.phone || "—")}</div>
+        <div>📅 ${escapeHtml(reservation?.date || "—")} • 🕒 ${escapeHtml(reservation?.time || "—")}</div>
+        <div>👥 ${escapeHtml(reservation?.guests || "—")} • 🚪 ${escapeHtml(reservation?.room || "—")}</div>
+        <div style="margin-top:8px;color:rgba(255,255,255,0.75)">${escapeHtml(reservation?.notes || "")}</div>
       `;
-    }
 
-    function wireResActions(scope){
-      scope.querySelectorAll("[data-view]").forEach(b=>{
-        b.addEventListener("click", ()=>{
-          const id = b.dataset.view;
-          const r = state.reservations.find(x=>String(x._id)===String(id));
-          if(!r) return;
-          openModal("Szczegóły rezerwacji", `
-            <div class="card" style="box-shadow:none;border:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.94)">
-              <div style="display:grid;gap:8px">
-                <div><b>Imię:</b> ${esc(r.name)}</div>
-                <div><b>Telefon:</b> ${esc(r.phone)}</div>
-                <div><b>Termin:</b> ${esc(r.date)} • ${esc(r.time)}</div>
-                <div><b>Osoby:</b> ${esc(r.guests)}</div>
-                <div><b>Strefa:</b> ${esc(r.room)}</div>
-                <div><b>Źródło:</b> ${esc(r.source || "index")}</div>
-                ${r.notes ? `<div><b>Uwagi:</b> ${esc(r.notes)}</div>` : ""}
-              </div>
-            </div>
-          `);
-        });
-      });
+      const alarm = $("#alarm");
+      alarm.classList.add("show");
+      alarm.classList.add("flash");
 
-      scope.querySelectorAll("[data-edit]").forEach(b=>{
-        b.addEventListener("click", ()=>{
-          const id = b.dataset.edit;
-          const r = state.reservations.find(x=>String(x._id)===String(id));
-          if(!r) return;
-
-          openModal("Edytuj rezerwację", `
-            <div class="row">
-              <div><label>Imię i nazwisko</label><input id="eName" value="${esc(r.name)}"></div>
-              <div><label>Telefon</label><input id="ePhone" value="${esc(r.phone)}"></div>
-            </div>
-            <div class="row">
-              <div><label>Data</label><input id="eDate" type="date" value="${esc(r.date)}"></div>
-              <div><label>Godzina</label><input id="eTime" type="time" value="${esc(r.time)}"></div>
-            </div>
-            <div class="row">
-              <div><label>Ilość osób</label><input id="eGuests" value="${esc(r.guests)}"></div>
-              <div><label>Strefa</label><input id="eRoom" value="${esc(r.room)}"></div>
-            </div>
-            <div>
-              <label>Uwagi</label>
-              <textarea id="eNotes">${esc(r.notes || "")}</textarea>
-            </div>
-            <button class="btn btn-primary" id="saveEdit"><i class="fa-solid fa-floppy-disk"></i> Zapisz zmiany</button>
-          `);
-
-          $("#saveEdit").addEventListener("click", async ()=>{
-            try{
-              await API.updateReservation(id, {
-                name: $("#eName").value.trim(),
-                phone: $("#ePhone").value.trim(),
-                date: $("#eDate").value,
-                time: $("#eTime").value,
-                guests: $("#eGuests").value.trim(),
-                room: $("#eRoom").value.trim(),
-                notes: $("#eNotes").value
-              });
-              overlay.classList.remove("show");
-              toast("Zapisano ✅");
-              await refreshReservations();
-            }catch(e){
-              toast("Błąd: " + e.message, true);
-            }
-          });
-        });
-      });
-
-      scope.querySelectorAll("[data-del]").forEach(b=>{
-        b.addEventListener("click", async ()=>{
-          const id = b.dataset.del;
-          const r = state.reservations.find(x=>String(x._id)===String(id));
-          if(!r) return;
-          if(!confirm(`Usunąć rezerwację: ${r.name} / ${r.date} ${r.time}?`)) return;
-          try{
-            await API.deleteReservation(id);
-            toast("Usunięto");
-            await refreshReservations();
-          }catch(e){
-            toast("Błąd: " + e.message, true);
-          }
-        });
-      });
-    }
-
-    function renderAll(){
-      const body = $("#allBody");
-      const q = ($("#resSearch").value || "").trim().toLowerCase();
-      const src = $("#resSource").value;
-
-      let list = [...(state.reservations || [])];
-      if(src) list = list.filter(r => String(r.source||"index") === src);
-
-      if(q){
-        list = list.filter(r => {
-          const blob = [r.name,r.phone,r.date,r.time,r.guests,r.room,r.notes,r.source].join(" ").toLowerCase();
-          return blob.includes(q);
-        });
+      // audio beep loop
+      ensureAudio();
+      if(state.audioCtx && state.audioCtx.state === "suspended"){
+        // próba resume (zwykle działa po pierwszej interakcji z panelem)
+        state.audioCtx.resume().catch(()=>{});
       }
 
-      if(!list.length){
-        body.innerHTML = `<tr><td colspan="5" class="muted">Brak wyników.</td></tr>`;
-        return;
-      }
-
-      body.innerHTML = list.map(r => rowRes(r)).join("");
-      wireResActions(body);
+      beepOnce();
+      state.beepInterval = setInterval(beepOnce, 650);
     }
 
-    $("#resSearch").addEventListener("input", renderAll);
-    $("#resSource").addEventListener("change", renderAll);
-
-    async function refreshHappyFromData(){
-      try{
-        const d = await API.data();
-        state.happy = d.happy || "";
-        $("#happyText").value = state.happy;
-        $("#happyState").textContent = "Wczytano.";
-      }catch(e){
-        $("#happyState").textContent = "Błąd: " + e.message;
+    function stopAlarm(){
+      state.alarmActive = false;
+      const alarm = $("#alarm");
+      alarm.classList.remove("show");
+      alarm.classList.remove("flash");
+      if(state.beepInterval){
+        clearInterval(state.beepInterval);
+        state.beepInterval = null;
       }
     }
 
-    $("#saveHappy").addEventListener("click", async ()=>{
-      $("#happyState").textContent = "Zapisywanie…";
-      try{
-        const txt = $("#happyText").value || "";
-        await API.saveHappy(txt);
-        $("#happyState").textContent = "Zapisano ✅";
-        toast("Zapisano pasek");
-      }catch(e){
-        $("#happyState").textContent = "Błąd: " + e.message;
-        toast("Błąd: " + e.message, true);
-      }
+    $("#alarmOk").addEventListener("click", ()=>{
+      stopAlarm();
+      showToast("Potwierdzono powiadomienie ✅");
     });
 
-    async function refreshEmployees(){
-      try{
-        state.employees = await API.employees();
-        const body = $("#empBody");
-        if(!state.employees.length){
-          body.innerHTML = `<tr><td colspan="4" class="muted">Brak pracowników.</td></tr>`;
-          return;
-        }
-        body.innerHTML = state.employees.map(e=>`
-          <tr>
-            <td><b>${esc(e.name)}</b></td>
-            <td class="mono">${esc(e.pin)}</td>
-            <td>${esc(e.role)}</td>
-            <td class="right">
-              <button class="btn btn-small btn-danger" data-del-emp="${esc(e._id)}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-          </tr>
-        `).join("");
-
-        body.querySelectorAll("[data-del-emp]").forEach(b=>{
-          b.addEventListener("click", async ()=>{
-            if(!confirm("Usunąć pracownika?")) return;
-            try{
-              await API.deleteEmployee(b.dataset.delEmp);
-              toast("Usunięto");
-              refreshEmployees();
-            }catch(e){
-              toast("Błąd: " + e.message, true);
-            }
-          });
-        });
-      }catch(e){
-        $("#empBody").innerHTML = `<tr><td colspan="4" class="muted">Błąd: ${esc(e.message)}</td></tr>`;
-      }
-    }
-
-    $("#addEmp").addEventListener("click", async ()=>{
-      $("#empState").textContent = "Dodawanie…";
-      try{
-        await API.addEmployee({
-          name: $("#empName").value,
-          pin: $("#empPin").value,
-          role: $("#empRole").value
-        });
-        $("#empState").textContent = "Dodano ✅";
-        $("#empName").value = "";
-        $("#empPin").value = "";
-        toast("Dodano pracownika");
-        refreshEmployees();
-      }catch(e){
-        $("#empState").textContent = "Błąd: " + e.message;
-        toast("Błąd: " + e.message, true);
-      }
-    });
-
-    function formatPLN(n){
-      const v = Number(n || 0);
-      return v.toLocaleString("pl-PL", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " zł";
-    }
-
-    function renderOrders(){
-      const body = $("#ordersBody");
-      const list = (state.orders || []).slice(0, 80);
-      if(!list.length){
-        body.innerHTML = `<tr><td colspan="6" class="muted">Brak zamówień.</td></tr>`;
-        return;
-      }
-      body.innerHTML = list.map(o=>`
-        <tr>
-          <td>${esc(formatDateTime(o.createdAt))}</td>
-          <td class="mono">${esc(o.milkId || "—")}</td>
-          <td>${esc(o.pickupLocation || "—")} • ${esc(o.pickupTime || "—")}</td>
-          <td class="right mono">${esc(formatPLN(o.total))}</td>
-          <td class="right">${statusTag(o.status)}</td>
-          <td class="right">
-            <button class="btn btn-small" data-view-order="${esc(o.id)}"><i class="fa-solid fa-eye"></i></button>
-            <a class="btn btn-small" href="appadmin.html?tab=orders" title="Otwórz Panel aplikacji"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-          </td>
-        </tr>
-      `).join("");
-
-      body.querySelectorAll("[data-view-order]").forEach(b=>{
-        b.addEventListener("click", ()=>{
-          const o = state.orders.find(x=>String(x.id)===String(b.dataset.viewOrder));
-          if(!o) return;
-          const items = (o.items || []).map(i => `• ${esc(i.qty)}x ${esc(i.title)} (${esc(formatPLN(i.price))})`).join("<br>");
-          openModal("Szczegóły zamówienia", `
-            <div class="card" style="box-shadow:none;border:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.94)">
-              <div style="display:grid;gap:8px">
-                <div><b>ID:</b> <span class="mono">${esc(o.id)}</span></div>
-                <div><b>Milk ID:</b> <span class="mono">${esc(o.milkId || "—")}</span></div>
-                <div><b>Data:</b> ${esc(formatDateTime(o.createdAt))}</div>
-                <div><b>Lokal:</b> ${esc(o.pickupLocation || "—")} • ${esc(o.pickupTime || "—")}</div>
-                <div><b>Status:</b> ${statusTag(o.status)}</div>
-                <div><b>Pozycje:</b><br>${items || "—"}</div>
-                <div style="border-top:1px dashed rgba(0,0,0,.10);padding-top:10px;display:flex;justify-content:space-between">
-                  <b>Suma</b> <b class="mono">${esc(formatPLN(o.total))}</b>
-                </div>
-                <a class="btn btn-primary" href="appadmin.html?tab=orders">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Przejdź do Panelu aplikacji (Zamówienia)
-                </a>
-              </div>
-            </div>
-          `);
-        });
-      });
-    }
-
-    async function refreshReservations(){
-      state.reservations = await API.reservations();
-      renderNew();
-      renderAll();
-    }
-
-    async function refreshOrders(){
-      state.orders = await API.orders();
-      renderOrders();
-    }
-
-    async function refreshAll(){
-      try{
-        await refreshReservations();
-        await refreshOrders();
-        await refreshHappyFromData();
-        await refreshEmployees();
-        toast("Odświeżono");
-      }catch(e){
-        toast("Błąd odświeżania: " + e.message, true);
-      }
-    }
-    $("#refreshBtn").addEventListener("click", refreshAll);
-
-    // ---------------- Socket realtime + alarm
+    // ==========================
+    // Realtime (Socket.IO)
+    // ==========================
     let socket = null;
 
-    function alarmReservation(r){
-      showAlarm({
-        title: "NOWA REZERWACJA!",
-        html: `
-          <div><b>${esc(r.name)}</b> • ${esc(r.phone)}</div>
-          <div><b>${esc(r.date)} • ${esc(r.time)}</b></div>
-          <div>${esc(r.guests)} os. • ${esc(r.room)}</div>
-          ${r.notes ? `<div style="margin-top:6px"><b>Uwagi:</b> ${esc(r.notes)}</div>` : ""}
-          <div style="margin-top:8px" class="muted">Źródło: <b>${esc(r.source || "index")}</b></div>
-        `,
-        actionsHtml: `
-          <button class="btn btn-primary" id="goRes"><i class="fa-solid fa-list"></i> Przejdź do rezerwacji</button>
-          <button class="btn" id="onlyOk"><i class="fa-solid fa-check"></i> OK</button>
-        `
-      });
-
-      setTimeout(()=>{
-        $("#goRes")?.addEventListener("click", ()=>{
-          setTab("new");
-          hideAlarm();
-        });
-        $("#onlyOk")?.addEventListener("click", hideAlarm);
-      },0);
-    }
-
-    function alarmOrder(o){
-      showAlarm({
-        title: "NOWE ZAMÓWIENIE!",
-        html: `
-          <div><b>Lokal:</b> ${esc(o.pickupLocation || "—")} • <b>Odbiór:</b> ${esc(o.pickupTime || "—")}</div>
-          <div><b>Milk ID:</b> <span class="mono">${esc(o.milkId || "—")}</span></div>
-          <div><b>Suma:</b> ${esc(formatPLN(o.total))} • ${statusTag(o.status)}</div>
-          <div style="margin-top:8px"><b>Pozycje:</b><br>${esc((o.items||[]).map(i=>`${i.qty}x ${i.title}`).join(", "))}</div>
-          ${o.notes ? `<div style="margin-top:8px"><b>Uwagi:</b> ${esc(o.notes)}</div>` : ""}
-        `,
-        actionsHtml: `
-          <button class="btn btn-primary" id="goOrders"><i class="fa-solid fa-bag-shopping"></i> Podgląd zamówień</button>
-          <a class="btn btn-primary" id="goAppOrders" href="appadmin.html?tab=orders"><i class="fa-solid fa-arrow-up-right-from-square"></i> Otwórz panel aplikacji</a>
-          <button class="btn" id="onlyOk2"><i class="fa-solid fa-check"></i> OK</button>
-        `
-      });
-
-      setTimeout(()=>{
-        $("#goOrders")?.addEventListener("click", ()=>{
-          setTab("orders");
-          hideAlarm();
-        });
-        $("#onlyOk2")?.addEventListener("click", hideAlarm);
-      },0);
-    }
-
     function initSocket(){
-      if(socket) return;
-      socket = io();
+      try{
+        socket = io();
 
-      socket.on("new-reservation", (r)=>{
-        alarmReservation(r);
-        refreshReservations().catch(()=>{});
-      });
+        socket.on("new-reservation", async (reservation)=>{
+          // 1) alarm + beep + migawka do OK
+          startAlarm(reservation);
 
-      socket.on("new-order", (o)=>{
-        alarmOrder(o);
-        refreshOrders().catch(()=>{});
-      });
+          // 2) aktualizacja listy
+          await loadReservations();
+          await loadStats();
+        });
 
-      socket.on("happy-updated", (text)=>{
-        $("#happyText").value = text || "";
-        toast("Happy bar zaktualizowany");
-      });
+        socket.on("happy-updated", (text)=>{
+          // jeżeli jesteśmy w zakładce "pasek info", aktualizuj pole
+          if($("#tab-happy").style.display !== "none"){
+            $("#happyText").value = text || "";
+          }
+          showToast("Pasek info zaktualizowany (realtime) ✅");
+        });
+
+        socket.on("connect_error", ()=>{});
+      }catch(e){
+        console.error("Socket init error", e);
+      }
     }
 
-    // START (od razu, bez logowania)
-    initSocket();
-    refreshAll();
+    // ==========================
+    // Init
+    // ==========================
+    async function initApp(){
+      showTab("reservations");
+      initSocket();
+      await apiHealth();
+      await loadStats();
+      await loadReservations();
+      await loadHappy();
+    }
+
+    $("#refreshBtn").addEventListener("click", async ()=>{
+      await apiHealth();
+      await loadStats();
+      await loadReservations();
+      showToast("Odświeżono ✅");
+    });
+
+    // clock
+    setInterval(()=>{
+      const now = new Date();
+      $("#clock").innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"})}`;
+    }, 1000);
+
+    // health periodic
+    setInterval(apiHealth, 6000);
+
+    // start locked by default
+    renderPin();
   </script>
 </body>
 </html>
