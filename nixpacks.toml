@@ -1,0 +1,9 @@
+# nixpacks.toml
+[phases.setup]
+providers = ["node"]
+
+[variables]
+NPM_CONFIG_PRODUCTION = "false"
+
+[start]
+cmd = "npm start"
