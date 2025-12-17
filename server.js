@@ -1,5 +1,5 @@
-// server.js — MilkShake Bar (MINIMAL: reservations + happybar realtime)
-// Kolekcje zgodne ze screenshotem: users, orders, products, reservations (+ happybars)
+// server.js — MilkShake Bar (MINIMAL: reservations + happybar realtime + ADMIN PIN from env)
+// Kolekcje: users, orders, products, reservations, happybars
 
 const express = require("express");
 const http = require("http");
@@ -19,14 +19,18 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
 
 // ==========================
-// MongoDB connect
+// ENV (Railway Variables)
 // ==========================
 const MONGO_URL = process.env.MONGO_URL;
+const ADMIN_PIN = process.env.ADMIN_PIN || "";      // ustaw w Railway Variables (np. 0051)
+const CLIENTS_PIN = process.env.CLIENTS_PIN || "";  // opcjonalnie (np. 5100)
 
-if (!MONGO_URL) {
-  console.error("❌ Brak MONGO_URL w zmiennych środowiskowych!");
-}
+if (!MONGO_URL) console.error("❌ Brak MONGO_URL w zmiennych środowiskowych!");
+if (!ADMIN_PIN) console.error("❌ Brak ADMIN_PIN w zmiennych środowiskowych! (Panel admin nie zaloguje się)");
 
+// ==========================
+// MongoDB connect
+// ==========================
 mongoose
   .connect(MONGO_URL, {
     dbName: "milkshakebar",
@@ -62,11 +66,11 @@ const HappySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Kolekcje NA SZTYWNO jak na screenie:
+// Kolekcje NA SZTYWNO:
 const Reservation = mongoose.model("Reservation", ReservationSchema, "reservations");
 const HappyBar = mongoose.model("HappyBar", HappySchema, "happybars");
 
-// (opcjonalnie) liczniki do kafelków w panelu, jeśli chcesz
+// Liczniki do kafelków w panelu (opcjonalnie, strict:false)
 const User = mongoose.model("User", new mongoose.Schema({}, { strict: false }), "users");
 const Order = mongoose.model("Order", new mongoose.Schema({}, { strict: false }), "orders");
 const Product = mongoose.model("Product", new mongoose.Schema({}, { strict: false }), "products");
@@ -107,6 +111,45 @@ app.get("/api/health", (_req, res) => {
     mongoState: mongoose.connection.readyState, // 1 = connected
     db: mongoose.connection.name,
   });
+});
+
+// ==========================
+// API — ADMIN LOGIN (PIN from Railway Variables)
+// ==========================
+app.post("/api/login", (req, res) => {
+  const pin = String(req.body?.pin || "");
+
+  // jeśli ktoś zapomniał ustawić w Railway:
+  if (!ADMIN_PIN) {
+    return res.status(500).json({
+      ok: false,
+      message: "Brak ADMIN_PIN w zmiennych środowiskowych (Railway Variables).",
+    });
+  }
+
+  if (pin === ADMIN_PIN) {
+    return res.json({ ok: true });
+  }
+
+  return res.status(401).json({ ok: false, message: "Błędny PIN" });
+});
+
+// opcjonalnie: osobny PIN do odblokowania 'Baza klientów'
+app.post("/api/clients/unlock", (req, res) => {
+  const pin = String(req.body?.pin || "");
+
+  if (!CLIENTS_PIN) {
+    return res.status(500).json({
+      ok: false,
+      message: "Brak CLIENTS_PIN w zmiennych środowiskowych (Railway Variables).",
+    });
+  }
+
+  if (pin === CLIENTS_PIN) {
+    return res.json({ ok: true });
+  }
+
+  return res.status(401).json({ ok: false, message: "Błędny PIN" });
 });
 
 // ==========================
@@ -155,7 +198,7 @@ app.post("/api/rezerwacje", async (req, res) => {
   }
 });
 
-// jeśli admin.html ma edycję / usuwanie (u Ciebie ma)
+// admin.html: edycja
 app.put("/api/rezerwacje/:id", async (req, res) => {
   try {
     const updated = await Reservation.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -169,6 +212,7 @@ app.put("/api/rezerwacje/:id", async (req, res) => {
   }
 });
 
+// admin.html: usuwanie
 app.delete("/api/rezerwacje/:id", async (req, res) => {
   try {
     await Reservation.findByIdAndDelete(req.params.id);
@@ -185,8 +229,7 @@ app.delete("/api/rezerwacje/:id", async (req, res) => {
 // API — HAPPY BAR
 // ==========================
 
-// ✅ DODANE: kompatybilny endpoint dla index.html, jeśli woła /api/data
-// Zwracamy kilka nazw pól, żeby pasowało do różnych wersji frontu.
+// kompatybilny endpoint dla index.html (/api/data)
 app.get("/api/data", async (_req, res) => {
   try {
     const doc = await HappyBar.findOne().sort({ updatedAt: -1 });
@@ -204,7 +247,7 @@ app.get("/api/data", async (_req, res) => {
   }
 });
 
-// index/admin: pobranie aktualnego tekstu
+// pobranie tekstu
 app.get("/api/happy", async (_req, res) => {
   try {
     const doc = await HappyBar.findOne().sort({ updatedAt: -1 });
@@ -215,7 +258,7 @@ app.get("/api/happy", async (_req, res) => {
   }
 });
 
-// admin.html: zapis + realtime update dla index.html
+// zapis + realtime update
 app.post("/api/happy", async (req, res) => {
   try {
     const text = String(req.body?.happy ?? req.body?.text ?? "");
@@ -232,7 +275,7 @@ app.post("/api/happy", async (req, res) => {
 });
 
 // ==========================
-// (Opcjonalnie) API — kafelki jak na screenie (liczniki)
+// API — kafelki w panelu (liczniki)
 // ==========================
 app.get("/api/admin/stats", async (_req, res) => {
   try {
@@ -250,7 +293,7 @@ app.get("/api/admin/stats", async (_req, res) => {
 });
 
 // ==========================
-// Clean routes (opcjonalnie)
+// Routes
 // ==========================
 app.get("/admin", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "admin.html")));
 app.get("/index.html", (_req, res) => res.redirect(301, "/"));
