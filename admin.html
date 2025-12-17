@@ -2,8 +2,15 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- ✅ Anti-zoom + fullscreen PWA safe-area -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <title>MilkShake Bar — Panel Administratora</title>
+
+  <!-- ✅ PWA -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FF6A00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,16 +21,27 @@
     :root{
       --primary:#FF6A00;
       --secondary:#FF9100;
-      --bg:#0e0a08;
-      --card:rgba(255,255,255,0.08);
-      --card2:rgba(255,255,255,0.10);
-      --border:rgba(255,255,255,0.14);
-      --text:#fff;
-      --muted:rgba(255,255,255,0.75);
-      --shadow:0 18px 60px rgba(0,0,0,0.45);
-      --radius:20px;
+      --accent:#FFE0B2;
+
+      --bg:#FFF6EC;
+      --bg2:#ffffff;
+      --text:#2B1300;
+      --muted: rgba(43,19,0,0.65);
+
+      --card: rgba(255,255,255,0.82);
+      --card2: rgba(255,255,255,0.92);
+      --border: rgba(43,19,0,0.12);
+
+      --shadow: 0px 10px 30px rgba(0,0,0,0.12);
+      --shadow2: 0px 18px 50px rgba(0,0,0,0.14);
+      --radius: 20px;
+
       --good:#16A34A;
       --bad:#DC2626;
+
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --glass: rgba(255,255,255,0.70);
+      --glass2: rgba(255,255,255,0.86);
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -32,33 +50,49 @@
       font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.35), transparent 60%),
-        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.25), transparent 60%),
-        radial-gradient(800px 500px at 50% 90%, rgba(255,255,255,0.06), transparent 60%),
+        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.16), transparent 60%),
+        radial-gradient(800px 500px at 50% 90%, rgba(43,19,0,0.06), transparent 60%),
         var(--bg);
       overflow:hidden;
+      overscroll-behavior: none;
     }
 
-    .app{height:100%;display:grid;grid-template-columns: 290px 1fr;}
+    /* ✅ Fullscreen responsive height */
+    .app{
+      height: 100dvh;
+      display:grid;
+      grid-template-columns: 290px 1fr;
+    }
+
+    /* ✅ Lockscreen freeze (no pinch/zoom/scroll/select) */
+    body.locked{
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    /* allow “tap” behavior for buttons (no double-tap zoom intent) */
+    #lock, #lock *{ touch-action: manipulation; }
 
     /* Sidebar */
     .sidebar{
       height:100%;
       padding:22px;
-      border-right:1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      backdrop-filter: blur(14px);
+      border-right:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.66));
+      backdrop-filter: blur(12px);
     }
     .brand{
       display:flex;align-items:center;gap:14px;
       padding:14px 14px;border-radius:18px;
-      background: rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+      background: var(--glass2);
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
     }
     .brand img{
       width:44px;height:44px;border-radius:999px;object-fit:cover;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
     }
     .brand .t1{font-weight:900;letter-spacing:.2px}
     .brand .t2{font-size:.86rem;color:var(--muted)}
@@ -67,37 +101,39 @@
       width:100%;
       display:flex;align-items:center;gap:12px;
       padding:12px 14px;border-radius:16px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      color:#fff;cursor:pointer;transition:.18s ease;text-align:left;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.70);
+      color:var(--text);cursor:pointer;transition:.18s ease;text-align:left;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
     }
-    .navbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.06)}
+    .navbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.86)}
     .navbtn.active{
-      background: linear-gradient(135deg, rgba(255,106,0,0.35), rgba(255,145,0,0.18));
+      background: linear-gradient(135deg, rgba(255,106,0,0.18), rgba(255,145,0,0.12));
       border-color: rgba(255,145,0,0.35);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+      box-shadow: 0 18px 40px rgba(255,106,0,0.12);
     }
     .navbtn i{width:18px;opacity:.95}
     .navsep{
       margin:12px 0 6px;
-      font-size:.82rem;color: rgba(255,255,255,0.55);
+      font-size:.82rem;color: rgba(43,19,0,0.55);
       padding:0 6px;letter-spacing:.4px;text-transform:uppercase;
     }
     .sidefoot{
       margin-top:14px;
       padding:12px 14px;border-radius:16px;
-      background: rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.70);
+      border:1px solid var(--border);
       color:var(--muted);
       font-size:.9rem;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
     }
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
-      background: rgba(0,0,0,0.35);
-      border:1px solid rgba(255,255,255,0.12);
-      font-size:.82rem;color:rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.72);
+      border:1px solid var(--border);
+      font-size:.82rem;color:rgba(43,19,0,0.92);
       white-space:nowrap;
     }
     .dot{
@@ -107,7 +143,11 @@
     .dot.ok{background:var(--good); box-shadow: 0 0 0 3px rgba(22,163,74,0.18);}
 
     /* Main */
-    .main{height:100%;overflow:auto;padding:22px;}
+    .main{
+      height:100%;
+      overflow:auto;
+      padding: calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
+    }
     .topbar{
       display:flex;align-items:flex-start;justify-content:space-between;
       gap:14px;margin-bottom:18px;
@@ -115,7 +155,7 @@
     .topbar h1{
       font-size:1.9rem;line-height:1.15;font-weight:900;
       margin-bottom:6px;letter-spacing:.2px;
-      background: linear-gradient(135deg, #fff, rgba(255,255,255,0.65));
+      background: var(--gradient);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
@@ -123,94 +163,113 @@
     .actions{
       display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
     }
+
     .btn{
       border:none;cursor:pointer;font-weight:800;
-      padding:12px 14px;border-radius:999px;color:#fff;
-      background: rgba(255,255,255,0.07);
-      border:1px solid rgba(255,255,255,0.12);
+      padding:12px 14px;border-radius:999px;
+      color:var(--text);
+      background: rgba(255,255,255,0.80);
+      border:1px solid var(--border);
       transition:.18s ease;
       display:inline-flex;gap:10px;align-items:center;white-space:nowrap;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.08);
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.92)}
     .btn.primary{
-      background: linear-gradient(135deg, rgba(255,106,0,0.95), rgba(255,145,0,0.95));
+      color:#fff;
+      background: var(--gradient);
       border-color: rgba(255,145,0,0.45);
-      box-shadow: 0 14px 35px rgba(255,106,0,0.18);
+      box-shadow: 0 14px 35px rgba(255,106,0,0.22);
     }
-    .btn.danger{background: rgba(220,38,38,0.14);border-color: rgba(220,38,38,0.35);}
+    .btn.danger{
+      color:#fff;
+      background: rgba(220,38,38,0.90);
+      border-color: rgba(220,38,38,0.35);
+      box-shadow: 0 14px 35px rgba(220,38,38,0.16);
+    }
 
     /* Cards / grid */
     .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:14px;}
     .card{
       grid-column: span 12;
-      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.05));
+      background: linear-gradient(180deg, var(--card2), var(--card));
       border:1px solid var(--border);
       border-radius:var(--radius);
       box-shadow: var(--shadow);
       padding:16px;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(12px);
     }
     .card h2{font-size:1.1rem;margin-bottom:10px;font-weight:900;letter-spacing:.2px;}
     .kpis{display:grid;grid-template-columns: repeat(4, 1fr);gap:14px;margin-top:10px;}
     .kpi{
-      background: rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.78);
+      border:1px solid var(--border);
       border-radius:18px;
       padding:14px;
       display:flex;gap:12px;align-items:center;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.06);
     }
-    .kpi i{font-size:1.05rem;opacity:.95}
+    .kpi i{font-size:1.05rem;opacity:.95;color: rgba(255,106,0,0.95)}
     .kpi .num{font-weight:900;font-size:1.35rem}
     .kpi .lbl{font-size:.86rem;color:var(--muted)}
 
     /* Table */
     table{width:100%;border-collapse:separate;border-spacing:0 10px;}
     th{
-      text-align:left;font-size:.82rem;color:rgba(255,255,255,0.7);
-      font-weight:800;padding:0 10px 6px;letter-spacing:.35px;text-transform:uppercase;
+      text-align:left;font-size:.82rem;color:rgba(43,19,0,0.55);
+      font-weight:900;padding:0 10px 6px;letter-spacing:.35px;text-transform:uppercase;
     }
     td{
-      padding:12px 10px;background: rgba(255,255,255,0.06);
-      border-top:1px solid rgba(255,255,255,0.10);
-      border-bottom:1px solid rgba(255,255,255,0.10);
+      padding:12px 10px;background: rgba(255,255,255,0.86);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      color: var(--text);
     }
     tr td:first-child{
-      border-left:1px solid rgba(255,255,255,0.10);
+      border-left:1px solid var(--border);
       border-top-left-radius:16px;border-bottom-left-radius:16px;
     }
     tr td:last-child{
-      border-right:1px solid rgba(255,255,255,0.10);
+      border-right:1px solid var(--border);
       border-top-right-radius:16px;border-bottom-right-radius:16px;
     }
     .tag{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
-      background: rgba(0,0,0,0.35);
-      border:1px solid rgba(255,255,255,0.12);
-      font-weight:800;font-size:.84rem;white-space:nowrap;
+      background: rgba(255,255,255,0.86);
+      border:1px solid var(--border);
+      font-weight:900;font-size:.84rem;white-space:nowrap;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.05);
     }
-    .tag small{font-weight:700;color:rgba(255,255,255,0.7)}
+    .tag i{color: rgba(255,106,0,0.95)}
+    .tag small{font-weight:700;color:rgba(43,19,0,0.55)}
     .row-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
     .iconbtn{
       width:40px;height:40px;border-radius:14px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color:#fff;cursor:pointer;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.86);
+      color:var(--text);cursor:pointer;
       display:grid;place-items:center;transition:.15s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
     }
-    .iconbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.09)}
-    .iconbtn.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
-    .iconbtn.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
+    .iconbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.95)}
+    .iconbtn.danger{background: rgba(220,38,38,0.12);border-color: rgba(220,38,38,0.28);color:#8a0d0d}
+    .iconbtn.ok{background: rgba(22,163,74,0.12);border-color: rgba(22,163,74,0.28);color:#0f5f2a}
 
     /* Inputs */
     .field{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-    .field label{font-weight:800;font-size:.9rem}
+    .field label{font-weight:900;font-size:.9rem}
     .input, .textarea{
       width:100%;
       padding:12px 14px;border-radius:16px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.30);
-      color:#fff;outline:none;font-family:Poppins;
+      border:2px solid rgba(43,19,0,0.10);
+      background: rgba(255,255,255,0.90);
+      color:var(--text);outline:none;font-family:Poppins;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .input:focus, .textarea:focus{
+      border-color: rgba(255,106,0,0.55);
+      box-shadow: 0 10px 26px rgba(255,106,0,0.12);
     }
     .textarea{min-height:130px;resize:vertical}
     .hint{margin-top:8px;color:var(--muted);font-size:.92rem}
@@ -220,18 +279,19 @@
       position:fixed; inset:0;
       display:none;align-items:center;justify-content:center;
       z-index:9999;
-      background: rgba(0,0,0,0.60);
-      backdrop-filter: blur(14px);
+      background: rgba(0,0,0,0.42);
+      backdrop-filter: blur(10px);
       padding:22px;
     }
     .modal.show, .lock.show{display:flex}
     .modalbox{
       width:min(920px, 100%);
       border-radius:28px;
-      border:1px solid rgba(255,255,255,0.16);
-      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
-      box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow2);
       padding:18px;
+      color: var(--text);
     }
     .modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
     .modalhead h3{font-size:1.2rem;font-weight:900}
@@ -243,40 +303,51 @@
     .lockbox{
       width:min(520px, 100%);
       border-radius:30px;
-      border:1px solid rgba(255,255,255,0.18);
-      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
-      box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow2);
       padding:18px;
+      color: var(--text);
     }
     .locktop{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;}
     .locktop .title{display:flex;flex-direction:column;gap:2px}
     .locktop .title b{font-weight:900;font-size:1.1rem}
     .locktop .title span{color:var(--muted);font-size:.92rem}
+
     .pin{display:flex;gap:10px;justify-content:center;margin:14px 0 10px;}
     .pin .dotpin{
       width:14px;height:14px;border-radius:99px;
-      background: rgba(255,255,255,0.22);
-      border:1px solid rgba(255,255,255,0.18);
-      box-shadow: inset 0 6px 12px rgba(0,0,0,0.25);
+      background: rgba(43,19,0,0.10);
+      border:1px solid rgba(43,19,0,0.12);
+      box-shadow: inset 0 6px 12px rgba(0,0,0,0.10);
     }
     .pin .dotpin.filled{
-      background: linear-gradient(135deg, rgba(255,106,0,1), rgba(255,145,0,1));
+      background: var(--gradient);
       border-color: rgba(255,145,0,0.55);
       box-shadow: 0 10px 25px rgba(255,106,0,0.18);
     }
     .keypad{display:grid;grid-template-columns: repeat(3, 1fr);gap:12px;margin-top:12px;}
     .key{
       height:56px;border-radius:18px;
-      border:1px solid rgba(255,255,255,0.16);
-      background: rgba(0,0,0,0.25);
-      color:#fff;font-weight:900;font-size:1.15rem;
+      border:1px solid rgba(43,19,0,0.12);
+      background: rgba(255,255,255,0.86);
+      color:var(--text);font-weight:900;font-size:1.15rem;
       cursor:pointer;transition:.15s ease;display:grid;place-items:center;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.06);
     }
-    .key:hover{transform: translateY(-1px); background: rgba(0,0,0,0.35)}
+    .key:hover{transform: translateY(-1px); background: rgba(255,255,255,0.95)}
     .key.small{font-size:1rem}
-    .key.danger{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.10)}
-    .key.ok{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.10)}
-    .lockmsg{text-align:center;color:rgba(255,255,255,0.85);font-size:.92rem;min-height:22px;margin-top:10px;}
+    .key.danger{
+      background: rgba(220,38,38,0.10);
+      border-color: rgba(220,38,38,0.22);
+      color:#8a0d0d;
+    }
+    .key.ok{
+      background: rgba(22,163,74,0.10);
+      border-color: rgba(22,163,74,0.22);
+      color:#0f5f2a;
+    }
+    .lockmsg{text-align:center;color:rgba(43,19,0,0.75);font-size:.92rem;min-height:22px;margin-top:10px;}
 
     /* FULLSCREEN ALERT */
     .alarm{
@@ -284,14 +355,14 @@
       z-index:10000;
       display:none;align-items:center;justify-content:center;
       padding:22px;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.50);
       backdrop-filter: blur(6px);
     }
     .alarm.show{display:flex}
     .alarm.flash::before{
       content:"";
       position:absolute; inset:0;
-      background: radial-gradient(700px 500px at 50% 30%, rgba(255,106,0,0.75), transparent 65%);
+      background: radial-gradient(700px 500px at 50% 30%, rgba(255,106,0,0.42), transparent 65%);
       animation: flash 0.55s infinite alternate;
       opacity:0.95;
     }
@@ -300,18 +371,19 @@
       position:relative;
       width:min(640px, 100%);
       border-radius:30px;
-      border:1px solid rgba(255,255,255,0.20);
-      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
-      box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow2);
       padding:18px;
       text-align:center;
+      color: var(--text);
     }
     .alarmbox h3{font-size:1.35rem;font-weight:900;margin:8px 0 6px;}
-    .alarmbox p{color:rgba(255,255,255,0.85)}
+    .alarmbox p{color:var(--muted)}
     .alarmbox .preview{
       margin-top:12px;
-      background: rgba(0,0,0,0.35);
-      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.86);
+      border:1px solid var(--border);
       border-radius:18px;
       padding:12px;
       text-align:left;
@@ -322,13 +394,13 @@
       display:flex;align-items:center;gap:10px;
       padding:8px 10px;
       border-radius:14px;
-      background: rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.92);
+      border:1px solid var(--border);
       margin-bottom:8px;
     }
-    .alarmbox .preview .line i{width:18px;color:rgba(255,145,0,0.95)}
-    .alarmbox .preview .muted{color:rgba(255,255,255,0.72)}
-    .alarmbox .preview b{color:#fff}
+    .alarmbox .preview .line i{width:18px;color:rgba(255,106,0,0.95)}
+    .alarmbox .preview .muted{color:rgba(43,19,0,0.62)}
+    .alarmbox .preview b{color:var(--text)}
     .alarmbox .okwrap{margin-top:14px;display:flex;justify-content:center}
 
     /* Toast */
@@ -336,12 +408,14 @@
       position:fixed;bottom:18px;right:18px;z-index:12000;
       display:none;align-items:center;gap:10px;
       padding:12px 14px;border-radius:999px;
-      background: rgba(22,163,74,0.22);
-      border:1px solid rgba(22,163,74,0.35);
-      color:#fff;backdrop-filter: blur(12px);
-      box-shadow: 0 18px 45px rgba(0,0,0,0.35);
-      font-weight:800;
+      background: rgba(22,163,74,0.14);
+      border:1px solid rgba(22,163,74,0.25);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+      font-weight:900;
     }
+    #toast i{color: var(--good)}
 
     /* Responsive base */
     @media (max-width: 1180px){
@@ -358,7 +432,7 @@
     /* ============ MOBILE/TABLET UX (drawer sidebar) ============ */
     .overlay{
       position:fixed; inset:0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.45);
       backdrop-filter: blur(6px);
       z-index:80;
       display:none;
@@ -377,14 +451,14 @@
         transform: translateX(-110%);
         transition: transform .22s ease;
         z-index:90;
-        border-right:1px solid rgba(255,255,255,0.10);
-        box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+        border-right:1px solid var(--border);
+        box-shadow: 0 30px 90px rgba(0,0,0,0.35);
       }
       .sidebar.open{transform: translateX(0)}
 
       /* Main full width */
       .main{
-        padding:14px;
+        padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
         height:auto;
         overflow:visible;
       }
@@ -397,11 +471,12 @@
         padding:12px;
         margin:-14px -14px 14px;
         border-radius:18px;
-        background: rgba(0,0,0,0.25);
-        border:1px solid rgba(255,255,255,0.10);
-        backdrop-filter: blur(14px);
+        background: rgba(255,255,255,0.86);
+        border:1px solid var(--border);
+        backdrop-filter: blur(12px);
         flex-direction:column;
         align-items:stretch;
+        box-shadow: var(--shadow);
       }
       .actions{
         justify-content:space-between;
@@ -411,17 +486,20 @@
       /* Show menu button on mobile */
       #menuBtn{display:inline-flex !important}
 
-      /* KPI grid on mobile */
-      .kpis{grid-template-columns:1fr}
+      /* ✅ KPI: małe prostokąty (2 kolumny), nie długie paski */
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+      .kpi{
+        padding:10px;
+        border-radius:16px;
+        min-height:78px;
+        align-items:center;
+      }
+      .kpi .num{font-size:1.1rem}
+      .kpi .lbl{font-size:.8rem}
 
       /* Tables: safe horizontal scroll */
       table{min-width: 760px}
       .card{padding:14px}
-    }
-
-    /* Tablet: keep 2 columns for KPI */
-    @media (min-width: 921px) and (max-width: 1180px){
-      .kpis{grid-template-columns: repeat(2, 1fr)}
     }
   </style>
 </head>
@@ -638,10 +716,10 @@
           <button class="btn primary" id="pAdd"><i class="fa-solid fa-plus"></i> Dodaj punkty</button>
         </div>
 
-        <div class="card" style="margin-top:14px; background: rgba(255,255,255,0.05)">
+        <div class="card" style="margin-top:14px;">
           <h2 style="margin-bottom:6px">Podgląd punktów (lokalnie)</h2>
           <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są liczone i trzymane tylko w pamięci przeglądarki.</p>
-          <div id="pointsPreview" style="margin-top:10px;color:rgba(255,255,255,0.9)"></div>
+          <div id="pointsPreview" style="margin-top:10px;"></div>
         </div>
       </section>
 
@@ -695,7 +773,6 @@
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
             <button class="btn primary" id="cUnlock"><i class="fa-solid fa-unlock"></i> Odblokuj</button>
           </div>
-          <!-- USUNIĘTO podpowiedź PIN: 5100 -->
         </div>
 
         <div id="clientsContent" style="display:none">
@@ -714,9 +791,9 @@
             </table>
           </div>
 
-          <div class="card" style="margin-top:14px; background: rgba(255,255,255,0.05)">
+          <div class="card" style="margin-top:14px;">
             <h2 style="margin-bottom:8px">Aktywność konta</h2>
-            <div id="clientActivity" style="color:rgba(255,255,255,0.9)">
+            <div id="clientActivity">
               Wybierz klienta, aby zobaczyć aktywność.
             </div>
           </div>
@@ -771,7 +848,6 @@
 
     const state = {
       pin: "",
-      okPin: "0051",
       unlocked: false,
 
       reservations: [],
@@ -780,6 +856,7 @@
       alarmActive: false,
       audioCtx: null,
       beepInterval: null,
+      alarmAudio: null,
 
       // STATIC: Milki Aplikacja
       app: {
@@ -825,8 +902,9 @@
       const tt = $("#toastText");
       tt.textContent = msg;
       t.style.display = "flex";
-      t.style.background = bad ? "rgba(220,38,38,0.20)" : "rgba(22,163,74,0.22)";
-      t.style.borderColor = bad ? "rgba(220,38,38,0.35)" : "rgba(22,163,74,0.35)";
+      t.style.background = bad ? "rgba(220,38,38,0.14)" : "rgba(22,163,74,0.14)";
+      t.style.borderColor = bad ? "rgba(220,38,38,0.25)" : "rgba(22,163,74,0.25)";
+      t.querySelector("i").style.color = bad ? "var(--bad)" : "var(--good)";
       setTimeout(()=> t.style.display="none", 3200);
     }
 
@@ -843,6 +921,39 @@
     }
 
     // ==========================
+    // ✅ Freeze + anti zoom gestures (lockscreen)
+    // ==========================
+    function setLockedFreeze(on){
+      document.body.classList.toggle("locked", !!on);
+    }
+    setLockedFreeze(true);
+
+    ["gesturestart","gesturechange","gestureend"].forEach(ev=>{
+      window.addEventListener(ev, (e)=> e.preventDefault(), {passive:false});
+    });
+
+    let lastTouchEnd = 0;
+    document.addEventListener("touchend", (e)=>{
+      const now = Date.now();
+      if(now - lastTouchEnd <= 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, {passive:false});
+
+    // ==========================
+    // ✅ Backend login (PIN not in frontend)
+    // POST /api/login {pin:"1234"} => {ok:true}
+    // ==========================
+    async function verifyPin(pin){
+      const res = await fetch("/api/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ pin })
+      });
+      const data = await res.json().catch(()=>({}));
+      return !!(res.ok && data && data.ok);
+    }
+
+    // ==========================
     // Lock screen PIN
     // ==========================
     function renderPin(){
@@ -853,11 +964,12 @@
     function setLockMsg(msg, bad=false){
       const el = $("#lockMsg");
       el.textContent = msg || "";
-      el.style.color = bad ? "rgba(255,200,200,0.95)" : "rgba(255,255,255,0.85)";
+      el.style.color = bad ? "rgba(220,38,38,0.95)" : "rgba(43,19,0,0.75)";
     }
 
     function unlock(){
       state.unlocked = true;
+      setLockedFreeze(false);
       $("#lock").classList.remove("show");
       $("#app").style.display = "grid";
       showToast("Zalogowano ✅");
@@ -870,13 +982,16 @@
       renderPin();
       $("#app").style.display = "none";
       $("#lock").classList.add("show");
+      setLockedFreeze(true);
       setLockMsg("");
       stopAlarm();
     }
 
-    $("#keypad").addEventListener("click", (e)=>{
+    let loginBusy = false;
+
+    $("#keypad").addEventListener("click", async (e)=>{
       const btn = e.target.closest("button");
-      if(!btn) return;
+      if(!btn || loginBusy) return;
 
       const k = btn.getAttribute("data-k");
       const act = btn.getAttribute("data-act");
@@ -886,13 +1001,21 @@
         state.pin += k;
         renderPin();
         setLockMsg("");
+
         if(state.pin.length === 4){
-          if(state.pin === state.okPin){
-            unlock();
-          }else{
-            setLockMsg("Błędny PIN", true);
-            state.pin = "";
-            renderPin();
+          const entered = state.pin;
+          state.pin = "";
+          renderPin();
+
+          loginBusy = true;
+          try{
+            const ok = await verifyPin(entered);
+            if(ok) unlock();
+            else setLockMsg("Błędny PIN", true);
+          }catch{
+            setLockMsg("Błąd logowania", true);
+          }finally{
+            loginBusy = false;
           }
         }
         return;
@@ -903,17 +1026,26 @@
         renderPin();
         setLockMsg("");
       }
+
       if(act === "ok"){
-        if(state.pin === state.okPin){
-          unlock();
-        }else{
-          setLockMsg("Błędny PIN", true);
-          state.pin = "";
-          renderPin();
+        const entered = state.pin;
+        state.pin = "";
+        renderPin();
+
+        loginBusy = true;
+        try{
+          const ok = await verifyPin(entered);
+          if(ok) unlock();
+          else setLockMsg("Błędny PIN", true);
+        }catch{
+          setLockMsg("Błąd logowania", true);
+        }finally{
+          loginBusy = false;
         }
       }
     });
 
+    // Blokuj klawiaturę systemową na lockscreen (totalny freeze)
     window.addEventListener("keydown", (e)=>{
       if(!$("#lock").classList.contains("show")) return;
       e.preventDefault();
@@ -942,7 +1074,7 @@
         if(sec) sec.style.display = (k === key) ? "block" : "none";
       });
       $("#title").textContent = tabMeta[key]?.title || "Panel";
-      $("#subtitle").textContent = ""; // usunięte opisy
+      $("#subtitle").textContent = "";
     }
 
     $$(".navbtn").forEach(b => b.addEventListener("click", ()=> showTab(b.dataset.tab)));
@@ -1008,7 +1140,7 @@
       if(state.reservations.length === 0){
         tb.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+            <td colspan="6" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
               Brak rezerwacji
             </td>
           </tr>
@@ -1024,11 +1156,11 @@
         tr.innerHTML = `
           <td>
             <div class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(fmtDateTime(r))}</div>
-            <div style="color:rgba(255,255,255,0.68);font-size:.82rem;margin-top:6px">Utworzono: ${escapeHtml(created)}</div>
+            <div style="color:rgba(43,19,0,0.60);font-size:.82rem;margin-top:6px">Utworzono: ${escapeHtml(created)}</div>
           </td>
           <td>
             <div style="font-weight:900">${escapeHtml(r.name || "—")}</div>
-            <div style="color:rgba(255,255,255,0.75);font-size:.9rem;margin-top:4px"><i class="fa-solid fa-phone"></i> ${escapeHtml(r.phone || "—")}</div>
+            <div style="color:rgba(43,19,0,0.70);font-size:.9rem;margin-top:4px"><i class="fa-solid fa-phone" style="color:rgba(255,106,0,0.95)"></i> ${escapeHtml(r.phone || "—")}</div>
           </td>
           <td><span class="tag"><i class="fa-solid fa-user-group"></i> ${escapeHtml(r.guests || "—")} <small>os.</small></span></td>
           <td><span class="tag"><i class="fa-solid fa-door-open"></i> ${escapeHtml(r.room || "—")}</span></td>
@@ -1165,26 +1297,35 @@
     $("#happySave").addEventListener("click", saveHappy);
 
     // ==========================
-    // Alarm: migawka + beep do OK
+    // ✅ Alarm: bardzo głośny dźwięk (loop) do OK
+    // Upewnij się, że backend serwuje /alarm.mp3 (głośny plik)
     // ==========================
+    function ensureAlarmAudio(){
+      if(state.alarmAudio) return;
+      state.alarmAudio = new Audio("/alarm.mp3");
+      state.alarmAudio.loop = true;
+      state.alarmAudio.preload = "auto";
+      state.alarmAudio.volume = 1.0;
+    }
+
+    // fallback oscillator
     function ensureAudio(){
       if(state.audioCtx) return;
       try{ state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
       catch(e){ state.audioCtx = null; }
     }
-
     function beepOnce(){
       if(!state.audioCtx) return;
       const ctx = state.audioCtx;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = "square";
-      o.frequency.value = 880;
-      g.gain.value = 0.06;
+      o.frequency.value = 1100;   // wyżej = bardziej “alarmowo”
+      g.gain.value = 0.14;        // głośniej (oscillator)
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      setTimeout(()=>{ try{o.stop();}catch(e){} }, 160);
+      setTimeout(()=>{ try{o.stop();}catch(e){} }, 140);
     }
 
     function startAlarm(reservation){
@@ -1218,12 +1359,25 @@
       alarm.classList.add("show");
       alarm.classList.add("flash");
 
-      ensureAudio();
-      if(state.audioCtx && state.audioCtx.state === "suspended"){
-        state.audioCtx.resume().catch(()=>{});
+      // Prefer mp3 loop
+      ensureAlarmAudio();
+      try{
+        state.alarmAudio.currentTime = 0;
+        state.alarmAudio.volume = 1.0;
+        state.alarmAudio.play().catch(()=>{
+          // fallback oscillator loop
+          ensureAudio();
+          if(state.audioCtx && state.audioCtx.state === "suspended"){
+            state.audioCtx.resume().catch(()=>{});
+          }
+          beepOnce();
+          state.beepInterval = setInterval(beepOnce, 280);
+        });
+      }catch{
+        ensureAudio();
+        beepOnce();
+        state.beepInterval = setInterval(beepOnce, 280);
       }
-      beepOnce();
-      state.beepInterval = setInterval(beepOnce, 650);
     }
 
     function stopAlarm(){
@@ -1231,9 +1385,16 @@
       const alarm = $("#alarm");
       alarm.classList.remove("show");
       alarm.classList.remove("flash");
+
       if(state.beepInterval){
         clearInterval(state.beepInterval);
         state.beepInterval = null;
+      }
+      if(state.alarmAudio){
+        try{
+          state.alarmAudio.pause();
+          state.alarmAudio.currentTime = 0;
+        }catch(e){}
       }
     }
 
@@ -1280,7 +1441,7 @@
       const list = state.app.orders || [];
       if(list.length === 0){
         tb.innerHTML = `
-          <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+          <tr><td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
             Brak zamówień
           </td></tr>
         `;
@@ -1351,7 +1512,7 @@
       const list = state.app.rewards || [];
       if(list.length === 0){
         tb.innerHTML = `
-          <tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+          <tr><td colspan="3" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
             Brak nagród
           </td></tr>
         `;
@@ -1409,7 +1570,7 @@
       const list = state.app.clients || [];
       if(list.length === 0){
         tb.innerHTML = `
-          <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.75);padding:18px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)">
+          <tr><td colspan="5" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
             Brak klientów
           </td></tr>
         `;
@@ -1499,19 +1660,26 @@
     });
     overlay?.addEventListener("click", closeMenu);
 
-    // po kliknięciu zakładki na mobile zamykaj menu
     document.querySelectorAll(".navbtn").forEach(b=>{
       b.addEventListener("click", ()=>{
         if(window.matchMedia("(max-width: 920px)").matches) closeMenu();
       });
     });
 
-    // przy zmianie rozmiaru ekranu ogarnij stan
     window.addEventListener("resize", ()=>{
       if(!window.matchMedia("(max-width: 920px)").matches){
         closeMenu();
       }
     });
+
+    // ==========================
+    // ✅ PWA service worker
+    // ==========================
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", ()=>{
+        navigator.serviceWorker.register("/sw.js").catch(()=>{});
+      });
+    }
 
     // ==========================
     // Init
@@ -1520,13 +1688,11 @@
       showTab("reservations");
       initSocket();
 
-      // backend części panelu:
       await apiHealth();
       await loadStats();
       await loadReservations();
       await loadHappy();
 
-      // statyczna aplikacja:
       renderOrders();
       renderPointsPreview();
       renderRewards();
@@ -1539,16 +1705,13 @@
       showToast("Odświeżono ✅");
     });
 
-    // clock
     setInterval(()=>{
       const now = new Date();
       $("#clock").innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"})}`;
     }, 1000);
 
-    // health periodic
     setInterval(apiHealth, 6000);
 
-    // start locked by default
     renderPin();
   </script>
 </body>
