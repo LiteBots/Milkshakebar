@@ -856,7 +856,6 @@
       alarmActive: false,
       audioCtx: null,
       beepInterval: null,
-      alarmAudio: null,
 
       // STATIC: Milki Aplikacja
       app: {
@@ -1297,23 +1296,14 @@
     $("#happySave").addEventListener("click", saveHappy);
 
     // ==========================
-    // ✅ Alarm: bardzo głośny dźwięk (loop) do OK
-    // Upewnij się, że backend serwuje /alarm.mp3 (głośny plik)
+    // ✅ Alarm: TYLKO szybkie pikanie (bez /alarm.mp3)
     // ==========================
-    function ensureAlarmAudio(){
-      if(state.alarmAudio) return;
-      state.alarmAudio = new Audio("/alarm.mp3");
-      state.alarmAudio.loop = true;
-      state.alarmAudio.preload = "auto";
-      state.alarmAudio.volume = 1.0;
-    }
-
-    // fallback oscillator
     function ensureAudio(){
       if(state.audioCtx) return;
       try{ state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
       catch(e){ state.audioCtx = null; }
     }
+
     function beepOnce(){
       if(!state.audioCtx) return;
       const ctx = state.audioCtx;
@@ -1359,25 +1349,13 @@
       alarm.classList.add("show");
       alarm.classList.add("flash");
 
-      // Prefer mp3 loop
-      ensureAlarmAudio();
-      try{
-        state.alarmAudio.currentTime = 0;
-        state.alarmAudio.volume = 1.0;
-        state.alarmAudio.play().catch(()=>{
-          // fallback oscillator loop
-          ensureAudio();
-          if(state.audioCtx && state.audioCtx.state === "suspended"){
-            state.audioCtx.resume().catch(()=>{});
-          }
-          beepOnce();
-          state.beepInterval = setInterval(beepOnce, 280);
-        });
-      }catch{
-        ensureAudio();
-        beepOnce();
-        state.beepInterval = setInterval(beepOnce, 280);
+      // ✅ tylko szybkie pikanie
+      ensureAudio();
+      if(state.audioCtx && state.audioCtx.state === "suspended"){
+        state.audioCtx.resume().catch(()=>{});
       }
+      beepOnce();
+      state.beepInterval = setInterval(beepOnce, 280);
     }
 
     function stopAlarm(){
@@ -1389,12 +1367,6 @@
       if(state.beepInterval){
         clearInterval(state.beepInterval);
         state.beepInterval = null;
-      }
-      if(state.alarmAudio){
-        try{
-          state.alarmAudio.pause();
-          state.alarmAudio.currentTime = 0;
-        }catch(e){}
       }
     }
 
