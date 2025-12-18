@@ -559,14 +559,7 @@
         linear-gradient(180deg, rgba(255,246,236,.98), rgba(255,246,236,.985));
     }
     .install-guide.show{ display:block; }
-
-    .install-shell{
-      max-width: 860px;
-      margin: 0 auto;
-      display:grid;
-      gap:12px;
-    }
-
+    .install-shell{ max-width: 860px; margin: 0 auto; display:grid; gap:12px; }
     .install-hero{
       background: rgba(255,255,255,.86);
       border: 1px solid rgba(255,255,255,.98);
@@ -585,19 +578,8 @@
       transform: rotate(18deg);
       pointer-events:none;
     }
-
-    .install-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .install-brand{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      min-width:0;
-    }
+    .install-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .install-brand{display:flex;gap:12px;align-items:center;min-width:0;}
     .install-badge{
       width:54px;height:54px;border-radius:18px;
       background: var(--grad);
@@ -608,9 +590,7 @@
       font-size:1.25rem;
       flex:0 0 auto;
     }
-    .install-headline{
-      min-width:0;
-    }
+    .install-headline{min-width:0;}
     .install-kicker{ font-weight:900; opacity:.72; font-size:.9rem; }
     .install-title{
       font-size:1.35rem;
@@ -628,7 +608,6 @@
       font-weight:700;
       max-width: 58ch;
     }
-
     .platform-switch{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -670,15 +649,9 @@
       box-shadow: var(--shadow);
       padding: 16px;
     }
-
     .install-pane{ display:none; }
     .install-pane.active{ display:block; }
-
-    .steps{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
+    .steps{ display:grid; gap:10px; margin-top:10px; }
     .step{
       display:flex;
       gap:12px;
@@ -699,17 +672,8 @@
       box-shadow:0 8px 18px rgba(255,106,0,.28);
     }
     .step-body b{ font-weight:900; }
-    .step-body{
-      line-height:1.45;
-      font-weight:750;
-      opacity:.92;
-    }
-
-    .install-ctaRow{
-      display:grid;
-      gap:8px;
-      margin-top:12px;
-    }
+    .step-body{ line-height:1.45; font-weight:750; opacity:.92; }
+    .install-ctaRow{ display:grid; gap:8px; margin-top:12px; }
     .install-note{
       margin-top:10px;
       font-size:.86rem;
@@ -722,12 +686,7 @@
       border:1px dashed rgba(0,0,0,.10);
     }
     .install-note i{ color: var(--primary); }
-
-    .install-helpRow{
-      margin-top:12px;
-      display:grid;
-      gap:8px;
-    }
+    .install-helpRow{ margin-top:12px; display:grid; gap:8px; }
     .help-pill{
       background: rgba(255,255,255,.9);
       border:1px solid rgba(0,0,0,.06);
@@ -968,6 +927,9 @@
 
       <div class="card">
         <div class="subtitle">Menu</div>
+        <div class="tiny" id="menuHint" style="opacity:.78;margin:-4px 0 10px">
+          Ładuję menu…
+        </div>
         <div id="menuList" class="menu-list"></div>
       </div>
 
@@ -979,17 +941,33 @@
           <span>Razem</span><span id="cartTotal">0 zł</span>
         </div>
 
+        <!-- ✅ WYMAGANE: imię i nazwisko + telefon -->
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label>Imię i nazwisko (wymagane)</label>
+            <input type="text" id="orderCustomerName" placeholder="Jan Kowalski" required>
+          </div>
+          <div>
+            <label>Telefon (wymagane)</label>
+            <input type="tel" id="orderCustomerPhone" placeholder="+48 700 000 000" required>
+          </div>
+        </div>
+
         <div class="row" style="margin-top:6px">
           <div>
             <label>Godzina odbioru</label>
-            <input type="time" id="pickupTime" required>
+            <input type="time" id="pickupTime" required step="900">
+            <div class="tiny" id="pickupRuleHint" style="margin-top:6px;opacity:.78;text-align:center"></div>
           </div>
           <div>
             <label>Lokal</label>
             <select id="pickupLocation">
               <option>Słupsk</option>
-              <option>Rowy</option>
+              <option value="Rowy" disabled>Rowy (chwilowo niedostępna)</option>
             </select>
+            <div class="tiny" style="margin-top:6px;opacity:.78;text-align:center">
+              Rowy jest chwilowo niedostępne.
+            </div>
           </div>
         </div>
 
@@ -1355,7 +1333,6 @@
         throw new Error(msg);
       }
 
-      // jeśli backend zwróci HTML (np. SPA fallback), pokaż czytelny błąd
       if (!ct.includes("application/json") && text.trim().startsWith("<")) {
         throw new Error("Backend zwrócił HTML zamiast JSON (sprawdź routing / endpoint).");
       }
@@ -1365,7 +1342,6 @@
       try { return JSON.parse(text); } catch { return text; }
     },
 
-    // próbuje GET z query ?email=, jak nie ma to robi POST {email}
     async getMy(urlBase, email) {
       const e = encodeURIComponent(email || "");
       try {
@@ -1424,6 +1400,10 @@
     navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
     window.scrollTo({ top: 0, behavior: "smooth" });
     renderTopPill();
+    if (name === "order") {
+      prefillOrderCheckout();
+      renderPickupRuleHintAndMin();
+    }
   }
   navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
   document.querySelectorAll("[data-go]").forEach((b) =>
@@ -1439,7 +1419,6 @@
     const user = getUser();
     if (user?.milkId && String(user.milkId).length === 6) return String(user.milkId);
 
-    // local per email
     const email = (user?.email || "").toLowerCase();
     const key = email ? ("milkIdByEmail:" + email) : "milkIdAnonymous";
     let code = store.get(key, null);
@@ -1618,7 +1597,6 @@
   ];
   const rewardsListEl = document.getElementById("rewardsList");
 
-  // server -> jeśli zwróci listę, używamy jej
   function getRewardsFromStore() {
     return store.get("rewardsCatalog", rewardsFallback);
   }
@@ -1676,18 +1654,15 @@
     const email = user.email;
     const milkId = getMilkId();
 
-    // 1) Spróbuj serwerowo (rewards collection)
     try {
       const res = await API.json("/api/rewards/redeem", {
         method: "POST",
         body: JSON.stringify({ email, milkId, rewardId }),
       });
 
-      // oczekiwane: { ok:true, points, history?, code?, reward? }
       if (typeof res?.points === "number") store.set("points", res.points);
       if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
 
-      // opcjonalny kod nagrody do pokazania:
       const code = res?.code || res?.rewardCode;
       if (code) {
         showToast("Nagroda wymieniona ✅");
@@ -1700,11 +1675,9 @@
       renderRewards();
       return;
     } catch (e) {
-      // fallback lokalny
       console.warn("redeem server failed -> local fallback", e);
     }
 
-    // 2) Local fallback
     const rewards = getRewardsFromStore();
     const r = rewards.find((x) => x.id === rewardId);
     if (!r) return;
@@ -1754,16 +1727,142 @@
     if (phone && !phone.value && p.phone) phone.value = p.phone;
   }
 
-  // ---------- Order & pickup ----------
-  const menuItems = [
-    { id: "m1", title: "Milkshake klasyczny", price: 18, icon: "fa-ice-cream", desc: "Dowolny smak" },
-    { id: "m2", title: "Milkshake premium", price: 24, icon: "fa-glass-whiskey", desc: "Z dodatkami" },
-    { id: "m3", title: "Deser dnia", price: 16, icon: "fa-cookie-bite", desc: "Z gabloty" },
-    { id: "m4", title: "Burger Milk", price: 29, icon: "fa-burger", desc: "Wołowina / kurczak" },
-    { id: "m5", title: "Frytki", price: 10, icon: "fa-potato", desc: "Klasyczne" },
-  ];
+  // ✅ Prefill checkout w zamówieniach
+  function prefillOrderCheckout() {
+    const p = getPersonal();
+    const nameEl = document.getElementById("orderCustomerName");
+    const phoneEl = document.getElementById("orderCustomerPhone");
+    if (nameEl && !nameEl.value && p.name) nameEl.value = p.name;
+    if (phoneEl && !phoneEl.value && p.phone) phoneEl.value = p.phone;
+  }
 
+  // ---------- Order time rules (Mon-Thu: 30min, Fri-Sun: 45min) ----------
+  const pickupTimeEl = document.getElementById("pickupTime");
+  const pickupRuleHintEl = document.getElementById("pickupRuleHint");
+
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function minutesToHHMM(mins){
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${pad2(h)}:${pad2(m)}`;
+  }
+  function ceilToQuarterMinutes(totalMins){
+    // zaokrąglenie w górę do pełnego kwadransa
+    return Math.ceil(totalMins / 15) * 15;
+  }
+  function getLeadMinutesForToday(now = new Date()){
+    // JS: 0=Sun,1=Mon..6=Sat
+    const d = now.getDay();
+    // pon-ctw: 30; pt-nd: 45
+    if (d >= 1 && d <= 4) return 30;
+    return 45;
+  }
+  function computeMinPickupTime(now = new Date()){
+    const lead = getLeadMinutesForToday(now);
+    const nowM = now.getHours()*60 + now.getMinutes();
+    // „pełne” -> najpierw do pełnego kwadransa, potem dodaj lead
+    const base = ceilToQuarterMinutes(nowM);
+    const minM = base + lead;
+    return { minM, lead, baseM: base };
+  }
+  function renderPickupRuleHintAndMin(){
+    if (!pickupTimeEl || !pickupRuleHintEl) return;
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const hhmm = minutesToHHMM(minM);
+    pickupRuleHintEl.innerHTML = `Najwcześniej możesz ustawić odbiór na <b>${hhmm}</b> (minimalnie pełne ${lead} min).`;
+    // Nie ustawiamy "min" na input (bywa mylące), walidujemy w JS.
+    // Ustaw sensowny default jeśli puste lub za wcześnie:
+    if (!pickupTimeEl.value) {
+      pickupTimeEl.value = hhmm;
+    } else {
+      const chosen = toMinutes(pickupTimeEl.value);
+      if (chosen < minM) pickupTimeEl.value = hhmm;
+    }
+  }
+  pickupTimeEl?.addEventListener("focus", renderPickupRuleHintAndMin);
+  pickupTimeEl?.addEventListener("change", () => {
+    const { minM } = computeMinPickupTime(new Date());
+    const chosen = pickupTimeEl.value ? toMinutes(pickupTimeEl.value) : null;
+    if (chosen !== null && chosen < minM) {
+      showToast("Godzina odbioru jest za wcześnie — ustaw późniejszą ⏰", true);
+      pickupTimeEl.value = minutesToHHMM(minM);
+    }
+  });
+
+  // ---------- Menu from menu.json ----------
   const menuListEl = document.getElementById("menuList");
+  const menuHintEl = document.getElementById("menuHint");
+  let menuItems = []; // dynamicznie
+
+  function normalizeMenuJson(raw){
+    // Akceptuje:
+    // - tablica [{title,price,...}]
+    // - {items:[...]} lub {menu:[...]} lub {products:[...]}
+    const arr =
+      Array.isArray(raw) ? raw :
+      Array.isArray(raw?.items) ? raw.items :
+      Array.isArray(raw?.menu) ? raw.menu :
+      Array.isArray(raw?.products) ? raw.products :
+      Array.isArray(raw?.data) ? raw.data :
+      [];
+
+    const safe = arr
+      .filter(Boolean)
+      .map((x, idx) => {
+        const id = x.id || x._id || x.sku || `m${idx+1}`;
+        const title = x.title || x.name || x.nazwa || "Pozycja";
+        const desc = x.desc || x.description || x.opis || "";
+        const priceRaw = x.price ?? x.cena ?? x.cost ?? 0;
+        const price = Number(String(priceRaw).replace(",", "."));
+        const icon = x.icon || x.fa || "fa-bag-shopping";
+        return { id, title, desc, price: Number.isFinite(price) ? price : 0, icon };
+      });
+
+    return safe;
+  }
+
+  async function loadMenuFromJson(){
+    try{
+      menuHintEl.textContent = "Ładuję menu…";
+      const raw = await API.json("menu.json", { method: "GET", headers: {} });
+      const normalized = normalizeMenuJson(raw);
+
+      if (!normalized.length) {
+        menuItems = [];
+        menuHintEl.textContent = "Brak pozycji w menu.json";
+        renderMenu();
+        return;
+      }
+
+      menuItems = normalized;
+      store.set("menu_cache", menuItems);
+      menuHintEl.textContent = `Menu załadowane (${menuItems.length} pozycji)`;
+      renderMenu();
+      renderCart();
+    } catch(e){
+      console.warn("menu.json load failed", e);
+      const cached = store.get("menu_cache", []);
+      if (cached?.length) {
+        menuItems = cached;
+        menuHintEl.textContent = "Nie udało się pobrać menu.json — używam ostatniego menu z cache ⚠️";
+        renderMenu();
+        renderCart();
+      } else {
+        menuItems = [];
+        menuHintEl.textContent = "Nie udało się pobrać menu.json ⚠️";
+        menuListEl.innerHTML = `
+          <div class="empty">
+            <div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+              <b>Menu niedostępne</b>
+              <div class="tiny">Sprawdź czy plik <b>menu.json</b> jest obok <b>app.html</b>.</div>
+            </div>
+          </div>`;
+      }
+    }
+  }
+
+  // ---------- Order & pickup ----------
   const cartListEl = document.getElementById("cartList");
   const cartTotalEl = document.getElementById("cartTotal");
   const submitOrderBtn = document.getElementById("submitOrderBtn");
@@ -1799,13 +1898,25 @@
   }
 
   function renderMenu() {
+    if (!menuItems.length) {
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-utensils"></i></div>
+          <div>
+            <b>Brak menu</b>
+            <div class="tiny">Dodaj pozycje do <b>menu.json</b>, aby wyświetlić menu.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
     menuListEl.innerHTML = menuItems.map((m) => `
       <div class="menu-item">
         <div class="menu-left">
           <div class="menu-ico"><i class="fa-solid ${m.icon}"></i></div>
           <div>
             <div class="menu-title">${m.title}</div>
-            <div class="menu-desc">${m.desc}</div>
+            <div class="menu-desc">${m.desc || ""}</div>
           </div>
         </div>
         <div style="text-align:right;min-width:88px">
@@ -1857,6 +1968,7 @@
     let total = 0;
     cartListEl.innerHTML = cart.map((c) => {
       const m = menuItems.find((x) => x.id === c.id);
+      if (!m) return "";
       const lineTotal = m.price * c.qty;
       total += lineTotal;
       return `
@@ -1885,6 +1997,16 @@
     });
   }
 
+  function cleanPhone(phone){
+    return String(phone || "").trim();
+  }
+  function validatePhoneBasic(phone){
+    const p = cleanPhone(phone);
+    // prosta walidacja: min 7 cyfr
+    const digits = p.replace(/\D/g, "");
+    return digits.length >= 7;
+  }
+
   async function submitOrder() {
     if (!requireLogin("zamówień")) return;
 
@@ -1894,33 +2016,61 @@
       return;
     }
 
+    const name = (document.getElementById("orderCustomerName")?.value || "").trim();
+    const phone = (document.getElementById("orderCustomerPhone")?.value || "").trim();
     const pickupTime = document.getElementById("pickupTime").value;
     const pickupLocation = document.getElementById("pickupLocation").value;
     const notes = document.getElementById("orderNotes").value;
+
+    // ✅ wymagane: name + phone
+    if (!name) { showToast("Podaj imię i nazwisko ✍️", true); return; }
+    if (!phone || !validatePhoneBasic(phone)) { showToast("Podaj poprawny numer telefonu 📞", true); return; }
+
+    // ✅ Rowy zablokowane
+    if (String(pickupLocation).toLowerCase() === "rowy") {
+      showToast("Rowy jest chwilowo niedostępne.", true);
+      return;
+    }
 
     if (!pickupTime) {
       showToast("Ustaw godzinę odbioru ⏰", true);
       return;
     }
 
+    // ✅ zasada wyprzedzenia (Mon-Thu: pełne 30; Fri-Sun: pełne 45)
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const chosenM = toMinutes(pickupTime);
+    if (chosenM < minM) {
+      showToast(`Za wcześnie. Minimalnie pełne ${lead} min — ustaw później.`, true);
+      document.getElementById("pickupTime").value = minutesToHHMM(minM);
+      renderPickupRuleHintAndMin();
+      return;
+    }
+
     const items = cart.map((c) => {
       const m = menuItems.find((x) => x.id === c.id);
-      return { title: m.title, qty: c.qty, price: m.price };
+      return { title: m?.title || "Pozycja", qty: c.qty, price: Number(m?.price || 0) };
     });
     const total = items.reduce((s, i) => s + i.price * i.qty, 0);
 
     const user = getUser();
-    const profile = getPersonal();
     const milkId = getMilkId();
+
+    // zapis profilu (żeby nie wpisywać drugi raz)
+    const profile = store.get("profile", {});
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (!profile.email) profile.email = user?.email || "";
+    store.set("profile", profile);
 
     const payload = {
       source: "app",
       email: user?.email || "",
       milkId,
-      customerName: profile.name || user?.name || "",
-      customerPhone: profile.phone || user?.phone || "",
+      customerName: name,
+      customerPhone: phone,
       pickupTime,
-      pickupLocation,
+      pickupLocation, // tylko Słupsk
       notes: notes || "",
       items,
       total,
@@ -1942,7 +2092,6 @@
       await refreshOrdersFromServer();
       openTab("order");
     } catch (e) {
-      // fallback local
       const local = store.get("orders_local", []);
       local.unshift({ ...payload, _id: crypto.randomUUID() });
       store.set("orders_local", local);
@@ -1965,7 +2114,6 @@
     }
 
     try {
-      // Preferowane: /api/orders/my (GET ?email= lub POST {email})
       const data = await API.getMy("/api/orders/my", user.email);
       const orders = Array.isArray(data) ? data : (data?.orders || []);
       renderOrdersUI(orders, false);
@@ -1982,6 +2130,7 @@
             <b>${(o.pickupLocation || "—")} • ${(o.pickupTime || "—")}</b>
             <div class="tiny">Złożono: ${o.date || (o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") : "—")}</div>
             <div class="tiny">Status: <b>${o.status || "Przyjęte"}</b>${isLocal ? " (lokalnie)" : ""}</div>
+            <div class="tiny">Dane: <b>${o.customerName || "—"}</b> • ${o.customerPhone || "—"}</div>
             <div style="margin-top:6px">
               ${(o.items || []).map((i) => `• ${i.qty}x ${i.title}`).join("<br>")}
             </div>
@@ -2014,7 +2163,6 @@
       return;
     }
 
-    // preferowane: /api/rezerwacje/my (jeśli zrobisz); fallback: /api/rezerwacje i filtr po email/milkId
     try {
       const data = await API.getMy("/api/rezerwacje/my", user.email);
       const list = Array.isArray(data) ? data : (data?.reservations || data?.list || []);
@@ -2085,7 +2233,6 @@
     const user = getUser();
     const milkId = getMilkId();
 
-    // ✅ ZGODNE z Twoim server.js dla reservations:
     const payload = {
       name: String(data.name),
       phone: String(data.phone),
@@ -2105,7 +2252,6 @@
         body: JSON.stringify(payload),
       });
 
-      // local UX copy (nie przeszkadza)
       const local = store.get("reservations_local", []);
       local.unshift({ ...payload, _id: crypto.randomUUID() });
       store.set("reservations_local", local);
@@ -2116,7 +2262,6 @@
       await refreshReservationsFromServer();
       openTab("res");
     } catch (err) {
-      // fallback local
       const local = store.get("reservations_local", []);
       local.unshift({ ...payload, _id: crypto.randomUUID() });
       store.set("reservations_local", local);
@@ -2168,9 +2313,10 @@
     renderCart();
     prefillPersonalUI();
     prefillReservationForm();
+    prefillOrderCheckout();
+    renderPickupRuleHintAndMin();
   }
 
-  // ✅ Logowanie: tworzy/odczytuje user w `users`
   async function loginWithEmail(email, password = "") {
     const clean = String(email || "").trim().toLowerCase();
     if (!clean) throw new Error("Podaj email");
@@ -2182,7 +2328,7 @@
       name: profile.name || "",
       phone: profile.phone || "",
       source: "app",
-      milkId: getMilkId(), // pomocniczo - backend może nadpisać
+      milkId: getMilkId(),
     };
 
     const data = await API.json("/api/auth/login", {
@@ -2190,25 +2336,21 @@
       body: JSON.stringify(payload),
     });
 
-    // oczekiwane: { ok:true, user:{email,name,phone,milkId}, points?, history?, rewardsCatalog? }
     const u = data?.user || { email: clean };
     if (!u.email) u.email = clean;
     if (!u.milkId) u.milkId = payload.milkId;
 
     store.set("user", u);
 
-    // server sync jeśli zwróci
     if (typeof data?.points === "number") store.set("points", data.points);
     if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
     if (Array.isArray(data?.rewardsCatalog)) store.set("rewardsCatalog", data.rewardsCatalog);
 
-    // zapewnij stałe Milk ID per email lokalnie
     getMilkId();
 
     renderAccount();
     openTab("account");
 
-    // po loginie odśwież listy
     await syncAll();
   }
 
@@ -2240,7 +2382,6 @@
     store.del("user");
     showToast("Wylogowano");
     renderAccount();
-    // czyścimy UI list na widoku:
     renderOrdersUI([], false);
     renderReservationsUI([], false);
   });
@@ -2292,6 +2433,7 @@
     store.set("user", user);
 
     prefillReservationForm();
+    prefillOrderCheckout();
     showToast("Dane zapisane ✅");
     closeSubpages();
     renderAccount();
@@ -2366,12 +2508,10 @@
 
     try {
       const data = await API.getMy("/api/milkpoints/my", user.email);
-      // oczekiwane: { ok:true, points, history } lub {points, history}
       const pts = (typeof data?.points === "number") ? data.points : (typeof data === "number" ? data : null);
       if (typeof pts === "number") store.set("points", pts);
       if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
     } catch (e) {
-      // nic - fallback local
       console.warn("syncPointsFromServer failed", e);
     }
   }
@@ -2382,10 +2522,8 @@
 
     try {
       const data = await API.getMy("/api/rewards/my", user.email);
-      // oczekiwane: {catalog:[...]} albo sama tablica
       const catalog = Array.isArray(data) ? data : (Array.isArray(data?.catalog) ? data.catalog : null);
       if (Array.isArray(catalog) && catalog.length) {
-        // ujednolicenie pól minimalnie:
         const normalized = catalog.map(r => ({
           id: r.id || r.rewardId || r._id,
           title: r.title || r.name || "Nagroda",
@@ -2420,7 +2558,6 @@
   });
 
   // ---------- Init ----------
-  renderMenu();
   renderOpeningHours();
   renderAccount();
   renderRewards();
@@ -2430,12 +2567,15 @@
 
   prefillPersonalUI();
   prefillReservationForm();
+  prefillOrderCheckout();
 
-  // initial lists
   refreshReservationsFromServer();
   refreshOrdersFromServer();
 
-  // if already logged in -> sync server collections (milkpoint/rewards/orders/res)
+  // ✅ menu.json
+  loadMenuFromJson();
+
+  // if already logged in -> sync server collections
   if (isLoggedIn()) syncAll();
 </script>
 
