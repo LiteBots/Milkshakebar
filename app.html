@@ -711,6 +711,66 @@
     @media (max-width:520px){
       .platform-switch{ grid-template-columns:1fr; }
     }
+
+    /* =========================
+       ✅ NOWE: Kategorie + FAB
+       ========================= */
+    .categories-bar{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding:4px 2px 10px;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:x mandatory;
+    }
+    .cat-chip{
+      flex:0 0 auto;
+      scroll-snap-align:start;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.06);
+      box-shadow:var(--shadow-soft);
+      opacity:.9;
+      transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+      white-space:nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cat-chip:active{transform:translateY(1px)}
+    .cat-chip.active{
+      background:var(--grad);
+      color:#fff;
+      opacity:1;
+      box-shadow:0 10px 22px rgba(255,106,0,.35);
+    }
+
+    .order-fab{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom: calc(86px + var(--safe-bottom)); /* nad dolnym nav */
+      width:min(820px, calc(100% - 18px));
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:12px 14px;
+      background:var(--grad);
+      color:#fff;
+      font-weight:900;
+      box-shadow:0 16px 34px rgba(255,106,0,.45);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      z-index:60;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .order-fab:active{transform:translateX(-50%) translateY(1px)}
+    .fab-left{display:flex;align-items:center;gap:10px;}
+    .fab-right{opacity:.95;}
   </style>
 </head>
 
@@ -930,6 +990,9 @@
         <div class="tiny" id="menuHint" style="opacity:.78;margin:-4px 0 10px">
           Ładuję menu…
         </div>
+
+        <!-- ✅ NOWE: Tylko kategorie, dopiero po kliknięciu produkty -->
+        <div id="categoriesBar" class="categories-bar"></div>
         <div id="menuList" class="menu-list"></div>
       </div>
 
@@ -988,6 +1051,17 @@
         <div class="subtitle">Twoje zamówienia</div>
         <div id="ordersList" class="muted"></div>
       </div>
+
+      <!-- ✅ NOWE: Pływający przycisk podsumowania -->
+      <button id="orderSummaryFab" class="order-fab" style="display:none;">
+        <span class="fab-left">
+          <i class="fa-solid fa-receipt"></i>
+          <b>Podsumowanie</b>
+        </span>
+        <span class="fab-right">
+          <span id="fabItems">0</span> • <span id="fabTotal">0 zł</span>
+        </span>
+      </button>
     </section>
 
     <!-- TAB: REZERWACJE -->
@@ -1404,6 +1478,7 @@
       prefillOrderCheckout();
       renderPickupRuleHintAndMin();
     }
+    setTimeout(renderOrderFab, 50);
   }
   navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
   document.querySelectorAll("[data-go]").forEach((b) =>
@@ -1747,20 +1822,16 @@
     return `${pad2(h)}:${pad2(m)}`;
   }
   function ceilToQuarterMinutes(totalMins){
-    // zaokrąglenie w górę do pełnego kwadransa
     return Math.ceil(totalMins / 15) * 15;
   }
   function getLeadMinutesForToday(now = new Date()){
-    // JS: 0=Sun,1=Mon..6=Sat
     const d = now.getDay();
-    // pon-ctw: 30; pt-nd: 45
     if (d >= 1 && d <= 4) return 30;
     return 45;
   }
   function computeMinPickupTime(now = new Date()){
     const lead = getLeadMinutesForToday(now);
     const nowM = now.getHours()*60 + now.getMinutes();
-    // „pełne” -> najpierw do pełnego kwadransa, potem dodaj lead
     const base = ceilToQuarterMinutes(nowM);
     const minM = base + lead;
     return { minM, lead, baseM: base };
@@ -1770,8 +1841,6 @@
     const { minM, lead } = computeMinPickupTime(new Date());
     const hhmm = minutesToHHMM(minM);
     pickupRuleHintEl.innerHTML = `Najwcześniej możesz ustawić odbiór na <b>${hhmm}</b> (minimalnie pełne ${lead} min).`;
-    // Nie ustawiamy "min" na input (bywa mylące), walidujemy w JS.
-    // Ustaw sensowny default jeśli puste lub za wcześnie:
     if (!pickupTimeEl.value) {
       pickupTimeEl.value = hhmm;
     } else {
@@ -1794,10 +1863,38 @@
   const menuHintEl = document.getElementById("menuHint");
   let menuItems = []; // dynamicznie
 
+  // ✅ NOWE: Kategorie (stałe)
+  const CATEGORIES = [
+    "Kawa i herbata",
+    "Napoje i soki",
+    "Shakes",
+    "Desery",
+    "Tex Mex",
+    "Kanapki",
+    "Burgery",
+    "Śniadania",
+  ];
+  const categoriesBarEl = document.getElementById("categoriesBar");
+  let activeCategory = CATEGORIES[0];
+
+  function renderCategories(){
+    if (!categoriesBarEl) return;
+    categoriesBarEl.innerHTML = CATEGORIES.map(c => `
+      <button class="cat-chip ${c === activeCategory ? "active" : ""}" data-cat="${c}">
+        ${c}
+      </button>
+    `).join("");
+    categoriesBarEl.querySelectorAll("[data-cat]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeCategory = btn.dataset.cat;
+        renderCategories();
+        renderMenu();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  }
+
   function normalizeMenuJson(raw){
-    // Akceptuje:
-    // - tablica [{title,price,...}]
-    // - {items:[...]} lub {menu:[...]} lub {products:[...]}
     const arr =
       Array.isArray(raw) ? raw :
       Array.isArray(raw?.items) ? raw.items :
@@ -1815,7 +1912,11 @@
         const priceRaw = x.price ?? x.cena ?? x.cost ?? 0;
         const price = Number(String(priceRaw).replace(",", "."));
         const icon = x.icon || x.fa || "fa-bag-shopping";
-        return { id, title, desc, price: Number.isFinite(price) ? price : 0, icon };
+
+        // ✅ NOWE: kategoria
+        const category = x.category || x.kategoria || x.cat || x.group || "Inne";
+
+        return { id, title, desc, price: Number.isFinite(price) ? price : 0, icon, category };
       });
 
     return safe;
@@ -1897,6 +1998,7 @@
     renderCart();
   }
 
+  // ✅ NOWE: render menu tylko dla aktywnej kategorii
   function renderMenu() {
     if (!menuItems.length) {
       menuListEl.innerHTML = `
@@ -1910,7 +2012,23 @@
       return;
     }
 
-    menuListEl.innerHTML = menuItems.map((m) => `
+    renderCategories();
+
+    const list = menuItems.filter(m => (m.category || "Inne") === activeCategory);
+
+    if (!list.length){
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <b>Brak produktów w tej kategorii</b>
+            <div class="tiny">Dodaj produkty do: <b>${activeCategory}</b> w <b>menu.json</b>.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    menuListEl.innerHTML = list.map((m) => `
       <div class="menu-item">
         <div class="menu-left">
           <div class="menu-ico"><i class="fa-solid ${m.icon}"></i></div>
@@ -1931,6 +2049,49 @@
     });
   }
 
+  // ✅ NOWE: FAB podsumowania
+  const orderFab = document.getElementById("orderSummaryFab");
+  const fabItemsEl = document.getElementById("fabItems");
+  const fabTotalEl = document.getElementById("fabTotal");
+
+  function calcCartSummary(){
+    const cart = getCart();
+    let itemsCount = 0;
+    let total = 0;
+
+    cart.forEach(c => {
+      const m = menuItems.find(x => x.id === c.id);
+      if (!m) return;
+      itemsCount += c.qty;
+      total += (m.price * c.qty);
+    });
+
+    return { itemsCount, total };
+  }
+
+  function renderOrderFab(){
+    if (!orderFab) return;
+
+    const user = getUser();
+    const cart = getCart();
+    const visible = !!user?.email && cart.length && tabs.order.classList.contains("active");
+
+    if (!visible){
+      orderFab.style.display = "none";
+      return;
+    }
+
+    const { itemsCount, total } = calcCartSummary();
+    fabItemsEl.textContent = `${itemsCount} szt.`;
+    fabTotalEl.textContent = `${total} zł`;
+    orderFab.style.display = "flex";
+  }
+
+  orderFab?.addEventListener("click", () => {
+    const cartCard = cartListEl?.closest(".card");
+    cartCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   function renderCart() {
     const user = getUser();
     const cart = getCart();
@@ -1946,6 +2107,7 @@
         </div>`;
       cartTotalEl.textContent = "0 zł";
       submitOrderBtn.disabled = true;
+      renderOrderFab();
       return;
     }
 
@@ -1960,6 +2122,7 @@
         </div>`;
       cartTotalEl.textContent = "0 zł";
       submitOrderBtn.disabled = true;
+      renderOrderFab();
       return;
     }
 
@@ -1995,6 +2158,8 @@
         changeQty(id, d);
       });
     });
+
+    renderOrderFab();
   }
 
   function cleanPhone(phone){
@@ -2002,7 +2167,6 @@
   }
   function validatePhoneBasic(phone){
     const p = cleanPhone(phone);
-    // prosta walidacja: min 7 cyfr
     const digits = p.replace(/\D/g, "");
     return digits.length >= 7;
   }
@@ -2022,11 +2186,9 @@
     const pickupLocation = document.getElementById("pickupLocation").value;
     const notes = document.getElementById("orderNotes").value;
 
-    // ✅ wymagane: name + phone
     if (!name) { showToast("Podaj imię i nazwisko ✍️", true); return; }
     if (!phone || !validatePhoneBasic(phone)) { showToast("Podaj poprawny numer telefonu 📞", true); return; }
 
-    // ✅ Rowy zablokowane
     if (String(pickupLocation).toLowerCase() === "rowy") {
       showToast("Rowy jest chwilowo niedostępne.", true);
       return;
@@ -2037,7 +2199,6 @@
       return;
     }
 
-    // ✅ zasada wyprzedzenia (Mon-Thu: pełne 30; Fri-Sun: pełne 45)
     const { minM, lead } = computeMinPickupTime(new Date());
     const chosenM = toMinutes(pickupTime);
     if (chosenM < minM) {
@@ -2056,7 +2217,6 @@
     const user = getUser();
     const milkId = getMilkId();
 
-    // zapis profilu (żeby nie wpisywać drugi raz)
     const profile = store.get("profile", {});
     if (name) profile.name = name;
     if (phone) profile.phone = phone;
@@ -2070,7 +2230,7 @@
       customerName: name,
       customerPhone: phone,
       pickupTime,
-      pickupLocation, // tylko Słupsk
+      pickupLocation,
       notes: notes || "",
       items,
       total,
@@ -2315,75 +2475,101 @@
     prefillReservationForm();
     prefillOrderCheckout();
     renderPickupRuleHintAndMin();
+    renderOrderFab();
   }
 
+  <!-- ✅ CZĘŚĆ 2/2 — wklej w miejsce komentarza:
+     // --- CZĘŚĆ 2/2 będzie kontynuacją... (czyli na samym końcu <script> w części 1)
+-->
+
+  // ---------- Login / Logout ----------
+  const loginGoogleBtn = document.getElementById("loginGoogle");
+  const loginEmailForm = document.getElementById("loginEmailForm");
+  const logoutBtn = document.getElementById("logoutBtn");
+
   async function loginWithEmail(email, password = "") {
-    const clean = String(email || "").trim().toLowerCase();
-    if (!clean) throw new Error("Podaj email");
+    email = String(email || "").trim().toLowerCase();
+    if (!email) {
+      showToast("Podaj email", true);
+      return;
+    }
 
-    const profile = getPersonal();
-    const payload = {
-      email: clean,
-      password: String(password || ""),
-      name: profile.name || "",
-      phone: profile.phone || "",
-      source: "app",
-      milkId: getMilkId(),
+    // spróbuj backend
+    try {
+      const res = await API.json("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const user = {
+        email,
+        name: res?.name || res?.user?.name || store.get("profile", {})?.name || "",
+        phone: res?.phone || res?.user?.phone || store.get("profile", {})?.phone || "",
+        milkId: res?.milkId || res?.user?.milkId || store.get("user", {})?.milkId || "",
+        token: res?.token || res?.jwt || "",
+      };
+
+      store.set("user", user);
+
+      // jeśli serwer zwrócił punkty/historię
+      if (typeof res?.points === "number") store.set("points", res.points);
+      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+
+      // przypisz milkId do email (jeśli brak)
+      if (!user.milkId) {
+        user.milkId = getMilkId();
+        store.set("user", user);
+      }
+
+      showToast("Zalogowano ✅");
+      renderAccount();
+      await syncAll();
+      return;
+    } catch (e) {
+      console.warn("login server failed -> local fallback", e);
+    }
+
+    // fallback lokalny (fake login)
+    const user = {
+      email,
+      name: store.get("profile", {})?.name || "",
+      phone: store.get("profile", {})?.phone || "",
+      milkId: store.get("user", {})?.milkId || "",
+      token: "",
     };
+    store.set("user", user);
 
-    const data = await API.json("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    // nadaj milkId powiązany z email
+    user.milkId = getMilkId();
+    store.set("user", user);
 
-    const u = data?.user || { email: clean };
-    if (!u.email) u.email = clean;
-    if (!u.milkId) u.milkId = payload.milkId;
-
-    store.set("user", u);
-
-    if (typeof data?.points === "number") store.set("points", data.points);
-    if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
-    if (Array.isArray(data?.rewardsCatalog)) store.set("rewardsCatalog", data.rewardsCatalog);
-
-    getMilkId();
-
+    showToast("Zalogowano lokalnie ⚠️");
     renderAccount();
-    openTab("account");
-
     await syncAll();
   }
 
-  document.getElementById("loginGoogle")?.addEventListener("click", async () => {
-    try {
-      const fakeEmail = "google_" + crypto.randomUUID().slice(0, 8) + "@milk.app";
-      await loginWithEmail(fakeEmail, "");
-      showToast("Zalogowano przez Google ✅");
-    } catch (e) {
-      showToast("Błąd logowania: " + e.message, true);
-    }
+  function fakeGoogleEmail() {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `google.user${rand}@gmail.com`;
+  }
+
+  loginGoogleBtn?.addEventListener("click", () => {
+    loginWithEmail(fakeGoogleEmail(), "");
   });
 
-  document.getElementById("loginEmailForm")?.addEventListener("submit", async (e) => {
+  loginEmailForm?.addEventListener("submit", (e) => {
     e.preventDefault();
-    const fd = new FormData(e.target);
+    const fd = new FormData(loginEmailForm);
     const email = fd.get("email");
-    const password = fd.get("password") || "";
-    try {
-      await loginWithEmail(email, password);
-      showToast("Zalogowano ✅");
-      e.target.reset();
-    } catch (err) {
-      showToast("Błąd logowania: " + err.message, true);
-    }
+    const password = fd.get("password");
+    loginWithEmail(email, password);
   });
 
-  document.getElementById("logoutBtn")?.addEventListener("click", () => {
+  logoutBtn?.addEventListener("click", () => {
     store.del("user");
     showToast("Wylogowano");
     renderAccount();
-    renderOrdersUI([], false);
-    renderReservationsUI([], false);
+    openTab("account");
   });
 
   // ---------- Subpages ----------
@@ -2395,51 +2581,51 @@
   };
 
   function openSubpage(name) {
-    Object.values(subpages).forEach((p) => p.classList.remove("active"));
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
     subpages[name]?.classList.add("active");
-    if (name === "personal") prefillPersonalUI();
+    prefillPersonalUI();
   }
 
   function closeSubpages() {
-    Object.values(subpages).forEach((p) => p.classList.remove("active"));
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
   }
 
-  document.querySelectorAll("[data-back]")?.forEach((b) =>
-    b.addEventListener("click", closeSubpages)
-  );
-
-  document.querySelectorAll(".list-item[data-open]")?.forEach((item) => {
-    item.addEventListener("click", () => openSubpage(item.dataset.open));
+  document.querySelectorAll("[data-open]").forEach((el) => {
+    el.addEventListener("click", () => openSubpage(el.dataset.open));
   });
 
-  document.getElementById("savePersonalBtn")?.addEventListener("click", () => {
-    if (!requireLogin("zapisu danych")) return;
+  document.querySelectorAll("[data-back]").forEach((btn) => {
+    btn.addEventListener("click", closeSubpages);
+  });
 
+  // ---------- Personal save ----------
+  const savePersonalBtn = document.getElementById("savePersonalBtn");
+  savePersonalBtn?.addEventListener("click", () => {
     const name = (document.getElementById("personalName")?.value || "").trim();
     const phone = (document.getElementById("personalPhone")?.value || "").trim();
     const email = (document.getElementById("personalEmail")?.value || "").trim().toLowerCase();
 
     const profile = store.get("profile", {});
-    profile.name = name || profile.name || "";
-    profile.phone = phone || profile.phone || "";
-    profile.email = email || profile.email || getUser()?.email || "";
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (email) profile.email = email;
     store.set("profile", profile);
 
-    const user = getUser() || {};
-    if (profile.email) user.email = profile.email;
-    if (profile.name) user.name = profile.name;
-    if (profile.phone) user.phone = profile.phone;
-    if (!user.milkId) user.milkId = getMilkId();
-    store.set("user", user);
+    // jeśli user zalogowany i ma email, uaktualnij dane w user (lokalnie)
+    const user = getUser();
+    if (user?.email) {
+      user.name = profile.name || user.name || "";
+      user.phone = profile.phone || user.phone || "";
+      store.set("user", user);
+    }
 
-    prefillReservationForm();
-    prefillOrderCheckout();
-    showToast("Dane zapisane ✅");
-    closeSubpages();
+    showToast("Zapisano ✅");
     renderAccount();
+    closeSubpages();
   });
 
-  document.querySelectorAll("[data-lang]")?.forEach((btn) => {
+  // ---------- Language ----------
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
     btn.addEventListener("click", () => {
       store.set("lang", btn.dataset.lang);
       showToast("Zapisano język ✅");
@@ -2447,136 +2633,151 @@
     });
   });
 
-  // ---------- Install guide ----------
-  const installGuideEl = document.getElementById("installGuide");
-  const guideTabs = document.querySelectorAll("[data-guide-tab]");
-  const guidePanes = document.querySelectorAll("[data-guide-pane]");
-  const androidInstallBtn = document.getElementById("androidInstallBtn");
+  // ---------- Sync ----------
+  const syncBtn = document.getElementById("syncBtn");
 
-  function isStandaloneMode() {
-    const standaloneDisplay = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-    const iosStandalone = typeof navigator !== "undefined" && "standalone" in navigator ? navigator.standalone : false;
-    return !!(standaloneDisplay || iosStandalone);
+  async function syncAll() {
+    if (!isLoggedIn()) return;
+
+    // punkty
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/milkpoints/my", user.email);
+      if (typeof data?.points === "number") store.set("points", data.points);
+      if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
+    } catch {}
+
+    // nagrody (posiadane / katalog)
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/rewards/my", user.email);
+      // katalog może być osobno, ale jeśli backend zwraca catalog:
+      if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
+    } catch {}
+
+    await refreshOrdersFromServer();
+    await refreshReservationsFromServer();
+
+    renderPoints();
+    renderRewards();
+    renderCart();
+    renderOrderFab();
   }
-  function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
-  function showInstallGuide() {
-    installGuideEl?.classList.add("show");
-    installGuideEl?.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-  function hideInstallGuide() {
-    installGuideEl?.classList.remove("show");
-    installGuideEl?.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-  }
-  function setGuideTab(name) {
-    guideTabs.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === name));
-    guidePanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === name));
-  }
-  guideTabs.forEach((btn) => btn.addEventListener("click", () => setGuideTab(btn.dataset.guideTab)));
-  (function initGuideDefaultTab() { setGuideTab(isIOS() ? "ios" : "android"); })();
+
+  syncBtn?.addEventListener("click", async () => {
+    if (!requireLogin("synchronizacji")) return;
+    showToast("Synchronizuję…");
+    await syncAll();
+    showToast("Zsynchronizowano ✅");
+  });
+
+  // ---------- Install guide ----------
+  const installGuide = document.getElementById("installGuide");
+  const platformBtns = document.querySelectorAll(".platform-btn");
+  const installPanes = document.querySelectorAll(".install-pane");
+  const androidInstallBtn = document.getElementById("androidInstallBtn");
+  const androidInstallHint = document.getElementById("androidInstallHint");
 
   let deferredPrompt = null;
+
+  function isStandalone() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  }
+
+  function showInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.add("show");
+    installGuide.setAttribute("aria-hidden", "false");
+  }
+
+  function hideInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.remove("show");
+    installGuide.setAttribute("aria-hidden", "true");
+  }
+
+  function setGuideTab(tab) {
+    platformBtns.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === tab));
+    installPanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === tab));
+  }
+
+  platformBtns.forEach((b) => {
+    b.addEventListener("click", () => setGuideTab(b.dataset.guideTab));
+  });
+
+  // klik w tło zamyka (żeby nie przeszkadzało)
+  installGuide?.addEventListener("click", (e) => {
+    if (e.target === installGuide) hideInstallGuide();
+  });
+
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (androidInstallBtn) {
-      androidInstallBtn.style.display = "inline-flex";
-      androidInstallBtn.disabled = false;
-    }
+    if (androidInstallBtn) androidInstallBtn.style.display = "inline-flex";
+    if (androidInstallHint) androidInstallHint.style.display = "none";
   });
 
   androidInstallBtn?.addEventListener("click", async () => {
     if (!deferredPrompt) return;
-    androidInstallBtn.disabled = true;
     deferredPrompt.prompt();
     try { await deferredPrompt.userChoice; } catch {}
     deferredPrompt = null;
     androidInstallBtn.style.display = "none";
+    if (androidInstallHint) androidInstallHint.style.display = "block";
   });
 
-  (function gateAppWithInstallGuide() {
-    const inStandalone = isStandaloneMode();
-    if (!inStandalone) showInstallGuide();
-    else hideInstallGuide();
+  // pokaż poradnik tylko, jeśli nie standalone i user nie zamknął
+  (function initInstallGuide() {
+    const dismissed = store.get("installGuideDismissed", false);
+    if (!isStandalone() && !dismissed) {
+      setTimeout(showInstallGuide, 900);
+    }
   })();
 
-  // ---------- Sync (punkty + nagrody + listy) ----------
-  async function syncPointsFromServer() {
-    const user = getUser();
-    if (!user?.email) return;
-
-    try {
-      const data = await API.getMy("/api/milkpoints/my", user.email);
-      const pts = (typeof data?.points === "number") ? data.points : (typeof data === "number" ? data : null);
-      if (typeof pts === "number") store.set("points", pts);
-      if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
-    } catch (e) {
-      console.warn("syncPointsFromServer failed", e);
-    }
-  }
-
-  async function syncRewardsFromServer() {
-    const user = getUser();
-    if (!user?.email) return;
-
-    try {
-      const data = await API.getMy("/api/rewards/my", user.email);
-      const catalog = Array.isArray(data) ? data : (Array.isArray(data?.catalog) ? data.catalog : null);
-      if (Array.isArray(catalog) && catalog.length) {
-        const normalized = catalog.map(r => ({
-          id: r.id || r.rewardId || r._id,
-          title: r.title || r.name || "Nagroda",
-          cost: Number(r.cost ?? r.points ?? 0),
-          icon: r.icon || "fa-gift",
-          desc: r.desc || r.description || ""
-        }));
-        store.set("rewardsCatalog", normalized);
-      }
-    } catch (e) {
-      console.warn("syncRewardsFromServer failed", e);
-    }
-  }
-
-  async function syncAll() {
-    if (!isLoggedIn()) return;
-    await Promise.allSettled([
-      syncPointsFromServer(),
-      syncRewardsFromServer(),
-      refreshOrdersFromServer(),
-      refreshReservationsFromServer(),
-    ]);
-    renderPoints();
-    renderRewards();
-  }
-
-  document.getElementById("syncBtn")?.addEventListener("click", async () => {
-    if (!requireLogin("synchronizacji")) return;
-    showToast("Odświeżam dane...");
-    await syncAll();
-    showToast("Odświeżono ✅");
+  // ESC zamyka poradnik
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideInstallGuide();
   });
 
-  // ---------- Init ----------
-  renderOpeningHours();
-  renderAccount();
-  renderRewards();
-  renderPoints();
-  renderCart();
-  openTab("points");
+  // kliknięcie gdzieś w UI może zamknąć poradnik na stałe (np. przy pierwszym użyciu)
+  installGuide?.addEventListener("pointerdown", () => {
+    store.set("installGuideDismissed", true);
+  });
 
-  prefillPersonalUI();
-  prefillReservationForm();
-  prefillOrderCheckout();
+  // ---------- Init render ----------
+  function initUI() {
+    // domyślny tab
+    openTab("points");
 
-  refreshReservationsFromServer();
-  refreshOrdersFromServer();
+    // render bazowy
+    renderAccount();
+    renderOpeningHours();
+    renderCategories(); // ✅ ważne, żeby chipsy były od razu
 
-  // ✅ menu.json
-  loadMenuFromJson();
+    // load menu + listy
+    loadMenuFromJson().then(() => {
+      renderMenu();
+      renderCart();
+      renderOrderFab();
+    });
 
-  // if already logged in -> sync server collections
-  if (isLoggedIn()) syncAll();
+    refreshOrdersFromServer();
+    refreshReservationsFromServer();
+
+    // reaguj na zmiany w koszyku przy przełączaniu tabów
+    window.addEventListener("scroll", () => {
+      // delikatnie odśwież FAB w order
+      if (tabs.order.classList.contains("active")) renderOrderFab();
+    });
+  }
+
+  // ---------- Extra: ukryj FAB gdy user przejdzie na inny tab ----------
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setTimeout(renderOrderFab, 50));
+  });
+
+  // ---------- Start ----------
+  initUI(); 
 </script>
 
 </body>
