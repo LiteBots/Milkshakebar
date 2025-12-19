@@ -1,4 +1,4 @@
-zapamietaj zapamietaj ten kod <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
@@ -713,7 +713,7 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
     }
 
     /* =========================
-       ✅ NOWE: Kategorie + FAB
+       ✅ Kategorie + FAB
        ========================= */
     .categories-bar{
       display:flex;
@@ -988,10 +988,9 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
       <div class="card">
         <div class="subtitle">Menu</div>
         <div class="tiny" id="menuHint" style="opacity:.78;margin:-4px 0 10px">
-          Ładuję menu…
+          Wybierz kategorię, aby zobaczyć produkty.
         </div>
 
-        <!-- ✅ NOWE: Tylko kategorie, dopiero po kliknięciu produkty -->
         <div id="categoriesBar" class="categories-bar"></div>
         <div id="menuList" class="menu-list"></div>
       </div>
@@ -1004,7 +1003,6 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
           <span>Razem</span><span id="cartTotal">0 zł</span>
         </div>
 
-        <!-- ✅ WYMAGANE: imię i nazwisko + telefon -->
         <div class="row" style="margin-top:10px">
           <div>
             <label>Imię i nazwisko (wymagane)</label>
@@ -1052,7 +1050,6 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
         <div id="ordersList" class="muted"></div>
       </div>
 
-      <!-- ✅ NOWE: Pływający przycisk podsumowania -->
       <button id="orderSummaryFab" class="order-fab" style="display:none;">
         <span class="fab-left">
           <i class="fa-solid fa-receipt"></i>
@@ -1231,15 +1228,7 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
           </div>
         </div>
 
-        <div class="card">
-          <div class="subtitle">Synchronizacja</div>
-          <button class="btn btn-primary btn-wide" id="syncBtn">
-            Odśwież dane z serwera <i class="fa-solid fa-rotate"></i>
-          </button>
-          <div class="tiny" style="text-align:center;opacity:.78;margin-top:8px">
-            Pobiera: punkty, historię, nagrody, zamówienia, rezerwacje (jeśli endpointy istnieją).
-          </div>
-        </div>
+        <!-- ✅ USUNIĘTO: przycisk "Odśwież dane z serwera" -->
       </div>
     </section>
 
@@ -1378,1645 +1367,1410 @@ zapamietaj zapamietaj ten kod <!DOCTYPE html>
   </div>
 
 <script>
-<script>
-/* =========================
-   MILK PWA — SCRIPT (CZĘŚĆ 2)
-   Zmiany:
-   ✅ Menu wbudowane w kod (bez menu.json)
-   ✅ Nowe nagrody (3 pozycje) + usunięte stare
-   ✅ Usunięta funkcja/przycisk “odśwież dane z serwera” (nie ma go w HTML, i nie ma logiki w JS)
-   ========================= */
+  // ---------- PWA ----------
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+  }
 
-(() => {
-  "use strict";
+  // ---------- Helpers / API ----------
+  const API = {
+    async json(url, opts = {}) {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+        ...opts,
+      });
 
-  /* -------------------------
-     Wbudowane MENU (zamiast menu.json)
-     ------------------------- */
-  const MENU_CATALOG = {
-    "schemaVersion": "1.0",
-    "currency": "PLN",
-    "items": [
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Espresso", "tag": "espresso", "desc": "35 ml", "price": 11 },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Podwójne espresso", "tag": "espresso", "desc": "70 ml", "price": 16 },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Affogato (espresso z lodami)", "tag": "deser kawowy", "desc": "", "price": "22/27",
-        "variants": [
-          { "label": "wariant 1", "price": 22, "size": null },
-          { "label": "wariant 2", "price": 27, "size": null }
-        ]
-      },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Kawa czarna", "tag": "klasyka", "desc": "200/300 ml", "price": "12/17",
-        "variants": [
-          { "label": "200", "price": 12, "size": "200" },
-          { "label": "300 ml", "price": 17, "size": "300 ml" }
-        ]
-      },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Kawa biała", "tag": "klasyka", "desc": "200/300 ml", "price": "12/17",
-        "variants": [
-          { "label": "200", "price": 12, "size": "200" },
-          { "label": "300 ml", "price": 17, "size": "300 ml" }
-        ]
-      },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Cappuccino", "tag": "klasyka", "desc": "200/300 ml", "price": "13/18",
-        "variants": [
-          { "label": "200", "price": 13, "size": "200" },
-          { "label": "300 ml", "price": 18, "size": "300 ml" }
-        ]
-      },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Latte", "tag": "klasyka", "desc": "200/300 ml", "price": "13/18",
-        "variants": [
-          { "label": "200", "price": 13, "size": "200" },
-          { "label": "300 ml", "price": 18, "size": "300 ml" }
-        ]
-      },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Kawa mrożona", "tag": "na zimno", "desc": "300 ml", "price": 26 },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Frappe słony karmel", "tag": "na zimno", "desc": "Podwójne espresso, kostki lodu, mleko, słony karmel", "price": 27 },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Gorąca czekolada", "tag": "na ciepło", "desc": "200 ml", "price": 21 },
-      { "category": "kawa-herbata", "categoryLabel": "Kawa", "title": "Dodatkowe espresso", "tag": "dodatek", "desc": "", "price": 5 },
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const text = await res.text();
 
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "Zielona", "tag": "klasyka", "desc": "", "price": 15 },
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "English breakfast", "tag": "klasyka", "desc": "", "price": 15 },
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "Piekielna herbata", "tag": "rozgrzewająca", "desc": "", "price": 22 },
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "Czort", "tag": "rozgrzewająca", "desc": "", "price": 22 },
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "Mon Cheri", "tag": "rozgrzewająca", "desc": "", "price": 22 },
-      { "category": "kawa-herbata", "categoryLabel": "Herbata", "title": "Domowa herbata mrożona", "tag": "na zimno", "desc": "500 ml", "price": 26 },
+      let data = null;
+      if (ct.includes("application/json")) {
+        try { data = JSON.parse(text); } catch { data = null; }
+      }
 
-      { "category": "kawa-herbata", "categoryLabel": "Matcha", "title": "Matcha latte", "tag": "matcha", "desc": "", "price": 20 },
-      { "category": "kawa-herbata", "categoryLabel": "Matcha", "title": "Iced matcha", "tag": "matcha", "desc": "", "price": 25 },
+      if (!res.ok) {
+        const msg =
+          (data && (data.message || data.error)) ||
+          (text && text.slice(0, 180)) ||
+          `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
 
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Cytrusowa", "tag": "lemoniada", "desc": "400/1200 ml", "price": "15/30",
-        "variants": [
-          { "label": "400", "price": 15, "size": "400" },
-          { "label": "1200 ml", "price": 30, "size": "1200 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Arbuzowa", "tag": "lemoniada", "desc": "400/1200 ml", "price": "17/35",
-        "variants": [
-          { "label": "400", "price": 17, "size": "400" },
-          { "label": "1200 ml", "price": 35, "size": "1200 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Ananasowa", "tag": "lemoniada", "desc": "400/1200 ml", "price": "17/35",
-        "variants": [
-          { "label": "400", "price": 17, "size": "400" },
-          { "label": "1200 ml", "price": 35, "size": "1200 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Gruszkowa", "tag": "lemoniada", "desc": "400/1200 ml", "price": "17/35",
-        "variants": [
-          { "label": "400", "price": 17, "size": "400" },
-          { "label": "1200 ml", "price": 35, "size": "1200 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Malinowa zimna", "tag": "lemoniada", "desc": "400/1200 ml", "price": "17/35",
-        "variants": [
-          { "label": "400", "price": 17, "size": "400" },
-          { "label": "1200 ml", "price": 35, "size": "1200 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Lemoniada", "title": "Malinowa ciepła", "tag": "lemoniada", "desc": "400/1200 ml", "price": "17/35",
-        "variants": [
-          { "label": "400", "price": 17, "size": "400" },
-          { "label": "1200 ml", "price": 35, "size": "1200 ml" }
-        ]
-      },
+      if (!ct.includes("application/json") && text.trim().startsWith("<")) {
+        throw new Error("Backend zwrócił HTML zamiast JSON (sprawdź routing / endpoint).");
+      }
 
-      { "category": "napoje-soki", "categoryLabel": "Napoje", "title": "Woda z kranu", "tag": "", "desc": "", "price": 0 },
-      { "category": "napoje-soki", "categoryLabel": "Napoje", "title": "Woda niegazowana", "tag": "", "desc": "500 ml", "price": 8 },
-      { "category": "napoje-soki", "categoryLabel": "Napoje", "title": "Woda gazowana", "tag": "", "desc": "500 ml", "price": 8 },
-      { "category": "napoje-soki", "categoryLabel": "Napoje", "title": "Pepsi", "tag": "", "desc": "330 ml", "price": 9 },
-      { "category": "napoje-soki", "categoryLabel": "Napoje", "title": "Pepsi Max", "tag": "", "desc": "330 ml", "price": 9 },
+      if (data !== null) return data;
+      if (!text) return null;
+      try { return JSON.parse(text); } catch { return text; }
+    },
 
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Pomarańczowy", "tag": "świeży sok", "desc": "300 ml", "price": 19 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Grejpfrutowy", "tag": "świeży sok", "desc": "300 ml", "price": 22 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Pomarańczowo-grejpfrutowy", "tag": "świeży sok", "desc": "300 ml", "price": 22 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Jabłkowy", "tag": "świeży sok", "desc": "300 ml", "price": 19 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Jabłkowo-gruszkowy", "tag": "świeży sok", "desc": "300 ml", "price": 19 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Marchewka-jabłko-pomarańcza", "tag": "świeży sok", "desc": "300 ml", "price": 19 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Burak-jabłko-pomarańcza-seler", "tag": "świeży sok", "desc": "300 ml", "price": 22 },
-      { "category": "napoje-soki", "categoryLabel": "Świeże soki", "title": "Jabłko-seler-kiwi", "tag": "świeży sok", "desc": "300 ml", "price": 22 },
-
-      { "category": "napoje-soki", "categoryLabel": "Smoothies", "title": "Zielony", "tag": "smoothies", "desc": "350 ml • szpinak, kiwi, pomarańcza, gruszka", "price": 29 },
-      { "category": "napoje-soki", "categoryLabel": "Smoothies", "title": "Żółty", "tag": "smoothies", "desc": "350 ml • banan, jabłko, ananas, mango", "price": 29 },
-      { "category": "napoje-soki", "categoryLabel": "Smoothies", "title": "Pomarańczowy", "tag": "smoothies", "desc": "350 ml • banan, pomarańcza, mango, nerkowce, limonka", "price": 29 },
-      { "category": "napoje-soki", "categoryLabel": "Smoothies", "title": "Czerwony", "tag": "smoothies", "desc": "350 ml • truskawki, maliny, banan, ananas", "price": 29 },
-
-      { "category": "napoje-soki", "categoryLabel": "Piwo", "title": "Corona", "tag": "piwo", "desc": "330 ml", "price": 15 },
-      { "category": "napoje-soki", "categoryLabel": "Piwo", "title": "Piwo bezalkoholowe", "tag": "piwo", "desc": "", "price": 14 },
-      { "category": "napoje-soki", "categoryLabel": "Piwo", "title": "IPA", "tag": "piwo", "desc": "0,5 l", "price": 19 },
-      { "category": "napoje-soki", "categoryLabel": "Piwo", "title": "Lager", "tag": "piwo", "desc": "Zapytaj o dostępność", "price": 17 },
-
-      { "category": "napoje-soki", "categoryLabel": "Wino & Aperitiff", "title": "Sauvignon blanc (białe wytrawne) – Skarby Mołdawii", "tag": "wino-aperitiff", "desc": "170/500/700 ml", "price": "22/64/89",
-        "variants": [
-          { "label": "170", "price": 22, "size": "170" },
-          { "label": "500", "price": 64, "size": "500" },
-          { "label": "700 ml", "price": 89, "size": "700 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Wino & Aperitiff", "title": "Cabernet sauvignon (czerwone wytrawne) – Skarby Mołdawii", "tag": "wino-aperitiff", "desc": "170/500/700 ml", "price": "22/64/89",
-        "variants": [
-          { "label": "170", "price": 22, "size": "170" },
-          { "label": "500", "price": 64, "size": "500" },
-          { "label": "700 ml", "price": 89, "size": "700 ml" }
-        ]
-      },
-      { "category": "napoje-soki", "categoryLabel": "Wino & Aperitiff", "title": "Hugo", "tag": "wino-aperitiff", "desc": "Prosecco, woda gazowana, syrop z czarnego bzu, mięta i limonka", "price": 35 },
-      { "category": "napoje-soki", "categoryLabel": "Wino & Aperitiff", "title": "Prosecco (wytrawne wino musujące)", "tag": "wino-aperitiff", "desc": "", "price": 26 },
-
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Śmietankowy", "tag": "klasyka", "desc": "", "price": 18 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Waniliowy", "tag": "klasyka", "desc": "", "price": 19 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Czekoladowy", "tag": "klasyka", "desc": "", "price": 19 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Straciatella", "tag": "klasyka", "desc": "", "price": 19 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Chałwa", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Krówka", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Daim", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Milky Way", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Oreo", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Snickers", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Ptasie mleczko waniliowe", "tag": "klasyka", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kinder Bueno", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Reese's Peanut Butter", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Nutella", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Raffaello", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Skittles", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Ferrero Rocher", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Maxi King", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Masło orzechowe", "tag": "klasyka", "desc": "", "price": 24 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kawowy", "tag": "klasyka", "desc": "", "price": 24 },
-
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Ciasteczkowy Potwór", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Pistacjusz", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Marshall", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Cringe", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Cheesecake", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Gonzo", "tag": "vip", "desc": "", "price": 37 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Johny Pierniczony", "tag": "vip", "desc": "", "price": 37 },
-
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Banan + maliny", "tag": "best-of", "desc": "", "price": 26 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Mango + truskawki", "tag": "best-of", "desc": "", "price": 26 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kiwi + mango", "tag": "best-of", "desc": "", "price": 26 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kinder bueno + maliny", "tag": "best-of", "desc": "", "price": 28 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Oreo + masło orzechowe", "tag": "best-of", "desc": "", "price": 28 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kawa + słony karmel", "tag": "best-of", "desc": "", "price": 29 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Kawa + Nutella", "tag": "best-of", "desc": "", "price": 29 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Ptasie mleczko + maliny", "tag": "best-of", "desc": "", "price": 28 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Raffaello + jagody", "tag": "best-of", "desc": "", "price": 28 },
-
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Bananowy", "tag": "owocowe", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Czarna porzeczka", "tag": "owocowe", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Malinowy", "tag": "owocowe", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Mango", "tag": "owocowe", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Truskawkowy", "tag": "owocowe", "desc": "", "price": 22 },
-      { "category": "shake", "categoryLabel": "Shakes", "title": "Jagodowy", "tag": "owocowe", "desc": "", "price": 22 },
-
-      { "category": "shake", "categoryLabel": "Shakes proteinowe", "title": "Jagodowy muffin", "tag": "proteinowe", "desc": "", "price": 32 },
-      { "category": "shake", "categoryLabel": "Shakes proteinowe", "title": "Słony karmel", "tag": "proteinowe", "desc": "", "price": 28 },
-      { "category": "shake", "categoryLabel": "Shakes proteinowe", "title": "Truskawkowe love", "tag": "proteinowe", "desc": "", "price": 28 },
-
-      { "category": "deser", "categoryLabel": "Lody włoskie", "title": "Lody włoskie śmietankowe (małe)", "tag": "lody-wloskie", "desc": "150 g", "price": 11 },
-      { "category": "deser", "categoryLabel": "Lody włoskie", "title": "Lody włoskie śmietankowe (duże)", "tag": "lody-wloskie", "desc": "250 g", "price": 16 },
-      { "category": "deser", "categoryLabel": "Dodatki", "title": "Mus owocowy lub polewa", "tag": "lody-wloskie", "desc": "", "price": 6 },
-      { "category": "deser", "categoryLabel": "Dodatki", "title": "M&Ms", "tag": "lody-wloskie", "desc": "", "price": 6 },
-      { "category": "deser", "categoryLabel": "Dodatki", "title": "Owoce", "tag": "lody-wloskie", "desc": "", "price": 14 },
-      { "category": "deser", "categoryLabel": "Dodatki", "title": "Bita śmietana", "tag": "lody-wloskie", "desc": "", "price": 6 },
-      { "category": "deser", "categoryLabel": "Desery lodowe", "title": "Troll", "tag": "desery-lodowe", "desc": "", "price": 24 },
-      { "category": "deser", "categoryLabel": "Desery lodowe", "title": "Owocowa aleja", "tag": "desery-lodowe", "desc": "", "price": 38 },
-      { "category": "deser", "categoryLabel": "Desery lodowe", "title": "Grzeszna truskawka", "tag": "desery-lodowe", "desc": "", "price": 38 },
-      { "category": "deser", "categoryLabel": "Desery lodowe", "title": "Oreo Sundae", "tag": "desery-lodowe", "desc": "", "price": 29 },
-
-      { "category": "deser", "categoryLabel": "Gofry amerykańskie", "title": "Z syropem klonowym, jajkiem sadzonym i bekonem", "tag": "gofry-amerykanskie", "desc": "pół / cały", "price": "28/44",
-        "variants": [
-          { "label": "pół", "price": 28, "size": "pół" },
-          { "label": "cały", "price": 44, "size": "cały" }
-        ]
-      },
-      { "category": "deser", "categoryLabel": "Gofry amerykańskie", "title": "American Pie z pieczonymi jabłkami, cynamonem, domową kruszonką i lodami", "tag": "gofry-amerykanskie", "desc": "pół / cały", "price": "27/49",
-        "variants": [
-          { "label": "pół", "price": 27, "size": "pół" },
-          { "label": "cały", "price": 49, "size": "cały" }
-        ]
-      },
-      { "category": "deser", "categoryLabel": "Gofry amerykańskie", "title": "Z dżemem z czarnej porzeczki i polewą Lotus Biscoff", "tag": "gofry-amerykanskie", "desc": "pół / cały", "price": "26/48",
-        "variants": [
-          { "label": "pół", "price": 26, "size": "pół" },
-          { "label": "cały", "price": 48, "size": "cały" }
-        ]
-      },
-      { "category": "deser", "categoryLabel": "Gofry amerykańskie", "title": "Dubajski z truskawkami", "tag": "gofry-amerykanskie", "desc": "pół / cały", "price": "32/54",
-        "variants": [
-          { "label": "pół", "price": 32, "size": "pół" },
-          { "label": "cały", "price": 54, "size": "cały" }
-        ]
-      },
-      { "category": "deser", "categoryLabel": "Gofry amerykańskie", "title": "Cheesecake z serkiem Philadelphia, masą ciasteczkową, kruszonką i truskawkami", "tag": "gofry-amerykanskie", "desc": "pół / cały", "price": "28/50",
-        "variants": [
-          { "label": "pół", "price": 28, "size": "pół" },
-          { "label": "cały", "price": 50, "size": "cały" }
-        ]
-      },
-
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z syropem klonowym i lodami", "tag": "pancakes", "desc": "3 szt.", "price": 29 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z owocami, musem truskawkowym i lodami", "tag": "pancakes", "desc": "3 szt.", "price": 36 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z Nutellą, truskawkami i lodami", "tag": "pancakes", "desc": "3 szt.", "price": 36 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z masą Kinder Bueno, malinami i lodami", "tag": "pancakes", "desc": "3 szt.", "price": 39 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z masą Raffaello, truskawkami i lodami", "tag": "pancakes", "desc": "3 szt.", "price": 39 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Z dubajską pistacją i truskawkami", "tag": "pancakes", "desc": "3 szt.", "price": 39 },
-      { "category": "deser", "categoryLabel": "Pancakes", "title": "Hello USA", "tag": "pancakes", "desc": "syrop klonowy, bekon, 2 jaja sadzone", "price": 39 },
-
-      { "category": "texmex", "categoryLabel": "Quesadillas", "title": "Pollo", "tag": "quesadillas", "desc": "", "price": 45 },
-      { "category": "texmex", "categoryLabel": "Quesadillas", "title": "Torro", "tag": "quesadillas", "desc": "", "price": 46 },
-      { "category": "texmex", "categoryLabel": "Quesadillas", "title": "Camaron", "tag": "quesadillas", "desc": "", "price": 49 },
-      { "category": "texmex", "categoryLabel": "Quesadillas", "title": "Verduras", "tag": "quesadillas", "desc": "", "price": 42 },
-
-      { "category": "texmex", "categoryLabel": "Fajita", "title": "Fajita z kurczakiem", "tag": "fajita", "desc": "", "price": 59 },
-      { "category": "texmex", "categoryLabel": "Fajita", "title": "Fajita z krewetkami", "tag": "fajita", "desc": "", "price": 69 },
-      { "category": "texmex", "categoryLabel": "Fajita", "title": "Fajita z polędwicą wołową", "tag": "fajita", "desc": "", "price": 79 },
-
-      { "category": "texmex", "categoryLabel": "Churros", "title": "Churros (6 szt.) z sosem czekoladowym i truskawkami", "tag": "churros", "desc": "", "price": 33 },
-      { "category": "texmex", "categoryLabel": "Churros", "title": "Churros (6 szt.) ze słonym karmelem i precelkami", "tag": "churros", "desc": "", "price": 32 },
-
-      { "category": "texmex", "categoryLabel": "Pasta", "title": "Tagiatelle z krewetkami", "tag": "pasta", "desc": "", "price": 51 },
-      { "category": "texmex", "categoryLabel": "Pasta", "title": "Vege Pasta", "tag": "pasta", "desc": "", "price": 44 },
-
-      { "category": "texmex", "categoryLabel": "NY Chinatown Stir Fry", "title": "Vege (z nerkowcami)", "tag": "stir-fry", "desc": "", "price": 39 },
-      { "category": "texmex", "categoryLabel": "NY Chinatown Stir Fry", "title": "Z kurczakiem 90g", "tag": "stir-fry", "desc": "", "price": 47 },
-      { "category": "texmex", "categoryLabel": "NY Chinatown Stir Fry", "title": "Z wołowiną 90g", "tag": "stir-fry", "desc": "", "price": 55 },
-      { "category": "texmex", "categoryLabel": "NY Chinatown Stir Fry", "title": "Z krewetkami (16/20) 7 szt.", "tag": "stir-fry", "desc": "", "price": 51 },
-      { "category": "texmex", "categoryLabel": "Dodatki", "title": "Dodatkowe nerkowce 20g", "tag": "stir-fry", "desc": "", "price": 8 },
-
-      { "category": "texmex", "categoryLabel": "Sałaty", "title": "Cezar", "tag": "salaty", "desc": "", "price": 49 },
-      { "category": "texmex", "categoryLabel": "Sałaty", "title": "Vege Cezar", "tag": "salaty", "desc": "", "price": 42 },
-      { "category": "texmex", "categoryLabel": "Sałaty", "title": "Ale burak", "tag": "salaty", "desc": "", "price": 44 },
-      { "category": "texmex", "categoryLabel": "Sałaty", "title": "Alabama", "tag": "salaty", "desc": "", "price": 51 },
-
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Frytki", "tag": "startery", "desc": "150 g", "price": 15 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Frytki z batatów", "tag": "startery", "desc": "150 g", "price": 19 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Frytki z serem, bekonem i majonezem sriracha", "tag": "startery", "desc": "", "price": 30 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Krążki cebulowe (5 szt.) z sosem sweet chili", "tag": "startery", "desc": "", "price": 18 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Krewetki w tempurze (3 szt.) z sosem sweet chili", "tag": "startery", "desc": "", "price": 21 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Krewetki w tempurze (6 szt.) z sosem sweet chili", "tag": "startery", "desc": "", "price": 39 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Nachos z serem, guacamole, śmietaną, salsą i jalapeno", "tag": "startery", "desc": "", "price": 41 },
-      { "category": "kanapki", "categoryLabel": "Startery", "title": "Nachos z chili con carne, serem, śmietaną, guacamole i jalapeno", "tag": "startery", "desc": "", "price": 49 },
-
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Rostbef", "tag": "kanapki", "desc": "60 g / 100 g", "price": "42/58",
-        "variants": [
-          { "label": "60 g", "price": 42, "size": "60 g" },
-          { "label": "100 g", "price": 58, "size": "100 g" }
-        ]
-      },
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Cotto", "tag": "kanapki", "desc": "70 g / 120 g", "price": "37/49",
-        "variants": [
-          { "label": "70 g", "price": 37, "size": "70 g" },
-          { "label": "120 g", "price": 49, "size": "120 g" }
-        ]
-      },
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Kura", "tag": "kanapki", "desc": "", "price": 46 },
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Club sandwich", "tag": "kanapki", "desc": "", "price": 38 },
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Cotto club", "tag": "kanapki", "desc": "", "price": 36 },
-      { "category": "kanapki", "categoryLabel": "Kanapki", "title": "Vege club", "tag": "kanapki", "desc": "", "price": 36 },
-
-      { "category": "kanapki", "categoryLabel": "Dania główne", "title": "Tatar z polędwicy wołowej", "tag": "dania-glowne", "desc": "100 g", "price": 51 },
-      { "category": "kanapki", "categoryLabel": "Dania główne", "title": "Żebro wieprzowe", "tag": "dania-glowne", "desc": "450 g", "price": 75 },
-      { "category": "kanapki", "categoryLabel": "Dania główne", "title": "Stek", "tag": "dania-glowne", "desc": "", "price": 125 },
-      { "category": "kanapki", "categoryLabel": "Dania główne", "title": "Kurczak supreme", "tag": "dania-glowne", "desc": "", "price": 65 },
-
-      { "category": "kanapki", "categoryLabel": "Zestawy", "title": "Burger + frytki lub sałatka", "tag": "zestawy", "desc": "oszczędzasz 5 PLN", "price": "+12",
-        "variants": [
-          { "label": "dopłata", "price": 12.0, "size": null }
-        ]
-      },
-      { "category": "kanapki", "categoryLabel": "Zestawy", "title": "Burger + frytki/sałatka + lemoniada cytrusowa", "tag": "zestawy", "desc": "oszczędzasz 10 PLN", "price": "+22",
-        "variants": [
-          { "label": "dopłata", "price": 22.0, "size": null }
-        ]
-      },
-      { "category": "kanapki", "categoryLabel": "Zestawy", "title": "Zamień frytki na krążki cebulowe", "tag": "zestawy", "desc": "", "price": 15 },
-      { "category": "kanapki", "categoryLabel": "Zestawy", "title": "Zamień frytki na mini nachos", "tag": "zestawy", "desc": "", "price": 18 },
-      { "category": "kanapki", "categoryLabel": "Zestawy", "title": "Zamień frytki na bataty", "tag": "zestawy", "desc": "", "price": 14 },
-
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Prostak", "tag": "wolowy", "desc": "mały / średni / duży", "price": "30/38/46",
-        "variants": [
-          { "label": "mały", "price": 30, "size": "mały" },
-          { "label": "średni", "price": 38, "size": "średni" },
-          { "label": "duży", "price": 46, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Sergio", "tag": "wolowy", "desc": "mały / średni / duży", "price": "32/40/48",
-        "variants": [
-          { "label": "mały", "price": 32, "size": "mały" },
-          { "label": "średni", "price": 40, "size": "średni" },
-          { "label": "duży", "price": 48, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Boston", "tag": "wolowy", "desc": "mały / średni / duży", "price": "34/42/50",
-        "variants": [
-          { "label": "mały", "price": 34, "size": "mały" },
-          { "label": "średni", "price": 42, "size": "średni" },
-          { "label": "duży", "price": 50, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Pleśniak", "tag": "wolowy", "desc": "mały / średni / duży", "price": "38/46/54",
-        "variants": [
-          { "label": "mały", "price": 38, "size": "mały" },
-          { "label": "średni", "price": 46, "size": "średni" },
-          { "label": "duży", "price": 54, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Bajpas", "tag": "wolowy", "desc": "mały / średni / duży", "price": "36/44/52",
-        "variants": [
-          { "label": "mały", "price": 36, "size": "mały" },
-          { "label": "średni", "price": 44, "size": "średni" },
-          { "label": "duży", "price": 52, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Burakoza", "tag": "wolowy", "desc": "mały / średni / duży", "price": "38/46/54",
-        "variants": [
-          { "label": "mały", "price": 38, "size": "mały" },
-          { "label": "średni", "price": 46, "size": "średni" },
-          { "label": "duży", "price": 54, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "New York", "tag": "wolowy", "desc": "mały / średni / duży", "price": "38/46/54",
-        "variants": [
-          { "label": "mały", "price": 38, "size": "mały" },
-          { "label": "średni", "price": 46, "size": "średni" },
-          { "label": "duży", "price": 54, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Złodziej", "tag": "wolowy", "desc": "mały / średni / duży", "price": "38/46/54",
-        "variants": [
-          { "label": "mały", "price": 38, "size": "mały" },
-          { "label": "średni", "price": 46, "size": "średni" },
-          { "label": "duży", "price": 54, "size": "duży" }
-        ]
-      },
-      { "category": "burger", "categoryLabel": "Burgery wołowe Black Angus", "title": "Missisipi", "tag": "wolowy", "desc": "mały / średni / duży", "price": "38/46/54",
-        "variants": [
-          { "label": "mały", "price": 38, "size": "mały" },
-          { "label": "średni", "price": 46, "size": "średni" },
-          { "label": "duży", "price": 54, "size": "duży" }
-        ]
-      },
-
-      { "category": "burger", "categoryLabel": "Burgery z kurczakiem", "title": "Kura", "tag": "kurczak", "desc": "", "price": 43 },
-      { "category": "burger", "categoryLabel": "Burgery z kurczakiem", "title": "Żółtodziób", "tag": "kurczak", "desc": "", "price": 43 },
-
-      { "category": "sniadania", "categoryLabel": "Napoje do śniadania", "title": "Kawa filtrowana (z dolewką)", "tag": "sniadania", "desc": "", "price": 12 },
-      { "category": "sniadania", "categoryLabel": "Napoje do śniadania", "title": "Herbata śniadaniowa", "tag": "sniadania", "desc": "", "price": 9 },
-      { "category": "sniadania", "categoryLabel": "Napoje do śniadania", "title": "Świeży sok", "tag": "sniadania", "desc": "0,2 l", "price": 18 },
-      { "category": "sniadania", "categoryLabel": "Napoje do śniadania", "title": "Mimoza", "tag": "sniadania", "desc": "", "price": 31 },
-
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Granola", "tag": "sniadania", "desc": "", "price": 44 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Tost francuski w panko", "tag": "sniadania", "desc": "", "price": 44 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Jajito burrito", "tag": "sniadania", "desc": "", "price": 37 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Czerwona szakszuka", "tag": "sniadania", "desc": "", "price": 39 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Egg royal", "tag": "sniadania", "desc": "", "price": 45 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Jajecznica", "tag": "sniadania", "desc": "", "price": 33 },
-      { "category": "sniadania", "categoryLabel": "Śniadania", "title": "Omlet francuski", "tag": "sniadania", "desc": "", "price": 37 },
-
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Rostbef", "tag": "kanapki-sniadaniowe", "desc": "60 g / 100 g", "price": "42/58",
-        "variants": [
-          { "label": "60 g", "price": 42, "size": "60 g" },
-          { "label": "100 g", "price": 58, "size": "100 g" }
-        ]
-      },
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Cotto", "tag": "kanapki-sniadaniowe", "desc": "70 g / 120 g", "price": "37/49",
-        "variants": [
-          { "label": "70 g", "price": 37, "size": "70 g" },
-          { "label": "120 g", "price": 49, "size": "120 g" }
-        ]
-      },
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Kura", "tag": "kanapki-sniadaniowe", "desc": "", "price": 46 },
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Club sandwich", "tag": "kanapki-sniadaniowe", "desc": "", "price": 38 },
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Cotto club", "tag": "kanapki-sniadaniowe", "desc": "", "price": 36 },
-      { "category": "sniadania", "categoryLabel": "Kanapki śniadaniowe", "title": "Vege club", "tag": "kanapki-sniadaniowe", "desc": "", "price": 36 },
-
-      { "category": "sniadania", "categoryLabel": "Full milkshake breakfast", "title": "Duży full milkshake breakfast", "tag": "zestaw-sniadaniowy", "desc": "", "price": 53 },
-      { "category": "sniadania", "categoryLabel": "Full milkshake breakfast", "title": "Mały full milkshake breakfast", "tag": "zestaw-sniadaniowy", "desc": "", "price": 42 },
-
-      { "category": "sniadania", "categoryLabel": "Chiquita", "title": "Chiquita", "tag": "chiquita", "desc": "", "price": 41 },
-      { "category": "sniadania", "categoryLabel": "Chiquita", "title": "Chiquita z chorizo", "tag": "chiquita", "desc": "80 g", "price": 39 },
-
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Frankfurterka", "tag": "sniadania-keto", "desc": "", "price": 7 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Chorizo", "tag": "sniadania-keto", "desc": "70 g", "price": 8 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "½ awokado", "tag": "sniadania-keto", "desc": "", "price": 9 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Twarożek", "tag": "sniadania-keto", "desc": "80 g", "price": 7 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Ogórek zielony", "tag": "sniadania-keto", "desc": "7 plastrów", "price": 5 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Pomidorki koktajlowe", "tag": "sniadania-keto", "desc": "80 g", "price": 5 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Bekon", "tag": "sniadania-keto", "desc": "2 plastry", "price": 4 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Jajo", "tag": "sniadania-keto", "desc": "", "price": 4 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Masło", "tag": "sniadania-keto", "desc": "10 g", "price": 2 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Chleb maślany", "tag": "sniadania-keto", "desc": "80 g", "price": 6 },
-      { "category": "sniadania", "categoryLabel": "Śniadanie KETO – dodatki", "title": "Gravlax", "tag": "sniadania-keto", "desc": "50 g", "price": 15 }
-    ]
+    async getMy(urlBase, email) {
+      const e = encodeURIComponent(email || "");
+      try {
+        return await API.json(`${urlBase}?email=${e}`);
+      } catch {
+        return await API.json(urlBase, {
+          method: "POST",
+          body: JSON.stringify({ email }),
+        });
+      }
+    }
   };
 
-  /* -------------------------
-     Nagrody (NOWE – 3 szt.)
-     ------------------------- */
-  const REWARDS = [
-    { id: "milkshake_30", title: "Milkshake do 30 PLN", points: 25, desc: "Realizacja: milkshake o wartości do 30 PLN." },
-    { id: "burger_set_60", title: "Zestaw burger do 60 PLN", points: 50, desc: "Realizacja: zestaw burger o wartości do 60 PLN." },
-    { id: "order_120", title: "Zamówienie do 120 PLN", points: 100, desc: "Realizacja: zamówienie o wartości do 120 PLN." }
-  ];
+  // ---------- Toast ----------
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+  function showToast(msg, danger = false) {
+    toastText.textContent = msg;
+    toast.classList.toggle("danger", danger);
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3200);
+  }
 
-  /* -------------------------
-     Helpers / storage
-     ------------------------- */
-  const LS = {
-    user: "milk_user",
-    points: "milk_points",
-    pointsHistory: "milk_points_history",
-    cart: "milk_cart",
-    orders: "milk_orders",
-    reservations: "milk_reservations",
-    profile: "milk_profile",
-    redeemed: "milk_redeemed_rewards",
-    lang: "milk_lang",
-    didResetHistory: "milk_points_history_reset_v1"
-  };
-
-  const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
-  const nowISO = () => new Date().toISOString();
-
-  const safeJsonParse = (s, fallback) => {
-    try { return JSON.parse(s); } catch { return fallback; }
-  };
-
+  // ---------- Storage ----------
   const store = {
-    get(key, fallback){
-      const raw = localStorage.getItem(key);
-      if (raw == null) return fallback;
-      return safeJsonParse(raw, fallback);
+    get(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+      catch { return fallback; }
     },
-    set(key, val){
-      localStorage.setItem(key, JSON.stringify(val));
-    },
-    del(key){
-      localStorage.removeItem(key);
-    }
+    set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+    del(key) { localStorage.removeItem(key); }
   };
 
-  const fmtPLN = (n) => {
-    const num = Number(n);
-    if (!Number.isFinite(num)) return String(n);
-    return num.toFixed(num % 1 === 0 ? 0 : 2).replace(".", ",");
+  // ---------- Auth / user gating ----------
+  function getUser() { return store.get("user", null); }
+  function isLoggedIn() { return !!getUser()?.email; }
+
+  function requireLogin(actionName = "tej akcji") {
+    if (isLoggedIn()) return true;
+    showToast(`Zaloguj się, aby użyć ${actionName}.`, true);
+    openTab("account");
+    return false;
+  }
+
+  // ---------- Tabs ----------
+  const tabs = {
+    points: document.getElementById("tab-points"),
+    rewards: document.getElementById("tab-rewards"),
+    order: document.getElementById("tab-order"),
+    res: document.getElementById("tab-res"),
+    account: document.getElementById("tab-account"),
+  };
+  const navButtons = document.querySelectorAll(".nav-btn");
+  function openTab(name) {
+    Object.entries(tabs).forEach(([k, el]) => el.classList.toggle("active", k === name));
+    navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    renderTopPill();
+    if (name === "order") {
+      prefillOrderCheckout();
+      renderPickupRuleHintAndMin();
+    }
+    setTimeout(renderOrderFab, 50);
+  }
+  navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
+  document.querySelectorAll("[data-go]").forEach((b) =>
+    b.addEventListener("click", () => openTab(b.dataset.go))
+  );
+
+  // ---------- Milk ID ----------
+  function generate6DigitCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  function getMilkId() {
+    const user = getUser();
+    if (user?.milkId && String(user.milkId).length === 6) return String(user.milkId);
+
+    const email = (user?.email || "").toLowerCase();
+    const key = email ? ("milkIdByEmail:" + email) : "milkIdAnonymous";
+    let code = store.get(key, null);
+    if (!code || String(code).length !== 6) {
+      code = generate6DigitCode();
+      store.set(key, code);
+    }
+
+    if (user?.email) {
+      user.milkId = String(code);
+      store.set("user", user);
+    }
+
+    return String(code);
+  }
+
+  // ---------- Top pill ----------
+  const pointsPillEl = document.getElementById("pointsPill");
+  function renderTopPill() {
+    const user = getUser();
+    if (!user?.email) {
+      pointsPillEl.textContent = "Zaloguj się";
+      return;
+    }
+    const pts = store.get("points", 0);
+    pointsPillEl.textContent = pts + " pkt";
+  }
+
+  // ---------- Opening hours / status ----------
+  const openingCardEl = document.getElementById("openingCard");
+  const openDotEl = document.getElementById("openDot");
+  const openTextEl = document.getElementById("openText");
+  const openHoursEl = document.getElementById("openingHours");
+  const openHintEl = document.getElementById("openHint");
+
+  const openingSchedule = {
+    0: { label: "niedziela", open: "09:00", close: "21:00" },
+    1: { label: "poniedziałek", open: "08:00", close: "21:00" },
+    2: { label: "wtorek", open: "08:00", close: "21:00" },
+    3: { label: "środa", open: "08:00", close: "21:00" },
+    4: { label: "czwartek", open: "08:00", close: "21:00" },
+    5: { label: "piątek", open: "08:00", close: "22:00" },
+    6: { label: "sobota", open: "09:00", close: "22:00" },
   };
 
-  const toast = (() => {
-    let tmr = null;
-    const el = $("#toast");
-    const title = $("#toastTitle");
-    const msg = $("#toastMsg");
-    const close = $("#toastClose");
-    if (close) close.addEventListener("click", () => hide());
+  function toMinutes(hhmm) {
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
+  }
 
-    function show(t, m){
-      if (!el) return;
-      title.textContent = t || "Info";
-      msg.textContent = m || "";
-      el.classList.add("show");
-      clearTimeout(tmr);
-      tmr = setTimeout(() => hide(), 3200);
+  function renderOpeningHours() {
+    const now = new Date();
+    const day = now.getDay();
+    const minutesNow = now.getHours() * 60 + now.getMinutes();
+
+    const today = openingSchedule[day];
+    const openM = toMinutes(today.open);
+    const closeM = toMinutes(today.close);
+    const isOpen = minutesNow >= openM && minutesNow < closeM;
+
+    openDotEl.classList.remove("open", "closed");
+    openDotEl.classList.add(isOpen ? "open" : "closed");
+    openTextEl.textContent = isOpen ? "Jesteśmy Otwarci" : "Jesteśmy Zamknięci";
+
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    openHoursEl.innerHTML = order.map((d) => {
+      const s = openingSchedule[d];
+      const isToday = d === day;
+      return `
+        <div class="${isToday ? "today" : ""}">
+          <b>${s.label}</b> ${s.open}–${s.close}
+        </div>
+      `;
+    }).join("");
+  }
+
+  openingCardEl?.addEventListener("click", () => {
+    openingCardEl.classList.toggle("expanded");
+    const expanded = openingCardEl.classList.contains("expanded");
+    openHintEl.textContent = expanded
+      ? "Kliknij, aby ukryć godziny otwarcia"
+      : "Kliknij, aby zobaczyć godziny otwarcia";
+  });
+
+  renderOpeningHours();
+  setInterval(renderOpeningHours, 60 * 1000);
+
+  // ---------- One-time clear (opcjonalne) ----------
+  (function clearHistoryOnce() {
+    const didClear = store.get("didClearHistoryOnce", false);
+    if (!didClear) {
+      store.set("pointsHistory", []);
+      store.set("didClearHistoryOnce", true);
     }
-    function hide(){
-      if (!el) return;
-      el.classList.remove("show");
-      clearTimeout(tmr);
-      tmr = null;
-    }
-    return { show, hide };
   })();
 
-  /* -------------------------
-     User / auth
-     ------------------------- */
-  const getUser = () => store.get(LS.user, null);
-  const setUser = (u) => store.set(LS.user, u);
-  const isLoggedIn = () => !!(getUser() && getUser().email);
+  // ---------- Modal: code ----------
+  const loyaltyCodeEl = document.getElementById("loyaltyCode");
+  const showCodeBtn = document.getElementById("showCodeBtn");
+  const copyCodeBtn = document.getElementById("copyCodeBtn");
+  const codeModal = document.getElementById("codeModal");
 
-  function hashTo6Digits(str){
-    // deterministyczny 6-cyfrowy Milk ID na bazie e-maila
-    let h = 2166136261;
-    for (let i=0;i<str.length;i++){
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
+  function renderMilkIdModal() {
+    loyaltyCodeEl.textContent = getMilkId();
+  }
+
+  function openCodeModal() {
+    if (!requireLogin("Milk ID")) return;
+    renderMilkIdModal();
+    codeModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+  function closeCodeModal() {
+    codeModal.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+
+  showCodeBtn?.addEventListener("click", openCodeModal);
+  codeModal?.querySelectorAll("[data-close]")?.forEach((el) =>
+    el.addEventListener("click", closeCodeModal)
+  );
+  copyCodeBtn?.addEventListener("click", async () => {
+    const code = loyaltyCodeEl.textContent;
+    try {
+      await navigator.clipboard.writeText(code);
+      showToast("Kod skopiowany ✅");
+    } catch {
+      showToast("Nie udało się skopiować 🤏", true);
     }
-    const n = Math.abs(h) % 1000000;
-    return String(n).padStart(6, "0");
-  }
-
-  function getMilkIdForUser(){
-    const u = getUser();
-    if (!u?.email) return null;
-    return hashTo6Digits(String(u.email).trim().toLowerCase());
-  }
-
-  /* -------------------------
-     Points
-     ------------------------- */
-  function initPointsIfMissing(){
-    const p = store.get(LS.points, null);
-    if (p == null) store.set(LS.points, 0);
-    const hist = store.get(LS.pointsHistory, null);
-    if (!Array.isArray(hist)) store.set(LS.pointsHistory, []);
-
-    // (z wcześniejszych wersji) 1x reset historii – zostawiamy, bo masz to w pamięci projektu
-    const did = store.get(LS.didResetHistory, false);
-    if (!did){
-      store.set(LS.pointsHistory, []);
-      store.set(LS.didResetHistory, true);
-    }
-  }
-
-  const getPoints = () => Number(store.get(LS.points, 0) || 0);
-  const setPoints = (n) => store.set(LS.points, Math.max(0, Number(n) || 0));
-
-  function addPointsHistory(entry){
-    const hist = store.get(LS.pointsHistory, []);
-    hist.unshift(entry);
-    store.set(LS.pointsHistory, hist.slice(0, 40));
-  }
-
-  function applyPointsDelta(delta, reason){
-    const prev = getPoints();
-    const next = Math.max(0, prev + delta);
-    setPoints(next);
-    addPointsHistory({
-      at: nowISO(),
-      delta,
-      reason: reason || (delta >= 0 ? "Dodano punkty" : "Odjęto punkty")
-    });
-    renderPoints();
-  }
-
-  /* -------------------------
-     Status / hours
-     ------------------------- */
-  const HOURS = {
-    monThu: "12:00–22:00",
-    fri: "12:00–23:00",
-    sat: "12:00–23:00",
-    sun: "12:00–22:00"
-  };
-
-  function isOpenNow(){
-    // prosta logika statusu (możesz podmienić realnymi godzinami)
-    // Dla UI: tylko “otwarte/zamknięte” na podstawie stałych godzin.
-    const d = new Date();
-    const day = d.getDay(); // 0 sun ... 6 sat
-    const min = d.getHours()*60 + d.getMinutes();
-
-    const parseRange = (range) => {
-      const [a,b] = range.split("–");
-      const toMin = (t) => {
-        const [hh,mm] = t.split(":").map(Number);
-        return hh*60 + mm;
-      };
-      return [toMin(a), toMin(b)];
-    };
-
-    let range = HOURS.sun;
-    if (day >= 1 && day <= 4) range = HOURS.monThu;
-    else if (day === 5) range = HOURS.fri;
-    else if (day === 6) range = HOURS.sat;
-
-    const [start,end] = parseRange(range);
-    return min >= start && min <= end;
-  }
-
-  function renderHours(expanded){
-    $("#h1").textContent = HOURS.monThu;
-    $("#h2").textContent = HOURS.fri;
-    $("#h3").textContent = HOURS.sat;
-    $("#h4").textContent = HOURS.sun;
-    $("#hoursGrid").classList.toggle("hide", !expanded);
-  }
-
-  function renderStatus(){
-    const open = isOpenNow();
-    const badge = $("#statusBadge");
-    const txt = $("#statusText");
-    const sub = $("#statusSub");
-
-    if (!badge || !txt || !sub) return;
-
-    badge.classList.remove("warn","bad");
-    const dot = badge.querySelector(".b-dot");
-
-    if (open){
-      txt.textContent = "Otwarte";
-      sub.textContent = "Wpadnij do nas — działamy!";
-      if (dot) dot.style.background = "var(--good)";
-    } else {
-      txt.textContent = "Zamknięte";
-      sub.textContent = "Aktualnie nieczynne — sprawdź godziny.";
-      badge.classList.add("warn");
-      if (dot) dot.style.background = "var(--warn)";
-    }
-  }
-
-  /* -------------------------
-     Tabs / pages
-     ------------------------- */
-  function showPage(tab){
-    const map = {
-      points: "#pagePoints",
-      rewards: "#pageRewards",
-      order: "#pageOrder",
-      reservations: "#pageReservations",
-      account: "#pageAccount"
-    };
-    $$(".page").forEach(p => p.classList.remove("active"));
-    $$(".nav-btn").forEach(b => b.classList.remove("active"));
-
-    const pageSel = map[tab] || "#pagePoints";
-    const page = $(pageSel);
-    if (page) page.classList.add("active");
-
-    const btn = $(`.nav-btn[data-tab="${tab}"]`);
-    if (btn) btn.classList.add("active");
-
-    // kart-fab tylko na Zamów
-    $("#cartFab").style.display = (tab === "order" && getCartCount() > 0) ? "block" : "none";
-  }
-
-  /* -------------------------
-     Menu normalization
-     ------------------------- */
-  const MAIN_CATS = [
-    { id: "kawa-herbata", label: "Kawa" },
-    { id: "napoje-soki", label: "Napoje" },
-    { id: "shake", label: "Shakes" },
-    { id: "deser", label: "Desery" },
-    { id: "texmex", label: "Tex Mex" },
-    { id: "kanapki", label: "Kanapki" },
-    { id: "burger", label: "Burgery" },
-    { id: "sniadania", label: "Śniadania" }
-  ];
-
-  function menuItemsByMainCategory(catId){
-    return MENU_CATALOG.items.filter(it => it.category === catId);
-  }
-
-  function itemBaseId(it, idx){
-    // stabilne id (tytuł+cat+idx)
-    return `${it.category}::${idx}::${String(it.title).toLowerCase().replace(/\s+/g,"-")}`;
-  }
-
-  function itemDisplayPrice(it){
-    if (Array.isArray(it.variants) && it.variants.length){
-      const prices = it.variants.map(v => v.price).filter(n => Number.isFinite(Number(n)));
-      if (prices.length){
-        const min = Math.min(...prices);
-        const max = Math.max(...prices);
-        return min === max ? `${fmtPLN(min)} PLN` : `${fmtPLN(min)}–${fmtPLN(max)} PLN`;
-      }
-    }
-    // price może być string typu "12/17" albo "+12"
-    if (typeof it.price === "string") return `${it.price} PLN`;
-    return `${fmtPLN(it.price)} PLN`;
-  }
-
-  /* -------------------------
-     Cart
-     ------------------------- */
-  const getCart = () => store.get(LS.cart, []);
-  const setCart = (c) => store.set(LS.cart, c);
-
-  function getCartCount(){
-    return getCart().reduce((a,it) => a + (it.qty || 0), 0);
-  }
-  function getCartTotal(){
-    return getCart().reduce((a,it) => a + (Number(it.unitPrice)||0) * (it.qty||0), 0);
-  }
-
-  function addToCart(product, variant){
-    // product: {id,title,desc,tag,categoryLabel}
-    // variant: {label, price, size} | null
-    const vLabel = variant?.label ? String(variant.label) : null;
-    const vSize = variant?.size ? String(variant.size) : null;
-    const unitPrice = Number(variant?.price ?? product.priceNumber ?? product.price ?? 0);
-
-    const key = `${product.id}::${vLabel||""}::${vSize||""}::${unitPrice}`;
-    const cart = getCart();
-    const found = cart.find(x => x.key === key);
-    if (found){
-      found.qty = (found.qty || 0) + 1;
-    } else {
-      cart.push({
-        key,
-        productId: product.id,
-        title: product.title,
-        desc: product.desc || "",
-        category: product.mainCategory || "",
-        variantLabel: vLabel,
-        variantSize: vSize,
-        unitPrice,
-        qty: 1
-      });
-    }
-    setCart(cart);
-    toast.show("Dodano do koszyka", product.title + (vLabel ? ` • ${vLabel}` : ""));
-    renderCartFab();
-    renderCartModal();
-  }
-
-  function decCartItem(key){
-    const cart = getCart();
-    const it = cart.find(x => x.key === key);
-    if (!it) return;
-    it.qty = (it.qty || 0) - 1;
-    const next = cart.filter(x => (x.qty || 0) > 0);
-    setCart(next);
-    renderCartFab();
-    renderCartModal();
-  }
-
-  function incCartItem(key){
-    const cart = getCart();
-    const it = cart.find(x => x.key === key);
-    if (!it) return;
-    it.qty = (it.qty || 0) + 1;
-    setCart(cart);
-    renderCartFab();
-    renderCartModal();
-  }
-
-  function removeCartItem(key){
-    const cart = getCart().filter(x => x.key !== key);
-    setCart(cart);
-    renderCartFab();
-    renderCartModal();
-  }
-
-  function clearCart(){
-    setCart([]);
-    renderCartFab();
-    renderCartModal();
-  }
-
-  /* -------------------------
-     Orders
-     ------------------------- */
-  const getOrders = () => store.get(LS.orders, []);
-  const setOrders = (o) => store.set(LS.orders, o);
-
-  function pickupLeadMinutes(){
-    const d = new Date();
-    const day = d.getDay(); // 0 sun, 6 sat
-    // Mon-Thu: 30, Fri-Sun: 45
-    if (day >= 1 && day <= 4) return 30;
-    return 45;
-  }
-
-  function setDefaultPickupTime(){
-    const el = $("#checkoutTime");
-    if (!el) return;
-    const d = new Date();
-    d.setMinutes(d.getMinutes() + pickupLeadMinutes());
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mm = String(d.getMinutes()).padStart(2,"0");
-    el.value = `${hh}:${mm}`;
-  }
-
-  async function placeOrder(){
-    if (!isLoggedIn()){
-      toast.show("Wymagane logowanie", "Zaloguj się, aby złożyć zamówienie.");
-      showPage("account");
-      return;
-    }
-
-    const cart = getCart();
-    if (!cart.length){
-      toast.show("Koszyk pusty", "Dodaj produkty do koszyka.");
-      return;
-    }
-
-    const name = ($("#checkoutName").value || "").trim();
-    const phone = ($("#checkoutPhone").value || "").trim();
-    const location = ($("#checkoutLocation").value || "Słupsk").trim();
-    const time = ($("#checkoutTime").value || "").trim();
-    const notes = ($("#checkoutNotes").value || "").trim();
-
-    if (!name || !phone){
-      toast.show("Brak danych", "Podaj imię i telefon.");
-      return;
-    }
-    if (!time){
-      toast.show("Brak godziny", "Wybierz godzinę odbioru.");
-      return;
-    }
-    if (location === "Rowy"){
-      toast.show("Rowy wyłączone", "Odbiór w Rowach jest chwilowo wyłączony.");
-      return;
-    }
-
-    const u = getUser();
-    const payload = {
-      createdAt: nowISO(),
-      email: u.email,
-      milkId: getMilkIdForUser(),
-      customer: { name, phone },
-      pickup: { location, time, notes },
-      items: cart.map(it => ({
-        title: it.title,
-        variant: it.variantLabel || null,
-        unitPrice: it.unitPrice,
-        qty: it.qty
-      })),
-      total: getCartTotal()
-    };
-
-    // próbujemy serwer
-    let ok = false;
-    let serverMsg = "";
-    try{
-      const r = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (r.ok){
-        ok = true;
-        try{
-          const js = await r.json();
-          if (js?.message) serverMsg = js.message;
-          if (js?.orderId) payload.orderId = js.orderId;
-        }catch{}
-      }
-    }catch{}
-
-    // lokalny zapis (zawsze)
-    const orders = getOrders();
-    orders.unshift({ ...payload, status: ok ? "Wysłane" : "Zapisane lokalnie", id: payload.orderId || ("local_" + Date.now()) });
-    setOrders(orders.slice(0, 40));
-
-    clearCart();
-    renderOrders();
-
-    toast.show("Zamówienie przyjęte", ok ? (serverMsg || "Wysłano na serwer.") : "Brak połączenia — zapis lokalny.");
-    closeModal("#cartModal");
-  }
-
-  /* -------------------------
-     Reservations
-     ------------------------- */
-  const getReservations = () => store.get(LS.reservations, []);
-  const setReservations = (r) => store.set(LS.reservations, r);
-
-  async function sendReservation(){
-    if (!isLoggedIn()){
-      toast.show("Wymagane logowanie", "Zaloguj się, aby wysłać rezerwację.");
-      showPage("account");
-      return;
-    }
-
-    const name = ($("#resName").value || "").trim();
-    const phone = ($("#resPhone").value || "").trim();
-    const date = ($("#resDate").value || "").trim();
-    const time = ($("#resTime").value || "").trim();
-    const people = ($("#resPeople").value || "").trim();
-    const notes = ($("#resNotes").value || "").trim();
-
-    if (!name || !phone || !date || !time || !people){
-      toast.show("Uzupełnij dane", "Imię, telefon, data, godzina i liczba osób są wymagane.");
-      return;
-    }
-
-    const u = getUser();
-    const payload = {
-      createdAt: nowISO(),
-      email: u.email,
-      milkId: getMilkIdForUser(),
-      name, phone, date, time, people: Number(people) || people, notes
-    };
-
-    let ok = false;
-    try{
-      const r = await fetch("/api/rezerwacje", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      ok = r.ok;
-      if (ok){
-        try{
-          const js = await r.json();
-          if (js?.id) payload.id = js.id;
-        }catch{}
-      }
-    }catch{}
-
-    const list = getReservations();
-    list.unshift({ ...payload, status: ok ? "Wysłano" : "Lokalnie", id: payload.id || ("local_" + Date.now()) });
-    setReservations(list.slice(0, 40));
-
-    renderReservations();
-    toast.show("Rezerwacja zapisana", ok ? "Wysłano na serwer." : "Brak połączenia — zapis lokalny.");
-    $("#resHint").textContent = ok ? "Wysłano rezerwację na serwer." : "Zapisano lokalnie (spróbuj później ponownie).";
-  }
-
-  function deleteReservation(id){
-    const list = getReservations().filter(x => x.id !== id);
-    setReservations(list);
-    renderReservations();
-    toast.show("Usunięto", "Rezerwacja usunięta lokalnie.");
-  }
-
-  /* -------------------------
-     Rewards
-     ------------------------- */
-  const getRedeemed = () => store.get(LS.redeemed, []);
-  const setRedeemed = (r) => store.set(LS.redeemed, r);
-
-  async function redeemReward(rewardId){
-    const rw = REWARDS.find(r => r.id === rewardId);
-    if (!rw) return;
-
-    if (!isLoggedIn()){
-      toast.show("Wymagane logowanie", "Zaloguj się, aby realizować nagrody.");
-      showPage("account");
-      return;
-    }
-
-    const pts = getPoints();
-    if (pts < rw.points){
-      toast.show("Za mało punktów", `Potrzebujesz ${rw.points} pkt.`);
-      return;
-    }
-
-    // próbujemy endpoint (jeśli istnieje), ale mamy fallback lokalny
-    let ok = false;
-    try{
-      const r = await fetch("/api/rewards/redeem", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({
-          rewardId: rw.id,
-          email: getUser().email,
-          milkId: getMilkIdForUser(),
-          at: nowISO()
-        })
-      });
-      ok = r.ok;
-    }catch{}
-
-    applyPointsDelta(-rw.points, `Realizacja nagrody: ${rw.title}`);
-
-    const redeemed = getRedeemed();
-    redeemed.unshift({
-      id: "redeem_" + Date.now(),
-      rewardId: rw.id,
-      title: rw.title,
-      points: rw.points,
-      at: nowISO(),
-      status: ok ? "Zarejestrowano" : "Lokalnie"
-    });
-    setRedeemed(redeemed.slice(0, 30));
-
-    toast.show("Zrealizowano nagrodę", ok ? "Zapisano na serwerze." : "Zapis lokalny (offline).");
-    renderRewards();
-  }
-
-  /* -------------------------
-     Rendering
-     ------------------------- */
-  function renderPoints(){
-    const pts = getPoints();
-    const p1 = $("#pointsValue");
-    const p2 = $("#pointsBig");
-    if (p1) p1.textContent = String(pts);
-    if (p2) p2.textContent = String(pts);
-
-    // do najbliższej nagrody
-    const next = [...REWARDS].sort((a,b)=>a.points-b.points).find(r => r.points > pts);
-    const toNext = $("#toNext");
-    if (toNext){
-      if (!next) toNext.textContent = "Masz na wszystkie 🎉";
-      else toNext.textContent = `${next.points - pts} pkt`;
-    }
-
-    // historia
-    const histEl = $("#pointsHistory");
-    if (histEl){
-      const hist = store.get(LS.pointsHistory, []);
-      if (!hist.length){
-        histEl.innerHTML = `<div class="mini">Brak historii.</div>`;
-      } else {
-        histEl.innerHTML = hist.map(h => {
-          const d = new Date(h.at);
-          const delta = Number(h.delta)||0;
-          const sign = delta >= 0 ? "+" : "";
-          return `
-            <div class="item">
-              <div class="meta">
-                <b>${h.reason || "Operacja"}</b>
-                <span>${d.toLocaleString("pl-PL")}</span>
+  });
+
+  // ---------- Points ----------
+  const pointsCountEl = document.getElementById("pointsCount");
+  const pointsProgressEl = document.getElementById("pointsProgress");
+  const historyEl = document.getElementById("pointsHistory");
+
+  function renderPoints() {
+    const user = getUser();
+    const pts = store.get("points", 0);
+
+    pointsCountEl.textContent = user?.email ? pts : "—";
+    renderTopPill();
+
+    const pct = user?.email ? Math.min(100, pts % 100) : 0;
+    pointsProgressEl.style.width = pct + "%";
+
+    const hist = store.get("pointsHistory", []);
+    historyEl.innerHTML = user?.email
+      ? (hist.length
+          ? hist.map(h => `
+              <div style="padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.06)">
+                <b>${h.text}</b><div class="tiny">${h.date}</div>
+              </div>`).join("")
+          : `<div class="empty">
+              <div class="icon"><i class="fa-solid fa-clock"></i></div>
+              <div>
+                <b>Historia punktów jest pusta</b>
+                <div class="tiny">Punkty pojawią się po pierwszym naliczeniu.</div>
               </div>
-              <div class="right">
-                <div class="price">${sign}${delta} pkt</div>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-    }
-  }
-
-  function renderRewards(){
-    const el = $("#rewardsList");
-    if (!el) return;
-
-    const pts = getPoints();
-    el.innerHTML = REWARDS.map(r => {
-      const disabled = pts < r.points;
-      return `
-        <div class="item">
-          <div class="meta">
-            <b>${r.title}</b>
-            <span>${r.desc}</span>
+            </div>`)
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się</b>
+            <div class="tiny">Aby zbierać punkty i używać Milk ID.</div>
           </div>
-          <div class="right">
-            <div class="price">${r.points} pkt</div>
-            <button class="btn small ${disabled ? "ghost" : "primary"}" data-reward="${r.id}" ${disabled ? "disabled" : ""}>
-              ${disabled ? "Brak pkt" : "Zrealizuj"}
+        </div>`;
+  }
+
+  // ---------- Rewards (fallback lista) ----------
+  const rewardsFallback = [
+    { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, icon: "fa-ice-cream", desc: "Wartość do 30 PLN" },
+    { id: "burger_set_60", title: "Zestaw burger do 60 PLN", cost: 50, icon: "fa-burger", desc: "Wartość do 60 PLN" },
+    { id: "order_120", title: "Zamówienie do 120 PLN", cost: 100, icon: "fa-receipt", desc: "Wartość do 120 PLN" },
+  ];
+  const rewardsListEl = document.getElementById("rewardsList");
+
+  function getRewardsFromStore() {
+    return store.get("rewardsCatalog", rewardsFallback);
+  }
+
+  function renderRewards() {
+    const user = getUser();
+    const pts = store.get("points", 0);
+
+    if (!user?.email) {
+      rewardsListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się, aby wymieniać nagrody</b>
+            <div class="tiny">Po zalogowaniu przypiszemy Milk ID do Twojego maila.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const rewards = getRewardsFromStore();
+    rewardsListEl.innerHTML = rewards.map((r) => {
+      const disabled = pts < r.cost;
+      return `
+        <div class="reward">
+          <div class="reward-left">
+            <div class="reward-ico"><i class="fa-solid ${r.icon || "fa-gift"}"></i></div>
+            <div>
+              <div class="reward-title">${r.title}</div>
+              <div class="tiny">${r.desc || ""}</div>
+              <div class="muted">Koszt: <b>${r.cost} pkt</b></div>
+            </div>
+          </div>
+          <div style="text-align:right;min-width:88px">
+            <div style="font-weight:900">${r.cost} pkt</div>
+            <button class="btn btn-primary btn-small"
+              ${disabled ? "disabled style='opacity:.5;cursor:not-allowed'" : ""}
+              data-redeem="${r.id}">
+              Wymień
             </button>
           </div>
         </div>
       `;
     }).join("");
 
-    // bind
-    el.querySelectorAll("button[data-reward]").forEach(btn => {
-      btn.addEventListener("click", () => redeemReward(btn.getAttribute("data-reward")));
+    rewardsListEl.querySelectorAll("[data-redeem]").forEach((btn) => {
+      btn.addEventListener("click", () => redeemReward(btn.dataset.redeem));
     });
   }
 
-  function renderOrderCategories(activeCat){
-    const wrap = $("#orderCategories");
-    if (!wrap) return;
+  async function redeemReward(rewardId) {
+    if (!requireLogin("wymiany nagród")) return;
 
-    const current = activeCat || store.get("milk_active_cat", MAIN_CATS[0].id);
-    store.set("milk_active_cat", current);
+    const user = getUser();
+    const email = user.email;
+    const milkId = getMilkId();
 
-    wrap.innerHTML = MAIN_CATS.map(c => `
-      <button class="chip ${c.id === current ? "active" : ""}" data-cat="${c.id}">
-        ${c.label}
-      </button>
-    `).join("");
-
-    wrap.querySelectorAll(".chip").forEach(ch => {
-      ch.addEventListener("click", () => {
-        const id = ch.getAttribute("data-cat");
-        renderOrderCategories(id);
-        renderOrderProducts(id);
+    try {
+      const res = await API.json("/api/rewards/redeem", {
+        method: "POST",
+        body: JSON.stringify({ email, milkId, rewardId }),
       });
-    });
-  }
 
-  function renderOrderProducts(catId){
-    const list = $("#orderProducts");
-    if (!list) return;
+      if (typeof res?.points === "number") store.set("points", res.points);
+      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
 
-    const items = menuItemsByMainCategory(catId);
-    if (!items.length){
-      list.innerHTML = `<div class="mini">Brak produktów w tej kategorii.</div>`;
-      return;
-    }
-
-    list.innerHTML = items.map((it, idx) => {
-      const pid = itemBaseId(it, idx);
-      const hasVar = Array.isArray(it.variants) && it.variants.length;
-      const priceTxt = itemDisplayPrice(it);
-      const desc = (it.desc || "").trim();
-      const tag = (it.tag || "").trim();
-
-      if (!hasVar){
-        return `
-          <div class="item">
-            <div class="meta">
-              <b>${it.title}</b>
-              <span>${[tag, desc].filter(Boolean).join(" • ")}</span>
-            </div>
-            <div class="right">
-              <div class="price">${priceTxt}</div>
-              <button class="btn small primary" data-add="${pid}">Dodaj</button>
-            </div>
-          </div>
-        `;
+      const code = res?.code || res?.rewardCode;
+      if (code) {
+        showToast("Nagroda wymieniona ✅");
+        alert("Kod do odbioru nagrody:\n\n" + code + "\n\nPokaż w lokalu.");
+      } else {
+        showToast("Nagroda wymieniona ✅");
       }
 
-      const options = it.variants.map((v, i) => {
-        const lbl = (v.label || v.size || `wariant ${i+1}`).toString();
-        return `<option value="${i}">${lbl} — ${fmtPLN(v.price)} PLN</option>`;
-      }).join("");
+      renderPoints();
+      renderRewards();
+      return;
+    } catch (e) {
+      console.warn("redeem server failed -> local fallback", e);
+    }
 
-      return `
-        <div class="item">
-          <div class="meta">
-            <b>${it.title}</b>
-            <span>${[tag, desc].filter(Boolean).join(" • ")}</span>
-            <div style="margin-top:8px">
-              <select class="input" style="padding:10px 12px;border-radius:14px" data-variant-select="${pid}">
-                ${options}
-              </select>
-            </div>
-          </div>
-          <div class="right">
-            <div class="price">${priceTxt}</div>
-            <button class="btn small primary" data-add="${pid}">Dodaj</button>
-          </div>
-        </div>
-      `;
-    }).join("");
+    const rewards = getRewardsFromStore();
+    const r = rewards.find((x) => x.id === rewardId);
+    if (!r) return;
 
-    // bind add buttons
-    list.querySelectorAll("button[data-add]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const pid = btn.getAttribute("data-add");
-        const idx = parseInt(pid.split("::")[1], 10);
-        const it = items[idx];
-        const hasVar = Array.isArray(it.variants) && it.variants.length;
-
-        const product = {
-          id: pid,
-          title: it.title,
-          desc: it.desc || "",
-          tag: it.tag || "",
-          mainCategory: catId,
-          priceNumber: (typeof it.price === "number") ? it.price : null
-        };
-
-        if (!hasVar){
-          addToCart(product, null);
-          return;
-        }
-
-        const sel = list.querySelector(`select[data-variant-select="${pid}"]`);
-        const vi = sel ? Number(sel.value) : 0;
-        const v = it.variants[vi] || it.variants[0];
-        addToCart(product, v);
-      });
-    });
-
-    renderCartFab();
-  }
-
-  function renderCartFab(){
-    const fab = $("#cartFab");
-    const c = getCartCount();
-    const t = getCartTotal();
-    $("#fabCount").textContent = String(c);
-    $("#fabTotal").textContent = fmtPLN(t);
-    $("#cartTotal").textContent = fmtPLN(t);
-    if (fab) fab.style.display = (showingTab() === "order" && c > 0) ? "block" : "none";
-  }
-
-  function renderCartModal(){
-    const list = $("#cartList");
-    if (!list) return;
-
-    const cart = getCart();
-    if (!cart.length){
-      list.innerHTML = `<div class="mini">Koszyk jest pusty.</div>`;
-      $("#cartTotal").textContent = "0";
-      renderCartFab();
+    const pts = store.get("points", 0);
+    if (pts < r.cost) {
+      showToast("Masz za mało punktów 😅", true);
       return;
     }
 
-    list.innerHTML = cart.map(it => {
-      const vv = it.variantLabel ? ` • ${it.variantLabel}` : "";
-      return `
-        <div class="item">
-          <div class="meta">
-            <b>${it.title}${vv}</b>
-            <span>${it.desc || ""}</span>
-          </div>
-          <div class="right">
-            <div class="price">${fmtPLN(it.unitPrice)} PLN</div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <button class="btn small ghost" data-dec="${it.key}">−</button>
-              <div style="min-width:28px;text-align:center;font-weight:900">${it.qty}</div>
-              <button class="btn small ghost" data-inc="${it.key}">+</button>
-            </div>
-            <button class="btn small ghost" data-rm="${it.key}">Usuń</button>
-          </div>
-        </div>
-      `;
-    }).join("");
+    store.set("points", pts - r.cost);
+    const hist = store.get("pointsHistory", []);
+    hist.unshift({ text: `Wymieniono: -${r.cost} pkt (${r.title})`, date: new Date().toLocaleString("pl-PL") });
+    store.set("pointsHistory", hist);
 
-    list.querySelectorAll("button[data-dec]").forEach(b => b.addEventListener("click", () => decCartItem(b.getAttribute("data-dec"))));
-    list.querySelectorAll("button[data-inc]").forEach(b => b.addEventListener("click", () => incCartItem(b.getAttribute("data-inc"))));
-    list.querySelectorAll("button[data-rm]").forEach(b => b.addEventListener("click", () => removeCartItem(b.getAttribute("data-rm"))));
-
-    const total = getCartTotal();
-    $("#cartTotal").textContent = fmtPLN(total);
-
-    // hint o regule odbioru
-    const lead = pickupLeadMinutes();
-    $("#pickupRuleHint").textContent = `Minimalny czas przygotowania: ${lead} min (${lead === 30 ? "Pon–Czw" : "Pią–Nie"}).`;
-
-    renderCartFab();
-  }
-
-  function renderOrders(){
-    const el = $("#ordersList");
-    if (!el) return;
-
-    const orders = getOrders();
-    if (!orders.length){
-      el.innerHTML = `<div class="mini">Brak zamówień.</div>`;
-      return;
-    }
-
-    el.innerHTML = orders.map(o => {
-      const d = new Date(o.createdAt);
-      const total = fmtPLN(o.total || 0);
-      const items = (o.items || []).slice(0,3).map(i => `${i.title}${i.variant ? ` (${i.variant})` : ""} ×${i.qty}`).join(", ");
-      return `
-        <div class="item">
-          <div class="meta">
-            <b>${o.status || "Zamówienie"}</b>
-            <span>${d.toLocaleString("pl-PL")} • ${o.pickup?.location || "Słupsk"} • odbiór ${o.pickup?.time || "—"}</span>
-            <span>${items}${(o.items||[]).length>3 ? "…" : ""}</span>
-          </div>
-          <div class="right">
-            <div class="price">${total} PLN</div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function renderReservations(){
-    const el = $("#resList");
-    if (!el) return;
-
-    const list = getReservations();
-    if (!list.length){
-      el.innerHTML = `<div class="mini">Brak rezerwacji.</div>`;
-      return;
-    }
-
-    el.innerHTML = list.map(r => {
-      const d = new Date(r.createdAt);
-      return `
-        <div class="item">
-          <div class="meta">
-            <b>${r.status || "Rezerwacja"} • ${r.date} ${r.time}</b>
-            <span>${r.people} os. • ${r.name} • ${r.phone}</span>
-            <span>${r.notes ? r.notes : ""}</span>
-          </div>
-          <div class="right">
-            <div class="price">${d.toLocaleDateString("pl-PL")}</div>
-            <button class="btn small ghost" data-delres="${r.id}">Usuń</button>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    el.querySelectorAll("button[data-delres]").forEach(b => {
-      b.addEventListener("click", () => deleteReservation(b.getAttribute("data-delres")));
-    });
-  }
-
-  function renderAuthUI(){
-    const u = getUser();
-    const logged = !!u?.email;
-
-    $("#authSub").textContent = logged ? `Zalogowano jako: ${u.email}` : "Zaloguj się, aby korzystać z pełnych funkcji";
-    $("#logoutBtn").disabled = !logged;
-
-    const hint = $("#authHint");
-    if (hint){
-      hint.textContent = logged
-        ? `Milk ID: ${getMilkIdForUser()}`
-        : "Logowanie jest uproszczone (mock).";
-    }
-
-    // top subtitle
-    $("#topSubtitle").textContent = logged ? `Zalogowano • ${u.email}` : "Lojalność • Nagrody • Zamówienia";
-  }
-
-  /* -------------------------
-     Modals
-     ------------------------- */
-  function openModal(sel){
-    const m = $(sel);
-    if (!m) return;
-    m.classList.add("show");
-    m.setAttribute("aria-hidden", "false");
-  }
-  function closeModal(sel){
-    const m = $(sel);
-    if (!m) return;
-    m.classList.remove("show");
-    m.setAttribute("aria-hidden", "true");
-  }
-
-  /* -------------------------
-     Milk ID modal
-     ------------------------- */
-  function openMilkId(){
-    if (!isLoggedIn()){
-      toast.show("Wymagane logowanie", "Zaloguj się, aby zobaczyć Milk ID.");
-      showPage("account");
-      return;
-    }
-    const code = getMilkIdForUser();
-    $("#milkIdInput").value = code || "••••••";
-    $("#milkIdHint").textContent = `Kod jest przypisany do e-maila: ${getUser().email}`;
-    openModal("#milkIdModal");
-  }
-
-  /* -------------------------
-     Install overlay
-     ------------------------- */
-  let deferredPrompt = null;
-
-  function isStandalone(){
-    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  }
-
-  function maybeShowInstall(){
-    if (isStandalone()) return;
-    const shown = store.get("milk_install_dismissed", false);
-    if (!shown) openInstall();
-  }
-
-  function openInstall(){
-    $("#pwaState").textContent = isStandalone() ? "Zainstalowana" : "Przeglądarka";
-    openModal("#installOverlay"); // overlay ma klasę .install, ale modal API działa tak samo (ma .show)
-    $("#installOverlay").classList.add("show");
-  }
-
-  function closeInstall(dismiss){
-    $("#installOverlay").classList.remove("show");
-    if (dismiss) store.set("milk_install_dismissed", true);
-  }
-
-  async function triggerInstall(){
-    if (!deferredPrompt){
-      toast.show("Instalacja", "Na iOS: Udostępnij → Dodaj do ekranu. Na Android: menu → Zainstaluj.");
-      return;
-    }
-    deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch {}
-    deferredPrompt = null;
-  }
-
-  /* -------------------------
-     Settings subpages
-     ------------------------- */
-  function showSub(id){
-    ["#subPersonal","#subLang","#subAbout","#subHelp"].forEach(s => $(s).classList.add("hide"));
-    $(id).classList.remove("hide");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-  function hideSubs(){
-    ["#subPersonal","#subLang","#subAbout","#subHelp"].forEach(s => $(s).classList.add("hide"));
-  }
-
-  /* -------------------------
-     Which tab is active?
-     ------------------------- */
-  function showingTab(){
-    const btn = $(".nav-btn.active");
-    return btn ? btn.getAttribute("data-tab") : "points";
-  }
-
-  /* -------------------------
-     Service worker
-     ------------------------- */
-  async function registerSW(){
-    if (!("serviceWorker" in navigator)) return;
-    try{
-      await navigator.serviceWorker.register("sw.js");
-    }catch{}
-  }
-
-  /* -------------------------
-     Bind UI events
-     ------------------------- */
-  function bind(){
-    // bottom nav
-    $$(".nav-btn").forEach(b => {
-      b.addEventListener("click", () => {
-        hideSubs();
-        showPage(b.getAttribute("data-tab"));
-        renderCartFab();
-      });
-    });
-
-    // quick actions
-    $("#qaMilkId").addEventListener("click", openMilkId);
-    $("#qaOrder").addEventListener("click", () => showPage("order"));
-    $("#qaRewards").addEventListener("click", () => showPage("rewards"));
-    $("#qaReservation").addEventListener("click", () => showPage("reservations"));
-
-    // points page
-    $("#openMilkId").addEventListener("click", openMilkId);
-
-    // eatmi
-    $("#eatmiBtn").addEventListener("click", () => {
-      window.open("https://eatmi.pl", "_blank");
-    });
-
-    // status card toggle hours
-    let expanded = false;
-    renderHours(expanded);
-    $("#statusCard").addEventListener("click", () => {
-      expanded = !expanded;
-      renderHours(expanded);
-    });
-
-    // Milk ID modal
-    $("#milkIdClose").addEventListener("click", () => closeModal("#milkIdModal"));
-    $("#milkIdCopy").addEventListener("click", async () => {
-      const v = $("#milkIdInput").value;
-      try{ await navigator.clipboard.writeText(v); }catch{}
-      toast.show("Skopiowano", "Milk ID skopiowane do schowka.");
-    });
-
-    // cart modal open/close
-    $("#openCartTop").addEventListener("click", () => { renderCartModal(); openModal("#cartModal"); setDefaultPickupTime(); });
-    $("#openCartFab").addEventListener("click", () => { renderCartModal(); openModal("#cartModal"); setDefaultPickupTime(); });
-    $("#cartClose").addEventListener("click", () => closeModal("#cartModal"));
-    $("#placeOrderBtn").addEventListener("click", placeOrder);
-
-    // install overlay
-    $("#installClose").addEventListener("click", () => closeInstall(true));
-    $("#installLater").addEventListener("click", () => closeInstall(true));
-    $("#installBtn").addEventListener("click", triggerInstall);
-
-    // account login
-    $("#loginGoogle").addEventListener("click", () => {
-      // mock google: jeśli wpisany email, bierzemy go; jak nie, generujemy
-      const email = ($("#emailInput").value || "").trim() || `user${Math.floor(Math.random()*9999)}@gmail.com`;
-      setUser({ email, provider: "google", at: nowISO() });
-      toast.show("Zalogowano", email);
-      renderAuthUI();
-    });
-
-    $("#loginEmail").addEventListener("click", () => {
-      $("#emailInput").focus();
-      toast.show("Logowanie e-mail", "Wpisz e-mail i kliknij “Zaloguj”.");
-    });
-
-    $("#loginSubmit").addEventListener("click", async () => {
-      const email = ($("#emailInput").value || "").trim();
-      const pass = ($("#passInput").value || "").trim();
-      if (!email){
-        toast.show("Brak e-maila", "Wpisz e-mail.");
-        return;
-      }
-
-      // próbujemy /api/auth/login (jeśli istnieje)
-      let ok = false;
-      try{
-        const r = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ email, password: pass })
-        });
-        ok = r.ok;
-      }catch{}
-
-      setUser({ email, provider: "email", at: nowISO(), server: ok });
-      toast.show("Zalogowano", ok ? "Zweryfikowano na serwerze." : "Tryb offline (mock).");
-      renderAuthUI();
-    });
-
-    $("#logoutBtn").addEventListener("click", () => {
-      store.del(LS.user);
-      toast.show("Wylogowano", "Konto zostało wylogowane.");
-      renderAuthUI();
-    });
-
-    // settings subpages
-    $("#settingsPersonal").addEventListener("click", () => {
-      showSub("#subPersonal");
-      const prof = store.get(LS.profile, {});
-      $("#profName").value = prof.name || "";
-      $("#profPhone").value = prof.phone || "";
-    });
-    $("#settingsLang").addEventListener("click", () => showSub("#subLang"));
-    $("#settingsAbout").addEventListener("click", () => showSub("#subAbout"));
-    $("#settingsHelp").addEventListener("click", () => showSub("#subHelp"));
-
-    $("#subBack1").addEventListener("click", hideSubs);
-    $("#subBack2").addEventListener("click", hideSubs);
-    $("#subBack3").addEventListener("click", hideSubs);
-    $("#subBack4").addEventListener("click", hideSubs);
-
-    $("#profSave").addEventListener("click", () => {
-      const name = ($("#profName").value || "").trim();
-      const phone = ($("#profPhone").value || "").trim();
-      store.set(LS.profile, { name, phone, at: nowISO() });
-      toast.show("Zapisano", "Dane profilu zapisane lokalnie.");
-      hideSubs();
-    });
-
-    $("#langPL").addEventListener("click", () => {
-      store.set(LS.lang, "pl");
-      toast.show("Język", "Ustawiono: Polski");
-      hideSubs();
-    });
-    $("#langEN").addEventListener("click", () => {
-      store.set(LS.lang, "en");
-      toast.show("Language", "Set: English");
-      hideSubs();
-    });
-
-    // reservations
-    $("#resSend").addEventListener("click", sendReservation);
-
-    // toast close (już w toast module)
-  }
-
-  /* -------------------------
-     Init
-     ------------------------- */
-  function init(){
-    initPointsIfMissing();
-
-    // wersja / pwa state
-    $("#appVer").textContent = "1.0";
-    $("#pwaState").textContent = isStandalone() ? "Zainstalowana" : "Przeglądarka";
-
-    // status/hours
-    renderStatus();
-    setInterval(renderStatus, 60_000);
-
-    // render main
-    renderAuthUI();
     renderPoints();
     renderRewards();
-    renderOrders();
-    renderReservations();
-
-    // order tab
-    const activeCat = store.get("milk_active_cat", MAIN_CATS[0].id);
-    renderOrderCategories(activeCat);
-    renderOrderProducts(activeCat);
-
-    // cart
-    renderCartFab();
-    renderCartModal();
-
-    // subpages hidden
-    hideSubs();
-
-    // default tab
-    showPage("points");
-
-    // pickup hint initial
-    $("#pickupRuleHint").textContent = `Minimalny czas przygotowania: ${pickupLeadMinutes()} min.`;
-
-    // install
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      // nie pokazujemy na siłę, ale przycisk będzie działał
-    });
-
-    // overlay w przeglądarce (bez przesady — można zdjąć jeśli nie chcesz)
-    maybeShowInstall();
-
-    // sw
-    registerSW();
+    showToast(`Nagroda odebrana: ${r.title} 🎁`);
   }
 
-  // fix: install overlay korzysta z osobnych klas
-  function openModalInstallCompat(){
-    $("#installOverlay").classList.add("show");
+  // ---------- Profile helpers ----------
+  function getPersonal() {
+    const user = getUser();
+    const profile = store.get("profile", {});
+    return {
+      name: profile.name || user?.name || "",
+      phone: profile.phone || user?.phone || "",
+      email: profile.email || user?.email || "",
+    };
   }
 
-  // “modal” helpers używają .modal, więc dla install robimy oddzielnie (ale i tak operujemy bezpośrednio)
-  function openModal(sel){
-    const m = $(sel);
-    if (!m) return;
-    m.classList.add("show");
-    m.setAttribute("aria-hidden", "false");
+  function prefillPersonalUI() {
+    const p = getPersonal();
+    const nameInput = document.getElementById("personalName");
+    const phoneInput = document.getElementById("personalPhone");
+    const emailInput = document.getElementById("personalEmail");
+    if (nameInput && !nameInput.value) nameInput.value = p.name || "";
+    if (phoneInput && !phoneInput.value) phoneInput.value = p.phone || "";
+    if (emailInput && !emailInput.value) emailInput.value = p.email || "";
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    bind();
-    init();
+  function prefillReservationForm() {
+    const p = getPersonal();
+    const name = document.querySelector("#reservationForm input[name='name']");
+    const phone = document.querySelector("#reservationForm input[name='phone']");
+    if (name && !name.value && p.name) name.value = p.name;
+    if (phone && !phone.value && p.phone) phone.value = p.phone;
+  }
 
-    // Drobna poprawka: install overlay (to nie jest .modal)
-    // (zostawiamy, bo w init może się pojawić)
-    if ($("#installOverlay") && $("#installOverlay").classList.contains("show")) {
-      openModalInstallCompat();
+  function prefillOrderCheckout() {
+    const p = getPersonal();
+    const nameEl = document.getElementById("orderCustomerName");
+    const phoneEl = document.getElementById("orderCustomerPhone");
+    if (nameEl && !nameEl.value && p.name) nameEl.value = p.name;
+    if (phoneEl && !phoneEl.value && p.phone) phoneEl.value = p.phone;
+  }
+
+  // ---------- Order time rules (Mon-Thu: 30min, Fri-Sun: 45min) ----------
+  const pickupTimeEl = document.getElementById("pickupTime");
+  const pickupRuleHintEl = document.getElementById("pickupRuleHint");
+
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function minutesToHHMM(mins){
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${pad2(h)}:${pad2(m)}`;
+  }
+  function ceilToQuarterMinutes(totalMins){
+    return Math.ceil(totalMins / 15) * 15;
+  }
+  function getLeadMinutesForToday(now = new Date()){
+    const d = now.getDay();
+    if (d >= 1 && d <= 4) return 30;
+    return 45;
+  }
+  function computeMinPickupTime(now = new Date()){
+    const lead = getLeadMinutesForToday(now);
+    const nowM = now.getHours()*60 + now.getMinutes();
+    const base = ceilToQuarterMinutes(nowM);
+    const minM = base + lead;
+    return { minM, lead, baseM: base };
+  }
+  function renderPickupRuleHintAndMin(){
+    if (!pickupTimeEl || !pickupRuleHintEl) return;
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const hhmm = minutesToHHMM(minM);
+    pickupRuleHintEl.innerHTML = `Najwcześniej możesz ustawić odbiór na <b>${hhmm}</b> (minimalnie pełne ${lead} min).`;
+    if (!pickupTimeEl.value) {
+      pickupTimeEl.value = hhmm;
+    } else {
+      const chosen = toMinutes(pickupTimeEl.value);
+      if (chosen < minM) pickupTimeEl.value = hhmm;
+    }
+  }
+  pickupTimeEl?.addEventListener("focus", renderPickupRuleHintAndMin);
+  pickupTimeEl?.addEventListener("change", () => {
+    const { minM } = computeMinPickupTime(new Date());
+    const chosen = pickupTimeEl.value ? toMinutes(pickupTimeEl.value) : null;
+    if (chosen !== null && chosen < minM) {
+      showToast("Godzina odbioru jest za wcześnie — ustaw późniejszą ⏰", true);
+      pickupTimeEl.value = minutesToHHMM(minM);
     }
   });
 
-})();
-</script>
+  // ---------- Menu wklejane w kodzie ----------
+  const menuListEl = document.getElementById("menuList");
+  const menuHintEl = document.getElementById("menuHint");
 
+
+ let menuItems = [
+  // =========================
+  // KAWA I HERBATA
+  // =========================
+  { id:"coffee_espresso", title:"Espresso", desc:"Klasyczne espresso", price:10, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_doppio", title:"Doppio", desc:"Podwójne espresso", price:14, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_americano", title:"Americano", desc:"Espresso + woda", price:12, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_black", title:"Czarna kawa", desc:"Klasyczna kawa czarna", price:12, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_cappuccino", title:"Cappuccino", desc:"Espresso + mleko", price:14, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_latte", title:"Latte", desc:"Mleczna kawa", price:16, icon:"fa-mug-hot", category:"Kawa i herbata" },
+  { id:"coffee_flatwhite", title:"Flat White", desc:"Mocna mleczna kawa", price:17, icon:"fa-mug-hot", category:"Kawa i herbata" },
+
+  { id:"tea_black", title:"Herbata czarna", desc:"Klasyczna", price:10, icon:"fa-mug-saucer", category:"Kawa i herbata" },
+  { id:"tea_green", title:"Herbata zielona", desc:"Lekka i aromatyczna", price:10, icon:"fa-mug-saucer", category:"Kawa i herbata" },
+  { id:"tea_fruit", title:"Herbata owocowa", desc:"Owocowa mieszanka", price:10, icon:"fa-mug-saucer", category:"Kawa i herbata" },
+  { id:"tea_winter", title:"Herbata zimowa", desc:"Z przyprawami", price:14, icon:"fa-mug-saucer", category:"Kawa i herbata" },
+
+  // =========================
+  // MATCHA / DODATKI (wrzucone do kawy i herbaty)
+  // =========================
+  { id:"matcha_classic", title:"Matcha klasyczna", desc:"Matcha + mleko", price:18, icon:"fa-leaf", category:"Kawa i herbata" },
+  { id:"matcha_strawberry", title:"Matcha truskawkowa", desc:"Matcha + truskawka", price:20, icon:"fa-leaf", category:"Kawa i herbata" },
+  { id:"matcha_mango", title:"Matcha mango", desc:"Matcha + mango", price:20, icon:"fa-leaf", category:"Kawa i herbata" },
+
+  // =========================
+  // NAPOJE I SOKI
+  // =========================
+  { id:"drink_cola", title:"Cola", desc:"Butelka", price:10, icon:"fa-bottle-water", category:"Napoje i soki" },
+  { id:"drink_cola_zero", title:"Cola Zero", desc:"Butelka", price:10, icon:"fa-bottle-water", category:"Napoje i soki" },
+  { id:"drink_fanta", title:"Fanta", desc:"Butelka", price:10, icon:"fa-bottle-water", category:"Napoje i soki" },
+  { id:"drink_sprite", title:"Sprite", desc:"Butelka", price:10, icon:"fa-bottle-water", category:"Napoje i soki" },
+
+  { id:"water_still", title:"Woda niegazowana", desc:"Butelka", price:8, icon:"fa-droplet", category:"Napoje i soki" },
+  { id:"water_sparkling", title:"Woda gazowana", desc:"Butelka", price:8, icon:"fa-droplet", category:"Napoje i soki" },
+
+  { id:"juice_orange", title:"Sok pomarańczowy", desc:"100% sok", price:12, icon:"fa-glass-water", category:"Napoje i soki" },
+  { id:"juice_apple", title:"Sok jabłkowy", desc:"100% sok", price:12, icon:"fa-glass-water", category:"Napoje i soki" },
+  { id:"juice_multivit", title:"Sok multiwitamina", desc:"100% sok", price:12, icon:"fa-glass-water", category:"Napoje i soki" },
+
+  { id:"lemonade_classic", title:"Lemoniada klasyczna", desc:"Cytryna, mięta", price:16, icon:"fa-lemon", category:"Napoje i soki" },
+  { id:"lemonade_strawberry", title:"Lemoniada truskawkowa", desc:"Truskawka, mięta", price:18, icon:"fa-lemon", category:"Napoje i soki" },
+  { id:"lemonade_mango", title:"Lemoniada mango", desc:"Mango, mięta", price:18, icon:"fa-lemon", category:"Napoje i soki" },
+
+  { id:"smoothie_strawberry", title:"Smoothie truskawkowe", desc:"Owocowe smoothie", price:22, icon:"fa-blender", category:"Napoje i soki" },
+  { id:"smoothie_mango", title:"Smoothie mango", desc:"Owocowe smoothie", price:22, icon:"fa-blender", category:"Napoje i soki" },
+  { id:"smoothie_forest", title:"Smoothie leśne", desc:"Owoce leśne", price:22, icon:"fa-blender", category:"Napoje i soki" },
+
+  { id:"beer_light", title:"Piwo jasne", desc:"Butelka", price:14, icon:"fa-beer-mug-empty", category:"Napoje i soki" },
+  { id:"beer_0", title:"Piwo 0%", desc:"Bezalkoholowe", price:14, icon:"fa-beer-mug-empty", category:"Napoje i soki" },
+  { id:"wine_glass", title:"Wino (kieliszek)", desc:"Białe / czerwone", price:18, icon:"fa-wine-glass", category:"Napoje i soki" },
+
+  // =========================
+  // SHAKES
+  // =========================
+  { id:"shake_vanilla", title:"Shake waniliowy", desc:"Kremowy milkshake", price:22, icon:"fa-ice-cream", category:"Shakes" },
+  { id:"shake_chocolate", title:"Shake czekoladowy", desc:"Kremowy milkshake", price:22, icon:"fa-ice-cream", category:"Shakes" },
+  { id:"shake_strawberry", title:"Shake truskawkowy", desc:"Kremowy milkshake", price:22, icon:"fa-ice-cream", category:"Shakes" },
+  { id:"shake_oreo", title:"Shake Oreo", desc:"Z ciasteczkami Oreo", price:24, icon:"fa-ice-cream", category:"Shakes" },
+  { id:"shake_salted_caramel", title:"Shake słony karmel", desc:"Słony karmel", price:24, icon:"fa-ice-cream", category:"Shakes" },
+  { id:"shake_mango", title:"Shake mango", desc:"Owocowy shake", price:24, icon:"fa-ice-cream", category:"Shakes" },
+
+  // =========================
+  // DESERY
+  // =========================
+  { id:"dessert_waffle", title:"Gofry", desc:"Z dodatkami", price:20, icon:"fa-cookie-bite", category:"Desery" },
+  { id:"dessert_pancakes", title:"Pancakes", desc:"Z owocami", price:22, icon:"fa-cookie-bite", category:"Desery" },
+  { id:"dessert_brownie", title:"Brownie", desc:"Czekoladowe", price:18, icon:"fa-cookie-bite", category:"Desery" },
+  { id:"dessert_icecream", title:"Lody", desc:"Porcja lodów", price:16, icon:"fa-ice-cream", category:"Desery" },
+
+  // =========================
+  // TEX MEX
+  // =========================
+  { id:"tex_nachos", title:"Nachosy", desc:"Z sosem", price:18, icon:"fa-pepper-hot", category:"Tex Mex" },
+  { id:"tex_tacos", title:"Tacos", desc:"2 sztuki", price:26, icon:"fa-pepper-hot", category:"Tex Mex" },
+  { id:"tex_burrito", title:"Burrito", desc:"Z mięsem i warzywami", price:30, icon:"fa-pepper-hot", category:"Tex Mex" },
+  { id:"tex_quesadilla", title:"Quesadilla", desc:"Z serem", price:28, icon:"fa-pepper-hot", category:"Tex Mex" },
+
+  // =========================
+  // KANAPKI
+  // =========================
+  { id:"sandwich_ham", title:"Kanapka z szynką", desc:"Klasyczna", price:18, icon:"fa-bread-slice", category:"Kanapki" },
+  { id:"sandwich_chicken", title:"Kanapka z kurczakiem", desc:"Z warzywami", price:22, icon:"fa-bread-slice", category:"Kanapki" },
+  { id:"sandwich_vege", title:"Kanapka vege", desc:"Warzywa i sos", price:20, icon:"fa-bread-slice", category:"Kanapki" },
+
+  // =========================
+  // BURGERY
+  // =========================
+  { id:"burger_classic", title:"Burger Classic", desc:"Wołowina, ser, warzywa", price:32, icon:"fa-burger", category:"Burgery" },
+  { id:"burger_bacon", title:"Burger Bacon", desc:"Wołowina, boczek, ser", price:36, icon:"fa-burger", category:"Burgery" },
+  { id:"burger_chicken", title:"Burger Chicken", desc:"Kurczak, warzywa", price:30, icon:"fa-burger", category:"Burgery" },
+  { id:"burger_vege", title:"Burger Vege", desc:"Kotlet roślinny", price:30, icon:"fa-burger", category:"Burgery" },
+
+  // =========================
+  // ŚNIADANIA
+  // =========================
+  { id:"breakfast_scrambled", title:"Jajecznica", desc:"Na maśle", price:18, icon:"fa-egg", category:"Śniadania" },
+  { id:"breakfast_omlette", title:"Omlet", desc:"Z dodatkami", price:20, icon:"fa-egg", category:"Śniadania" },
+  { id:"breakfast_toast", title:"Tosty", desc:"Ser / szynka", price:16, icon:"fa-bread-slice", category:"Śniadania" },
+  { id:"breakfast_oatmeal", title:"Owsianka", desc:"Z owocami", price:18, icon:"fa-bowl-food", category:"Śniadania" },
+
+  // Keto dodatki (pod śniadaniami)
+  { id:"keto_add_avocado", title:"Keto dodatek: awokado", desc:"Dodatek do śniadania", price:8, icon:"fa-seedling", category:"Śniadania" },
+  { id:"keto_add_bacon", title:"Keto dodatek: boczek", desc:"Dodatek do śniadania", price:8, icon:"fa-seedling", category:"Śniadania" },
+  { id:"keto_add_egg", title:"Keto dodatek: jajko", desc:"Dodatek do śniadania", price:6, icon:"fa-seedling", category:"Śniadania" },
+];
+
+
+  // Kategorie (stałe)
+  const CATEGORIES = [
+    "Kawa i herbata",
+    "Napoje i soki",
+    "Shakes",
+    "Desery",
+    "Tex Mex",
+    "Kanapki",
+    "Burgery",
+    "Śniadania",
+  ];
+  const categoriesBarEl = document.getElementById("categoriesBar");
+  let activeCategory = CATEGORIES[0];
+
+  function renderCategories(){
+    if (!categoriesBarEl) return;
+    categoriesBarEl.innerHTML = CATEGORIES.map(c => `
+      <button class="cat-chip ${c === activeCategory ? "active" : ""}" data-cat="${c}">
+        ${c}
+      </button>
+    `).join("");
+    categoriesBarEl.querySelectorAll("[data-cat]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeCategory = btn.dataset.cat;
+        renderCategories();
+        renderMenu();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  }
+
+  // ---------- Order & pickup ----------
+  const cartListEl = document.getElementById("cartList");
+  const cartTotalEl = document.getElementById("cartTotal");
+  const submitOrderBtn = document.getElementById("submitOrderBtn");
+  const ordersListEl = document.getElementById("ordersList");
+
+  function getCart() { return store.get("orderCart", []); }
+  function setCart(c) { store.set("orderCart", c); }
+
+  function addToCart(id) {
+    if (!requireLogin("zamówień")) return;
+    const item = menuItems.find((x) => x.id === id);
+    if (!item) return;
+    const cart = getCart();
+    const existing = cart.find((c) => c.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ id, qty: 1 });
+    setCart(cart);
+    renderCart();
+    showToast(`Dodano: ${item.title}`);
+  }
+
+  function changeQty(id, delta) {
+    const cart = getCart();
+    const line = cart.find((c) => c.id === id);
+    if (!line) return;
+    line.qty += delta;
+    if (line.qty <= 0) {
+      const idx = cart.findIndex((c) => c.id === id);
+      cart.splice(idx, 1);
+    }
+    setCart(cart);
+    renderCart();
+  }
+
+  function renderMenu() {
+    if (!menuItems.length) {
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-utensils"></i></div>
+          <div>
+            <b>Brak menu</b>
+            <div class="tiny">Wklej pozycje do <b>menuItems</b> w kodzie.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    renderCategories();
+
+    const list = menuItems.filter(m => (m.category || "Inne") === activeCategory);
+
+    if (!list.length){
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <b>Brak produktów w tej kategorii</b>
+            <div class="tiny">Dodaj produkty z category: <b>${activeCategory}</b>.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    menuListEl.innerHTML = list.map((m) => `
+      <div class="menu-item">
+        <div class="menu-left">
+          <div class="menu-ico"><i class="fa-solid ${m.icon}"></i></div>
+          <div>
+            <div class="menu-title">${m.title}</div>
+            <div class="menu-desc">${m.desc || ""}</div>
+          </div>
+        </div>
+        <div style="text-align:right;min-width:88px">
+          <div class="menu-price">${m.price} zł</div>
+          <button class="btn btn-primary btn-small" data-add="${m.id}">Dodaj</button>
+        </div>
+      </div>
+    `).join("");
+
+    menuListEl.querySelectorAll("[data-add]").forEach((btn) => {
+      btn.addEventListener("click", () => addToCart(btn.dataset.add));
+    });
+  }
+
+  // FAB podsumowania
+  const orderFab = document.getElementById("orderSummaryFab");
+  const fabItemsEl = document.getElementById("fabItems");
+  const fabTotalEl = document.getElementById("fabTotal");
+
+  function calcCartSummary(){
+    const cart = getCart();
+    let itemsCount = 0;
+    let total = 0;
+
+    cart.forEach(c => {
+      const m = menuItems.find(x => x.id === c.id);
+      if (!m) return;
+      itemsCount += c.qty;
+      total += (m.price * c.qty);
+    });
+
+    return { itemsCount, total };
+  }
+
+  function renderOrderFab(){
+    if (!orderFab) return;
+
+    const user = getUser();
+    const cart = getCart();
+    const visible = !!user?.email && cart.length && tabs.order.classList.contains("active");
+
+    if (!visible){
+      orderFab.style.display = "none";
+      return;
+    }
+
+    const { itemsCount, total } = calcCartSummary();
+    fabItemsEl.textContent = `${itemsCount} szt.`;
+    fabTotalEl.textContent = `${total} zł`;
+    orderFab.style.display = "flex";
+  }
+
+  orderFab?.addEventListener("click", () => {
+    const cartCard = cartListEl?.closest(".card");
+    cartCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  function renderCart() {
+    const user = getUser();
+    const cart = getCart();
+
+    if (!user?.email) {
+      cartListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się, aby składać zamówienia</b>
+            <div class="tiny">Po zalogowaniu możesz „Zamów i odbierz”.</div>
+          </div>
+        </div>`;
+      cartTotalEl.textContent = "0 zł";
+      submitOrderBtn.disabled = true;
+      renderOrderFab();
+      return;
+    }
+
+    if (!cart.length) {
+      cartListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div>
+            <b>Koszyk jest pusty</b>
+            <div class="tiny">Dodaj coś z menu.</div>
+          </div>
+        </div>`;
+      cartTotalEl.textContent = "0 zł";
+      submitOrderBtn.disabled = true;
+      renderOrderFab();
+      return;
+    }
+
+    submitOrderBtn.disabled = false;
+
+    let total = 0;
+    cartListEl.innerHTML = cart.map((c) => {
+      const m = menuItems.find((x) => x.id === c.id);
+      if (!m) return "";
+      const lineTotal = m.price * c.qty;
+      total += lineTotal;
+      return `
+        <div class="cart-line">
+          <div>
+            <b>${m.title}</b>
+            <div class="tiny">${m.price} zł x ${c.qty} = ${lineTotal} zł</div>
+          </div>
+          <div class="cart-actions">
+            <button class="qty-btn" data-qty="${c.id}" data-d="-1">−</button>
+            <b>${c.qty}</b>
+            <button class="qty-btn" data-qty="${c.id}" data-d="1">+</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    cartTotalEl.textContent = total + " zł";
+
+    cartListEl.querySelectorAll("[data-qty]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.qty;
+        const d = Number(btn.dataset.d);
+        changeQty(id, d);
+      });
+    });
+
+    renderOrderFab();
+  }
+
+  function cleanPhone(phone){
+    return String(phone || "").trim();
+  }
+  function validatePhoneBasic(phone){
+    const p = cleanPhone(phone);
+    const digits = p.replace(/\D/g, "");
+    return digits.length >= 7;
+  }
+
+  async function submitOrder() {
+    if (!requireLogin("zamówień")) return;
+
+    const cart = getCart();
+    if (!cart.length) {
+      showToast("Koszyk pusty 😅", true);
+      return;
+    }
+
+    const name = (document.getElementById("orderCustomerName")?.value || "").trim();
+    const phone = (document.getElementById("orderCustomerPhone")?.value || "").trim();
+    const pickupTime = document.getElementById("pickupTime").value;
+    const pickupLocation = document.getElementById("pickupLocation").value;
+    const notes = document.getElementById("orderNotes").value;
+
+    if (!name) { showToast("Podaj imię i nazwisko ✍️", true); return; }
+    if (!phone || !validatePhoneBasic(phone)) { showToast("Podaj poprawny numer telefonu 📞", true); return; }
+
+    if (String(pickupLocation).toLowerCase() === "rowy") {
+      showToast("Rowy jest chwilowo niedostępne.", true);
+      return;
+    }
+
+    if (!pickupTime) {
+      showToast("Ustaw godzinę odbioru ⏰", true);
+      return;
+    }
+
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const chosenM = toMinutes(pickupTime);
+    if (chosenM < minM) {
+      showToast(`Za wcześnie. Minimalnie pełne ${lead} min — ustaw później.`, true);
+      document.getElementById("pickupTime").value = minutesToHHMM(minM);
+      renderPickupRuleHintAndMin();
+      return;
+    }
+
+    const items = cart.map((c) => {
+      const m = menuItems.find((x) => x.id === c.id);
+      return { title: m?.title || "Pozycja", qty: c.qty, price: Number(m?.price || 0) };
+    });
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+    const user = getUser();
+    const milkId = getMilkId();
+
+    const profile = store.get("profile", {});
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (!profile.email) profile.email = user?.email || "";
+    store.set("profile", profile);
+
+    const payload = {
+      source: "app",
+      email: user?.email || "",
+      milkId,
+      customerName: name,
+      customerPhone: phone,
+      pickupTime,
+      pickupLocation,
+      notes: notes || "",
+      items,
+      total,
+      status: "Przyjęte",
+      createdAt: new Date().toISOString(),
+      payment: "on_pickup",
+    };
+
+    try {
+      await API.json("/api/orders", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      setCart([]);
+      document.getElementById("orderNotes").value = "";
+      renderCart();
+      showToast("Zamówienie wysłane ✅");
+      await refreshOrdersFromServer();
+      openTab("order");
+    } catch (e) {
+      const local = store.get("orders_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("orders_local", local);
+
+      setCart([]);
+      renderCart();
+
+      showToast("Zamówienie zapisane lokalnie (brak endpointu) ⚠️", true);
+      await refreshOrdersFromServer();
+    }
+  }
+
+  submitOrderBtn?.addEventListener("click", submitOrder);
+
+  async function refreshOrdersFromServer() {
+    const user = getUser();
+    if (!user?.email) {
+      renderOrdersUI([], false);
+      return;
+    }
+
+    try {
+      const data = await API.getMy("/api/orders/my", user.email);
+      const orders = Array.isArray(data) ? data : (data?.orders || []);
+      renderOrdersUI(orders, false);
+    } catch {
+      const local = store.get("orders_local", []);
+      renderOrdersUI(local, true);
+    }
+  }
+
+  function renderOrdersUI(orders, isLocal = false) {
+    ordersListEl.innerHTML = orders.length
+      ? orders.map((o) => `
+          <div class="res-item">
+            <b>${(o.pickupLocation || "—")} • ${(o.pickupTime || "—")}</b>
+            <div class="tiny">Złożono: ${o.date || (o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") : "—")}</div>
+            <div class="tiny">Status: <b>${o.status || "Przyjęte"}</b>${isLocal ? " (lokalnie)" : ""}</div>
+            <div class="tiny">Dane: <b>${o.customerName || "—"}</b> • ${o.customerPhone || "—"}</div>
+            <div style="margin-top:6px">
+              ${(o.items || []).map((i) => `• ${i.qty}x ${i.title}`).join("<br>")}
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;justify-content:space-between;font-weight:900">
+              <span>Razem</span><span>${o.total ?? 0} zł</span>
+            </div>
+            <div class="tiny" style="margin-top:4px">
+              Płatność na miejscu przy odbiorze.
+            </div>
+          </div>
+        `).join("")
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div>
+            <b>Brak zamówień</b>
+            <div class="tiny">Twoje zamówienia pojawią się tutaj.</div>
+          </div>
+        </div>`;
+  }
+
+  // ---------- Reservations ----------
+  const resForm = document.getElementById("reservationForm");
+  const resListEl = document.getElementById("reservationsList");
+
+  async function refreshReservationsFromServer() {
+    const user = getUser();
+    if (!user?.email) {
+      renderReservationsUI([], false);
+      return;
+    }
+
+    try {
+      const data = await API.getMy("/api/rezerwacje/my", user.email);
+      const list = Array.isArray(data) ? data : (data?.reservations || data?.list || []);
+      renderReservationsUI(list, false);
+      return;
+    } catch {}
+
+    try {
+      const all = await API.json("/api/rezerwacje");
+      const milkId = getMilkId();
+      const filtered = (Array.isArray(all) ? all : []).filter(r => {
+        const re = String(r.email || "").toLowerCase();
+        const rm = String(r.milkId || "");
+        return (re && re === user.email.toLowerCase()) || (rm && rm === milkId);
+      });
+      renderReservationsUI(filtered, false);
+    } catch {
+      const local = store.get("reservations_local", []);
+      renderReservationsUI(local, true);
+    }
+  }
+
+  function renderReservationsUI(list, isLocal = false) {
+    resListEl.innerHTML = list.length
+      ? list.map((r) => `
+          <div class="res-item">
+            <b>${r.date} • ${r.time}</b>
+            <div>${r.guests} os. • ${r.room}</div>
+            <div class="tiny">${r.name}, ${r.phone}</div>
+            ${r.notes ? `<div class="tiny">Uwagi: ${r.notes}</div>` : ""}
+            <div class="divider"></div>
+            <div class="res-actions">
+              ${isLocal ? `<button class="btn btn-ghost btn-small" data-del-local="${r._id || r.id}">Usuń</button>` : ``}
+            </div>
+          </div>
+        `).join("")
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div>
+            <b>Brak rezerwacji</b>
+            <div class="tiny">Zarezerwuj stolik — zajmie to chwilkę.</div>
+          </div>
+        </div>`;
+
+    resListEl.querySelectorAll("[data-del-local]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.delLocal;
+        const newList = store.get("reservations_local", []).filter((x) => (x._id || x.id) !== id);
+        store.set("reservations_local", newList);
+        refreshReservationsFromServer();
+        showToast("Rezerwacja usunięta");
+      });
+    });
+  }
+
+  resForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!requireLogin("rezerwacji")) return;
+
+    const fd = new FormData(resForm);
+    const data = Object.fromEntries(fd.entries());
+
+    if (!data.name || !data.phone || !data.date || !data.time || !data.guests || !data.room) {
+      showToast("Uzupełnij wszystkie pola", true);
+      return;
+    }
+
+    const user = getUser();
+    const milkId = getMilkId();
+
+    const payload = {
+      name: String(data.name),
+      phone: String(data.phone),
+      date: String(data.date),
+      time: String(data.time),
+      guests: String(data.guests),
+      room: String(data.room),
+      notes: String(data.notes || ""),
+      email: String(user.email || ""),
+      milkId: String(milkId || ""),
+      source: "app",
+    };
+
+    try {
+      await API.json("/api/rezerwacje", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      const local = store.get("reservations_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("reservations_local", local);
+
+      resForm.reset();
+      prefillReservationForm();
+      showToast("Rezerwacja wysłana 🧡");
+      await refreshReservationsFromServer();
+      openTab("res");
+    } catch (err) {
+      const local = store.get("reservations_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("reservations_local", local);
+
+      resForm.reset();
+      prefillReservationForm();
+      showToast("Rezerwacja zapisana lokalnie (brak endpointu) ⚠️", true);
+      await refreshReservationsFromServer();
+    }
+  });
+
+  (function () {
+    if (!resForm) return;
+    const dateInput = resForm.querySelector("input[name='date']");
+    if (!dateInput) return;
+    dateInput.min = new Date().toISOString().split("T")[0];
+  })();
+
+  // ---------- Account / Auth ----------
+  const loggedOutEl = document.getElementById("accountLoggedOut");
+  const loggedInEl = document.getElementById("accountLoggedIn");
+  const avatarEl = document.getElementById("avatar");
+  const accNameEl = document.getElementById("accName");
+  const accEmailEl = document.getElementById("accEmail");
+
+  function renderAccount() {
+    const user = getUser();
+    const isLogged = !!user?.email;
+
+    loggedOutEl.style.display = isLogged ? "none" : "flex";
+    loggedInEl.style.display = isLogged ? "flex" : "none";
+
+    if (isLogged) {
+      const profile = getPersonal();
+      const initials = (profile.name || user.name || "Milk User")
+        .split(" ")
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
+      avatarEl.textContent = initials || "MK";
+      accNameEl.textContent = profile.name || user.name || "Użytkownik";
+      accEmailEl.textContent = profile.email || user.email || "";
+    }
+
+    renderPoints();
+    renderRewards();
+    renderCart();
+    prefillPersonalUI();
+    prefillReservationForm();
+    prefillOrderCheckout();
+    renderPickupRuleHintAndMin();
+    renderOrderFab();
+  }
+
+  // ---------- Login / Logout ----------
+  const loginGoogleBtn = document.getElementById("loginGoogle");
+  const loginEmailForm = document.getElementById("loginEmailForm");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  async function loginWithEmail(email, password = "") {
+    email = String(email || "").trim().toLowerCase();
+    if (!email) {
+      showToast("Podaj email", true);
+      return;
+    }
+
+    try {
+      const res = await API.json("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const user = {
+        email,
+        name: res?.name || res?.user?.name || store.get("profile", {})?.name || "",
+        phone: res?.phone || res?.user?.phone || store.get("profile", {})?.phone || "",
+        milkId: res?.milkId || res?.user?.milkId || store.get("user", {})?.milkId || "",
+        token: res?.token || res?.jwt || "",
+      };
+
+      store.set("user", user);
+
+      if (typeof res?.points === "number") store.set("points", res.points);
+      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+
+      if (!user.milkId) {
+        user.milkId = getMilkId();
+        store.set("user", user);
+      }
+
+      showToast("Zalogowano ✅");
+      renderAccount();
+      await syncAll();
+      return;
+    } catch (e) {
+      console.warn("login server failed -> local fallback", e);
+    }
+
+    const user = {
+      email,
+      name: store.get("profile", {})?.name || "",
+      phone: store.get("profile", {})?.phone || "",
+      milkId: store.get("user", {})?.milkId || "",
+      token: "",
+    };
+    store.set("user", user);
+
+    user.milkId = getMilkId();
+    store.set("user", user);
+
+    showToast("Zalogowano lokalnie ⚠️");
+    renderAccount();
+    await syncAll();
+  }
+
+  function fakeGoogleEmail() {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `google.user${rand}@gmail.com`;
+  }
+
+  loginGoogleBtn?.addEventListener("click", () => {
+    loginWithEmail(fakeGoogleEmail(), "");
+  });
+
+  loginEmailForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(loginEmailForm);
+    const email = fd.get("email");
+    const password = fd.get("password");
+    loginWithEmail(email, password);
+  });
+
+  logoutBtn?.addEventListener("click", () => {
+    store.del("user");
+    showToast("Wylogowano");
+    renderAccount();
+    openTab("account");
+  });
+
+  // ---------- Subpages ----------
+  const subpages = {
+    personal: document.getElementById("page-personal"),
+    language: document.getElementById("page-language"),
+    about: document.getElementById("page-about"),
+    help: document.getElementById("page-help"),
+  };
+
+  function openSubpage(name) {
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+    subpages[name]?.classList.add("active");
+    prefillPersonalUI();
+  }
+
+  function closeSubpages() {
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+  }
+
+  document.querySelectorAll("[data-open]").forEach((el) => {
+    el.addEventListener("click", () => openSubpage(el.dataset.open));
+  });
+
+  document.querySelectorAll("[data-back]").forEach((btn) => {
+    btn.addEventListener("click", closeSubpages);
+  });
+
+  // ---------- Personal save ----------
+  const savePersonalBtn = document.getElementById("savePersonalBtn");
+  savePersonalBtn?.addEventListener("click", () => {
+    const name = (document.getElementById("personalName")?.value || "").trim();
+    const phone = (document.getElementById("personalPhone")?.value || "").trim();
+    const email = (document.getElementById("personalEmail")?.value || "").trim().toLowerCase();
+
+    const profile = store.get("profile", {});
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (email) profile.email = email;
+    store.set("profile", profile);
+
+    const user = getUser();
+    if (user?.email) {
+      user.name = profile.name || user.name || "";
+      user.phone = profile.phone || user.phone || "";
+      store.set("user", user);
+    }
+
+    showToast("Zapisano ✅");
+    renderAccount();
+    closeSubpages();
+  });
+
+  // ---------- Language ----------
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      store.set("lang", btn.dataset.lang);
+      showToast("Zapisano język ✅");
+      closeSubpages();
+    });
+  });
+
+  // ---------- Sync (bez przycisku w UI; nadal używane po loginie) ----------
+  async function syncAll() {
+    if (!isLoggedIn()) return;
+
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/milkpoints/my", user.email);
+      if (typeof data?.points === "number") store.set("points", data.points);
+      if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
+    } catch {}
+
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/rewards/my", user.email);
+      if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
+    } catch {}
+
+    await refreshOrdersFromServer();
+    await refreshReservationsFromServer();
+
+    renderPoints();
+    renderRewards();
+    renderCart();
+    renderOrderFab();
+  }
+
+  // ---------- Install guide ----------
+  const installGuide = document.getElementById("installGuide");
+  const platformBtns = document.querySelectorAll(".platform-btn");
+  const installPanes = document.querySelectorAll(".install-pane");
+  const androidInstallBtn = document.getElementById("androidInstallBtn");
+  const androidInstallHint = document.getElementById("androidInstallHint");
+
+  let deferredPrompt = null;
+
+  function isStandalone() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  }
+
+  function showInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.add("show");
+    installGuide.setAttribute("aria-hidden", "false");
+  }
+
+  function hideInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.remove("show");
+    installGuide.setAttribute("aria-hidden", "true");
+  }
+
+  function setGuideTab(tab) {
+    platformBtns.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === tab));
+    installPanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === tab));
+  }
+
+  platformBtns.forEach((b) => {
+    b.addEventListener("click", () => setGuideTab(b.dataset.guideTab));
+  });
+
+  installGuide?.addEventListener("click", (e) => {
+    if (e.target === installGuide) hideInstallGuide();
+  });
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (androidInstallBtn) androidInstallBtn.style.display = "inline-flex";
+    if (androidInstallHint) androidInstallHint.style.display = "none";
+  });
+
+  androidInstallBtn?.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch {}
+    deferredPrompt = null;
+    androidInstallBtn.style.display = "none";
+    if (androidInstallHint) androidInstallHint.style.display = "block";
+  });
+
+  (function initInstallGuide() {
+    const dismissed = store.get("installGuideDismissed", false);
+    if (!isStandalone() && !dismissed) {
+      setTimeout(showInstallGuide, 900);
+    }
+  })();
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideInstallGuide();
+  });
+
+  installGuide?.addEventListener("pointerdown", () => {
+    store.set("installGuideDismissed", true);
+  });
+
+  // ---------- Init render ----------
+  function initUI() {
+    openTab("points");
+
+    renderAccount();
+    renderOpeningHours();
+    renderCategories();
+
+    menuHintEl.textContent = menuItems.length
+      ? `Menu gotowe (${menuItems.length} pozycji)`
+      : "Brak menu — wklej pozycje do menuItems w kodzie.";
+
+    renderMenu();
+    renderCart();
+    renderOrderFab();
+
+    refreshOrdersFromServer();
+    refreshReservationsFromServer();
+
+    window.addEventListener("scroll", () => {
+      if (tabs.order.classList.contains("active")) renderOrderFab();
+    });
+  }
+
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setTimeout(renderOrderFab, 50));
+  });
+
+  initUI();
 </script>
 
 </body>
