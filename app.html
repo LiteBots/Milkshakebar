@@ -1849,125 +1849,17 @@
   const menuListEl = document.getElementById("menuList");
   const menuHintEl = document.getElementById("menuHint");
 
-
-// ===============================
-// MENU – WKLEJ TUTAJ WSZYSTKIE POZYCJE
-// (nic nie pobiera się z JSON)
-// ===============================
-// ===============================
-// PEŁNE MENU – W KODZIE (STAŁE)
-// ===============================
-let menuItems = [
   // ===============================
-  // KAWA / HERBATA / MATCHA
+  // ✅ MENU W KODZIE (WKLEJ TUTAJ)
   // ===============================
-  { id:"espresso", title:"Espresso", desc:"35 ml", price:11, category:"Kawa i herbata" },
-  { id:"espresso_double", title:"Podwójne espresso", desc:"70 ml", price:16, category:"Kawa i herbata" },
+  // Wklej tutaj wszystkie pozycje menu jako tablica obiektów.
+  // Wymagane pola: id, title, desc, price, icon, category
+  let menuItems = [
+    // PRZYKŁAD:
+    // { id: "kawa_americano", title: "Americano", desc: "Klasyczna kawa", price: 12, icon: "fa-mug-hot", category: "Kawa i herbata" },
 
-  { id:"affogato_1", title:"Affogato", desc:"espresso z lodami", price:22, category:"Kawa i herbata" },
-  { id:"affogato_2", title:"Affogato (duże)", desc:"espresso z lodami", price:27, category:"Kawa i herbata" },
-
-  { id:"black_coffee_200", title:"Kawa czarna", desc:"200 ml", price:12, category:"Kawa i herbata" },
-  { id:"black_coffee_300", title:"Kawa czarna", desc:"300 ml", price:17, category:"Kawa i herbata" },
-
-  { id:"white_coffee_200", title:"Kawa biała", desc:"200 ml", price:12, category:"Kawa i herbata" },
-  { id:"white_coffee_300", title:"Kawa biała", desc:"300 ml", price:17, category:"Kawa i herbata" },
-
-  { id:"cappuccino_200", title:"Cappuccino", desc:"200 ml", price:13, category:"Kawa i herbata" },
-  { id:"cappuccino_300", title:"Cappuccino", desc:"300 ml", price:18, category:"Kawa i herbata" },
-
-  { id:"latte_200", title:"Latte", desc:"200 ml", price:13, category:"Kawa i herbata" },
-  { id:"latte_300", title:"Latte", desc:"300 ml", price:18, category:"Kawa i herbata" },
-
-  { id:"iced_coffee", title:"Kawa mrożona", desc:"300 ml", price:26, category:"Kawa i herbata" },
-  { id:"frappe_caramel", title:"Frappe słony karmel", desc:"espresso, lód, mleko", price:27, category:"Kawa i herbata" },
-
-  { id:"hot_chocolate", title:"Gorąca czekolada", desc:"200 ml", price:21, category:"Kawa i herbata" },
-  { id:"extra_espresso", title:"Dodatkowe espresso", desc:"", price:5, category:"Kawa i herbata" },
-
-  { id:"tea_green", title:"Herbata zielona", price:15, category:"Kawa i herbata" },
-  { id:"tea_english", title:"English Breakfast", price:15, category:"Kawa i herbata" },
-  { id:"tea_hell", title:"Piekielna herbata", price:22, category:"Kawa i herbata" },
-  { id:"tea_czort", title:"Czort", price:22, category:"Kawa i herbata" },
-  { id:"tea_moncheri", title:"Mon Cheri", price:22, category:"Kawa i herbata" },
-  { id:"iced_tea", title:"Domowa herbata mrożona", desc:"500 ml", price:26, category:"Kawa i herbata" },
-
-  { id:"matcha_latte", title:"Matcha latte", price:20, category:"Kawa i herbata" },
-  { id:"matcha_iced", title:"Iced matcha", price:25, category:"Kawa i herbata" },
-
-  // ===============================
-  // NAPOJE / SOKI / ALKOHOL
-  // ===============================
-  { id:"lemonade_citrus_400", title:"Lemoniada cytrusowa", desc:"400 ml", price:15, category:"Napoje i soki" },
-  { id:"lemonade_citrus_1200", title:"Lemoniada cytrusowa", desc:"1200 ml", price:30, category:"Napoje i soki" },
-
-  { id:"water_free", title:"Woda z kranu", price:0, category:"Napoje i soki" },
-  { id:"water_still", title:"Woda niegazowana", desc:"500 ml", price:8, category:"Napoje i soki" },
-  { id:"water_sparkling", title:"Woda gazowana", desc:"500 ml", price:8, category:"Napoje i soki" },
-
-  { id:"pepsi", title:"Pepsi", desc:"330 ml", price:9, category:"Napoje i soki" },
-  { id:"pepsi_max", title:"Pepsi Max", desc:"330 ml", price:9, category:"Napoje i soki" },
-
-  { id:"beer_corona", title:"Corona", desc:"330 ml", price:15, category:"Napoje i soki" },
-  { id:"beer_zero", title:"Piwo bezalkoholowe", price:14, category:"Napoje i soki" },
-  { id:"beer_ipa", title:"IPA", desc:"0,5 l", price:19, category:"Napoje i soki" },
-
-  { id:"prosecco", title:"Prosecco", price:26, category:"Napoje i soki" },
-  { id:"hugo", title:"Hugo", desc:"prosecco, mięta, limonka", price:35, category:"Napoje i soki" },
-
-  // ===============================
-  // SHAKES (KLASYKA / VIP / OWOCOWE)
-  // ===============================
-  { id:"shake_vanilla", title:"Waniliowy", price:19, category:"Shakes" },
-  { id:"shake_chocolate", title:"Czekoladowy", price:19, category:"Shakes" },
-  { id:"shake_oreo", title:"Oreo", price:22, category:"Shakes" },
-  { id:"shake_kinder", title:"Kinder Bueno", price:24, category:"Shakes" },
-  { id:"shake_pistachio", title:"Pistacjusz (VIP)", price:37, category:"Shakes" },
-  { id:"shake_cringe", title:"Cringe (VIP)", price:37, category:"Shakes" },
-
-  // ===============================
-  // DESERY
-  // ===============================
-  { id:"icecream_small", title:"Lody włoskie małe", desc:"150 g", price:11, category:"Desery" },
-  { id:"icecream_big", title:"Lody włoskie duże", desc:"250 g", price:16, category:"Desery" },
-
-  { id:"pancakes_maple", title:"Pancakes z syropem klonowym", price:29, category:"Desery" },
-  { id:"pancakes_nutella", title:"Pancakes z Nutellą", price:36, category:"Desery" },
-
-  // ===============================
-  // TEX MEX / DANIA
-  // ===============================
-  { id:"quesadilla_pollo", title:"Quesadilla Pollo", price:45, category:"Tex Mex" },
-  { id:"fajita_chicken", title:"Fajita z kurczakiem", price:59, category:"Tex Mex" },
-  { id:"pasta_shrimp", title:"Tagliatelle z krewetkami", price:51, category:"Tex Mex" },
-
-  // ===============================
-  // BURGERY
-  // ===============================
-  { id:"burger_prostak_s", title:"Burger Prostak", desc:"mały", price:30, category:"Burgery" },
-  { id:"burger_prostak_m", title:"Burger Prostak", desc:"średni", price:38, category:"Burgery" },
-  { id:"burger_prostak_l", title:"Burger Prostak", desc:"duży", price:46, category:"Burgery" },
-
-  { id:"burger_sergio_s", title:"Burger Sergio", desc:"mały", price:32, category:"Burgery" },
-  { id:"burger_sergio_m", title:"Burger Sergio", desc:"średni", price:40, category:"Burgery" },
-  { id:"burger_sergio_l", title:"Burger Sergio", desc:"duży", price:48, category:"Burgery" },
-
-  // ===============================
-  // ŚNIADANIA
-  // ===============================
-  { id:"breakfast_granola", title:"Granola", price:44, category:"Śniadania" },
-  { id:"breakfast_scrambled", title:"Jajecznica", price:33, category:"Śniadania" },
-  { id:"breakfast_omelette", title:"Omlet francuski", price:37, category:"Śniadania" },
-
-  { id:"keto_bacon", title:"KETO dodatek: Bekon", price:4, category:"Śniadania" },
-  { id:"keto_egg", title:"KETO dodatek: Jajo", price:4, category:"Śniadania" },
-];
-
-
-// Jeśli w Twoim kodzie było `menuItems` – możesz sobie zrobić alias:
-const menuItems = MENU_ITEMS;
-
-
+    // ⬇️ WKLEJ TUTAJ PEŁNE MENU ⬇️
+  ];
 
   // Kategorie (stałe)
   const CATEGORIES = [
