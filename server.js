@@ -2,6 +2,7 @@
 // ✅ bcryptjs (hasła)
 // ✅ milkid (6 cyfr per user) + codeid (kody nagród do realizacji)
 // ✅ admin: naliczanie punktów po milkId + realizacja kodów
+// ✅ NOWE: rewards_history (historia wykorzystania kodów) + API /api/admin/rewards/history
 // ❌ NO orders (na razie nie używamy "zamów i odbierz")
 
 const express = require("express");
@@ -44,7 +45,8 @@ mongoose
       const existing = await db.listCollections().toArray();
       const names = new Set(existing.map((c) => c.name));
 
-      const mustHave = ["milkpoint", "milkid", "codeid", "rewards"];
+      // ✅ dodane rewards_history
+      const mustHave = ["milkpoint", "milkid", "codeid", "rewards", "rewards_history"];
       for (const name of mustHave) {
         if (!names.has(name)) {
           await db.createCollection(name);
@@ -150,6 +152,23 @@ const RewardSchema = new mongoose.Schema(
   { minimize: false }
 );
 
+// ✅ NOWE: rewards_history – historia wykorzystania kodów (oddzielna kolekcja)
+const RewardHistorySchema = new mongoose.Schema(
+  {
+    code: { type: String, required: true, unique: true, index: true }, // 1 wpis na kod (bo kod jednorazowy)
+    name: { type: String, default: "" }, // tytuł nagrody
+    rewardId: { type: String, default: "" },
+
+    email: { type: String, default: "", index: true },
+    milkId: { type: String, default: "", index: true },
+
+    note: { type: String, default: "" }, // notatka z panelu / usedBy
+    usedAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { minimize: false }
+);
+
 // Kolekcje NA SZTYWNO:
 const Reservation = mongoose.model("Reservation", ReservationSchema, "reservations");
 const HappyBar = mongoose.model("HappyBar", HappySchema, "happybars");
@@ -158,6 +177,7 @@ const MilkPoint = mongoose.model("MilkPoint", MilkPointSchema, "milkpoint");
 const MilkId = mongoose.model("MilkId", MilkIdSchema, "milkid");
 const CodeId = mongoose.model("CodeId", CodeIdSchema, "codeid");
 const Reward = mongoose.model("Reward", RewardSchema, "rewards");
+const RewardHistory = mongoose.model("RewardHistory", RewardHistorySchema, "rewards_history");
 
 // products do statystyk (jeśli masz)
 const Product = mongoose.model("Product", new mongoose.Schema({}, { strict: false }), "products");
@@ -662,6 +682,27 @@ app.post("/api/rewards/redeem", async (req, res) => {
 // ADMIN: sprawdź / wykorzystaj kod (codeid)
 // ==========================
 
+// ✅ zapis do historii (rewards_history) – jednorazowy wpis per kod
+async function writeRewardUseHistoryOnce({ code, name, rewardId, email, milkId, note, usedAt }) {
+  // kod jest unikalny, więc jak wpis istnieje, to nic nie robimy
+  await RewardHistory.updateOne(
+    { code },
+    {
+      $setOnInsert: {
+        code,
+        name: name || "",
+        rewardId: rewardId || "",
+        email: email || "",
+        milkId: milkId || "",
+        note: note || "",
+        usedAt: usedAt || new Date(),
+        createdAt: new Date(),
+      },
+    },
+    { upsert: true }
+  ).catch(() => {});
+}
+
 // wspólna logika wykorzystania kodu (żeby nie dublować)
 async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
   const code = String(codeRaw || "").trim().toUpperCase();
@@ -680,6 +721,7 @@ async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
     throw err;
   }
 
+  // jeśli już użyty, zwróć konflikt – ale możesz też odczytać historię
   if (doc.status === "used") {
     const err = new Error("Kod został już wykorzystany.");
     err.status = 409;
@@ -702,6 +744,17 @@ async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
 
   // oznacz historię nagród (opcjonalnie)
   await Reward.updateMany({ code }, { $set: { status: "redeemed" } }).catch(() => {});
+
+  // ✅ zapis do rewards_history (tylko raz na kod)
+  await writeRewardUseHistoryOnce({
+    code: doc.code,
+    name: doc.title,
+    rewardId: doc.rewardId,
+    email: doc.email,
+    milkId: doc.milkId,
+    note: doc.usedBy,
+    usedAt: doc.usedAt,
+  });
 
   return {
     ok: true,
@@ -766,13 +819,13 @@ app.post("/api/codeid/use", async (req, res) => {
   }
 });
 
-// ✅ NOWY ENDPOINT DLA PANELU ADMINA (pasuje do Twojego frontu)
+// ✅ ENDPOINT DLA PANELU ADMINA (pasuje do Twojego frontu)
 // POST /api/admin/rewards/use { code, note }
 app.post("/api/admin/rewards/use", async (req, res) => {
   try {
     const out = await useRewardCodeCommon({
       codeRaw: req.body?.code,
-      usedByRaw: req.body?.note, // w panelu "Notatka" zapisujemy jako usedBy/note
+      usedByRaw: req.body?.note, // notatka z panelu
     });
 
     // Forma idealnie pod Twój admin.html:
@@ -790,6 +843,38 @@ app.post("/api/admin/rewards/use", async (req, res) => {
     if (e.payload) return res.status(status).json(e.payload);
     console.error(e);
     return res.status(status).json({ ok: false, message: e.message || "Błąd wykorzystania kodu" });
+  }
+});
+
+// ✅ NOWE API: HISTORIA WYKORZYSTANIA KODÓW (dla admin panelu)
+// GET /api/admin/rewards/history
+app.get("/api/admin/rewards/history", async (req, res) => {
+  try {
+    const limitRaw = Number(req.query?.limit);
+    const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(500, Math.floor(limitRaw))) : 200;
+
+    const items = await RewardHistory.find({})
+      .sort({ usedAt: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    // Ujednolicona forma dla frontu:
+    // items: [{ code, name, note, usedAt, email, milkId, used:true }]
+    const out = items.map((x) => ({
+      code: x.code,
+      name: x.name || "",
+      rewardId: x.rewardId || "",
+      note: x.note || "",
+      usedAt: x.usedAt || x.createdAt || null,
+      email: x.email || "",
+      milkId: x.milkId || "",
+      used: true,
+    }));
+
+    return res.json({ ok: true, items: out });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ ok: false, items: [], message: "Błąd pobierania historii" });
   }
 });
 
