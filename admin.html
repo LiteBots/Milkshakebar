@@ -224,7 +224,6 @@
       border-top:1px solid var(--border);
       border-bottom:1px solid var(--border);
       color: var(--text);
-      vertical-align:top;
     }
     tr td:first-child{
       border-left:1px solid var(--border);
@@ -369,6 +368,16 @@
     }
     @keyframes flash{from{opacity:.20}to{opacity:.85}}
 
+    /* ✅ Reservation: ultra-fast background swap white <-> orange */
+    @keyframes resvBgSwap {
+      0%   { background: rgba(255,255,255,0.96); }
+      50%  { background: rgba(255,106,0,0.85); }
+      100% { background: rgba(255,255,255,0.96); }
+    }
+    .alarm.resvflash .alarmbox{
+      animation: resvBgSwap 0.12s infinite linear; /* szybkie miganie */
+    }
+
     /* ✅ ALARM CONTENT = FULLSCREEN */
     .alarmbox{
       position:relative;
@@ -412,16 +421,6 @@
     .alarmbox .preview .muted{color:rgba(43,19,0,0.62)}
     .alarmbox .preview b{color:var(--text)}
     .alarmbox .okwrap{margin-top:14px;display:flex;justify-content:center}
-
-    /* ✅ Rezerwacja: migawka tła co 0.1s (100ms) biały ↔ pomarańcz */
-    .alarm.reservation .alarmbox{
-      animation: resFlashBg 0.2s steps(1, end) infinite;
-    }
-    @keyframes resFlashBg{
-      0%   { background: rgba(255,255,255,0.96); }
-      50%  { background: rgba(255,145,0,0.35); }
-      100% { background: rgba(255,255,255,0.96); }
-    }
 
     /* Toast */
     #toast{
@@ -606,7 +605,6 @@
         <div class="navsep">Milki Aplikacja</div>
         <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
         <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
-        <button class="navbtn" data-tab="codes"><i class="fa-solid fa-ticket"></i> Wykorzystaj kod</button>
         <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
 
         <div class="sidefoot">
@@ -686,37 +684,10 @@
         </div>
       </section>
 
-      <!-- TAB: USERS (✅ from Mongo: users + milkpoints) -->
+      <!-- TAB: USERS -->
       <section class="card" id="tab-users" style="display:none">
-        <h2>Użytkownicy (users + milkpoints)</h2>
-
-        <div class="modalgrid" style="margin-top:6px">
-          <div class="field">
-            <label>Filtr (email / Milk ID)</label>
-            <input class="input" id="uFilter" placeholder="np. 123456 lub mail@...">
-          </div>
-          <div class="field" style="display:flex;justify-content:flex-end;align-items:flex-end">
-            <button class="btn primary" id="uLoad"><i class="fa-solid fa-rotate"></i> Wczytaj listę</button>
-          </div>
-        </div>
-
-        <div style="overflow:auto;margin-top:10px">
-          <table>
-            <thead>
-              <tr>
-                <th>Milk ID</th>
-                <th>Adres e-mail</th>
-                <th>Milkosy</th>
-                <th style="text-align:right">Akcje</th>
-              </tr>
-            </thead>
-            <tbody id="usersTbody"></tbody>
-          </table>
-        </div>
-
-        <p class="hint">
-          Wymagany endpoint: <b>GET /api/admin/users</b> (z joinem users + milkpoints) -> [{milkId,email,points}]
-        </p>
+        <h2>Użytkownicy</h2>
+        <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
       <!-- TAB: EMPLOYEES -->
@@ -744,7 +715,7 @@
         <p class="hint">Pobierane z backendu: <b>/api/orders</b>. Alarm realtime: <b>new-order</b>.</p>
       </section>
 
-      <!-- TAB: POINTS (✅ BACKEND + HISTORY) -->
+      <!-- TAB: POINTS (✅ BACKEND) -->
       <section class="card" id="tab-points" style="display:none">
         <h2>Punkty Milk</h2>
 
@@ -760,7 +731,6 @@
         </div>
 
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-          <button class="btn" id="pHistoryLoad"><i class="fa-solid fa-clock-rotate-left"></i> Historia (Milk ID)</button>
           <button class="btn primary" id="pAdd"><i class="fa-solid fa-plus"></i> Dodaj punkty</button>
         </div>
 
@@ -769,79 +739,38 @@
           <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są zapisywane w MongoDB.</p>
           <div id="pointsPreview" style="margin-top:10px;"></div>
         </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Historia doładowań (użytkownika)</h2>
-          <p class="hint" style="margin-top:0">
-            Wymagany endpoint: <b>GET /api/admin/milkpoints/history?milkId=123456</b> -> {ok:true, email, milkId, points, history:[{createdAt, amountPln, addedPoints, note}]}
-          </p>
-          <div style="overflow:auto;margin-top:10px">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Kwota (zł)</th>
-                  <th>Dodano pkt</th>
-                  <th>Info</th>
-                </tr>
-              </thead>
-              <tbody id="pointsHistTbody"></tbody>
-            </table>
-          </div>
-        </div>
       </section>
 
-      <!-- TAB: CODES (✅ redeem / use code -> rewards collection in Mongo) -->
-      <section class="card" id="tab-codes" style="display:none">
-        <h2>Wykorzystaj kod</h2>
-
-        <div class="modalgrid" style="margin-top:6px">
-          <div class="field">
-            <label>Kod</label>
-            <input class="input" id="cCode" placeholder="np. MSB-AB12CD lub inny kod">
-          </div>
-          <div class="field" style="display:flex;justify-content:flex-end;align-items:flex-end">
-            <button class="btn primary" id="cUse"><i class="fa-solid fa-circle-check"></i> Zrealizuj kod</button>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Ostatni wynik</h2>
-          <div id="codePreview" style="margin-top:10px;">
-            <span class="muted" style="color:rgba(43,19,0,0.62)">Brak operacji.</span>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Historia zrealizowanych kodów</h2>
-          <p class="hint" style="margin-top:0">
-            Wymagane endpointy: <b>POST /api/admin/rewards/redeem-code</b> {code} oraz <b>GET /api/admin/rewards/redeemed</b> -> [{code, redeemedAt, email, milkId, rewardName}]
-          </p>
-          <div style="overflow:auto;margin-top:10px">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Kod</th>
-                  <th>Użytkownik</th>
-                  <th>Nagroda</th>
-                </tr>
-              </thead>
-              <tbody id="codesTbody"></tbody>
-            </table>
-          </div>
-
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-            <button class="btn" id="cReload"><i class="fa-solid fa-rotate"></i> Odśwież listę</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB: REWARDS (STATIC) -->
+      <!-- TAB: REWARDS (STATIC + USE CODE BACKEND) -->
       <section class="card" id="tab-rewards" style="display:none">
         <h2>Nagrody</h2>
 
-        <div class="modalgrid" style="margin-top:6px">
+        <!-- ✅ USE CODE (MongoDB rewards) -->
+        <div class="card" style="margin-top:12px;">
+          <h2 style="margin-bottom:6px">Wykorzystaj kod</h2>
+          <p class="hint" style="margin-top:0">
+            Wpisz kod nagrody (np. <b>MSB-123456</b>). Po wykorzystaniu kod jest jednorazowy i zostaje oznaczony jako użyty w MongoDB (kolekcja <b>rewards</b>).
+          </p>
+
+          <div class="modalgrid" style="margin-top:10px">
+            <div class="field">
+              <label>Kod nagrody</label>
+              <input class="input" id="useCodeValue" placeholder="np. MSB-123456" autocomplete="off">
+            </div>
+            <div class="field">
+              <label>Notatka (opcjonalnie)</label>
+              <input class="input" id="useCodeNote" placeholder="np. odebrane w lokalu / podpis pracownika">
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+            <button class="btn primary" id="useCodeBtn"><i class="fa-solid fa-check"></i> Wykorzystaj kod</button>
+          </div>
+
+          <div id="useCodePreview" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="modalgrid" style="margin-top:14px">
           <div class="field">
             <label>Nazwa nagrody</label>
             <input class="input" id="rName" placeholder="np. Darmowy shake 500 ml">
@@ -869,7 +798,7 @@
           </table>
         </div>
 
-        <p class="hint">To jest statyczna baza nagród — backend podłączymy później.</p>
+        <p class="hint">Lista poniżej to statyczna baza nagród w panelu — backend podłączymy później. „Wykorzystaj kod” działa z backendu.</p>
       </section>
 
     </main>
@@ -921,7 +850,7 @@
       unlocked: false,
 
       reservations: [],
-      orders: [],
+      orders: [],               // ✅ from DB (/api/orders)
 
       editingId: null,
 
@@ -931,15 +860,6 @@
 
       // ✅ backend points last result
       pointsLast: null,
-
-      // ✅ points history
-      pointsHistory: [],
-
-      // ✅ users list (users + milkpoints)
-      users: [],
-
-      // ✅ redeemed codes list
-      redeemedCodes: [],
 
       // STATIC: Milki Aplikacja
       app: {
@@ -971,17 +891,6 @@
       return String(s ?? "").replace(/[&<>"']/g, m => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
       }[m]));
-    }
-
-    function safePLDate(x){
-      try{
-        if(!x) return "—";
-        const d = new Date(x);
-        if(isNaN(d.getTime())) return String(x);
-        return d.toLocaleString("pl-PL");
-      }catch{
-        return String(x ?? "—");
-      }
     }
 
     // ==========================
@@ -1127,7 +1036,6 @@
       employees: { title:"Pracownicy" },
       pickup: { title:"Zamówienie z odbiorem" },
       points: { title:"Punkty Milk" },
-      codes: { title:"Wykorzystaj kod" },
       rewards: { title:"Nagrody" },
     };
 
@@ -1207,168 +1115,6 @@
       }
     }
 
-    // ✅ USERS (users + milkpoints)
-    async function loadUsers(){
-      try{
-        const q = ($("#uFilter").value || "").trim();
-        const url = q ? `/api/admin/users?query=${encodeURIComponent(q)}` : `/api/admin/users`;
-        const res = await fetch(url, {cache:"no-store"});
-        const data = await res.json().catch(()=>null);
-
-        const list = Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
-        state.users = list.map(x => ({
-          milkId: x.milkId ?? x.milkid ?? x.milkID ?? x.milk ?? "",
-          email: x.email ?? x.mail ?? "",
-          points: x.points ?? x.milkos ?? x.milkos ?? 0
-        }));
-
-        renderUsers();
-        showToast("Wczytano użytkowników ✅");
-      }catch(e){
-        console.error(e);
-        showToast("Nie udało się pobrać użytkowników", true);
-      }
-    }
-
-    function renderUsers(){
-      const tb = $("#usersTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const list = state.users || [];
-      if(list.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak danych
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const u of list){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><span class="tag"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(u.milkId || "—")}</span></td>
-          <td style="font-weight:900">${escapeHtml(u.email || "—")}</td>
-          <td><span class="tag"><i class="fa-solid fa-star"></i> ${escapeHtml(u.points ?? 0)} <small>Milkosów</small></span></td>
-          <td>
-            <div class="row-actions">
-              <button class="iconbtn ok" title="Pokaż historię punktów" data-act="uhist" data-milkid="${escapeHtml(u.milkId || "")}">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-              </button>
-            </div>
-          </td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    $("#usersTbody").addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      const act = btn.getAttribute("data-act");
-      if(act !== "uhist") return;
-      const milkId = (btn.getAttribute("data-milkid") || "").trim();
-      if(!milkId) return;
-
-      // szybki skrót: przenosi do zakładki punkty + wczytuje historię dla milkId
-      $("#pMilkId").value = milkId;
-      showTab("points");
-      await loadPointsHistoryByMilkId(milkId);
-    });
-
-    $("#uLoad").addEventListener("click", loadUsers);
-
-    // ✅ CODES: redeemed list
-    async function loadRedeemedCodes(){
-      try{
-        const res = await fetch("/api/admin/rewards/redeemed", {cache:"no-store"});
-        const data = await res.json().catch(()=>null);
-        const list = Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
-        state.redeemedCodes = list;
-        renderRedeemedCodes();
-      }catch(e){
-        console.error(e);
-        showToast("Nie udało się pobrać kodów", true);
-      }
-    }
-
-    function renderRedeemedCodes(){
-      const tb = $("#codesTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const list = state.redeemedCodes || [];
-      if(list.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak zrealizowanych kodów
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const x of list){
-        const tr = document.createElement("tr");
-        const dt = x.redeemedAt || x.usedAt || x.createdAt || x.date;
-        const who = x.email ? `${x.email}${x.milkId ? " • " + x.milkId : ""}` : (x.milkId || "—");
-        tr.innerHTML = `
-          <td><span class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(safePLDate(dt))}</span></td>
-          <td style="font-weight:900">${escapeHtml(x.code || "—")}</td>
-          <td><span class="tag"><i class="fa-solid fa-user"></i> ${escapeHtml(who)}</span></td>
-          <td>${escapeHtml(x.rewardName || x.name || x.title || "—")}</td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    $("#cReload").addEventListener("click", async ()=>{
-      await loadRedeemedCodes();
-      showToast("Odświeżono ✅");
-    });
-
-    $("#cUse").addEventListener("click", async ()=>{
-      const code = ($("#cCode").value || "").trim();
-      if(!code){
-        showToast("Wpisz kod", true);
-        return;
-      }
-
-      try{
-        const res = await fetch("/api/admin/rewards/redeem-code", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ code })
-        });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false){
-          throw new Error(data?.message || "Kod nieprawidłowy lub już wykorzystany");
-        }
-
-        $("#codePreview").innerHTML = `
-          <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-ticket"></i> Kod <small>•</small> ${escapeHtml(data.code || code)}</div>
-          <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-circle-check"></i> Status <small>•</small> Wykorzystany</div>
-          ${data.rewardName ? `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-gift"></i> ${escapeHtml(data.rewardName)}</div>` : ``}
-          ${data.email ? `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-envelope"></i> ${escapeHtml(data.email)}</div>` : ``}
-          ${data.milkId ? `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(data.milkId)}</div>` : ``}
-        `;
-
-        $("#cCode").value = "";
-        showToast("Kod zrealizowany ✅");
-        await loadRedeemedCodes();
-      }catch(e){
-        console.error(e);
-        showToast(e.message || "Błąd realizacji kodu", true);
-      }
-    });
-
-    // ==========================
-    // Rendering: reservations
-    // ==========================
     function renderReservations(){
       const tb = $("#resTbody");
       if(!tb) return;
@@ -1443,7 +1189,7 @@
     });
 
     // ==========================
-    // Orders table
+    // Orders table (like reservations)
     // ==========================
     function renderOrders(){
       const tb = $("#ordersTbody");
@@ -1620,20 +1366,12 @@
       const pill = $("#alarmPill");
       const title = $("#alarmTitle");
       const desc = $("#alarmDesc");
-      const alarm = $("#alarm");
-
-      // reset klas migania
-      alarm.classList.remove("reservation");
-      alarm.classList.remove("order");
 
       if(kind === "order"){
-        alarm.classList.add("order");
         pill.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> Nowe zamówienie`;
         title.textContent = "Przyszło nowe zamówienie!";
         desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
       }else{
-        // ✅ rezerwacja: migawka tła 0.1s + ten sam dźwięk
-        alarm.classList.add("reservation");
         pill.innerHTML = `<i class="fa-solid fa-bell"></i> Nowa rezerwacja`;
         title.textContent = "Przyszła nowa rezerwacja!";
         desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
@@ -1690,8 +1428,15 @@
         `;
       }
 
+      const alarm = $("#alarm");
       alarm.classList.add("show");
-      alarm.classList.add("flash");
+
+      // reset klas
+      alarm.classList.remove("flash", "resvflash");
+
+      // order: zostaw flash, reservation: szybka zamiana tła
+      if(kind === "order") alarm.classList.add("flash");
+      else alarm.classList.add("resvflash");
 
       ensureAudio();
       if(state.audioCtx && state.audioCtx.state === "suspended"){
@@ -1706,8 +1451,7 @@
       const alarm = $("#alarm");
       alarm.classList.remove("show");
       alarm.classList.remove("flash");
-      alarm.classList.remove("reservation");
-      alarm.classList.remove("order");
+      alarm.classList.remove("resvflash");
 
       if(state.beepInterval){
         clearInterval(state.beepInterval);
@@ -1754,14 +1498,14 @@
     }
 
     // ==========================
-    // ✅ POINTS (BACKEND) + HISTORY
+    // ✅ POINTS (BACKEND)
     // ==========================
     function renderPointsPreview(){
       const box = $("#pointsPreview");
       if(!box) return;
 
       if(!state.pointsLast){
-        box.innerHTML = `<span class="muted" style="color:rgba(43,19,0,0.62)">Brak operacji.</span>`;
+        box.innerHTML = `<span class="muted">Brak operacji.</span>`;
         return;
       }
 
@@ -1773,71 +1517,6 @@
         <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-star"></i> Razem <small>•</small> ${escapeHtml(x.points)} pkt</div>
       `;
     }
-
-    function renderPointsHistory(){
-      const tb = $("#pointsHistTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const list = state.pointsHistory || [];
-      if(list.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak historii (wczytaj Milk ID)
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const h of list){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><span class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(safePLDate(h.createdAt || h.date))}</span></td>
-          <td>${escapeHtml(h.amountPln ?? h.amount ?? "—")}</td>
-          <td><span class="tag"><i class="fa-solid fa-plus"></i> ${escapeHtml(h.addedPoints ?? h.points ?? "—")}</span></td>
-          <td>${escapeHtml(h.note || h.source || "")}</td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    async function loadPointsHistoryByMilkId(milkId){
-      const id = (milkId || "").trim();
-      if(!id || id.length !== 6){
-        showToast("Podaj poprawny Milk ID (6 cyfr)", true);
-        return;
-      }
-
-      try{
-        const res = await fetch(`/api/admin/milkpoints/history?milkId=${encodeURIComponent(id)}`, {cache:"no-store"});
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false){
-          throw new Error(data?.message || "Nie udało się pobrać historii");
-        }
-
-        // akceptuj: {ok:true, history:[...]} albo bez ok
-        const hist = Array.isArray(data?.history) ? data.history : (Array.isArray(data) ? data : []);
-        state.pointsHistory = hist.slice().sort((a,b)=>{
-          const da = new Date(a.createdAt || a.date || 0).getTime();
-          const db = new Date(b.createdAt || b.date || 0).getTime();
-          return db - da;
-        });
-
-        renderPointsHistory();
-        showToast("Wczytano historię ✅");
-      }catch(e){
-        console.error(e);
-        state.pointsHistory = [];
-        renderPointsHistory();
-        showToast(e.message || "Błąd historii", true);
-      }
-    }
-
-    $("#pHistoryLoad").addEventListener("click", async ()=>{
-      await loadPointsHistoryByMilkId($("#pMilkId").value);
-    });
 
     $("#pAdd").addEventListener("click", async () => {
       const milkId = ($("#pMilkId").value || "").trim();
@@ -1873,14 +1552,75 @@
           points: data.points
         };
 
+        $("#pMilkId").value = "";
         $("#pAmount").value = "";
+
         renderPointsPreview();
         showToast(`Dodano +${data.addedPoints} pkt (razem: ${data.points}) ✅`);
 
         await loadStats();
-        // ✅ po dodaniu: odśwież historię użytkownika
-        await loadPointsHistoryByMilkId(milkId);
       } catch (err) {
+        console.error(err);
+        showToast(err.message || "Błąd serwera", true);
+      }
+    });
+
+    // ==========================
+    // ✅ USE CODE (BACKEND) - mark reward code as used (one-time)
+    // POST /api/admin/rewards/use { code, note }
+    // ==========================
+    function renderUseCodePreview(x){
+      const box = $("#useCodePreview");
+      if(!box) return;
+
+      if(!x){
+        box.innerHTML = `<span class="muted">Brak operacji.</span>`;
+        return;
+      }
+
+      const usedAt = x.usedAt ? new Date(x.usedAt).toLocaleString("pl-PL") : "—";
+      box.innerHTML = `
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-ticket"></i> Kod <small>•</small> ${escapeHtml(x.code)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-gift"></i> ${escapeHtml(x.name || "Nagroda")}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-circle-check"></i> Status <small>•</small> ${escapeHtml(x.status || "USED")}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-regular fa-clock"></i> Użyto <small>•</small> ${escapeHtml(usedAt)}</div>
+        ${x.note ? `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-note-sticky"></i> ${escapeHtml(x.note)}</div>` : ""}
+      `;
+    }
+
+    $("#useCodeBtn")?.addEventListener("click", async ()=>{
+      const code = ($("#useCodeValue").value || "").trim();
+      const note = ($("#useCodeNote").value || "").trim();
+
+      if(!code || code.length < 6){
+        showToast("Podaj poprawny kod", true);
+        return;
+      }
+
+      try{
+        const res = await fetch("/api/admin/rewards/use", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ code, note })
+        });
+
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok || !data?.ok) throw new Error(data?.message || "Nie udało się wykorzystać kodu");
+
+        $("#useCodeValue").value = "";
+        $("#useCodeNote").value = "";
+
+        renderUseCodePreview({
+          code: data.code,
+          name: data.name,
+          status: data.used ? "USED" : "OK",
+          usedAt: data.usedAt,
+          note: data.note
+        });
+
+        showToast("Kod wykorzystany ✅");
+        await loadStats();
+      }catch(err){
         console.error(err);
         showToast(err.message || "Błąd serwera", true);
       }
@@ -2004,11 +1744,8 @@
       await loadHappy();
 
       renderPointsPreview();
-      renderPointsHistory();
+      renderUseCodePreview(null);
       renderRewards();
-
-      // ✅ wstępnie wczytaj listę zrealizowanych kodów (dla zakładki)
-      await loadRedeemedCodes();
     }
 
     $("#refreshBtn").addEventListener("click", async ()=>{
