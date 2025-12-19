@@ -9,7 +9,6 @@
   <link rel="icon" href="/favicon.png">
   <meta name="theme-color" content="#ff6a00">
 
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -216,7 +215,7 @@
     .opening-hours b{ font-weight:900; }
     .opening-hours .today{ font-weight:900; color: var(--link); }
 
-    .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+    .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
     .quick{
       background:var(--glass-strong);border:1px solid rgba(0,0,0,.04);
       border-radius:18px;padding:12px;display:grid;gap:6px;place-items:center;text-align:center;
@@ -344,33 +343,6 @@
     .res-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
     .divider{height:1px;background:rgba(0,0,0,.06);margin:4px 0 0;}
 
-    .menu-list{display:grid;gap:10px;}
-    .menu-item{
-      background:var(--glass-strong);
-      border:1px solid rgba(0,0,0,.05);
-      border-radius:16px;
-      padding:12px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      box-shadow:var(--shadow-soft);
-    }
-    .menu-left{display:flex;gap:10px;align-items:center;}
-    .menu-ico{
-      width:48px;height:48px;border-radius:14px;background:var(--grad);color:#fff;
-      display:grid;place-items:center;font-size:1.2rem;box-shadow:0 6px 14px rgba(255,106,0,.4);
-    }
-    .menu-title{font-weight:900}
-    .menu-desc{font-size:.85rem;opacity:.7}
-    .menu-price{font-weight:900}
-    .cart-line{
-      display:flex;align-items:center;justify-content:space-between;gap:8px;
-      background:#fff;border:1px solid #eee;border-radius:12px;padding:8px 10px;
-    }
-    .cart-actions{display:flex;gap:6px;align-items:center;}
-    .qty-btn{
-      width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;font-weight:900;
-      background:rgba(0,0,0,.06);
-    }
-
     .account-hero{display:flex;gap:12px;align-items:center;}
     .avatar{
       width:56px;height:56px;border-radius:16px;background:var(--grad);display:grid;place-items:center;
@@ -395,8 +367,6 @@
     .li-sub{font-size:.85rem;opacity:.7}
 
     .auth-wrap{display:grid;gap:10px;}
-    .auth-btn{width:100%;justify-content:center;font-weight:900;}
-    .auth-btn.google{background:#fff;border:2px solid #eee;}
     .auth-sep{display:flex;align-items:center;gap:10px;margin:6px 0;}
     .auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:rgba(0,0,0,.08);}
     .auth-sep span{font-size:.85rem;opacity:.7;font-weight:800;}
@@ -484,10 +454,9 @@
     }
     @media (max-width:560px){
       .row{grid-template-columns:1fr}
-      .quick-grid{grid-template-columns:1fr 1fr 1fr}
+      .quick-grid{grid-template-columns:1fr 1fr}
     }
     @media (max-width:420px){ .eatmi-text span{display:none;} }
-    @media (max-width:380px){ .quick-grid{grid-template-columns:1fr 1fr} }
 
     .toast{
       position:fixed;left:50%;bottom: calc(126px + var(--safe-bottom));
@@ -712,66 +681,6 @@
     @media (max-width:520px){
       .platform-switch{ grid-template-columns:1fr; }
     }
-
-    /* =========================
-       ✅ Kategorie + FAB
-       ========================= */
-    .categories-bar{
-      display:flex;
-      gap:8px;
-      overflow:auto;
-      padding:4px 2px 10px;
-      -webkit-overflow-scrolling:touch;
-      scroll-snap-type:x mandatory;
-    }
-    .cat-chip{
-      flex:0 0 auto;
-      scroll-snap-align:start;
-      border:none;
-      cursor:pointer;
-      border-radius:999px;
-      padding:10px 12px;
-      font-weight:900;
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(0,0,0,.06);
-      box-shadow:var(--shadow-soft);
-      opacity:.9;
-      transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
-      white-space:nowrap;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .cat-chip:active{transform:translateY(1px)}
-    .cat-chip.active{
-      background:var(--grad);
-      color:#fff;
-      opacity:1;
-      box-shadow:0 10px 22px rgba(255,106,0,.35);
-    }
-
-    .order-fab{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom: calc(86px + var(--safe-bottom)); /* nad dolnym nav */
-      width:min(820px, calc(100% - 18px));
-      border:none;
-      cursor:pointer;
-      border-radius:999px;
-      padding:12px 14px;
-      background:var(--grad);
-      color:#fff;
-      font-weight:900;
-      box-shadow:0 16px 34px rgba(255,106,0,.45);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      z-index:60;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .order-fab:active{transform:translateX(-50%) translateY(1px)}
-    .fab-left{display:flex;align-items:center;gap:10px;}
-    .fab-right{opacity:.95;}
   </style>
 </head>
 
@@ -933,12 +842,6 @@
             <span>Wymień punkty</span>
           </button>
 
-          <button class="quick" data-go="order">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <b>Zamów i odbierz</b>
-            <span>Płatność na miejscu</span>
-          </button>
-
           <button class="quick" data-go="res">
             <i class="fa-solid fa-calendar-check"></i>
             <b>Rezerwuj</b>
@@ -975,91 +878,6 @@
         <p class="muted">Kliknij „Wymień”, a pokażemy Ci kod do odbioru w lokalu.</p>
       </div>
       <div class="card" id="rewardsList"></div>
-    </section>
-
-    <!-- TAB: ZAMÓW I ODBIERZ -->
-    <section id="tab-order" class="tab">
-      <div class="card">
-        <div class="title">Zamów i odbierz</div>
-        <p class="muted">
-          Złóż zamówienie w aplikacji, odbierz w lokalu. <b>Płatność na miejscu</b> (gotówka/karta).
-        </p>
-      </div>
-
-      <div class="card">
-        <div class="subtitle">Menu</div>
-        <div class="tiny" id="menuHint" style="opacity:.78;margin:-4px 0 10px">
-          Wybierz kategorię, aby zobaczyć produkty.
-        </div>
-
-        <div id="categoriesBar" class="categories-bar"></div>
-        <div id="menuList" class="menu-list"></div>
-      </div>
-
-      <div class="card stack">
-        <div class="subtitle">Koszyk</div>
-        <div id="cartList" class="stack"></div>
-        <div class="divider"></div>
-        <div style="display:flex;justify-content:space-between;font-weight:900;font-size:1.05rem">
-          <span>Razem</span><span id="cartTotal">0 zł</span>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <div>
-            <label>Imię i nazwisko (wymagane)</label>
-            <input type="text" id="orderCustomerName" placeholder="Jan Kowalski" required>
-          </div>
-          <div>
-            <label>Telefon (wymagane)</label>
-            <input type="tel" id="orderCustomerPhone" placeholder="+48 700 000 000" required>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:6px">
-          <div>
-            <label>Godzina odbioru</label>
-            <input type="time" id="pickupTime" required step="900">
-            <div class="tiny" id="pickupRuleHint" style="margin-top:6px;opacity:.78;text-align:center"></div>
-          </div>
-          <div>
-            <label>Lokal</label>
-            <select id="pickupLocation">
-              <option>Słupsk</option>
-              <option value="Rowy" disabled>Rowy (chwilowo niedostępna)</option>
-            </select>
-            <div class="tiny" style="margin-top:6px;opacity:.78;text-align:center">
-              Rowy jest chwilowo niedostępne.
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label>Uwagi (opcjonalnie)</label>
-          <textarea id="orderNotes" placeholder="np. bez bitej śmietany, alergie, itp."></textarea>
-        </div>
-
-        <button class="btn btn-primary btn-wide" id="submitOrderBtn">
-          Złóż zamówienie <i class="fa-solid fa-check"></i>
-        </button>
-        <div class="tiny" style="text-align:center">
-          Płatność na miejscu przy odbiorze.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="subtitle">Twoje zamówienia</div>
-        <div id="ordersList" class="muted"></div>
-      </div>
-
-      <button id="orderSummaryFab" class="order-fab" style="display:none;">
-        <span class="fab-left">
-          <i class="fa-solid fa-receipt"></i>
-          <b>Podsumowanie</b>
-        </span>
-        <span class="fab-right">
-          <span id="fabItems">0</span> • <span id="fabTotal">0 zł</span>
-        </span>
-      </button>
     </section>
 
     <!-- TAB: REZERWACJE -->
@@ -1142,26 +960,37 @@
         <div class="card auth-wrap">
           <div class="subtitle">Zaloguj się</div>
 
-          <button class="btn auth-btn google" id="loginGoogle">
-            <i class="fa-brands fa-google"></i> Kontynuuj z Google
-          </button>
-
-          <div class="auth-sep"><span>lub</span></div>
-
           <form id="loginEmailForm" class="stack">
             <div>
               <label>Email</label>
               <input type="email" name="email" placeholder="np. klient@mail.com" required>
             </div>
             <div>
-              <label>Hasło (opcjonalnie)</label>
-              <input type="password" name="password" placeholder="••••••••">
+              <label>Hasło</label>
+              <input type="password" name="password" placeholder="••••••••" required minlength="6">
             </div>
-            <button class="btn btn-primary btn-wide">
+            <button class="btn btn-primary btn-wide" type="submit">
               Zaloguj się <i class="fa-solid fa-right-to-bracket"></i>
             </button>
+          </form>
+
+          <div class="auth-sep"><span>albo</span></div>
+
+          <div class="subtitle" style="margin-top:2px">Zarejestruj się</div>
+          <form id="registerForm" class="stack">
+            <div>
+              <label>Email</label>
+              <input type="email" name="email" placeholder="np. klient@mail.com" required>
+            </div>
+            <div>
+              <label>Hasło</label>
+              <input type="password" name="password" placeholder="Ustaw hasło" required minlength="6">
+            </div>
+            <button class="btn btn-ghost btn-wide" type="submit">
+              Utwórz konto <i class="fa-solid fa-user-plus"></i>
+            </button>
             <div class="tiny" style="text-align:center;opacity:.75">
-              Jeśli nie używasz haseł — wpisz sam email (backend może tworzyć konto automatycznie).
+              Jeśli email już istnieje — rejestracja zostanie zablokowana.
             </div>
           </form>
         </div>
@@ -1228,8 +1057,6 @@
             </div>
           </div>
         </div>
-
-        <!-- ✅ USUNIĘTO: przycisk "Odśwież dane z serwera" -->
       </div>
     </section>
 
@@ -1313,9 +1140,6 @@
       </button>
       <button class="nav-btn" data-tab="rewards">
         <i class="fa-solid fa-gift"></i><div class="lbl">Nagrody</div>
-      </button>
-      <button class="nav-btn" data-tab="order">
-        <i class="fa-solid fa-bag-shopping"></i><div class="lbl">Zamów</div>
       </button>
       <button class="nav-btn" data-tab="res">
         <i class="fa-solid fa-calendar-check"></i><div class="lbl">Rezerwuj</div>
@@ -1454,7 +1278,6 @@
   const tabs = {
     points: document.getElementById("tab-points"),
     rewards: document.getElementById("tab-rewards"),
-    order: document.getElementById("tab-order"),
     res: document.getElementById("tab-res"),
     account: document.getElementById("tab-account"),
   };
@@ -1464,11 +1287,6 @@
     navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
     window.scrollTo({ top: 0, behavior: "smooth" });
     renderTopPill();
-    if (name === "order") {
-      prefillOrderCheckout();
-      renderPickupRuleHintAndMin();
-    }
-    setTimeout(renderOrderFab, 50);
   }
   navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
   document.querySelectorAll("[data-go]").forEach((b) =>
@@ -1791,456 +1609,6 @@
     if (phone && !phone.value && p.phone) phone.value = p.phone;
   }
 
-  function prefillOrderCheckout() {
-    const p = getPersonal();
-    const nameEl = document.getElementById("orderCustomerName");
-    const phoneEl = document.getElementById("orderCustomerPhone");
-    if (nameEl && !nameEl.value && p.name) nameEl.value = p.name;
-    if (phoneEl && !phoneEl.value && p.phone) phoneEl.value = p.phone;
-  }
-
-  // ---------- Order time rules (Mon-Thu: 30min, Fri-Sun: 45min) ----------
-  const pickupTimeEl = document.getElementById("pickupTime");
-  const pickupRuleHintEl = document.getElementById("pickupRuleHint");
-
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function minutesToHHMM(mins){
-    const h = Math.floor(mins / 60) % 24;
-    const m = mins % 60;
-    return `${pad2(h)}:${pad2(m)}`;
-  }
-  function ceilToQuarterMinutes(totalMins){
-    return Math.ceil(totalMins / 15) * 15;
-  }
-  function getLeadMinutesForToday(now = new Date()){
-    const d = now.getDay();
-    if (d >= 1 && d <= 4) return 30;
-    return 45;
-  }
-  function computeMinPickupTime(now = new Date()){
-    const lead = getLeadMinutesForToday(now);
-    const nowM = now.getHours()*60 + now.getMinutes();
-    const base = ceilToQuarterMinutes(nowM);
-    const minM = base + lead;
-    return { minM, lead, baseM: base };
-  }
-  function renderPickupRuleHintAndMin(){
-    if (!pickupTimeEl || !pickupRuleHintEl) return;
-    const { minM, lead } = computeMinPickupTime(new Date());
-    const hhmm = minutesToHHMM(minM);
-    pickupRuleHintEl.innerHTML = `Najwcześniej możesz ustawić odbiór na <b>${hhmm}</b> (minimalnie pełne ${lead} min).`;
-    if (!pickupTimeEl.value) {
-      pickupTimeEl.value = hhmm;
-    } else {
-      const chosen = toMinutes(pickupTimeEl.value);
-      if (chosen < minM) pickupTimeEl.value = hhmm;
-    }
-  }
-  pickupTimeEl?.addEventListener("focus", renderPickupRuleHintAndMin);
-  pickupTimeEl?.addEventListener("change", () => {
-    const { minM } = computeMinPickupTime(new Date());
-    const chosen = pickupTimeEl.value ? toMinutes(pickupTimeEl.value) : null;
-    if (chosen !== null && chosen < minM) {
-      showToast("Godzina odbioru jest za wcześnie — ustaw późniejszą ⏰", true);
-      pickupTimeEl.value = minutesToHHMM(minM);
-    }
-  });
-
-  // ---------- Menu wklejane w kodzie ----------
-  const menuListEl = document.getElementById("menuList");
-  const menuHintEl = document.getElementById("menuHint");
-
-  // ===============================
-  // ✅ MENU W KODZIE (WKLEJ TUTAJ)
-  // ===============================
-  // Wklej tutaj wszystkie pozycje menu jako tablica obiektów.
-  // Wymagane pola: id, title, desc, price, icon, category
-  let menuItems = [
-    // PRZYKŁAD:
-    // { id: "kawa_americano", title: "Americano", desc: "Klasyczna kawa", price: 12, icon: "fa-mug-hot", category: "Kawa i herbata" },
-
-    // ⬇️ WKLEJ TUTAJ PEŁNE MENU ⬇️
-  ];
-
-  // Kategorie (stałe)
-  const CATEGORIES = [
-    "Kawa i herbata",
-    "Napoje i soki",
-    "Shakes",
-    "Desery",
-    "Tex Mex",
-    "Kanapki",
-    "Burgery",
-    "Śniadania",
-  ];
-  const categoriesBarEl = document.getElementById("categoriesBar");
-  let activeCategory = CATEGORIES[0];
-
-  function renderCategories(){
-    if (!categoriesBarEl) return;
-    categoriesBarEl.innerHTML = CATEGORIES.map(c => `
-      <button class="cat-chip ${c === activeCategory ? "active" : ""}" data-cat="${c}">
-        ${c}
-      </button>
-    `).join("");
-    categoriesBarEl.querySelectorAll("[data-cat]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        activeCategory = btn.dataset.cat;
-        renderCategories();
-        renderMenu();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-  }
-
-  // ---------- Order & pickup ----------
-  const cartListEl = document.getElementById("cartList");
-  const cartTotalEl = document.getElementById("cartTotal");
-  const submitOrderBtn = document.getElementById("submitOrderBtn");
-  const ordersListEl = document.getElementById("ordersList");
-
-  function getCart() { return store.get("orderCart", []); }
-  function setCart(c) { store.set("orderCart", c); }
-
-  function addToCart(id) {
-    if (!requireLogin("zamówień")) return;
-    const item = menuItems.find((x) => x.id === id);
-    if (!item) return;
-    const cart = getCart();
-    const existing = cart.find((c) => c.id === id);
-    if (existing) existing.qty++;
-    else cart.push({ id, qty: 1 });
-    setCart(cart);
-    renderCart();
-    showToast(`Dodano: ${item.title}`);
-  }
-
-  function changeQty(id, delta) {
-    const cart = getCart();
-    const line = cart.find((c) => c.id === id);
-    if (!line) return;
-    line.qty += delta;
-    if (line.qty <= 0) {
-      const idx = cart.findIndex((c) => c.id === id);
-      cart.splice(idx, 1);
-    }
-    setCart(cart);
-    renderCart();
-  }
-
-  function renderMenu() {
-    if (!menuItems.length) {
-      menuListEl.innerHTML = `
-        <div class="empty">
-          <div class="icon"><i class="fa-solid fa-utensils"></i></div>
-          <div>
-            <b>Brak menu</b>
-            <div class="tiny">Chwilowo niedostępne do <b>x</b>x</div>
-          </div>
-        </div>`;
-      return;
-    }
-
-    renderCategories();
-
-    const list = menuItems.filter(m => (m.category || "Inne") === activeCategory);
-
-    if (!list.length){
-      menuListEl.innerHTML = `
-        <div class="empty">
-          <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
-          <div>
-            <b>Brak produktów w tej kategorii</b>
-            <div class="tiny">Dodaj produkty z category: <b>${activeCategory}</b>.</div>
-          </div>
-        </div>`;
-      return;
-    }
-
-    menuListEl.innerHTML = list.map((m) => `
-      <div class="menu-item">
-        <div class="menu-left">
-          <div class="menu-ico"><i class="fa-solid ${m.icon}"></i></div>
-          <div>
-            <div class="menu-title">${m.title}</div>
-            <div class="menu-desc">${m.desc || ""}</div>
-          </div>
-        </div>
-        <div style="text-align:right;min-width:88px">
-          <div class="menu-price">${m.price} zł</div>
-          <button class="btn btn-primary btn-small" data-add="${m.id}">Dodaj</button>
-        </div>
-      </div>
-    `).join("");
-
-    menuListEl.querySelectorAll("[data-add]").forEach((btn) => {
-      btn.addEventListener("click", () => addToCart(btn.dataset.add));
-    });
-  }
-
-  // FAB podsumowania
-  const orderFab = document.getElementById("orderSummaryFab");
-  const fabItemsEl = document.getElementById("fabItems");
-  const fabTotalEl = document.getElementById("fabTotal");
-
-  function calcCartSummary(){
-    const cart = getCart();
-    let itemsCount = 0;
-    let total = 0;
-
-    cart.forEach(c => {
-      const m = menuItems.find(x => x.id === c.id);
-      if (!m) return;
-      itemsCount += c.qty;
-      total += (m.price * c.qty);
-    });
-
-    return { itemsCount, total };
-  }
-
-  function renderOrderFab(){
-    if (!orderFab) return;
-
-    const user = getUser();
-    const cart = getCart();
-    const visible = !!user?.email && cart.length && tabs.order.classList.contains("active");
-
-    if (!visible){
-      orderFab.style.display = "none";
-      return;
-    }
-
-    const { itemsCount, total } = calcCartSummary();
-    fabItemsEl.textContent = `${itemsCount} szt.`;
-    fabTotalEl.textContent = `${total} zł`;
-    orderFab.style.display = "flex";
-  }
-
-  orderFab?.addEventListener("click", () => {
-    const cartCard = cartListEl?.closest(".card");
-    cartCard?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  function renderCart() {
-    const user = getUser();
-    const cart = getCart();
-
-    if (!user?.email) {
-      cartListEl.innerHTML = `
-        <div class="empty">
-          <div class="icon"><i class="fa-solid fa-user"></i></div>
-          <div>
-            <b>Zaloguj się, aby składać zamówienia</b>
-            <div class="tiny">Po zalogowaniu możesz „Zamów i odbierz”.</div>
-          </div>
-        </div>`;
-      cartTotalEl.textContent = "0 zł";
-      submitOrderBtn.disabled = true;
-      renderOrderFab();
-      return;
-    }
-
-    if (!cart.length) {
-      cartListEl.innerHTML = `
-        <div class="empty">
-          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
-          <div>
-            <b>Koszyk jest pusty</b>
-            <div class="tiny">Dodaj coś z menu.</div>
-          </div>
-        </div>`;
-      cartTotalEl.textContent = "0 zł";
-      submitOrderBtn.disabled = true;
-      renderOrderFab();
-      return;
-    }
-
-    submitOrderBtn.disabled = false;
-
-    let total = 0;
-    cartListEl.innerHTML = cart.map((c) => {
-      const m = menuItems.find((x) => x.id === c.id);
-      if (!m) return "";
-      const lineTotal = m.price * c.qty;
-      total += lineTotal;
-      return `
-        <div class="cart-line">
-          <div>
-            <b>${m.title}</b>
-            <div class="tiny">${m.price} zł x ${c.qty} = ${lineTotal} zł</div>
-          </div>
-          <div class="cart-actions">
-            <button class="qty-btn" data-qty="${c.id}" data-d="-1">−</button>
-            <b>${c.qty}</b>
-            <button class="qty-btn" data-qty="${c.id}" data-d="1">+</button>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    cartTotalEl.textContent = total + " zł";
-
-    cartListEl.querySelectorAll("[data-qty]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.qty;
-        const d = Number(btn.dataset.d);
-        changeQty(id, d);
-      });
-    });
-
-    renderOrderFab();
-  }
-
-  function cleanPhone(phone){
-    return String(phone || "").trim();
-  }
-  function validatePhoneBasic(phone){
-    const p = cleanPhone(phone);
-    const digits = p.replace(/\D/g, "");
-    return digits.length >= 7;
-  }
-
-  async function submitOrder() {
-    if (!requireLogin("zamówień")) return;
-
-    const cart = getCart();
-    if (!cart.length) {
-      showToast("Koszyk pusty 😅", true);
-      return;
-    }
-
-    const name = (document.getElementById("orderCustomerName")?.value || "").trim();
-    const phone = (document.getElementById("orderCustomerPhone")?.value || "").trim();
-    const pickupTime = document.getElementById("pickupTime").value;
-    const pickupLocation = document.getElementById("pickupLocation").value;
-    const notes = document.getElementById("orderNotes").value;
-
-    if (!name) { showToast("Podaj imię i nazwisko ✍️", true); return; }
-    if (!phone || !validatePhoneBasic(phone)) { showToast("Podaj poprawny numer telefonu 📞", true); return; }
-
-    if (String(pickupLocation).toLowerCase() === "rowy") {
-      showToast("Rowy jest chwilowo niedostępne.", true);
-      return;
-    }
-
-    if (!pickupTime) {
-      showToast("Ustaw godzinę odbioru ⏰", true);
-      return;
-    }
-
-    const { minM, lead } = computeMinPickupTime(new Date());
-    const chosenM = toMinutes(pickupTime);
-    if (chosenM < minM) {
-      showToast(`Za wcześnie. Minimalnie pełne ${lead} min — ustaw później.`, true);
-      document.getElementById("pickupTime").value = minutesToHHMM(minM);
-      renderPickupRuleHintAndMin();
-      return;
-    }
-
-    const items = cart.map((c) => {
-      const m = menuItems.find((x) => x.id === c.id);
-      return { title: m?.title || "Pozycja", qty: c.qty, price: Number(m?.price || 0) };
-    });
-    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-
-    const user = getUser();
-    const milkId = getMilkId();
-
-    const profile = store.get("profile", {});
-    if (name) profile.name = name;
-    if (phone) profile.phone = phone;
-    if (!profile.email) profile.email = user?.email || "";
-    store.set("profile", profile);
-
-    const payload = {
-      source: "app",
-      email: user?.email || "",
-      milkId,
-      customerName: name,
-      customerPhone: phone,
-      pickupTime,
-      pickupLocation,
-      notes: notes || "",
-      items,
-      total,
-      status: "Przyjęte",
-      createdAt: new Date().toISOString(),
-      payment: "on_pickup",
-    };
-
-    try {
-      await API.json("/api/orders", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-
-      setCart([]);
-      document.getElementById("orderNotes").value = "";
-      renderCart();
-      showToast("Zamówienie wysłane ✅");
-      await refreshOrdersFromServer();
-      openTab("order");
-    } catch (e) {
-      const local = store.get("orders_local", []);
-      local.unshift({ ...payload, _id: crypto.randomUUID() });
-      store.set("orders_local", local);
-
-      setCart([]);
-      renderCart();
-
-      showToast("Zamówienie zapisane lokalnie (brak endpointu) ⚠️", true);
-      await refreshOrdersFromServer();
-    }
-  }
-
-  submitOrderBtn?.addEventListener("click", submitOrder);
-
-  async function refreshOrdersFromServer() {
-    const user = getUser();
-    if (!user?.email) {
-      renderOrdersUI([], false);
-      return;
-    }
-
-    try {
-      const data = await API.getMy("/api/orders/my", user.email);
-      const orders = Array.isArray(data) ? data : (data?.orders || []);
-      renderOrdersUI(orders, false);
-    } catch {
-      const local = store.get("orders_local", []);
-      renderOrdersUI(local, true);
-    }
-  }
-
-  function renderOrdersUI(orders, isLocal = false) {
-    ordersListEl.innerHTML = orders.length
-      ? orders.map((o) => `
-          <div class="res-item">
-            <b>${(o.pickupLocation || "—")} • ${(o.pickupTime || "—")}</b>
-            <div class="tiny">Złożono: ${o.date || (o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") : "—")}</div>
-            <div class="tiny">Status: <b>${o.status || "Przyjęte"}</b>${isLocal ? " (lokalnie)" : ""}</div>
-            <div class="tiny">Dane: <b>${o.customerName || "—"}</b> • ${o.customerPhone || "—"}</div>
-            <div style="margin-top:6px">
-              ${(o.items || []).map((i) => `• ${i.qty}x ${i.title}`).join("<br>")}
-            </div>
-            <div class="divider"></div>
-            <div style="display:flex;justify-content:space-between;font-weight:900">
-              <span>Razem</span><span>${o.total ?? 0} zł</span>
-            </div>
-            <div class="tiny" style="margin-top:4px">
-              Płatność na miejscu przy odbiorze.
-            </div>
-          </div>
-        `).join("")
-      : `<div class="empty">
-          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
-          <div>
-            <b>Brak zamówień</b>
-            <div class="tiny">Twoje zamówienia pojawią się tutaj.</div>
-          </div>
-        </div>`;
-  }
-
   // ---------- Reservations ----------
   const resForm = document.getElementById("reservationForm");
   const resListEl = document.getElementById("reservationsList");
@@ -2399,25 +1767,21 @@
 
     renderPoints();
     renderRewards();
-    renderCart();
     prefillPersonalUI();
     prefillReservationForm();
-    prefillOrderCheckout();
-    renderPickupRuleHintAndMin();
-    renderOrderFab();
   }
 
-  // ---------- Login / Logout ----------
-  const loginGoogleBtn = document.getElementById("loginGoogle");
+  // ---------- Login / Register / Logout ----------
   const loginEmailForm = document.getElementById("loginEmailForm");
+  const registerForm = document.getElementById("registerForm");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  async function loginWithEmail(email, password = "") {
+  async function loginWithEmail(email, password) {
     email = String(email || "").trim().toLowerCase();
-    if (!email) {
-      showToast("Podaj email", true);
-      return;
-    }
+    password = String(password || "").trim();
+
+    if (!email) { showToast("Podaj email", true); return; }
+    if (!password) { showToast("Podaj hasło", true); return; }
 
     try {
       const res = await API.json("/api/auth/login", {
@@ -2446,36 +1810,12 @@
       showToast("Zalogowano ✅");
       renderAccount();
       await syncAll();
+      openTab("points");
       return;
     } catch (e) {
-      console.warn("login server failed -> local fallback", e);
+      showToast(e.message || "Błędny email lub hasło", true);
     }
-
-    const user = {
-      email,
-      name: store.get("profile", {})?.name || "",
-      phone: store.get("profile", {})?.phone || "",
-      milkId: store.get("user", {})?.milkId || "",
-      token: "",
-    };
-    store.set("user", user);
-
-    user.milkId = getMilkId();
-    store.set("user", user);
-
-    showToast("Zalogowano lokalnie ⚠️");
-    renderAccount();
-    await syncAll();
   }
-
-  function fakeGoogleEmail() {
-    const rand = Math.floor(1000 + Math.random() * 9000);
-    return `google.user${rand}@gmail.com`;
-  }
-
-  loginGoogleBtn?.addEventListener("click", () => {
-    loginWithEmail(fakeGoogleEmail(), "");
-  });
 
   loginEmailForm?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -2483,6 +1823,28 @@
     const email = fd.get("email");
     const password = fd.get("password");
     loginWithEmail(email, password);
+  });
+
+  registerForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(registerForm);
+    const email = String(fd.get("email") || "").trim().toLowerCase();
+    const password = String(fd.get("password") || "").trim();
+
+    if (!email) { showToast("Podaj email", true); return; }
+    if (!password || password.length < 6) { showToast("Hasło min. 6 znaków", true); return; }
+
+    try {
+      await API.json("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      showToast("Konto utworzone ✅ Zaloguj się.");
+      registerForm.reset();
+      openTab("account");
+    } catch (err) {
+      showToast(err.message || "Nie udało się zarejestrować", true);
+    }
   });
 
   logoutBtn?.addEventListener("click", () => {
@@ -2552,7 +1914,7 @@
     });
   });
 
-  // ---------- Sync (bez przycisku w UI; nadal używane po loginie) ----------
+  // ---------- Sync (wywoływany po loginie) ----------
   async function syncAll() {
     if (!isLoggedIn()) return;
 
@@ -2569,13 +1931,10 @@
       if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
     } catch {}
 
-    await refreshOrdersFromServer();
     await refreshReservationsFromServer();
 
     renderPoints();
     renderRewards();
-    renderCart();
-    renderOrderFab();
   }
 
   // ---------- Install guide ----------
@@ -2650,30 +2009,12 @@
   // ---------- Init render ----------
   function initUI() {
     openTab("points");
-
     renderAccount();
     renderOpeningHours();
-    renderCategories();
-
-    menuHintEl.textContent = menuItems.length
-      ? `Menu gotowe (${menuItems.length} pozycji)`
-      : "Brak menu — wklej pozycje do menuItems w kodzie.";
-
-    renderMenu();
-    renderCart();
-    renderOrderFab();
-
-    refreshOrdersFromServer();
+    renderPoints();
+    renderRewards();
     refreshReservationsFromServer();
-
-    window.addEventListener("scroll", () => {
-      if (tabs.order.classList.contains("active")) renderOrderFab();
-    });
   }
-
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => setTimeout(renderOrderFab, 50));
-  });
 
   initUI();
 </script>
