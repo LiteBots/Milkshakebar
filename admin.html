@@ -354,7 +354,7 @@
       position:fixed; inset:0;
       z-index:10000;
       display:none;align-items:center;justify-content:center;
-      padding:22px;
+      padding:0; /* ✅ full */
       background: rgba(0,0,0,0.50);
       backdrop-filter: blur(6px);
     }
@@ -367,21 +367,30 @@
       opacity:0.95;
     }
     @keyframes flash{from{opacity:.20}to{opacity:.85}}
+
+    /* ✅ ALARM CONTENT = FULLSCREEN */
     .alarmbox{
       position:relative;
-      width:min(640px, 100%);
-      border-radius:30px;
-      border:1px solid rgba(255,255,255,0.55);
+      width:100%;
+      height:100%;
+      border-radius:0;
+      border:0;
       background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
-      box-shadow: var(--shadow2);
-      padding:18px;
+      box-shadow:none;
+      padding:22px;
       text-align:center;
       color: var(--text);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:12px;
     }
-    .alarmbox h3{font-size:1.35rem;font-weight:900;margin:8px 0 6px;}
+    .alarmbox h3{font-size:1.6rem;font-weight:900;margin:8px 0 6px;}
     .alarmbox p{color:var(--muted)}
     .alarmbox .preview{
-      margin-top:12px;
+      max-width: 900px;
+      margin: 12px auto 0;
+      width: 100%;
       background: rgba(255,255,255,0.86);
       border:1px solid var(--border);
       border-radius:18px;
@@ -546,11 +555,11 @@
   <!-- FULLSCREEN ALARM -->
   <div class="alarm" id="alarm">
     <div class="alarmbox">
-      <div class="pill" style="margin:0 auto 8px; width:max-content;">
-        <i class="fa-solid fa-bell"></i> Nowa rezerwacja
+      <div class="pill" style="margin:0 auto 8px; width:max-content;" id="alarmPill">
+        <i class="fa-solid fa-bell"></i> Alert
       </div>
-      <h3>Przyszła nowa rezerwacja!</h3>
-      <p>Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.</p>
+      <h3 id="alarmTitle">Alert</h3>
+      <p id="alarmDesc">Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.</p>
 
       <div class="preview" id="alarmPreview"></div>
 
@@ -587,7 +596,6 @@
         <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
         <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
         <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
-        <button class="navbtn" data-tab="clients"><i class="fa-solid fa-address-book"></i> Baza klientów</button>
 
         <div class="sidefoot">
           <span class="pill"><span class="dot" id="apiDot"></span> API</span>
@@ -628,7 +636,7 @@
           <div class="kpi"><i class="fa-solid fa-bolt"></i><div><div class="num" id="kAppOps">Problem z Panelem?</div><div class="lbl">Zadzwoń 735 396 534</div></div></div>
         </div>
 
-        <p class="hint">Sekcja „Milki Aplikacja” jest teraz w pełni statyczna (bez backendu).</p>
+        <p class="hint">„Zamówienie z odbiorem” jest teraz pobierane z backendu (/api/orders) + realtime alarm (Socket.IO).</p>
       </section>
 
       <!-- TAB: RESERVATIONS -->
@@ -678,7 +686,7 @@
         <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <!-- TAB: PICKUP (STATIC) -->
+      <!-- TAB: PICKUP (FROM DB: /api/orders) -->
       <section class="card" id="tab-pickup" style="display:none">
         <h2>Zamówienie z odbiorem</h2>
         <div style="overflow:auto">
@@ -694,7 +702,7 @@
             <tbody id="ordersTbody"></tbody>
           </table>
         </div>
-        <p class="hint">To jest statyczny podgląd — backend podłączymy później.</p>
+        <p class="hint">Pobierane z backendu: <b>/api/orders</b>. Alarm realtime: <b>new-order</b>.</p>
       </section>
 
       <!-- TAB: POINTS (STATIC) -->
@@ -758,50 +766,6 @@
         <p class="hint">To jest statyczna baza nagród — backend podłączymy później.</p>
       </section>
 
-      <!-- TAB: CLIENTS (STATIC + PIN 5100) -->
-      <section class="card" id="tab-clients" style="display:none">
-        <h2>Baza klientów</h2>
-
-        <div id="clientsLocked" style="display:block">
-          <p style="color:var(--muted)">Dostęp wymaga PIN.</p>
-          <div class="modalgrid" style="margin-top:6px">
-            <div class="field" style="grid-column:span 2">
-              <label>PIN dostępu</label>
-              <input class="input" id="cPin" type="password" placeholder="••••">
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-            <button class="btn primary" id="cUnlock"><i class="fa-solid fa-unlock"></i> Odblokuj</button>
-          </div>
-        </div>
-
-        <div id="clientsContent" style="display:none">
-          <div style="overflow:auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>Klient</th>
-                  <th>Email</th>
-                  <th>Telefon</th>
-                  <th>Milk ID</th>
-                  <th style="text-align:right">Akcje</th>
-                </tr>
-              </thead>
-              <tbody id="clientsTbody"></tbody>
-            </table>
-          </div>
-
-          <div class="card" style="margin-top:14px;">
-            <h2 style="margin-bottom:8px">Aktywność konta</h2>
-            <div id="clientActivity">
-              Wybierz klienta, aby zobaczyć aktywność.
-            </div>
-          </div>
-
-          <p class="hint">To jest statyczny widok — backend podłączymy później.</p>
-        </div>
-      </section>
-
     </main>
   </div>
 
@@ -851,6 +815,8 @@
       unlocked: false,
 
       reservations: [],
+      orders: [],               // ✅ from DB (/api/orders)
+
       editingId: null,
 
       alarmActive: false,
@@ -863,35 +829,6 @@
         rewards: [
           { id: "r1", name: "Darmowy shake 500 ml", cost: 20 },
           { id: "r2", name: "Zniżka -10% na zamówienie", cost: 12 }
-        ],
-        orders: [
-          { id:"o1", date:"2025-12-16", name:"Klaudia Nowak", items:"2x Shake Mango, 1x Fries", pickup:"18:20" },
-          { id:"o2", date:"2025-12-16", name:"Mateusz K.", items:"1x Shake Oreo", pickup:"19:05" }
-        ],
-        clientsPinOk: false,
-        clients: [
-          {
-            id:"c1",
-            name:"Anna Kowalska",
-            email:"anna@example.com",
-            phone:"+48 500 111 222",
-            milkId:"MILK-10293",
-            activity:[
-              { t:"Doładowanie", d:"2025-12-12 14:22", v:"+5 Milkosów (50 zł)" },
-              { t:"Nagroda", d:"2025-12-13 19:08", v:"-20 Milkosów — Darmowy shake 500 ml" },
-              { t:"Rezerwacja", d:"2025-12-15 12:01", v:"Stolik 3 os. • 18:00" }
-            ]
-          },
-          {
-            id:"c2",
-            name:"Piotr Zieliński",
-            email:"piotr@example.com",
-            phone:"+48 501 333 444",
-            milkId:"MILK-88401",
-            activity:[
-              { t:"Doładowanie", d:"2025-12-10 11:40", v:"+3 Milkosy (30 zł)" }
-            ]
-          }
         ]
       }
     };
@@ -1063,7 +1000,6 @@
       pickup: { title:"Zamówienie z odbiorem" },
       points: { title:"Punkty Milk" },
       rewards: { title:"Nagrody" },
-      clients: { title:"Baza klientów" },
     };
 
     function showTab(key){
@@ -1106,7 +1042,6 @@
         $("#kMilkos").textContent = (data.milkosTotal ?? "—");
         $("#kUsersWithPoints").textContent = (data.usersWithPoints ?? "—");
         $("#kEmployees").textContent = (data.employees ?? "—");
-
       }catch{
         $("#kUsers").textContent = "—";
         $("#kOrders").textContent = "—";
@@ -1128,6 +1063,18 @@
       }catch(e){
         console.error(e);
         showToast("Nie udało się pobrać rezerwacji", true);
+      }
+    }
+
+    async function loadOrders(){
+      try{
+        const res = await fetch("/api/orders", {cache:"no-store"});
+        const list = await res.json();
+        state.orders = Array.isArray(list) ? list : [];
+        renderOrders();
+      }catch(e){
+        console.error(e);
+        showToast("Nie udało się pobrać zamówień", true);
       }
     }
 
@@ -1203,6 +1150,64 @@
         }
       }
     });
+
+    // ==========================
+    // Orders table (like reservations)
+    // ==========================
+    function renderOrders(){
+      const tb = $("#ordersTbody");
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      if(state.orders.length === 0){
+        tb.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
+              Brak zamówień
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      for(const o of state.orders){
+        // Dopasowania pól (fallbacki)
+        const created =
+          o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") :
+          (o.date || "—");
+
+        const name =
+          o.name || o.customerName || o.customer?.name || "—";
+
+        const pickup =
+          o.pickupTime || o.pickup || o.time || (o.pickupAt ? new Date(o.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
+
+        const items =
+          Array.isArray(o.items)
+            ? o.items.map(x => `${x.qty ?? x.quantity ?? 1}x ${x.name ?? x.title ?? "Produkt"}`).join(", ")
+            : (o.itemsText || o.items || "—");
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <div class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(created)}</div>
+          </td>
+          <td>
+            <div style="font-weight:900">${escapeHtml(name)}</div>
+            <div style="color:rgba(43,19,0,0.70);font-size:.9rem;margin-top:4px">
+              <i class="fa-solid fa-receipt" style="color:rgba(255,106,0,0.95)"></i> ${escapeHtml(items)}
+            </div>
+          </td>
+          <td>
+            <span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(pickup)}</span>
+          </td>
+          <td>
+            <span class="tag"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(o.location || o.place || "—")}</span>
+          </td>
+        `;
+        tb.appendChild(tr);
+      }
+    }
 
     // ==========================
     // Edit modal
@@ -1296,7 +1301,7 @@
     $("#happySave").addEventListener("click", saveHappy);
 
     // ==========================
-    // ✅ Alarm: TYLKO szybkie pikanie (bez /alarm.mp3)
+    // ✅ Alarm: szybkie pikanie (oscillator)
     // ==========================
     function ensureAudio(){
       if(state.audioCtx) return;
@@ -1310,46 +1315,89 @@
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = "square";
-      o.frequency.value = 1100;   // wyżej = bardziej “alarmowo”
-      g.gain.value = 0.14;        // głośniej (oscillator)
+      o.frequency.value = 1100;
+      g.gain.value = 0.14;
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
       setTimeout(()=>{ try{o.stop();}catch(e){} }, 140);
     }
 
-    function startAlarm(reservation){
+    function startAlarm(kind, payload){
       if(state.alarmActive) return;
       state.alarmActive = true;
 
-      $("#alarmPreview").innerHTML = `
-        <div class="line">
-          <i class="fa-solid fa-user"></i>
-          <div><b>${escapeHtml(reservation?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(reservation?.phone || "—")}</div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-calendar-day"></i>
-          <div>${escapeHtml(reservation?.date || "—")} <span class="muted">•</span> ${escapeHtml(reservation?.time || "—")}</div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-user-group"></i>
-          <div>${escapeHtml(reservation?.guests || "—")} <span class="muted">os.</span></div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-door-open"></i>
-          <div>${escapeHtml(reservation?.room || "—")}</div>
-        </div>
-        <div class="line" style="margin-bottom:0">
-          <i class="fa-solid fa-note-sticky"></i>
-          <div class="muted">${escapeHtml(reservation?.notes || "—")}</div>
-        </div>
-      `;
+      // header texts
+      const pill = $("#alarmPill");
+      const title = $("#alarmTitle");
+      const desc = $("#alarmDesc");
+
+      if(kind === "order"){
+        pill.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> Nowe zamówienie`;
+        title.textContent = "Przyszło nowe zamówienie!";
+        desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
+      }else{
+        pill.innerHTML = `<i class="fa-solid fa-bell"></i> Nowa rezerwacja`;
+        title.textContent = "Przyszła nowa rezerwacja!";
+        desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
+      }
+
+      // Preview
+      if(kind === "order"){
+        const name = payload?.name || payload?.customerName || payload?.customer?.name || "—";
+        const phone = payload?.phone || payload?.customerPhone || payload?.customer?.phone || "—";
+        const pickup =
+          payload?.pickupTime || payload?.pickup || payload?.time ||
+          (payload?.pickupAt ? new Date(payload.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
+
+        const items =
+          Array.isArray(payload?.items)
+            ? payload.items.map(x => `${x.qty ?? x.quantity ?? 1}x ${x.name ?? x.title ?? "Produkt"}`).join(", ")
+            : (payload?.itemsText || payload?.items || "—");
+
+        $("#alarmPreview").innerHTML = `
+          <div class="line">
+            <i class="fa-solid fa-user"></i>
+            <div><b>${escapeHtml(name)}</b> <span class="muted">•</span> ${escapeHtml(phone)}</div>
+          </div>
+          <div class="line">
+            <i class="fa-regular fa-clock"></i>
+            <div>Odbiór: <b>${escapeHtml(pickup)}</b></div>
+          </div>
+          <div class="line" style="margin-bottom:0">
+            <i class="fa-solid fa-receipt"></i>
+            <div class="muted">${escapeHtml(items)}</div>
+          </div>
+        `;
+      }else{
+        $("#alarmPreview").innerHTML = `
+          <div class="line">
+            <i class="fa-solid fa-user"></i>
+            <div><b>${escapeHtml(payload?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(payload?.phone || "—")}</div>
+          </div>
+          <div class="line">
+            <i class="fa-solid fa-calendar-day"></i>
+            <div>${escapeHtml(payload?.date || "—")} <span class="muted">•</span> ${escapeHtml(payload?.time || "—")}</div>
+          </div>
+          <div class="line">
+            <i class="fa-solid fa-user-group"></i>
+            <div>${escapeHtml(payload?.guests || "—")} <span class="muted">os.</span></div>
+          </div>
+          <div class="line">
+            <i class="fa-solid fa-door-open"></i>
+            <div>${escapeHtml(payload?.room || "—")}</div>
+          </div>
+          <div class="line" style="margin-bottom:0">
+            <i class="fa-solid fa-note-sticky"></i>
+            <div class="muted">${escapeHtml(payload?.notes || "—")}</div>
+          </div>
+        `;
+      }
 
       const alarm = $("#alarm");
       alarm.classList.add("show");
       alarm.classList.add("flash");
 
-      // ✅ tylko szybkie pikanie
       ensureAudio();
       if(state.audioCtx && state.audioCtx.state === "suspended"){
         state.audioCtx.resume().catch(()=>{});
@@ -1384,9 +1432,17 @@
       try{
         socket = io();
 
+        // ✅ reservations alarm
         socket.on("new-reservation", async (reservation)=>{
-          startAlarm(reservation);
+          startAlarm("reservation", reservation);
           await loadReservations();
+          await loadStats();
+        });
+
+        // ✅ orders alarm
+        socket.on("new-order", async (order)=>{
+          startAlarm("order", order);
+          await loadOrders();
           await loadStats();
         });
 
@@ -1403,35 +1459,8 @@
     }
 
     // ==========================
-    // STATIC: Milki Aplikacja
+    // STATIC: Milki Aplikacja (points / rewards only)
     // ==========================
-    function renderOrders(){
-      const tb = $("#ordersTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const list = state.app.orders || [];
-      if(list.length === 0){
-        tb.innerHTML = `
-          <tr><td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-            Brak zamówień
-          </td></tr>
-        `;
-        return;
-      }
-
-      for(const o of list){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><span class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(o.date)}</span></td>
-          <td style="font-weight:900">${escapeHtml(o.name)}</td>
-          <td>${escapeHtml(o.items)}</td>
-          <td><span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(o.pickup)}</span></td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
     function calcPointsFromAmount(amount){
       const a = Number(amount);
       if(!isFinite(a) || a <= 0) return 0;
@@ -1534,82 +1563,6 @@
       showToast("Usunięto ✅");
     });
 
-    function renderClients(){
-      const tb = $("#clientsTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const list = state.app.clients || [];
-      if(list.length === 0){
-        tb.innerHTML = `
-          <tr><td colspan="5" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-            Brak klientów
-          </td></tr>
-        `;
-        return;
-      }
-
-      for(const c of list){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td style="font-weight:900">${escapeHtml(c.name)}</td>
-          <td>${escapeHtml(c.email)}</td>
-          <td>${escapeHtml(c.phone)}</td>
-          <td><span class="tag"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(c.milkId)}</span></td>
-          <td style="text-align:right">
-            <button class="iconbtn ok" data-cid="${escapeHtml(c.id)}" title="Podgląd"><i class="fa-solid fa-eye"></i></button>
-          </td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    function renderClientActivity(client){
-      const box = $("#clientActivity");
-      if(!box) return;
-      if(!client){
-        box.textContent = "Wybierz klienta, aby zobaczyć aktywność.";
-        return;
-      }
-
-      const items = client.activity || [];
-      if(items.length === 0){
-        box.innerHTML = `<span class="muted">Brak aktywności.</span>`;
-        return;
-      }
-
-      box.innerHTML = items.map(a => `
-        <div class="tag" style="display:flex;justify-content:space-between;gap:10px;width:100%;margin-top:10px">
-          <span><i class="fa-solid fa-circle-dot"></i> ${escapeHtml(a.t)} <small>•</small> ${escapeHtml(a.v)}</span>
-          <small class="muted" style="opacity:.9">${escapeHtml(a.d)}</small>
-        </div>
-      `).join("");
-    }
-
-    $("#cUnlock").addEventListener("click", ()=>{
-      const pin = ($("#cPin").value || "").trim();
-      if(pin !== "5100"){
-        showToast("Błędny PIN", true);
-        return;
-      }
-      state.app.clientsPinOk = true;
-      $("#clientsLocked").style.display = "none";
-      $("#clientsContent").style.display = "block";
-      renderClients();
-      renderClientActivity(null);
-      showToast("Odblokowano ✅");
-    });
-
-    $("#clientsTbody").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      const id = btn.getAttribute("data-cid");
-      if(!id) return;
-      const client = (state.app.clients || []).find(x => x.id === id);
-      renderClientActivity(client);
-      showToast("Podgląd klienta ✅");
-    });
-
     // ==========================
     // Mobile drawer sidebar
     // ==========================
@@ -1663,9 +1616,9 @@
       await apiHealth();
       await loadStats();
       await loadReservations();
+      await loadOrders();   // ✅ load orders from DB
       await loadHappy();
 
-      renderOrders();
       renderPointsPreview();
       renderRewards();
     }
@@ -1674,6 +1627,7 @@
       await apiHealth();
       await loadStats();
       await loadReservations();
+      await loadOrders();
       showToast("Odświeżono ✅");
     });
 
