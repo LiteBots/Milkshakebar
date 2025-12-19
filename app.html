@@ -1854,7 +1854,7 @@
 // MENU – WKLEJ TUTAJ WSZYSTKIE POZYCJE
 // (nic nie pobiera się z JSON)
 // ===============================
-const MENU_ITEMS = [
+let menuItems = [
   { category:"kawa-herbata", categoryLabel:"Kawa", title:"Espresso", price:11, desc:"35 ml", tag:"espresso" },
   { category:"kawa-herbata", categoryLabel:"Kawa", title:"Podwójne espresso", price:16, desc:"70 ml", tag:"espresso" },
   { category:"kawa-herbata", categoryLabel:"Kawa", title:"Affogato (espresso z lodami)", price:"22/27", desc:"", tag:"deser kawowy" },
@@ -2142,6 +2142,7 @@ const MENU_ITEMS = [
   { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Chleb maślany", price:6, desc:"80 g", tag:"sniadania-keto" },
   { category:"sniadania", categoryLabel:"Śniadanie KETO – dodatki", title:"Gravlax", price:15, desc:"50 g", tag:"sniadania-keto" },
 ];
+
 
 // Jeśli w Twoim kodzie było `menuItems` – możesz sobie zrobić alias:
 const menuItems = MENU_ITEMS;
