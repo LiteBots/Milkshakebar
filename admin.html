@@ -354,19 +354,11 @@
       position:fixed; inset:0;
       z-index:10000;
       display:none;align-items:center;justify-content:center;
-      padding:0; /* ✅ full */
+      padding:0;
       background: rgba(0,0,0,0.50);
       backdrop-filter: blur(6px);
     }
     .alarm.show{display:flex}
-    .alarm.flash::before{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(700px 500px at 50% 30%, rgba(255,106,0,0.42), transparent 65%);
-      animation: flash 0.55s infinite alternate;
-      opacity:0.95;
-    }
-    @keyframes flash{from{opacity:.20}to{opacity:.85}}
 
     /* ✅ Reservation: ultra-fast background swap white <-> orange */
     @keyframes resvBgSwap {
@@ -375,7 +367,7 @@
       100% { background: rgba(255,255,255,0.96); }
     }
     .alarm.resvflash .alarmbox{
-      animation: resvBgSwap 0.12s infinite linear; /* szybkie miganie */
+      animation: resvBgSwap 0.12s infinite linear;
     }
 
     /* ✅ ALARM CONTENT = FULLSCREEN */
@@ -566,9 +558,9 @@
   <div class="alarm" id="alarm">
     <div class="alarmbox">
       <div class="pill" style="margin:0 auto 8px; width:max-content;" id="alarmPill">
-        <i class="fa-solid fa-bell"></i> Alert
+        <i class="fa-solid fa-bell"></i> Nowa rezerwacja
       </div>
-      <h3 id="alarmTitle">Alert</h3>
+      <h3 id="alarmTitle">Przyszła nowa rezerwacja!</h3>
       <p id="alarmDesc">Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.</p>
 
       <div class="preview" id="alarmPreview"></div>
@@ -603,9 +595,8 @@
         <button class="navbtn" data-tab="employees"><i class="fa-solid fa-user-tie"></i> Pracownicy</button>
 
         <div class="navsep">Milki Aplikacja</div>
-        <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
         <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
-        <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
+        <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-ticket"></i> Kody nagród</button>
 
         <div class="sidefoot">
           <span class="pill"><span class="dot" id="apiDot"></span> API</span>
@@ -641,12 +632,10 @@
 
         <div class="kpis" style="margin-top:14px">
           <div class="kpi"><i class="fa-solid fa-user-check"></i><div><div class="num" id="kUsersWithPoints">—</div><div class="lbl">Użytkownicy z punktami</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-bag-shopping"></i><div><div class="num" id="kOrders">—</div><div class="lbl">Zamówienia</div></div></div>
           <div class="kpi"><i class="fa-solid fa-utensils"></i><div><div class="num" id="kProducts">—</div><div class="lbl">Produkty</div></div></div>
           <div class="kpi"><i class="fa-solid fa-bolt"></i><div><div class="num" id="kAppOps">Problem z Panelem?</div><div class="lbl">Zadzwoń 735 396 534</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-shield-halved"></i><div><div class="num">OK</div><div class="lbl">Panel działa</div></div></div>
         </div>
-
-        <p class="hint">„Zamówienie z odbiorem” jest teraz pobierane z backendu (/api/orders) + realtime alarm (Socket.IO).</p>
       </section>
 
       <!-- TAB: RESERVATIONS -->
@@ -696,25 +685,6 @@
         <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <!-- TAB: PICKUP (FROM DB: /api/orders) -->
-      <section class="card" id="tab-pickup" style="display:none">
-        <h2>Zamówienie z odbiorem</h2>
-        <div style="overflow:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Klient</th>
-                <th>Zamówienie</th>
-                <th>Odbiór</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTbody"></tbody>
-          </table>
-        </div>
-        <p class="hint">Pobierane z backendu: <b>/api/orders</b>. Alarm realtime: <b>new-order</b>.</p>
-      </section>
-
       <!-- TAB: POINTS (✅ BACKEND) -->
       <section class="card" id="tab-points" style="display:none">
         <h2>Punkty Milk</h2>
@@ -741,9 +711,9 @@
         </div>
       </section>
 
-      <!-- TAB: REWARDS (STATIC + USE CODE BACKEND) -->
+      <!-- TAB: REWARDS (ONLY USE CODE + HISTORY FROM DB) -->
       <section class="card" id="tab-rewards" style="display:none">
-        <h2>Nagrody</h2>
+        <h2>Kody nagród</h2>
 
         <!-- ✅ USE CODE (MongoDB rewards) -->
         <div class="card" style="margin-top:12px;">
@@ -770,35 +740,30 @@
           <div id="useCodePreview" style="margin-top:10px;"></div>
         </div>
 
-        <div class="modalgrid" style="margin-top:14px">
-          <div class="field">
-            <label>Nazwa nagrody</label>
-            <input class="input" id="rName" placeholder="np. Darmowy shake 500 ml">
+        <!-- ✅ HISTORY (FROM DB rewards collection) -->
+        <div class="card" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <h2 style="margin-bottom:6px">Historia wykorzystania kodów</h2>
+            <button class="btn" id="rewardsHistoryRefresh"><i class="fa-solid fa-rotate"></i> Odśwież historię</button>
           </div>
-          <div class="field">
-            <label>Koszt (Milkosy)</label>
-            <input class="input" id="rCost" type="number" min="0" step="1" placeholder="np. 20">
+
+          <div style="overflow:auto;margin-top:10px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data użycia</th>
+                  <th>Kod</th>
+                  <th>Nagroda</th>
+                  <th>Notatka</th>
+                  <th>Użytkownik</th>
+                </tr>
+              </thead>
+              <tbody id="rewardsHistoryTbody"></tbody>
+            </table>
           </div>
-        </div>
 
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-          <button class="btn primary" id="rAdd"><i class="fa-solid fa-plus"></i> Dodaj nagrodę</button>
+          <p class="hint">Dane są pobierane z backendu: <b>/api/admin/rewards/history</b> (kolekcja <b>rewards</b>).</p>
         </div>
-
-        <div style="margin-top:12px;overflow:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Nagroda</th>
-                <th>Koszt</th>
-                <th style="text-align:right">Akcje</th>
-              </tr>
-            </thead>
-            <tbody id="rewardsTbody"></tbody>
-          </table>
-        </div>
-
-        <p class="hint">Lista poniżej to statyczna baza nagród w panelu — backend podłączymy później. „Wykorzystaj kod” działa z backendu.</p>
       </section>
 
     </main>
@@ -850,8 +815,6 @@
       unlocked: false,
 
       reservations: [],
-      orders: [],               // ✅ from DB (/api/orders)
-
       editingId: null,
 
       alarmActive: false,
@@ -860,14 +823,6 @@
 
       // ✅ backend points last result
       pointsLast: null,
-
-      // STATIC: Milki Aplikacja
-      app: {
-        rewards: [
-          { id: "r1", name: "Darmowy shake 500 ml", cost: 20 },
-          { id: "r2", name: "Zniżka -10% na zamówienie", cost: 12 }
-        ]
-      }
     };
 
     function showToast(msg, bad=false){
@@ -1034,9 +989,8 @@
       happy: { title:"Pasek info" },
       users: { title:"Użytkownicy" },
       employees: { title:"Pracownicy" },
-      pickup: { title:"Zamówienie z odbiorem" },
       points: { title:"Punkty Milk" },
-      rewards: { title:"Nagrody" },
+      rewards: { title:"Kody nagród" },
     };
 
     function showTab(key){
@@ -1072,7 +1026,6 @@
         if(!data?.ok) throw new Error("no ok");
 
         $("#kUsers").textContent = data.users ?? 0;
-        $("#kOrders").textContent = data.orders ?? 0;
         $("#kProducts").textContent = data.products ?? 0;
         $("#kReservations").textContent = data.reservations ?? 0;
 
@@ -1081,7 +1034,6 @@
         $("#kEmployees").textContent = (data.employees ?? "—");
       }catch{
         $("#kUsers").textContent = "—";
-        $("#kOrders").textContent = "—";
         $("#kProducts").textContent = "—";
         $("#kReservations").textContent = "—";
         $("#kMilkos").textContent = "—";
@@ -1100,18 +1052,6 @@
       }catch(e){
         console.error(e);
         showToast("Nie udało się pobrać rezerwacji", true);
-      }
-    }
-
-    async function loadOrders(){
-      try{
-        const res = await fetch("/api/orders", {cache:"no-store"});
-        const list = await res.json();
-        state.orders = Array.isArray(list) ? list : [];
-        renderOrders();
-      }catch(e){
-        console.error(e);
-        showToast("Nie udało się pobrać zamówień", true);
       }
     }
 
@@ -1187,63 +1127,6 @@
         }
       }
     });
-
-    // ==========================
-    // Orders table (like reservations)
-    // ==========================
-    function renderOrders(){
-      const tb = $("#ordersTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      if(state.orders.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak zamówień
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const o of state.orders){
-        const created =
-          o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") :
-          (o.date || "—");
-
-        const name =
-          o.name || o.customerName || o.customer?.name || "—";
-
-        const pickup =
-          o.pickupTime || o.pickup || o.time || (o.pickupAt ? new Date(o.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
-
-        const items =
-          Array.isArray(o.items)
-            ? o.items.map(x => `${x.qty ?? x.quantity ?? 1}x ${x.name ?? x.title ?? "Produkt"}`).join(", ")
-            : (o.itemsText || o.items || "—");
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>
-            <div class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(created)}</div>
-          </td>
-          <td>
-            <div style="font-weight:900">${escapeHtml(name)}</div>
-            <div style="color:rgba(43,19,0,0.70);font-size:.9rem;margin-top:4px">
-              <i class="fa-solid fa-receipt" style="color:rgba(255,106,0,0.95)"></i> ${escapeHtml(items)}
-            </div>
-          </td>
-          <td>
-            <span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(pickup)}</span>
-          </td>
-          <td>
-            <span class="tag"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(o.location || o.place || "—")}</span>
-          </td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
 
     // ==========================
     // Edit modal
@@ -1359,84 +1242,36 @@
       setTimeout(()=>{ try{o.stop();}catch(e){} }, 140);
     }
 
-    function startAlarm(kind, payload){
+    function startAlarmReservation(payload){
       if(state.alarmActive) return;
       state.alarmActive = true;
 
-      const pill = $("#alarmPill");
-      const title = $("#alarmTitle");
-      const desc = $("#alarmDesc");
-
-      if(kind === "order"){
-        pill.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> Nowe zamówienie`;
-        title.textContent = "Przyszło nowe zamówienie!";
-        desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
-      }else{
-        pill.innerHTML = `<i class="fa-solid fa-bell"></i> Nowa rezerwacja`;
-        title.textContent = "Przyszła nowa rezerwacja!";
-        desc.innerHTML = `Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.`;
-      }
-
-      if(kind === "order"){
-        const name = payload?.name || payload?.customerName || payload?.customer?.name || "—";
-        const phone = payload?.phone || payload?.customerPhone || payload?.customer?.phone || "—";
-        const pickup =
-          payload?.pickupTime || payload?.pickup || payload?.time ||
-          (payload?.pickupAt ? new Date(payload.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
-
-        const items =
-          Array.isArray(payload?.items)
-            ? payload.items.map(x => `${x.qty ?? x.quantity ?? 1}x ${x.name ?? x.title ?? "Produkt"}`).join(", ")
-            : (payload?.itemsText || payload?.items || "—");
-
-        $("#alarmPreview").innerHTML = `
-          <div class="line">
-            <i class="fa-solid fa-user"></i>
-            <div><b>${escapeHtml(name)}</b> <span class="muted">•</span> ${escapeHtml(phone)}</div>
-          </div>
-          <div class="line">
-            <i class="fa-regular fa-clock"></i>
-            <div>Odbiór: <b>${escapeHtml(pickup)}</b></div>
-          </div>
-          <div class="line" style="margin-bottom:0">
-            <i class="fa-solid fa-receipt"></i>
-            <div class="muted">${escapeHtml(items)}</div>
-          </div>
-        `;
-      }else{
-        $("#alarmPreview").innerHTML = `
-          <div class="line">
-            <i class="fa-solid fa-user"></i>
-            <div><b>${escapeHtml(payload?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(payload?.phone || "—")}</div>
-          </div>
-          <div class="line">
-            <i class="fa-solid fa-calendar-day"></i>
-            <div>${escapeHtml(payload?.date || "—")} <span class="muted">•</span> ${escapeHtml(payload?.time || "—")}</div>
-          </div>
-          <div class="line">
-            <i class="fa-solid fa-user-group"></i>
-            <div>${escapeHtml(payload?.guests || "—")} <span class="muted">os.</span></div>
-          </div>
-          <div class="line">
-            <i class="fa-solid fa-door-open"></i>
-            <div>${escapeHtml(payload?.room || "—")}</div>
-          </div>
-          <div class="line" style="margin-bottom:0">
-            <i class="fa-solid fa-note-sticky"></i>
-            <div class="muted">${escapeHtml(payload?.notes || "—")}</div>
-          </div>
-        `;
-      }
+      $("#alarmPreview").innerHTML = `
+        <div class="line">
+          <i class="fa-solid fa-user"></i>
+          <div><b>${escapeHtml(payload?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(payload?.phone || "—")}</div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-calendar-day"></i>
+          <div>${escapeHtml(payload?.date || "—")} <span class="muted">•</span> ${escapeHtml(payload?.time || "—")}</div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-user-group"></i>
+          <div>${escapeHtml(payload?.guests || "—")} <span class="muted">os.</span></div>
+        </div>
+        <div class="line">
+          <i class="fa-solid fa-door-open"></i>
+          <div>${escapeHtml(payload?.room || "—")}</div>
+        </div>
+        <div class="line" style="margin-bottom:0">
+          <i class="fa-solid fa-note-sticky"></i>
+          <div class="muted">${escapeHtml(payload?.notes || "—")}</div>
+        </div>
+      `;
 
       const alarm = $("#alarm");
       alarm.classList.add("show");
-
-      // reset klas
-      alarm.classList.remove("flash", "resvflash");
-
-      // order: zostaw flash, reservation: szybka zamiana tła
-      if(kind === "order") alarm.classList.add("flash");
-      else alarm.classList.add("resvflash");
+      alarm.classList.add("resvflash");
 
       ensureAudio();
       if(state.audioCtx && state.audioCtx.state === "suspended"){
@@ -1450,7 +1285,6 @@
       state.alarmActive = false;
       const alarm = $("#alarm");
       alarm.classList.remove("show");
-      alarm.classList.remove("flash");
       alarm.classList.remove("resvflash");
 
       if(state.beepInterval){
@@ -1474,14 +1308,8 @@
         socket = io();
 
         socket.on("new-reservation", async (reservation)=>{
-          startAlarm("reservation", reservation);
+          startAlarmReservation(reservation);
           await loadReservations();
-          await loadStats();
-        });
-
-        socket.on("new-order", async (order)=>{
-          startAlarm("order", order);
-          await loadOrders();
           await loadStats();
         });
 
@@ -1620,6 +1448,7 @@
 
         showToast("Kod wykorzystany ✅");
         await loadStats();
+        await loadRewardsHistory();
       }catch(err){
         console.error(err);
         showToast(err.message || "Błąd serwera", true);
@@ -1627,65 +1456,65 @@
     });
 
     // ==========================
-    // STATIC: Rewards UI (unchanged)
+    // ✅ REWARDS HISTORY (FROM DB)
+    // GET /api/admin/rewards/history
     // ==========================
-    function renderRewards(){
-      const tb = $("#rewardsTbody");
+    async function loadRewardsHistory(){
+      try{
+        const res = await fetch("/api/admin/rewards/history", { cache:"no-store" });
+        const data = await res.json().catch(()=>null);
+
+        // backend może zwracać {ok:true, items:[...]} albo samą tablicę
+        const list = Array.isArray(data) ? data : (data?.items || data?.rewards || []);
+        renderRewardsHistory(list);
+      }catch(e){
+        console.error(e);
+        renderRewardsHistory([]);
+        showToast("Nie udało się pobrać historii kodów", true);
+      }
+    }
+
+    function renderRewardsHistory(list){
+      const tb = $("#rewardsHistoryTbody");
       if(!tb) return;
       tb.innerHTML = "";
 
-      const list = state.app.rewards || [];
-      if(list.length === 0){
+      const items = Array.isArray(list) ? list : [];
+
+      // pokaż tylko użyte (jeśli backend zwraca też nieużyte)
+      const used = items.filter(x => x?.used === true || x?.status === "USED" || !!x?.usedAt);
+
+      if(used.length === 0){
         tb.innerHTML = `
-          <tr><td colspan="3" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-            Brak nagród
-          </td></tr>
+          <tr>
+            <td colspan="5" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
+              Brak historii wykorzystania
+            </td>
+          </tr>
         `;
         return;
       }
 
-      for(const r of list){
+      for(const r of used){
+        const usedAt = r.usedAt ? new Date(r.usedAt).toLocaleString("pl-PL") : "—";
+        const code = r.code || r.rewardCode || "—";
+        const name = r.name || r.rewardName || "—";
+        const note = r.note || r.usedNote || "";
+        const user = r.email || (r.milkId ? `Milk ID: ${r.milkId}` : "—");
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td style="font-weight:900">${escapeHtml(r.name)}</td>
-          <td><span class="tag"><i class="fa-solid fa-coins"></i> ${escapeHtml(r.cost)} <small>Milkosów</small></span></td>
-          <td style="text-align:right">
-            <button class="iconbtn danger" data-rid="${escapeHtml(r.id)}" title="Usuń"><i class="fa-solid fa-trash"></i></button>
-          </td>
+          <td><span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(usedAt)}</span></td>
+          <td><span class="tag"><i class="fa-solid fa-ticket"></i> ${escapeHtml(code)}</span></td>
+          <td style="font-weight:900">${escapeHtml(name)}</td>
+          <td>${note ? escapeHtml(note) : '<span class="muted">—</span>'}</td>
+          <td><span class="tag"><i class="fa-solid fa-user"></i> ${escapeHtml(user)}</span></td>
         `;
         tb.appendChild(tr);
       }
     }
 
-    $("#rAdd").addEventListener("click", ()=>{
-      const name = ($("#rName").value || "").trim();
-      const cost = Number($("#rCost").value);
-
-      if(!name){
-        showToast("Podaj nazwę nagrody", true);
-        return;
-      }
-      if(!isFinite(cost) || cost <= 0){
-        showToast("Podaj poprawny koszt", true);
-        return;
-      }
-
-      state.app.rewards.push({ id: "r" + Math.random().toString(16).slice(2), name, cost: Math.floor(cost) });
-      $("#rName").value = "";
-      $("#rCost").value = "";
-      renderRewards();
-      showToast("Dodano nagrodę ✅");
-    });
-
-    $("#rewardsTbody").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      const id = btn.getAttribute("data-rid");
-      if(!id) return;
-      state.app.rewards = state.app.rewards.filter(x => x.id !== id);
-      renderRewards();
-      showToast("Usunięto ✅");
-    });
+    $("#rewardsHistoryRefresh")?.addEventListener("click", loadRewardsHistory);
 
     // ==========================
     // Mobile drawer sidebar
@@ -1740,19 +1569,17 @@
       await apiHealth();
       await loadStats();
       await loadReservations();
-      await loadOrders();
       await loadHappy();
 
       renderPointsPreview();
       renderUseCodePreview(null);
-      renderRewards();
+      await loadRewardsHistory();
     }
 
     $("#refreshBtn").addEventListener("click", async ()=>{
       await apiHealth();
       await loadStats();
       await loadReservations();
-      await loadOrders();
       showToast("Odświeżono ✅");
     });
 
@@ -1767,3 +1594,4 @@
   </script>
 </body>
 </html>
+
