@@ -596,8 +596,6 @@
         <button class="navbtn" data-tab="pickup"><i class="fa-solid fa-bag-shopping"></i> Zamówienie z odbiorem</button>
         <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
         <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
-        <!-- ✅ NEW -->
-        <button class="navbtn" data-tab="usecode"><i class="fa-solid fa-qrcode"></i> Wykorzystaj kod</button>
 
         <div class="sidefoot">
           <span class="pill"><span class="dot" id="apiDot"></span> API</span>
@@ -638,7 +636,7 @@
           <div class="kpi"><i class="fa-solid fa-bolt"></i><div><div class="num" id="kAppOps">Problem z Panelem?</div><div class="lbl">Zadzwoń 735 396 534</div></div></div>
         </div>
 
-        <p class="hint">„Zamówienie z odbiorem” jest pobierane z backendu (GET /api/orders) + realtime alarm (Socket.IO).</p>
+        <p class="hint">„Zamówienie z odbiorem” jest teraz pobierane z backendu (/api/orders) + realtime alarm (Socket.IO).</p>
       </section>
 
       <!-- TAB: RESERVATIONS -->
@@ -688,7 +686,7 @@
         <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <!-- TAB: PICKUP (FROM DB: GET /api/orders) -->
+      <!-- TAB: PICKUP (FROM DB: /api/orders) -->
       <section class="card" id="tab-pickup" style="display:none">
         <h2>Zamówienie z odbiorem</h2>
         <div style="overflow:auto">
@@ -704,17 +702,17 @@
             <tbody id="ordersTbody"></tbody>
           </table>
         </div>
-        <p class="hint">Pobierane z backendu: <b>GET /api/orders</b>. Alarm realtime: <b>new-order</b>.</p>
+        <p class="hint">Pobierane z backendu: <b>/api/orders</b>. Alarm realtime: <b>new-order</b>.</p>
       </section>
 
-      <!-- TAB: POINTS (SERVER: add by MilkID) -->
+      <!-- TAB: POINTS (✅ BACKEND) -->
       <section class="card" id="tab-points" style="display:none">
         <h2>Punkty Milk</h2>
 
         <div class="modalgrid" style="margin-top:6px">
           <div class="field">
             <label>Milk ID (6 cyfr)</label>
-            <input class="input" id="pMilkId" placeholder="np. 123456" inputmode="numeric" maxlength="6">
+            <input class="input" id="pMilkId" placeholder="np. 123456">
           </div>
           <div class="field">
             <label>Kwota wydana (zł)</label>
@@ -727,11 +725,9 @@
         </div>
 
         <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Wynik operacji</h2>
-          <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są zapisywane w bazie (konto po Milk ID).</p>
-          <div id="pointsPreview" style="margin-top:10px;">
-            <span class="muted">Wpisz Milk ID i kwotę, a potem kliknij „Dodaj punkty”.</span>
-          </div>
+          <h2 style="margin-bottom:6px">Wynik (z backendu)</h2>
+          <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są zapisywane w MongoDB.</p>
+          <div id="pointsPreview" style="margin-top:10px;"></div>
         </div>
       </section>
 
@@ -767,31 +763,7 @@
           </table>
         </div>
 
-        <p class="hint">To jest statyczna baza nagród — backend można podłączyć później.</p>
-      </section>
-
-      <!-- ✅ TAB: USE CODE -->
-      <section class="card" id="tab-usecode" style="display:none">
-        <h2>Wykorzystaj kod</h2>
-
-        <div class="modalgrid" style="margin-top:6px">
-          <div class="field" style="grid-column: span 2">
-            <label>Kod realizacji (z aplikacji)</label>
-            <input class="input" id="uCode" placeholder="np. MSB-7F3K2A">
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-          <button class="btn" id="uCheck"><i class="fa-solid fa-magnifying-glass"></i> Sprawdź</button>
-          <button class="btn primary" id="uUse" disabled><i class="fa-solid fa-lock"></i> Oznacz jako wykorzystany</button>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Szczegóły</h2>
-          <div id="uResult" class="hint" style="margin-top:0">Wpisz kod i kliknij „Sprawdź”.</div>
-        </div>
-
-        <p class="hint">To działa z backendem: <b>/api/admin/code/check</b> i <b>/api/admin/code/use</b>.</p>
+        <p class="hint">To jest statyczna baza nagród — backend podłączymy później.</p>
       </section>
 
     </main>
@@ -843,7 +815,7 @@
       unlocked: false,
 
       reservations: [],
-      orders: [],
+      orders: [],               // ✅ from DB (/api/orders)
 
       editingId: null,
 
@@ -851,17 +823,16 @@
       audioCtx: null,
       beepInterval: null,
 
-      // (STATIC: rewards list)
+      // ✅ backend points last result
+      pointsLast: null,
+
+      // STATIC: Milki Aplikacja
       app: {
         rewards: [
           { id: "r1", name: "Darmowy shake 500 ml", cost: 20 },
           { id: "r2", name: "Zniżka -10% na zamówienie", cost: 12 }
         ]
-      },
-
-      // Use code
-      lastCheckedCode: null,
-      lastCheckedData: null,
+      }
     };
 
     function showToast(msg, bad=false){
@@ -1031,7 +1002,6 @@
       pickup: { title:"Zamówienie z odbiorem" },
       points: { title:"Punkty Milk" },
       rewards: { title:"Nagrody" },
-      usecode: { title:"Wykorzystaj kod" }, // ✅ NEW
     };
 
     function showTab(key){
@@ -1098,7 +1068,6 @@
       }
     }
 
-    // ✅ Admin list orders (requires GET /api/orders in backend)
     async function loadOrders(){
       try{
         const res = await fetch("/api/orders", {cache:"no-store"});
@@ -1185,7 +1154,7 @@
     });
 
     // ==========================
-    // Orders table
+    // Orders table (like reservations)
     // ==========================
     function renderOrders(){
       const tb = $("#ordersTbody");
@@ -1204,21 +1173,20 @@
       }
 
       for(const o of state.orders){
-        const created = o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") : (o.date || "—");
+        const created =
+          o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") :
+          (o.date || "—");
 
         const name =
-          o.user?.name || o.name || o.customerName || o.customer?.name || "—";
+          o.name || o.customerName || o.customer?.name || "—";
 
         const pickup =
-          o.pickupTime || o.pickup || o.time ||
-          (o.pickupAt ? new Date(o.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
+          o.pickupTime || o.pickup || o.time || (o.pickupAt ? new Date(o.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
 
         const items =
           Array.isArray(o.items)
             ? o.items.map(x => `${x.qty ?? x.quantity ?? 1}x ${x.name ?? x.title ?? "Produkt"}`).join(", ")
             : (o.itemsText || o.items || "—");
-
-        const location = o.pickupLocation || o.location || o.place || "—";
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -1235,7 +1203,7 @@
             <span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(pickup)}</span>
           </td>
           <td>
-            <span class="tag"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(location)}</span>
+            <span class="tag"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(o.location || o.place || "—")}</span>
           </td>
         `;
         tb.appendChild(tr);
@@ -1375,8 +1343,8 @@
       }
 
       if(kind === "order"){
-        const name = payload?.user?.name || payload?.name || payload?.customerName || payload?.customer?.name || "—";
-        const phone = payload?.user?.phone || payload?.phone || payload?.customerPhone || payload?.customer?.phone || "—";
+        const name = payload?.name || payload?.customerName || payload?.customer?.name || "—";
+        const phone = payload?.phone || payload?.customerPhone || payload?.customer?.phone || "—";
         const pickup =
           payload?.pickupTime || payload?.pickup || payload?.time ||
           (payload?.pickupAt ? new Date(payload.pickupAt).toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}) : "—");
@@ -1488,169 +1456,75 @@
     }
 
     // ==========================
-    // ✅ Points: add by Milk ID (SERVER)
-    // POST /api/admin/points/add-by-milkid {milkId, amount}
+    // ✅ POINTS (BACKEND)
     // ==========================
-    function normalizeMilkId(s){
-      const digits = String(s || "").trim().replace(/\D/g, "");
-      return digits;
+    function renderPointsPreview(){
+      const box = $("#pointsPreview");
+      if(!box) return;
+
+      if(!state.pointsLast){
+        box.innerHTML = `<span class="muted">Brak operacji.</span>`;
+        return;
+      }
+
+      const x = state.pointsLast;
+      box.innerHTML = `
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> Milk ID <small>•</small> ${escapeHtml(x.milkId)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-envelope"></i> ${escapeHtml(x.email)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-plus"></i> +${escapeHtml(x.addedPoints)} pkt</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-star"></i> Razem <small>•</small> ${escapeHtml(x.points)} pkt</div>
+      `;
     }
 
-    $("#pAdd").addEventListener("click", async ()=>{
-      const milkId = normalizeMilkId($("#pMilkId").value);
-      const amount = Number($("#pAmount").value || 0);
+    $("#pAdd").addEventListener("click", async () => {
+      const milkId = ($("#pMilkId").value || "").trim();
+      const amount = Number($("#pAmount").value);
 
-      if(milkId.length !== 6){
-        showToast("Milk ID musi mieć 6 cyfr", true);
-        return;
-      }
-      if(!isFinite(amount) || amount < 10){
-        showToast("Min. 10 zł = 1 pkt", true);
+      if (!milkId || milkId.length !== 6) {
+        showToast("Podaj poprawny Milk ID (6 cyfr)", true);
         return;
       }
 
-      try{
-        const res = await fetch("/api/admin/points/add-by-milkid", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ milkId, amount })
+      if (!Number.isFinite(amount) || amount < 10) {
+        showToast("Minimalna kwota to 10 zł (1 pkt)", true);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/admin/milkpoints/add-by-milkid", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ milkId, amountPln: amount })
         });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false) throw new Error(data?.message || "Błąd");
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.ok) {
+          throw new Error(data.message || "Błąd naliczania punktów");
+        }
+
+        state.pointsLast = {
+          milkId: data.milkId,
+          email: data.email,
+          addedPoints: data.addedPoints,
+          points: data.points
+        };
 
         $("#pMilkId").value = "";
         $("#pAmount").value = "";
 
-        const added = data.pointsAdded ?? "—";
-        const total = data.points ?? "—";
-        const email = data.email ?? "—";
+        renderPointsPreview();
+        showToast(`Dodano +${data.addedPoints} pkt (razem: ${data.points}) ✅`);
 
-        $("#pointsPreview").innerHTML = `
-          <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(milkId)} <small>•</small> ${escapeHtml(email)}</div>
-          <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-circle-plus"></i> +${escapeHtml(added)} <small>pkt</small></div>
-          <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-star"></i> ${escapeHtml(total)} <small>pkt łącznie</small></div>
-        `;
-
-        showToast(`Dodano +${added} pkt ✅`);
         await loadStats();
-      }catch(e){
-        console.error(e);
-        showToast(String(e.message || "Błąd dodawania punktów"), true);
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || "Błąd serwera", true);
       }
     });
 
     // ==========================
-    // ✅ Use code (SERVER)
-    // POST /api/admin/code/check {code}
-    // POST /api/admin/code/use {code}
-    // ==========================
-    function renderUseCodeResult(doc){
-      const box = $("#uResult");
-      if(!box) return;
-
-      if(!doc){
-        box.innerHTML = `Wpisz kod i kliknij „Sprawdź”.`;
-        return;
-      }
-
-      const status = String(doc.status || "").toLowerCase();
-      const statusTag =
-        status === "issued"
-          ? `<span class="tag"><i class="fa-solid fa-circle-check"></i> Aktywny</span>`
-          : status === "used" || status === "redeemed"
-            ? `<span class="tag" style="background: rgba(220,38,38,0.10);border-color: rgba(220,38,38,0.22);"><i class="fa-solid fa-ban"></i> Wykorzystany</span>`
-            : `<span class="tag"><i class="fa-solid fa-circle-question"></i> ${escapeHtml(doc.status || "unknown")}</span>`;
-
-      const title = doc.title || doc.rewardTitle || doc.rewardName || "—";
-      const email = doc.email || doc.userEmail || "—";
-      const code = doc.code || doc.codeId || doc.value || "—";
-      const createdAt = doc.createdAt ? new Date(doc.createdAt).toLocaleString("pl-PL") : "—";
-
-      box.innerHTML = `
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          ${statusTag}
-          <span class="tag"><i class="fa-solid fa-qrcode"></i> ${escapeHtml(code)}</span>
-          <span class="tag"><i class="fa-solid fa-user"></i> ${escapeHtml(email)}</span>
-        </div>
-
-        <div class="tag" style="display:flex;justify-content:space-between;width:100%;border-radius:16px;">
-          <span><i class="fa-solid fa-gift"></i> Uprawnia do:</span>
-          <b>${escapeHtml(title)}</b>
-        </div>
-
-        <div style="color:rgba(43,19,0,0.65);font-size:.92rem;margin-top:10px">
-          Utworzono: <b>${escapeHtml(createdAt)}</b>
-        </div>
-      `;
-    }
-
-    $("#uCheck").addEventListener("click", async ()=>{
-      const code = String($("#uCode").value || "").trim();
-      if(!code){
-        showToast("Wpisz kod", true);
-        return;
-      }
-
-      $("#uUse").disabled = true;
-      state.lastCheckedCode = null;
-      state.lastCheckedData = null;
-
-      try{
-        const res = await fetch("/api/admin/code/check", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ code })
-        });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false) throw new Error(data?.message || "Nie znaleziono kodu");
-
-        const doc = data.codeDoc || data.doc || data;
-        state.lastCheckedCode = code;
-        state.lastCheckedData = doc;
-
-        renderUseCodeResult(doc);
-
-        const st = String(doc.status || "").toLowerCase();
-        $("#uUse").disabled = !(st === "issued");
-
-        showToast("Kod znaleziony ✅");
-      }catch(e){
-        console.error(e);
-        renderUseCodeResult(null);
-        showToast(String(e.message || "Błąd sprawdzania kodu"), true);
-      }
-    });
-
-    $("#uUse").addEventListener("click", async ()=>{
-      if(!state.lastCheckedCode){
-        showToast("Najpierw sprawdź kod", true);
-        return;
-      }
-
-      try{
-        const res = await fetch("/api/admin/code/use", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ code: state.lastCheckedCode })
-        });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false) throw new Error(data?.message || "Nie udało się wykorzystać kodu");
-
-        const doc = data.codeDoc || data.doc || data;
-        state.lastCheckedData = doc;
-        renderUseCodeResult(doc);
-
-        $("#uUse").disabled = true;
-        showToast("Kod oznaczony jako wykorzystany ✅");
-        await loadStats();
-      }catch(e){
-        console.error(e);
-        showToast(String(e.message || "Błąd"), true);
-      }
-    });
-
-    // ==========================
-    // Rewards (STATIC)
+    // STATIC: Rewards UI (unchanged)
     // ==========================
     function renderRewards(){
       const tb = $("#rewardsTbody");
@@ -1766,8 +1640,8 @@
       await loadOrders();
       await loadHappy();
 
+      renderPointsPreview();
       renderRewards();
-      renderUseCodeResult(null);
     }
 
     $("#refreshBtn").addEventListener("click", async ()=>{
