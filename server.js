@@ -131,7 +131,7 @@ const CodeIdSchema = new mongoose.Schema(
     status: { type: String, default: "issued" }, // issued / used
     issuedAt: { type: Date, default: Date.now },
     usedAt: { type: Date, default: null },
-    usedBy: { type: String, default: "" }, // np. pracownik / kasa
+    usedBy: { type: String, default: "" }, // np. pracownik / kasa / notatka
   },
   { minimize: false }
 );
@@ -539,7 +539,9 @@ app.post("/api/admin/milkpoints/add-by-milkid", async (req, res) => {
     const addPts = calcPointsFromAmountPLN(amountPln);
     if (addPts <= 0) return res.status(400).json({ ok: false, message: "Kwota za mała (min 10 zł = 1 pkt)." });
 
-    const text = `Naliczenie: +${addPts} pkt (kwota ${Number(amountPln).toFixed(2)} zł) • Milk ID ${milkId}${cashier ? ` • ${cashier}` : ""}`;
+    const text = `Naliczenie: +${addPts} pkt (kwota ${Number(amountPln).toFixed(2)} zł) • Milk ID ${milkId}${
+      cashier ? ` • ${cashier}` : ""
+    }`;
 
     const doc = await MilkPoint.findOneAndUpdate(
       { email: mpMap.email },
@@ -647,7 +649,7 @@ app.post("/api/rewards/redeem", async (req, res) => {
       code,
       codeDoc: createdCode,
       reward: { id: reward.id, title: reward.title, cost: reward.cost },
-      points: updated?.points ?? (current - reward.cost),
+      points: updated?.points ?? current - reward.cost,
       history: updated?.history || [],
     });
   } catch (e) {
@@ -659,6 +661,59 @@ app.post("/api/rewards/redeem", async (req, res) => {
 // ==========================
 // ADMIN: sprawdź / wykorzystaj kod (codeid)
 // ==========================
+
+// wspólna logika wykorzystania kodu (żeby nie dublować)
+async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
+  const code = String(codeRaw || "").trim().toUpperCase();
+  const usedBy = String(usedByRaw || "").trim();
+
+  if (!code) {
+    const err = new Error("Podaj kod.");
+    err.status = 400;
+    throw err;
+  }
+
+  const doc = await CodeId.findOne({ code });
+  if (!doc) {
+    const err = new Error("Nie znaleziono kodu.");
+    err.status = 404;
+    throw err;
+  }
+
+  if (doc.status === "used") {
+    const err = new Error("Kod został już wykorzystany.");
+    err.status = 409;
+    err.payload = {
+      ok: false,
+      message: "Kod został już wykorzystany.",
+      code: doc.code,
+      name: doc.title,
+      used: true,
+      usedAt: doc.usedAt,
+      note: doc.usedBy,
+    };
+    throw err;
+  }
+
+  doc.status = "used";
+  doc.usedAt = new Date();
+  doc.usedBy = usedBy || "";
+  await doc.save();
+
+  // oznacz historię nagród (opcjonalnie)
+  await Reward.updateMany({ code }, { $set: { status: "redeemed" } }).catch(() => {});
+
+  return {
+    ok: true,
+    code: doc.code,
+    name: doc.title,
+    used: true,
+    usedAt: doc.usedAt,
+    note: doc.usedBy,
+    email: doc.email,
+    milkId: doc.milkId,
+  };
+}
 
 // sprawdź kod i pokaż co daje
 app.post("/api/codeid/check", async (req, res) => {
@@ -688,47 +743,53 @@ app.post("/api/codeid/check", async (req, res) => {
   }
 });
 
-// wykorzystaj (zablokuj) kod na zawsze
+// wykorzystaj (zablokuj) kod na zawsze (stary endpoint)
 app.post("/api/codeid/use", async (req, res) => {
   try {
-    const code = String(req.body?.code || "").trim().toUpperCase();
-    const usedBy = String(req.body?.usedBy || "").trim();
+    const out = await useRewardCodeCommon({
+      codeRaw: req.body?.code,
+      usedByRaw: req.body?.usedBy,
+    });
 
-    if (!code) return res.status(400).json({ ok: false, message: "Podaj kod." });
-
-    const doc = await CodeId.findOne({ code });
-    if (!doc) return res.status(404).json({ ok: false, message: "Nie znaleziono kodu." });
-
-    if (doc.status === "used") {
-      return res.status(409).json({
-        ok: false,
-        message: "Kod został już wykorzystany.",
-        code: doc.code,
-        usedAt: doc.usedAt,
-        usedBy: doc.usedBy,
-      });
-    }
-
-    doc.status = "used";
-    doc.usedAt = new Date();
-    doc.usedBy = usedBy || "";
-    await doc.save();
-
-    await Reward.updateMany({ code }, { $set: { status: "redeemed" } }).catch(() => {});
-
+    // zachowaj kompatybilność: zwróć też pola jak dawniej
     return res.json({
-      ok: true,
+      ...out,
       message: "Kod wykorzystany i zablokowany ✅",
-      code: doc.code,
-      title: doc.title,
-      email: doc.email,
-      milkId: doc.milkId,
-      usedAt: doc.usedAt,
-      usedBy: doc.usedBy,
+      title: out.name,
+      usedBy: out.note,
     });
   } catch (e) {
+    const status = e.status || 500;
+    if (e.payload) return res.status(status).json(e.payload);
     console.error(e);
-    return res.status(500).json({ ok: false, message: "Błąd wykorzystania kodu" });
+    return res.status(status).json({ ok: false, message: e.message || "Błąd wykorzystania kodu" });
+  }
+});
+
+// ✅ NOWY ENDPOINT DLA PANELU ADMINA (pasuje do Twojego frontu)
+// POST /api/admin/rewards/use { code, note }
+app.post("/api/admin/rewards/use", async (req, res) => {
+  try {
+    const out = await useRewardCodeCommon({
+      codeRaw: req.body?.code,
+      usedByRaw: req.body?.note, // w panelu "Notatka" zapisujemy jako usedBy/note
+    });
+
+    // Forma idealnie pod Twój admin.html:
+    // { ok:true, code, name, used:true, usedAt, note }
+    return res.json({
+      ok: true,
+      code: out.code,
+      name: out.name,
+      used: true,
+      usedAt: out.usedAt,
+      note: out.note,
+    });
+  } catch (e) {
+    const status = e.status || 500;
+    if (e.payload) return res.status(status).json(e.payload);
+    console.error(e);
+    return res.status(status).json({ ok: false, message: e.message || "Błąd wykorzystania kodu" });
   }
 });
 
