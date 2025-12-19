@@ -1,6 +1,8 @@
-// server.js — MilkShake Bar (EXTENDED: index.html + app.html PWA)
-// + milkid (stały 6-cyfrowy kod per user) + codeid (kody nagród do realizacji)
-// + admin: naliczanie punktów po milkId i realizacja kodów
+// server.js — MilkShake Bar
+// ✅ bcryptjs (hasła)
+// ✅ milkid (6 cyfr per user) + codeid (kody nagród do realizacji)
+// ✅ admin: naliczanie punktów po milkId + realizacja kodów
+// ❌ NO orders (na razie nie używamy "zamów i odbierz")
 
 const express = require("express");
 const http = require("http");
@@ -8,7 +10,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { Server } = require("socket.io");
-
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const server = http.createServer(app);
@@ -34,10 +36,7 @@ if (!ADMIN_PIN) console.error("❌ Brak ADMIN_PIN w zmiennych środowiskowych! (
 // MongoDB connect + ensure collections
 // ==========================
 mongoose
-  .connect(MONGO_URL, {
-    dbName: "milkshakebar",
-    autoIndex: true,
-  })
+  .connect(MONGO_URL, { dbName: "milkshakebar", autoIndex: true })
   .then(async () => {
     console.log("✅ MongoDB connected");
     try {
@@ -88,7 +87,7 @@ const HappySchema = new mongoose.Schema({
 // users (email + passwordHash + milkId)
 const UserSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, index: true },
+    email: { type: String, required: true, index: true, unique: true },
     passwordHash: { type: String, required: true },
     milkId: { type: String, default: "", index: true },
     createdAt: { type: Date, default: Date.now },
@@ -108,7 +107,7 @@ const MilkPointSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-// milkid mapping (NOWA KOLEKCJA: milkid)
+// milkid mapping (kolekcja: milkid)
 const MilkIdSchema = new mongoose.Schema(
   {
     milkId: { type: String, required: true, unique: true, index: true }, // "123456"
@@ -118,7 +117,7 @@ const MilkIdSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-// codeid (NOWA KOLEKCJA: codeid) – kody do realizacji nagród
+// codeid (kolekcja: codeid) – kody do realizacji nagród
 const CodeIdSchema = new mongoose.Schema(
   {
     code: { type: String, required: true, unique: true, index: true }, // np. "MSB-7F3K2A"
@@ -137,7 +136,7 @@ const CodeIdSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-// rewards (opcjonalnie: jeśli chcesz trzymać też “historię nagród” osobno)
+// rewards (opcjonalnie: historia nagród)
 const RewardSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, index: true },
@@ -145,7 +144,7 @@ const RewardSchema = new mongoose.Schema(
     title: { type: String, default: "" },
     cost: { type: Number, default: 0 },
     code: { type: String, default: "" },
-    status: { type: String, default: "issued" },
+    status: { type: String, default: "issued" }, // issued/redeemed
     createdAt: { type: Date, default: Date.now },
   },
   { minimize: false }
@@ -160,8 +159,7 @@ const MilkId = mongoose.model("MilkId", MilkIdSchema, "milkid");
 const CodeId = mongoose.model("CodeId", CodeIdSchema, "codeid");
 const Reward = mongoose.model("Reward", RewardSchema, "rewards");
 
-// do kafelków w panelu (orders/products mogą być strict:false)
-const Order = mongoose.model("Order", new mongoose.Schema({}, { strict: false }), "orders");
+// products do statystyk (jeśli masz)
 const Product = mongoose.model("Product", new mongoose.Schema({}, { strict: false }), "products");
 
 // ==========================
@@ -204,8 +202,7 @@ function makeRewardCode() {
 }
 
 async function generateUniqueMilkId() {
-  // 6 cyfr, unikalne w kolekcji milkid
-  for (let tries = 0; tries < 50; tries++) {
+  for (let tries = 0; tries < 80; tries++) {
     const milkId = String(Math.floor(100000 + Math.random() * 900000));
     const exists = await MilkId.findOne({ milkId });
     if (!exists) return milkId;
@@ -214,14 +211,12 @@ async function generateUniqueMilkId() {
 }
 
 function calcPointsFromAmountPLN(amountPln) {
-  // 10 zł = 1 pkt
-  // zaokrąglamy w dół, np. 29.99 -> 2 pkt
   const a = Number(amountPln);
   if (!Number.isFinite(a) || a <= 0) return 0;
   return Math.floor(a / 10);
 }
 
-// Serwerowy katalog nagród (żeby app mogła wysłać tylko rewardId)
+// Serwerowy katalog nagród (rewardId -> tytuł/koszt)
 const REWARDS_CATALOG = [
   { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, desc: "Wartość do 30 PLN" },
   { id: "burger_set_60", title: "Zestaw burger do 60 PLN", cost: 50, desc: "Wartość do 60 PLN" },
@@ -269,10 +264,10 @@ app.post("/api/clients/unlock", (req, res) => {
 });
 
 // ==========================
-// API — AUTH (register/login z hasłem)
+// API — AUTH (register/login)
 // ==========================
 
-// Rejestracja: tworzy usera + nadaje milkId (zapis do users i milkid)
+// Rejestracja: tworzy usera + nadaje milkId (users + milkid)
 app.post("/api/auth/register", async (req, res) => {
   try {
     const email = normEmail(req.body?.email);
@@ -284,9 +279,10 @@ app.post("/api/auth/register", async (req, res) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ ok: false, message: "Konto z tym emailem już istnieje." });
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const milkId = await generateUniqueMilkId();
     const now = new Date();
+    const milkId = await generateUniqueMilkId();
+
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const userDoc = await User.create({
       email,
@@ -298,7 +294,6 @@ app.post("/api/auth/register", async (req, res) => {
 
     await MilkId.create({ milkId, email, createdAt: now });
 
-    // upewnij punkty
     await MilkPoint.findOneAndUpdate(
       { email },
       { $setOnInsert: { email, points: 0, history: [], updatedAt: now } },
@@ -316,7 +311,7 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// Login: weryfikuje hasło, zwraca milkId + punkty/historię
+// Login: weryfikuje hasło (bcrypt), zwraca milkId + punkty/historię
 app.post("/api/auth/login", async (req, res) => {
   try {
     const email = normEmail(req.body?.email);
@@ -331,14 +326,17 @@ app.post("/api/auth/login", async (req, res) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ ok: false, message: "Błędny email lub hasło." });
 
-    // jeśli z jakiegoś powodu user nie ma milkId -> dopisz
+    // upewnij milkId + mapping
     if (!user.milkId) {
-      const milkId = await generateUniqueMilkId();
-      user.milkId = milkId;
+      const newMilkId = await generateUniqueMilkId();
+      user.milkId = newMilkId;
       await user.save();
-      await MilkId.findOneAndUpdate({ milkId }, { $set: { milkId, email } }, { upsert: true, new: true });
+      await MilkId.findOneAndUpdate(
+        { milkId: newMilkId },
+        { $set: { milkId: newMilkId, email } },
+        { upsert: true, new: true }
+      );
     } else {
-      // upewnij mapping
       await MilkId.findOneAndUpdate(
         { milkId: user.milkId },
         { $set: { milkId: user.milkId, email } },
@@ -502,54 +500,7 @@ app.post("/api/happy", async (req, res) => {
 });
 
 // ==========================
-// API — ORDERS (zostawione jak było)
-// ==========================
-app.post("/api/orders", async (req, res) => {
-  try {
-    const o = req.body || {};
-    const email = normEmail(o.user?.email || o.email);
-    if (!email) return res.status(400).json({ ok: false, message: "Brak email użytkownika." });
-
-    const items = Array.isArray(o.items) ? o.items : [];
-    if (!items.length) return res.status(400).json({ ok: false, message: "Koszyk jest pusty." });
-
-    const now = new Date();
-    const orderDoc = {
-      source: String(o.source || "app"),
-      pickupTime: String(o.pickupTime || ""),
-      pickupLocation: String(o.pickupLocation || ""),
-      notes: String(o.notes || ""),
-      items,
-      total: Number(o.total || 0),
-      status: String(o.status || "Przyjęte"),
-      createdAt: o.createdAt ? new Date(o.createdAt) : now,
-      user: { email, name: String(o.user?.name || ""), phone: String(o.user?.phone || "") },
-      loyaltyCode: String(o.loyaltyCode || o.milkId || ""),
-    };
-
-    const created = await Order.create(orderDoc);
-    io.emit("new-order", created);
-    return res.json({ ok: true, order: created });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ ok: false, message: "Błąd zapisu zamówienia" });
-  }
-});
-
-app.get("/api/orders/my", async (req, res) => {
-  try {
-    const email = normEmail(req.query?.email);
-    if (!email) return res.json([]);
-    const list = await Order.find({ "user.email": email }).sort({ createdAt: -1 });
-    return res.json(list);
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json([]);
-  }
-});
-
-// ==========================
-// API — MILKPOINT
+// API — MILKPOINT (app / konto)
 // ==========================
 app.get("/api/milkpoints/my", async (req, res) => {
   try {
@@ -569,27 +520,6 @@ app.get("/api/milkpoints/my", async (req, res) => {
   }
 });
 
-app.post("/api/milkpoints/sync", async (req, res) => {
-  try {
-    const email = normEmail(req.body?.email);
-    if (!email) return res.status(400).json({ ok: false, message: "Brak email." });
-
-    const points = Number(req.body?.points || 0);
-    const history = Array.isArray(req.body?.history) ? req.body.history : [];
-
-    const updated = await MilkPoint.findOneAndUpdate(
-      { email },
-      { $set: { points, history, updatedAt: new Date() } },
-      { upsert: true, new: true }
-    );
-
-    return res.json({ ok: true, email, points: updated.points, history: updated.history || [] });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ ok: false, message: "Błąd synchronizacji punktów" });
-  }
-});
-
 // ==========================
 // ADMIN: nalicz punkty po MILK ID (10zł=1pkt)
 // ==========================
@@ -599,7 +529,9 @@ app.post("/api/admin/milkpoints/add-by-milkid", async (req, res) => {
     const amountPln = req.body?.amountPln;
     const cashier = String(req.body?.cashier || "").trim();
 
-    if (!milkId || milkId.length !== 6) return res.status(400).json({ ok: false, message: "Podaj poprawny Milk ID (6 cyfr)." });
+    if (!milkId || milkId.length !== 6) {
+      return res.status(400).json({ ok: false, message: "Podaj poprawny Milk ID (6 cyfr)." });
+    }
 
     const mpMap = await MilkId.findOne({ milkId });
     if (!mpMap) return res.status(404).json({ ok: false, message: "Nie znaleziono użytkownika dla tego Milk ID." });
@@ -662,16 +594,18 @@ app.post("/api/rewards/redeem", async (req, res) => {
     const current = mp?.points || 0;
     if (current < reward.cost) return res.status(400).json({ ok: false, message: "Za mało punktów." });
 
-    // generuj unikalny kod
+    // unikalny kod
     let code = "";
-    for (let i = 0; i < 30; i++) {
-      code = makeRewardCode();
-      const exists = await CodeId.findOne({ code });
-      if (!exists) break;
+    for (let i = 0; i < 40; i++) {
+      const candidate = makeRewardCode();
+      const exists = await CodeId.findOne({ code: candidate });
+      if (!exists) {
+        code = candidate;
+        break;
+      }
     }
     if (!code) return res.status(500).json({ ok: false, message: "Nie udało się wygenerować kodu." });
 
-    // zapisz codeid
     const createdCode = await CodeId.create({
       code,
       email,
@@ -683,7 +617,6 @@ app.post("/api/rewards/redeem", async (req, res) => {
       issuedAt: new Date(),
     });
 
-    // opcjonalnie: zapisz też do rewards (stara kolekcja)
     await Reward.create({
       email,
       rewardId,
@@ -694,7 +627,6 @@ app.post("/api/rewards/redeem", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // odejmij punkty + historia
     const updated = await MilkPoint.findOneAndUpdate(
       { email },
       {
@@ -782,7 +714,6 @@ app.post("/api/codeid/use", async (req, res) => {
     doc.usedBy = usedBy || "";
     await doc.save();
 
-    // opcjonalnie: zsynchronizuj w rewards
     await Reward.updateMany({ code }, { $set: { status: "redeemed" } }).catch(() => {});
 
     return res.json({
@@ -802,20 +733,31 @@ app.post("/api/codeid/use", async (req, res) => {
 });
 
 // ==========================
-// Admin stats
+// Admin stats (bez orders)
 // ==========================
 app.get("/api/admin/stats", async (_req, res) => {
   try {
-    const [users, orders, products, reservations] = await Promise.all([
+    const [users, products, reservations] = await Promise.all([
       User.countDocuments(),
-      Order.countDocuments(),
       Product.countDocuments(),
       Reservation.countDocuments(),
     ]);
-    res.json({ ok: true, users, orders, products, reservations });
+
+    const milkpointsDocs = await MilkPoint.find({}, { points: 1 }).lean();
+    const milkosTotal = milkpointsDocs.reduce((sum, d) => sum + (Number(d.points) || 0), 0);
+    const usersWithPoints = milkpointsDocs.filter((d) => (Number(d.points) || 0) > 0).length;
+
+    res.json({
+      ok: true,
+      users,
+      products,
+      reservations,
+      milkosTotal,
+      usersWithPoints,
+    });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok: false, users: 0, orders: 0, products: 0, reservations: 0 });
+    res.status(500).json({ ok: false, users: 0, products: 0, reservations: 0, milkosTotal: 0, usersWithPoints: 0 });
   }
 });
 
