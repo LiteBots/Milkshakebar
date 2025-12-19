@@ -1,2287 +1,2784 @@
-<!doctype html>
+zapamietaj ten kod <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f0f10" />
-  <title>Milk — Aplikacja</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Milk</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#FF6A00" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
-  <!-- Fonts / Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
     :root{
-      --bg0:#0b0b0c;
-      --bg1:#0f0f10;
-      --card: rgba(255,255,255,.08);
-      --card2: rgba(255,255,255,.10);
-      --stroke: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-
-      --accent:#ff7a00;
-      --accent2:#ffb000;
-      --ok:#2ecc71;
-      --bad:#ff4d4d;
-
-      --shadow: 0 18px 45px rgba(0,0,0,.45);
-      --r: 22px;
-
-      --safe-top: env(safe-area-inset-top);
-      --safe-bottom: env(safe-area-inset-bottom);
+      --primary:#FF6A00;
+      --secondary:#FF9100;
+      --accent:#FFE0B2;
+      --bg:#FFF6EC;
+      --text:#2B1300;
+      --white:#fff;
+      --grad:linear-gradient(135deg,var(--primary),var(--secondary));
+      --radius:20px;
+      --shadow:0 14px 40px rgba(0,0,0,.12);
+      --shadow-soft:0 8px 22px rgba(0,0,0,.08);
+      --glass:rgba(255,255,255,.82);
+      --glass-strong:rgba(255,255,255,.97);
+      --success:#16A34A;
+      --danger:#DC2626;
+      --link:#8a3d00;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{box-sizing:border-box;margin:0;padding:0}
     body{
-      margin:0;
-      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:
-        radial-gradient(900px 650px at 20% 15%, rgba(255,122,0,.25), transparent 55%),
-        radial-gradient(900px 650px at 80% 30%, rgba(255,176,0,.16), transparent 55%),
-        radial-gradient(700px 700px at 50% 95%, rgba(255,122,0,.10), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
       color:var(--text);
-      overflow-x:hidden;
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      padding-bottom: calc(118px + var(--safe-bottom));
     }
 
-    /* blob background */
     .blob{
-      position:fixed; inset:auto;
-      width:380px; height:380px;
-      filter: blur(36px);
-      opacity:.35;
-      pointer-events:none;
-      z-index:0;
-      border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,176,0,.9), rgba(255,122,0,.6), transparent 65%);
-      animation: floaty 10s ease-in-out infinite;
+      position:fixed;z-index:-1;filter:blur(70px);opacity:.33;
+      width:280px;height:280px;border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, #ffe1c7, transparent 60%),
+        var(--grad);
     }
-    .blob.b1{left:-120px; top:80px; transform:rotate(12deg)}
-    .blob.b2{right:-160px; top:260px; width:460px; height:460px; opacity:.28; animation-duration: 13s}
-    .blob.b3{left:12%; bottom:-220px; width:520px; height:520px; opacity:.22; animation-duration: 15s}
-    @keyframes floaty{
-      0%,100%{transform:translateY(0) translateX(0) scale(1)}
-      50%{transform:translateY(-18px) translateX(10px) scale(1.03)}
-    }
-
-    /* layout */
-    .app{
-      position:relative;
-      z-index:1;
-      min-height:100%;
-      padding-bottom: calc(92px + var(--safe-bottom));
-    }
+    .blob.b1{top:-70px;left:-70px}
+    .blob.b2{bottom:-110px;right:-90px;transform:rotate(25deg)}
 
     .topbar{
-      position:sticky;
-      top:0;
-      z-index:50;
-      padding: calc(14px + var(--safe-top)) 16px 12px;
-      backdrop-filter: blur(16px);
-      background: linear-gradient(180deg, rgba(15,15,16,.78), rgba(15,15,16,.35));
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      position:sticky;top:0;z-index:20;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      background:rgba(255,246,236,.96);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+      display:flex;align-items:center;justify-content:space-between;
     }
-
-    .topbarRow{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
     .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
+      display:flex;align-items:center;gap:10px;font-weight:900;
+      font-size:1.08rem;letter-spacing:.2px;
     }
-
-    .logo{
-      width:40px;
-      height:40px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(255,122,0,.95), rgba(255,176,0,.85));
-      box-shadow: 0 12px 26px rgba(255,122,0,.18);
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-    }
-    .logo i{color:#101012; font-size:18px}
-
-    .brandText{
-      display:flex; flex-direction:column; line-height:1.1; min-width:0;
-    }
-    .brandText b{font-size:15px}
-    .brandText span{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
-    .pointsPill{
-      margin-left:auto;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      user-select:none;
-      cursor:pointer;
-    }
-    .pointsPill i{color:var(--accent2)}
-    .pointsPill .num{font-weight:700}
-    .pointsPill small{color:var(--muted); font-weight:500}
-
-    .content{
-      padding: 14px 16px 0;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    /* cards */
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
+    .logo-wrap{
+      width:40px;height:40px;border-radius:50%;
+      background:rgba(255,255,255,.9);
+      display:grid;place-items:center;
+      box-shadow:var(--shadow-soft);
+      border:2px solid rgba(255,255,255,.9);
       overflow:hidden;
     }
-    .cardPad{padding:14px}
-
-    .cardTitle{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
+    .logo-wrap img{
+      width:100%;height:100%;object-fit:cover;border-radius:50%;
     }
-    .cardTitle h3{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .cardTitle .hint{
-      font-size:12px;
-      color:var(--muted);
+    .pill{
+      background:var(--grad);
+      color:#fff;font-weight:900;font-size:.85rem;
+      padding:7px 11px;border-radius:999px;
+      display:flex;gap:7px;align-items:center;
+      box-shadow:0 6px 16px rgba(255,106,0,.35);
     }
 
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .container{padding:14px;max-width:820px;margin:0 auto;}
+    .stack{display:flex;flex-direction:column;gap:12px;}
+    .card{
+      background:var(--glass);
+      backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.98);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
     }
-    .col{display:flex; flex-direction:column; gap:10px}
+    .title{
+      font-size:1.6rem;font-weight:900;
+      background:var(--grad);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:6px;
+    }
+    .subtitle{font-weight:900;margin-bottom:8px;font-size:1.05rem;}
+    .muted{opacity:.82;font-size:.95rem;line-height:1.55}
+    .tiny{font-size:.82rem;opacity:.7}
+
+    label{font-size:.9rem;font-weight:900;margin:8px 0 6px;display:block}
+    input,select,textarea{
+      width:100%;padding:12px 14px;border-radius:14px;
+      border:2px solid #eee;background:var(--white);
+      font-size:1rem;outline:none;
+      transition:.2s border-color,.2s box-shadow,.2s transform;
+      font-family:inherit;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--primary);
+      box-shadow:0 6px 18px rgba(255,106,0,.12);
+      transform:translateY(-1px);
+    }
+    textarea{min-height:84px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
     .btn{
-      appearance:none;
-      border:none;
-      cursor:pointer;
-      font-family:inherit;
+      border:none;cursor:pointer;font-weight:900;border-radius:16px;
+      padding:12px 14px;display:inline-flex;align-items:center;gap:8px;
+      transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+      text-decoration:none;user-select:none;-webkit-tap-highlight-color: transparent;
+      justify-content:center;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{
+      background:var(--grad);color:#fff;
+      box-shadow:0 8px 22px rgba(255,106,0,.5);
+    }
+    .btn-ghost{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.06);
       color:var(--text);
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 16px;
-      padding: 12px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      font-weight:600;
-      transition: transform .08s ease, background .2s ease;
-      user-select:none;
     }
-    .btn:active{transform: scale(.98)}
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(255,122,0,.95), rgba(255,176,0,.85));
-      border-color: rgba(0,0,0,.18);
-      color:#101012;
-    }
-    .btn.ghost{
-      background: rgba(255,255,255,.06);
-    }
-    .btn.small{padding:10px 12px; border-radius: 14px; font-size:13px}
-    .btn.full{width:100%}
+    .btn-small{padding:8px 10px;font-size:.9rem;border-radius:12px}
+    .btn-wide{width:100%;}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
 
-    .chipRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top: 10px;
-    }
-    .chip{
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.82);
-      font-size: 12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .chip.active{
-      background: rgba(255,122,0,.18);
-      border-color: rgba(255,122,0,.35);
-      color: #fff;
+    .tab{display:none;animation:fade .22s ease}
+    .tab.active{display:block}
+    @keyframes fade{
+      from{opacity:0;transform:translateY(8px) scale(.99)}
+      to{opacity:1;transform:none}
     }
 
-    .muted{color:var(--muted)}
-    .sep{height:1px; background: rgba(255,255,255,.10); margin: 12px 0}
-
-    /* Opening hours card */
-    .statusDot{
-      width:10px;height:10px;border-radius:50%;
-      background: rgba(255,255,255,.30);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+    .points-hero{
+      background:var(--grad);color:#fff;border-radius:22px;padding:16px;
+      display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+      box-shadow:var(--shadow);position:relative;overflow:hidden;
     }
-    .statusDot.open{background: var(--ok); box-shadow: 0 0 0 4px rgba(46,204,113,.14)}
-    .statusDot.closed{background: var(--bad); box-shadow: 0 0 0 4px rgba(255,77,77,.12)}
-
-    .hoursHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .hoursHeader .left{
-      display:flex; gap:10px; align-items:center;
-    }
-    .hoursHeader b{font-size:14px}
-    .hoursHeader span{font-size:12px; color:var(--muted)}
-    .hoursBody{padding: 0 14px 12px}
-    .hoursList{
-      display:none;
-      margin-top: 10px;
-      gap:8px;
-      flex-direction:column;
-    }
-    .hoursList.show{display:flex}
-    .hoursRow{
-      display:flex; justify-content:space-between; gap:12px;
-      font-size:12px; color: rgba(255,255,255,.78);
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.09);
-    }
-
-    /* rewards */
-    .rewardList{
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .reward{
-      display:flex; gap:12px; align-items:center;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-    }
-    .rewardIcon{
-      width:42px; height:42px;
-      border-radius: 16px;
-      display:grid; place-items:center;
-      background: rgba(255,122,0,.14);
-      border: 1px solid rgba(255,122,0,.25);
-      flex:0 0 auto;
-    }
-    .rewardIcon i{color: var(--accent2)}
-    .rewardMain{min-width:0; flex:1}
-    .rewardMain b{display:block; font-size:13px; margin-bottom:2px}
-    .rewardMain span{display:block; font-size:12px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .rewardRight{
-      display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-      flex:0 0 auto;
-    }
-    .pts{
-      font-size:12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.86);
-    }
-
-    /* order */
-    .orderTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .menuGrid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top: 10px;
-    }
-    .menuItem{
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .menuItem .left{min-width:0}
-    .menuItem b{display:block; font-size:13px}
-    .menuItem .desc{font-size:12px; color: var(--muted); margin-top:2px}
-    .menuItem .right{
-      display:flex; flex-direction:column; align-items:flex-end; gap:8px;
-      flex:0 0 auto;
-    }
-    .price{
-      font-weight:700;
-      font-size:13px;
-      color: rgba(255,255,255,.92);
-    }
-
-    /* cart fab */
-    .fab{
-      position:fixed;
-      right: 16px;
-      bottom: calc(92px + var(--safe-bottom) + 14px);
-      z-index: 60;
-      border-radius: 999px;
-      padding: 12px 14px;
-      background: linear-gradient(135deg, rgba(255,122,0,.95), rgba(255,176,0,.85));
-      border: 1px solid rgba(0,0,0,.18);
-      box-shadow: 0 18px 40px rgba(0,0,0,.45);
-      color:#101012;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .fab b{font-size:13px}
-    .fab .badge{
-      display:inline-grid; place-items:center;
-      min-width:22px; height:22px;
-      padding: 0 7px;
-      border-radius: 999px;
-      background: rgba(16,16,18,.92);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    /* bottom nav */
-    .bottomNav{
-      position:fixed;
-      left:0; right:0;
-      bottom:0;
-      z-index:70;
-      padding: 10px 12px calc(10px + var(--safe-bottom));
-      backdrop-filter: blur(18px);
-      background: linear-gradient(180deg, rgba(15,15,16,.30), rgba(15,15,16,.86));
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .navRow{
-      display:flex;
-      gap:10px;
-      justify-content:space-between;
-      align-items:center;
-      max-width: 540px;
-      margin: 0 auto;
-    }
-    .navBtn{
-      flex:1;
-      padding: 10px 8px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.75);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      cursor:pointer;
-      user-select:none;
-      transition: background .2s ease, color .2s ease;
-      font-size: 11px;
-      min-height: 54px;
-    }
-    .navBtn i{font-size:16px}
-    .navBtn.active{
-      background: rgba(255,122,0,.16);
-      border-color: rgba(255,122,0,.32);
-      color:#fff;
-    }
-
-    /* pages */
-    .page{display:none}
-    .page.show{display:block}
-
-    /* forms */
-    .input{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      outline:none;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 13px;
-    }
-    .input::placeholder{color: rgba(255,255,255,.40)}
-    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px}
-    @media (max-width: 380px){ .grid2{grid-template-columns: 1fr} }
-
-    /* modals + toasts */
-    .overlay{
-      position:fixed;
-      inset:0;
-      z-index: 120;
-      background: rgba(0,0,0,.55);
-      display:none;
-      padding: 18px;
-      align-items:flex-end;
-    }
-    .overlay.show{display:flex}
-    .modal{
-      width:100%;
-      max-width: 560px;
-      margin: 0 auto;
-      border-radius: 26px;
-      background: rgba(20,20,22,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 20px 60px rgba(0,0,0,.60);
-      backdrop-filter: blur(14px);
-      overflow:hidden;
-    }
-    .modalHead{
-      padding: 14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-    }
-    .modalHead b{font-size:14px}
-    .modalBody{padding: 14px 16px}
-    .modalFoot{
-      padding: 14px 16px 16px;
-      display:flex;
-      gap:10px;
-      border-top: 1px solid rgba(255,255,255,.10);
-    }
-
-    .toastWrap{
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      top: calc(12px + var(--safe-top));
-      z-index: 200;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+    .points-hero::after{
+      content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;
+      background:radial-gradient(circle, rgba(255,255,255,.45), transparent 60%);
+      transform:rotate(18deg);
       pointer-events:none;
     }
-    .toast{
-      pointer-events:auto;
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 12px 12px;
+    #showCodeBtn{position:relative;z-index:2;}
+    .points-count{font-size:2.5rem;font-weight:900;letter-spacing:.6px;line-height:1;}
+    .points-sub{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;}
+    .chip{
+      background:rgba(255,255,255,.2);
+      padding:6px 10px;border-radius:999px;font-weight:900;font-size:.82rem;
+      display:inline-flex;gap:6px;align-items:center;
+    }
+    .progress{margin-top:10px;background:rgba(255,255,255,.24);height:10px;border-radius:999px;overflow:hidden;}
+    .progress > div{height:100%;background:rgba(255,255,255,.96);width:0%;transition:width .35s ease;border-radius:999px;}
+
+    .opening-card{
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.98);
       border-radius: 18px;
-      background: rgba(20,20,22,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      box-shadow: var(--shadow-soft);
+      padding: 12px 14px;
+      display: grid;
+      gap: 8px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .opening-status{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight:900;
+      font-size:1.02rem;
+    }
+    .status-dot{
+      width:10px;height:10px;border-radius:50%;
+      background:#ccc;
+      box-shadow: 0 0 0 3px rgba(0,0,0,.04);
+    }
+    .status-dot.open{ background: var(--success); }
+    .status-dot.closed{ background: var(--danger); }
+    .opening-hint{ font-size:.82rem; opacity:.75; font-weight:800; }
+    .opening-hours{
+      font-size:.9rem;
+      line-height:1.55;
+      opacity:.9;
+      display:none;
+      gap:2px;
+      padding-top:6px;
+      border-top:1px dashed rgba(0,0,0,.08);
+    }
+    .opening-card.expanded .opening-hours{ display:grid; }
+    .opening-hours b{ font-weight:900; }
+    .opening-hours .today{ font-weight:900; color: var(--link); }
+
+    .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+    .quick{
+      background:var(--glass-strong);border:1px solid rgba(0,0,0,.04);
+      border-radius:18px;padding:12px;display:grid;gap:6px;place-items:center;text-align:center;
+      box-shadow:var(--shadow-soft);
+      transition:.2s transform,.2s box-shadow;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quick:active{transform:translateY(1px)}
+    .quick i{
+      width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+      background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(255,106,0,.45);
+      font-size:1.1rem;
+    }
+    .quick b{font-size:.95rem;font-weight:900}
+    .quick span{font-size:.8rem;opacity:.7}
+
+    .eatmi-banner{
+      margin-top:14px;
+      width:100%;
+      border-radius:22px;
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      background:
+        linear-gradient(135deg, rgba(255,106,0,.95), rgba(255,145,0,.95));
+      color:#fff;
+      box-shadow:0 14px 34px rgba(255,106,0,.45);
+      text-decoration:none;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+      position:relative;
+      overflow:hidden;
+      transition:.25s transform,.25s box-shadow,.25s opacity;
+    }
+    .eatmi-banner::after{
+      content:"";
+      position:absolute;
+      right:-60px; top:-60px;
+      width:220px; height:220px;
+      background:radial-gradient(circle, rgba(255,255,255,.38), transparent 65%);
+      transform:rotate(18deg);
+      pointer-events:none;
+    }
+    .eatmi-banner:hover{ box-shadow:0 18px 42px rgba(255,106,0,.55); }
+    .eatmi-banner:active{ transform:translateY(1px); }
+
+    .eatmi-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+      position:relative;
+      z-index:2;
+    }
+    .eatmi-logo{
+      width:56px;
+      height:56px;
+      border-radius:18px;
+      background:#fff;
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.18);
+      flex:0 0 auto;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.35);
+    }
+    .eatmi-logo img{
+      width:74%;
+      height:74%;
+      object-fit:contain;
+    }
+    .eatmi-text{ min-width:0; }
+    .eatmi-text b{
+      font-size:1.12rem;
+      font-weight:900;
+      display:block;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .eatmi-text span{
+      font-size:.92rem;
+      opacity:.92;
+      display:block;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .eatmi-cta{
+      position:relative;
+      z-index:2;
+      flex:0 0 auto;
+      background:#fff;
+      color:#ff6a00;
+      font-weight:900;
+      border-radius:16px;
+      padding:10px 14px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 8px 18px rgba(0,0,0,.18);
+      transition:.2s transform;
+    }
+    .eatmi-banner:hover .eatmi-cta{ transform:translateX(2px); }
+
+    .reward{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      background:var(--glass-strong);border:1px solid rgba(0,0,0,.04);
+      border-radius:18px;padding:12px;
+      box-shadow:var(--shadow-soft);
+    }
+    .reward-left{display:flex;gap:12px;align-items:center;}
+    .reward-ico{
+      width:52px;height:52px;border-radius:16px;background:var(--grad);color:#fff;display:grid;place-items:center;
+      box-shadow:0 6px 16px rgba(255,106,0,.45);font-size:1.25rem;
+    }
+    .reward-title{font-weight:900}
+    .reward + .reward{margin-top:10px}
+
+    .res-item{
+      padding:10px;border-radius:14px;background:#fff;border:1px solid #eee;display:grid;gap:4px;
+    }
+    .res-item b{font-weight:900}
+    .res-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+    .divider{height:1px;background:rgba(0,0,0,.06);margin:4px 0 0;}
+
+    .menu-list{display:grid;gap:10px;}
+    .menu-item{
+      background:var(--glass-strong);
+      border:1px solid rgba(0,0,0,.05);
+      border-radius:16px;
+      padding:12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      box-shadow:var(--shadow-soft);
+    }
+    .menu-left{display:flex;gap:10px;align-items:center;}
+    .menu-ico{
+      width:48px;height:48px;border-radius:14px;background:var(--grad);color:#fff;
+      display:grid;place-items:center;font-size:1.2rem;box-shadow:0 6px 14px rgba(255,106,0,.4);
+    }
+    .menu-title{font-weight:900}
+    .menu-desc{font-size:.85rem;opacity:.7}
+    .menu-price{font-weight:900}
+    .cart-line{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      background:#fff;border:1px solid #eee;border-radius:12px;padding:8px 10px;
+    }
+    .cart-actions{display:flex;gap:6px;align-items:center;}
+    .qty-btn{
+      width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;font-weight:900;
+      background:rgba(0,0,0,.06);
+    }
+
+    .account-hero{display:flex;gap:12px;align-items:center;}
+    .avatar{
+      width:56px;height:56px;border-radius:16px;background:var(--grad);display:grid;place-items:center;
+      color:#fff;font-size:1.3rem;font-weight:900;box-shadow:0 8px 20px rgba(255,106,0,.5);
+    }
+    .account-name{font-weight:900;font-size:1.1rem}
+    .account-mail{font-size:.9rem;opacity:.75}
+    .list{display:flex;flex-direction:column;gap:8px;}
+    .list-item{
+      background:var(--glass-strong);border:1px solid rgba(0,0,0,.04);
+      padding:12px;border-radius:16px;display:flex;align-items:center;justify-content:space-between;
+      box-shadow:var(--shadow-soft);
+      cursor:pointer;transition:.2s transform,.2s box-shadow;-webkit-tap-highlight-color: transparent;
+    }
+    .list-item:active{transform:translateY(1px)}
+    .list-left{display:flex;gap:10px;align-items:center;}
+    .li-ico{
+      width:40px;height:40px;border-radius:12px;background:rgba(0,0,0,.05);
+      display:grid;place-items:center;font-size:1.05rem;
+    }
+    .li-title{font-weight:900}
+    .li-sub{font-size:.85rem;opacity:.7}
+
+    .auth-wrap{display:grid;gap:10px;}
+    .auth-btn{width:100%;justify-content:center;font-weight:900;}
+    .auth-btn.google{background:#fff;border:2px solid #eee;}
+    .auth-sep{display:flex;align-items:center;gap:10px;margin:6px 0;}
+    .auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:rgba(0,0,0,.08);}
+    .auth-sep span{font-size:.85rem;opacity:.7;font-weight:800;}
+
+    .subpage{
+      position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column;
+      animation:slideIn .25s ease;padding-bottom: calc(20px + var(--safe-bottom));
+    }
+    .subpage.active{display:flex;}
+    @keyframes slideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+    .sub-top{
+      position:sticky;top:0;z-index:5;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      background:rgba(255,246,236,.96);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+      display:flex;align-items:center;gap:10px;
+    }
+    .back-btn{
+      width:40px;height:40px;border-radius:12px;border:none;background:#fff;cursor:pointer;
+      display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.08);
+    }
+    .sub-title{font-weight:900;font-size:1.05rem}
+
+    .empty{
+      background:var(--glass-strong);padding:14px;border-radius:16px;border:1px dashed rgba(0,0,0,.07);
+      display:flex;gap:12px;align-items:center;
+    }
+    .empty .icon{
+      width:48px;height:48px;border-radius:14px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:1.2rem;
+      box-shadow:0 6px 14px rgba(255,106,0,.4);
+    }
+
+    .bottom-nav{
+      position:fixed;
+      left:0; right:0;
+      bottom:10px;
+      z-index:50;
+      display:flex;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .nav-wrap{
+      pointer-events:auto;
+      width:min(820px,calc(100% - 18px));
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.98);
+      box-shadow:0 10px 28px rgba(0,0,0,.18);
+      border-radius:999px;
+      padding:6px 6px;
+      display:flex;
+      gap:6px;
+      align-items:stretch;
+    }
+    .nav-btn{
+      flex:1 1 0;
+      min-width:0;
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:8px 4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      font-weight:900;
+      color:var(--text);
+      opacity:.7;
+      transition:.2s all;
+      -webkit-tap-highlight-color: transparent;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .nav-btn i{font-size:clamp(.95rem, 2.8vw, 1.12rem);line-height:1;}
+    .nav-btn .lbl{font-size:clamp(.62rem, 2.2vw, .73rem);line-height:1.05;text-align:center;}
+    .nav-btn.active{
+      background:var(--grad);
+      color:#fff;
+      opacity:1;
+      transform:translateY(-2px);
+      box-shadow:0 8px 18px rgba(255,106,0,.45);
+    }
+    @media (max-width:560px){
+      .row{grid-template-columns:1fr}
+      .quick-grid{grid-template-columns:1fr 1fr 1fr}
+    }
+    @media (max-width:420px){ .eatmi-text span{display:none;} }
+    @media (max-width:380px){ .quick-grid{grid-template-columns:1fr 1fr} }
+
+    .toast{
+      position:fixed;left:50%;bottom: calc(126px + var(--safe-bottom));
+      transform:translateX(-50%) translateY(8px);
+      background:var(--success);color:#fff;font-weight:900;font-size:.95rem;
+      padding:10px 14px;border-radius:999px;box-shadow:0 10px 25px rgba(0,0,0,.25);
+      opacity:0;pointer-events:none;transition:.25s;z-index:999;display:flex;gap:8px;align-items:center;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.danger{background:var(--danger)}
+
+    .modal{position:fixed; inset:0; z-index:100; display:none;}
+    .modal.show{display:block;}
+    .modal-backdrop{
+      position:absolute; inset:0;
+      background:rgba(0,0,0,.35);
+      backdrop-filter: blur(2px);
+      animation:fadeBg .18s ease;
+    }
+    @keyframes fadeBg{from{opacity:0}to{opacity:1}}
+    .modal-sheet{
+      position:absolute; left:0; right:0; bottom:0;
+      background: var(--glass-strong);
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -12px 40px rgba(0,0,0,.25);
+      padding: 10px 14px 18px;
+      transform: translateY(12px);
+      animation:sheetUp .22s ease forwards;
+    }
+    @keyframes sheetUp{to{transform:translateY(0)}}
+    .modal-handle{
+      width:46px; height:5px; border-radius:999px;
+      background:rgba(0,0,0,.12); margin:6px auto 10px;
+    }
+    .modal-header{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .modal-title{
+      font-weight:900; font-size:1.2rem;
+      background:var(--grad);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .modal-close{
+      width:40px; height:40px; border-radius:12px; border:none; cursor:pointer;
+      background:#fff; display:grid; place-items:center;
+      box-shadow: var(--shadow-soft);
+    }
+    .modal-code-box{
+      background:#0f0f0f; color:#fff;
+      border-radius:18px; padding:18px 14px;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.06);
+    }
+    .modal-code{
+      font-size:2.4rem; font-weight:900;
+      letter-spacing:10px; text-align:center;
+      font-variant-numeric: tabular-nums;
+    }
+    .modal-actions{ margin-top:10px; display:grid; gap:8px; }
+
+    .install-guide{
+      position:fixed; inset:0; z-index:200;
+      display:none;
+      padding: calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
+      overflow:auto;
+      background:
+        radial-gradient(900px 600px at 10% 10%, rgba(255,106,0,.12), transparent 60%),
+        radial-gradient(900px 600px at 90% 90%, rgba(255,145,0,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,246,236,.98), rgba(255,246,236,.985));
+    }
+    .install-guide.show{ display:block; }
+    .install-shell{ max-width: 860px; margin: 0 auto; display:grid; gap:12px; }
+    .install-hero{
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(255,255,255,.98);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      overflow:hidden;
+      position:relative;
+    }
+    .install-hero::after{
+      content:"";
+      position:absolute;
+      right:-70px; top:-70px;
+      width:260px; height:260px;
+      background: radial-gradient(circle, rgba(255,106,0,.22), transparent 65%);
+      transform: rotate(18deg);
+      pointer-events:none;
+    }
+    .install-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .install-brand{display:flex;gap:12px;align-items:center;min-width:0;}
+    .install-badge{
+      width:54px;height:54px;border-radius:18px;
+      background: var(--grad);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      box-shadow: 0 12px 26px rgba(255,106,0,.35);
+      font-size:1.25rem;
+      flex:0 0 auto;
+    }
+    .install-headline{min-width:0;}
+    .install-kicker{ font-weight:900; opacity:.72; font-size:.9rem; }
+    .install-title{
+      font-size:1.35rem;
+      font-weight:900;
+      margin-top:2px;
+      line-height:1.15;
+      background:var(--grad);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .install-sub{
+      margin-top:6px;
+      opacity:.86;
+      line-height:1.45;
+      font-weight:700;
+      max-width: 58ch;
+    }
+    .platform-switch{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+    .platform-btn{
+      border:none; cursor:pointer;
+      padding:12px 10px;
+      border-radius:18px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.06);
+      font-weight:900;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      -webkit-tap-highlight-color: transparent;
+      transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+      color: var(--text);
+      opacity:.88;
+    }
+    .platform-btn i{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      background: rgba(0,0,0,.05);
+      font-size:1.05rem;
+    }
+    .platform-btn.active{
+      background: var(--grad);
+      color:#fff;
+      opacity:1;
+      box-shadow:0 10px 22px rgba(255,106,0,.32);
+      transform: translateY(-1px);
+    }
+    .platform-btn.active i{ background: rgba(255,255,255,.22); color:#fff; }
+
+    .install-panel{
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(255,255,255,.98);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .install-pane{ display:none; }
+    .install-pane.active{ display:block; }
+    .steps{ display:grid; gap:10px; margin-top:10px; }
+    .step{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:12px;
+      border-radius:18px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.05);
+      box-shadow: var(--shadow-soft);
+    }
+    .step-num{
+      width:36px;height:36px;border-radius:14px;
+      background: var(--grad);
+      color:#fff;
+      display:grid;place-items:center;
+      font-weight:900;
+      flex:0 0 auto;
+      box-shadow:0 8px 18px rgba(255,106,0,.28);
+    }
+    .step-body b{ font-weight:900; }
+    .step-body{ line-height:1.45; font-weight:750; opacity:.92; }
+    .install-ctaRow{ display:grid; gap:8px; margin-top:12px; }
+    .install-note{
+      margin-top:10px;
+      font-size:.86rem;
+      opacity:.82;
+      line-height:1.45;
+      font-weight:700;
+      padding:12px;
+      border-radius:18px;
+      background: rgba(255,255,255,.9);
+      border:1px dashed rgba(0,0,0,.10);
+    }
+    .install-note i{ color: var(--primary); }
+    .install-helpRow{ margin-top:12px; display:grid; gap:8px; }
+    .help-pill{
+      background: rgba(255,255,255,.9);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:18px;
+      padding:12px;
+      box-shadow: var(--shadow-soft);
       display:flex;
       align-items:flex-start;
       gap:10px;
+      font-weight:750;
+      opacity:.92;
+      line-height:1.45;
     }
-    .toast i{margin-top:2px; color: var(--accent2)}
-    .toast b{display:block; font-size:13px}
-    .toast span{display:block; font-size:12px; color: var(--muted); margin-top:2px}
+    .help-pill .hico{
+      width:40px;height:40px;border-radius:14px;
+      background: rgba(0,0,0,.05);
+      display:grid;place-items:center;
+      flex:0 0 auto;
+    }
+    .help-pill b{ font-weight:900; }
 
-    /* install guide */
-    .installOverlay{
-      position:fixed;
-      inset:0;
-      z-index: 300;
-      background: rgba(0,0,0,.70);
-      display:none;
-      padding: 18px;
-      overflow:auto;
+    @media (max-width:520px){
+      .platform-switch{ grid-template-columns:1fr; }
     }
-    .installOverlay.show{display:block}
-    .installBox{
-      max-width: 560px;
-      margin: calc(14px + var(--safe-top)) auto 20px;
-      background: rgba(20,20,22,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 26px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.60);
-      overflow:hidden;
-    }
-    .installBox .head{
-      padding: 14px 16px;
+
+    /* =========================
+       ✅ NOWE: Kategorie + FAB
+       ========================= */
+    .categories-bar{
       display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      gap:8px;
+      overflow:auto;
+      padding:4px 2px 10px;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:x mandatory;
     }
-    .installBox .head b{font-size:14px}
-    .installBox .body{padding: 14px 16px}
-    .steps{
-      display:flex; flex-direction:column; gap:10px;
+    .cat-chip{
+      flex:0 0 auto;
+      scroll-snap-align:start;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.06);
+      box-shadow:var(--shadow-soft);
+      opacity:.9;
+      transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+      white-space:nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
-    .step{
-      padding: 12px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      font-size: 12px;
-      color: rgba(255,255,255,.82);
+    .cat-chip:active{transform:translateY(1px)}
+    .cat-chip.active{
+      background:var(--grad);
+      color:#fff;
+      opacity:1;
+      box-shadow:0 10px 22px rgba(255,106,0,.35);
     }
-    .step i{color: var(--accent2); margin-right:8px}
 
-    /* utility */
-    .hide{display:none !important}
+    .order-fab{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom: calc(86px + var(--safe-bottom)); /* nad dolnym nav */
+      width:min(820px, calc(100% - 18px));
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:12px 14px;
+      background:var(--grad);
+      color:#fff;
+      font-weight:900;
+      box-shadow:0 16px 34px rgba(255,106,0,.45);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      z-index:60;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .order-fab:active{transform:translateX(-50%) translateY(1px)}
+    .fab-left{display:flex;align-items:center;gap:10px;}
+    .fab-right{opacity:.95;}
   </style>
 </head>
 
 <body>
   <div class="blob b1"></div>
   <div class="blob b2"></div>
-  <div class="blob b3"></div>
-
-  <!-- toasts -->
-  <div class="toastWrap" id="toastWrap"></div>
-
-  <div class="app" id="app">
-    <header class="topbar">
-      <div class="topbarRow">
-        <div class="brand">
-          <div class="logo"><i class="fa-solid fa-mug-hot"></i></div>
-          <div class="brandText">
-            <b>Milk</b>
-            <span id="topSub">Aplikacja lojalnościowa</span>
-          </div>
-        </div>
-
-        <div class="pointsPill" id="pointsPill" title="Kliknij, aby zobaczyć Milk ID">
-          <i class="fa-solid fa-star"></i>
-          <div>
-            <div class="num" id="pointsNum">0</div>
-            <small>pkt</small>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="content">
-      <!-- PAGE: POINTS -->
-      <section class="page show" id="pagePoints">
-        <div class="card">
-          <div class="cardPad">
-            <div class="hoursHeader" id="hoursToggle" style="cursor:pointer;">
-              <div class="left">
-                <div class="statusDot" id="statusDot"></div>
-                <div>
-                  <b id="openStatus">Sprawdzam godziny…</b><br>
-                  <span id="openHint">Kliknij, aby rozwinąć</span>
-                </div>
-              </div>
-              <i class="fa-solid fa-chevron-down muted"></i>
-            </div>
-
-            <div class="hoursBody">
-              <div class="hoursList" id="hoursList">
-                <!-- wypełni JS -->
-              </div>
-            </div>
-
-            <div class="sep"></div>
-
-            <div class="cardTitle">
-              <h3>Punkty i historia</h3>
-              <span class="hint" id="pointsHint">Zbieraj punkty za zakupy</span>
-            </div>
-
-            <div class="row" style="margin-top:10px;">
-              <button class="btn primary" id="btnShowMilkId"><i class="fa-solid fa-id-card"></i> Milk ID</button>
-              <button class="btn ghost" id="btnLogin"><i class="fa-solid fa-user"></i> Konto</button>
-            </div>
-
-            <div class="sep"></div>
-
-            <div class="cardTitle">
-              <h3>Historia</h3>
-              <span class="hint" id="historyCount">0 wpisów</span>
-            </div>
-            <div class="col" id="historyList">
-              <!-- wypełni JS -->
-              <div class="muted" style="font-size:12px;">Brak historii — zrób pierwszy zakup.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="cardPad">
-            <div class="cardTitle">
-              <h3>Szybkie akcje</h3>
-              <span class="hint">Najważniejsze w 1 klik</span>
-            </div>
-
-            <div class="grid3">
-              <button class="btn small" data-nav="rewards"><i class="fa-solid fa-gift"></i> Nagrody</button>
-              <button class="btn small" data-nav="order"><i class="fa-solid fa-bag-shopping"></i> Zamów</button>
-              <button class="btn small" data-nav="res"><i class="fa-solid fa-calendar-check"></i> Rezerwuj</button>
-            </div>
-
-            <div class="sep"></div>
-
-            <div class="card" style="box-shadow:none;">
-              <div class="cardPad">
-                <div class="row" style="justify-content:space-between;">
-                  <div>
-                    <b style="font-size:13px;">Eatmi.pl</b><br>
-                    <span class="muted" style="font-size:12px;">Zamawianie online (promo)</span>
-                  </div>
-                  <button class="btn small primary" id="btnOpenEatmi"><i class="fa-solid fa-arrow-up-right-from-square"></i> Otwórz</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: REWARDS -->
-      <section class="page" id="pageRewards">
-        <div class="card">
-          <div class="cardPad">
-            <div class="cardTitle">
-              <h3>Nagrody</h3>
-              <span class="hint">Wymień punkty na nagrody</span>
-            </div>
-
-            <div class="rewardList" id="rewardList">
-              <!-- wypełni JS - docelowo TYLKO te 3:
-                   - Milkshake do 30PLN - 25pkt
-                   - Zestaw burger do 60PLN - 50pkt
-                   - Zamówienie do 120PLN - 100pkt
-              -->
-              <div class="reward">
-                <div class="rewardIcon"><i class="fa-solid fa-gift"></i></div>
-                <div class="rewardMain">
-                  <b>Ładowanie nagród…</b>
-                  <span>Za chwilę zobaczysz dostępne opcje</span>
-                </div>
-                <div class="rewardRight">
-                  <div class="pts">— pkt</div>
-                  <button class="btn small" disabled>Wybierz</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="muted" style="font-size:12px;">
-              * Wymiana nagród może wymagać zalogowania (Milk ID).
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: ORDER -->
-      <section class="page" id="pageOrder">
-        <div class="card">
-          <div class="cardPad">
-            <div class="orderTop">
-              <div>
-                <b style="font-size:14px;">Zamów i odbierz</b><br>
-                <span class="muted" style="font-size:12px;">Wybierz kategorię i dodaj do koszyka</span>
-              </div>
-              <button class="btn small" id="btnOrderInfo"><i class="fa-solid fa-circle-info"></i></button>
-            </div>
-
-            <div class="chipRow" id="orderCategories">
-              <!-- kategorie wypełni JS na podstawie menu wklejonego w kodzie (część 2/2) -->
-              <div class="chip active" data-cat="kawa-herbata">Kawa</div>
-              <div class="chip" data-cat="napoje-soki">Napoje</div>
-              <div class="chip" data-cat="shake">Shakes</div>
-              <div class="chip" data-cat="deser">Desery</div>
-              <div class="chip" data-cat="texmex">Tex Mex</div>
-              <div class="chip" data-cat="kanapki">Kanapki</div>
-              <div class="chip" data-cat="burger">Burgery</div>
-              <div class="chip" data-cat="sniadania">Śniadania</div>
-            </div>
-
-            <div class="sep"></div>
-
-            <!-- tu JS wyrenderuje pozycje (JUŻ NIE Z menu.json) -->
-            <div class="menuGrid" id="menuGrid">
-              <div class="muted" style="font-size:12px;">
-                Ładowanie menu…
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: RESERVATIONS -->
-      <section class="page" id="pageRes">
-        <div class="card">
-          <div class="cardPad">
-            <div class="cardTitle">
-              <h3>Rezerwacje</h3>
-              <span class="hint">Szybko i wygodnie</span>
-            </div>
-
-            <div class="grid2">
-              <input class="input" id="resName" placeholder="Imię i nazwisko" />
-              <input class="input" id="resPhone" placeholder="Telefon" inputmode="tel" />
-            </div>
-            <div style="height:10px"></div>
-            <div class="grid2">
-              <input class="input" id="resDate" type="date" />
-              <input class="input" id="resTime" type="time" />
-            </div>
-            <div style="height:10px"></div>
-            <div class="grid2">
-              <input class="input" id="resPeople" type="number" min="1" max="30" placeholder="Liczba osób" />
-              <select class="input" id="resPlace">
-                <option value="Słupsk">Słupsk</option>
-                <option value="Rowy">Rowy</option>
-              </select>
-            </div>
-
-            <div style="height:10px"></div>
-            <input class="input" id="resNote" placeholder="Uwagi (opcjonalnie)" />
-
-            <div style="height:12px"></div>
-            <button class="btn primary full" id="btnResSubmit"><i class="fa-solid fa-calendar-check"></i> Wyślij rezerwację</button>
-
-            <div class="sep"></div>
-
-            <div class="cardTitle">
-              <h3>Moje rezerwacje</h3>
-              <span class="hint" id="resCount">0</span>
-            </div>
-            <div class="col" id="resList">
-              <div class="muted" style="font-size:12px;">Brak rezerwacji.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: ACCOUNT -->
-      <section class="page" id="pageAccount">
-        <div class="card">
-          <div class="cardPad">
-            <div class="cardTitle">
-              <h3>Konto</h3>
-              <span class="hint" id="accHint">Zaloguj się, aby mieć Milk ID</span>
-            </div>
-
-            <div class="col" id="accountBox">
-              <!-- JS pokaże: login / profil -->
-              <button class="btn primary full" id="btnOpenLogin"><i class="fa-brands fa-google"></i> Zaloguj (Google)</button>
-              <button class="btn ghost full" id="btnOpenEmailLogin"><i class="fa-solid fa-envelope"></i> Zaloguj e-mail</button>
-            </div>
-
-            <div class="sep"></div>
-
-            <div class="cardTitle">
-              <h3>Ustawienia</h3>
-              <span class="hint">Preferencje aplikacji</span>
-            </div>
-
-            <div class="col">
-              <button class="btn full" id="btnSettingsPersonal"><i class="fa-solid fa-user-gear"></i> Dane osobowe</button>
-              <button class="btn full" id="btnSettingsLang"><i class="fa-solid fa-language"></i> Język</button>
-              <button class="btn full" id="btnSettingsHelp"><i class="fa-solid fa-circle-question"></i> Pomoc</button>
-              <button class="btn full" id="btnSettingsAbout"><i class="fa-solid fa-circle-info"></i> O aplikacji</button>
-
-              <!-- USUNIĘTE: przycisk "odśwież dane z serwera" (zgodnie z Twoją prośbą) -->
-              <!-- <button class="btn full" id="btnSync"><i class="fa-solid fa-arrows-rotate"></i> Odśwież dane z serwera</button> -->
-
-              <button class="btn full" id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- CART FAB -->
-    <div class="fab hide" id="cartFab">
-      <i class="fa-solid fa-basket-shopping"></i>
-      <b>Koszyk</b>
-      <span class="badge" id="cartBadge">0</span>
-    </div>
-
-    <!-- BOTTOM NAV -->
-    <nav class="bottomNav">
-      <div class="navRow">
-        <div class="navBtn active" data-nav="points">
-          <i class="fa-solid fa-star"></i>
-          Punkty
-        </div>
-        <div class="navBtn" data-nav="rewards">
-          <i class="fa-solid fa-gift"></i>
-          Nagrody
-        </div>
-        <div class="navBtn" data-nav="order">
-          <i class="fa-solid fa-bag-shopping"></i>
-          Zamów
-        </div>
-        <div class="navBtn" data-nav="res">
-          <i class="fa-solid fa-calendar-check"></i>
-          Rezerwacje
-        </div>
-        <div class="navBtn" data-nav="account">
-          <i class="fa-solid fa-user"></i>
-          Konto
-        </div>
-      </div>
-    </nav>
-  </div>
-
-  <!-- MODAL: Milk ID -->
-  <div class="overlay" id="milkIdOverlay">
-    <div class="modal">
-      <div class="modalHead">
-        <b>Milk ID</b>
-        <button class="btn small" id="milkIdClose"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modalBody">
-        <div class="muted" style="font-size:12px; margin-bottom:10px;">
-          Twój kod lojalnościowy (6 cyfr). Pokaż w barze.
-        </div>
-
-        <div style="display:flex; gap:10px; align-items:center;">
-          <input class="input" id="milkIdValue" readonly value="------" style="font-weight:800; text-align:center; letter-spacing:6px; font-size:16px;">
-          <button class="btn primary" id="milkIdCopy"><i class="fa-solid fa-copy"></i> Kopiuj</button>
-        </div>
-
-        <div class="sep"></div>
-        <div class="muted" style="font-size:12px;">
-          * Kod jest przypisany do e-maila po zalogowaniu.
-        </div>
-      </div>
-      <div class="modalFoot">
-        <button class="btn full" id="milkIdGoLogin"><i class="fa-solid fa-user"></i> Przejdź do konta</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Cart -->
-  <div class="overlay" id="cartOverlay">
-    <div class="modal">
-      <div class="modalHead">
-        <b>Koszyk</b>
-        <button class="btn small" id="cartClose"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="modalBody">
-        <div class="col" id="cartList">
-          <div class="muted" style="font-size:12px;">Koszyk jest pusty.</div>
-        </div>
-
-        <div class="sep"></div>
-
-        <div class="grid2">
-          <input class="input" id="orderName" placeholder="Imię i nazwisko" />
-          <input class="input" id="orderPhone" placeholder="Telefon" inputmode="tel" />
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div class="grid2">
-          <input class="input" id="orderPickupTime" type="time" />
-          <select class="input" id="orderPickupPlace">
-            <option value="Słupsk">Słupsk</option>
-            <option value="Rowy" disabled>Rowy (chwilowo niedostępne)</option>
-          </select>
-        </div>
-
-        <div style="height:10px"></div>
-        <input class="input" id="orderNote" placeholder="Uwagi (opcjonalnie)" />
-
-        <div class="sep"></div>
-
-        <div class="row" style="justify-content:space-between;">
-          <div>
-            <b style="font-size:13px;">Suma</b><br>
-            <span class="muted" style="font-size:12px;">Do zapłaty na miejscu</span>
-          </div>
-          <div class="price" id="cartTotal">0 PLN</div>
-        </div>
-      </div>
-
-      <div class="modalFoot">
-        <button class="btn ghost full" id="cartClear"><i class="fa-solid fa-trash"></i> Wyczyść</button>
-        <button class="btn primary full" id="cartCheckout"><i class="fa-solid fa-check"></i> Złóż zamówienie</button>
-      </div>
-    </div>
-  </div>
 
   <!-- INSTALL GUIDE -->
-  <div class="installOverlay" id="installOverlay">
-    <div class="installBox">
-      <div class="head">
-        <b>Zainstaluj aplikację</b>
-        <button class="btn small" id="installClose"><i class="fa-solid fa-xmark"></i></button>
+  <section id="installGuide" class="install-guide" aria-hidden="true">
+    <div class="install-shell">
+
+      <div class="install-hero">
+        <div class="install-top">
+          <div class="install-brand">
+            <div class="install-badge"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="install-headline">
+              <div class="install-kicker">Milk • uruchom jak aplikację</div>
+              <div class="install-title">Dodaj Milk do ekranu głównego</div>
+              <div class="install-sub">
+                To zajmie <b>około 10 sekund</b>. Potem otwierasz Milk z ikony — szybciej i wygodniej.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="platform-switch" style="position:relative;z-index:2;">
+          <button class="platform-btn active" data-guide-tab="android">
+            <i class="fa-brands fa-android"></i> Android (Chrome)
+          </button>
+          <button class="platform-btn" data-guide-tab="ios">
+            <i class="fa-brands fa-apple"></i> iPhone / iPad (Safari)
+          </button>
+        </div>
       </div>
-      <div class="body">
-        <div class="muted" style="font-size:12px; margin-bottom:10px;">
-          Dodaj Milk do ekranu głównego — działa jak aplikacja.
+
+      <div class="install-panel">
+        <div class="install-pane active" data-guide-pane="android">
+          <div class="subtitle" style="margin:0;">Android — instalacja</div>
+          <div class="tiny" style="margin-top:4px; opacity:.78;">
+            Najczęściej działa w <b>Chrome</b>. Jeśli widzisz przycisk „Zainstaluj”, kliknij go.
+          </div>
+
+          <div class="install-ctaRow">
+            <button id="androidInstallBtn" class="btn btn-primary btn-wide" style="display:none;">
+              Zainstaluj teraz <i class="fa-solid fa-download"></i>
+            </button>
+            <div class="tiny" id="androidInstallHint" style="opacity:.78; text-align:center;">
+              Jeśli nie widzisz przycisku — zrób to ręcznie poniżej.
+            </div>
+          </div>
+
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body">Naciśnij menu przeglądarki: <b>⋮</b> (prawy górny róg).</div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body">Wybierz <b>„Zainstaluj aplikację”</b> lub <b>„Dodaj do ekranu głównego”</b>.</div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body">Potwierdź: <b>Zainstaluj / Dodaj</b>. Gotowe ✅</div></div>
+          </div>
+
+          <div class="install-helpRow">
+            <div class="help-pill">
+              <div class="hico"><i class="fa-solid fa-circle-question"></i></div>
+              <div>
+                <b>Nie widzę tej opcji?</b><br>
+                Upewnij się, że masz otwarte w <b>Chrome</b> i odśwież stronę.
+              </div>
+            </div>
+          </div>
+
+          <div class="install-note">
+            <i class="fa-solid fa-shield-heart"></i>
+            Poradnik zniknie automatycznie, gdy uruchomisz Milk z ikony (tryb aplikacji).
+            <div class="tiny" style="margin-top:6px; opacity:.78;">
+              Problem? Napisz: <b>support@velorie.pl</b>
+            </div>
+          </div>
         </div>
 
-        <div class="row">
-          <button class="btn small" id="installAndroid"><i class="fa-brands fa-android"></i> Android</button>
-          <button class="btn small" id="installIos"><i class="fa-brands fa-apple"></i> iOS</button>
-          <button class="btn small primary hide" id="installBtn"><i class="fa-solid fa-download"></i> Zainstaluj</button>
-        </div>
+        <div class="install-pane" data-guide-pane="ios">
+          <div class="subtitle" style="margin:0;">iPhone / iPad — instalacja</div>
+          <div class="tiny" style="margin-top:4px; opacity:.78;">
+            Ważne: na iOS dodawanie działa w <b>Safari</b> (nie w Chrome).
+          </div>
 
-        <div class="sep"></div>
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-body">Otwórz tę stronę w <b>Safari</b>.</div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body">Kliknij <b>Udostępnij</b> (ikonka <b>⬆️</b> na dole ekranu).</div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body">Wybierz <b>„Dodaj do ekranu początkowego”</b>, potem <b>Dodaj</b>. Gotowe ✅</div></div>
+          </div>
 
-        <div class="steps" id="installSteps">
-          <!-- JS podmieni instrukcję zależnie od platformy -->
-          <div class="step"><i class="fa-solid fa-ellipsis-vertical"></i> Otwórz menu przeglądarki</div>
-          <div class="step"><i class="fa-solid fa-square-plus"></i> Wybierz „Dodaj do ekranu głównego”</div>
-          <div class="step"><i class="fa-solid fa-check"></i> Potwierdź instalację</div>
+          <div class="install-helpRow">
+            <div class="help-pill">
+              <div class="hico"><i class="fa-solid fa-lightbulb"></i></div>
+              <div>
+                <b>Nie ma „Dodaj do ekranu”?</b><br>
+                Przewiń listę w dół w panelu udostępniania. Jeśli dalej brak — upewnij się, że to <b>Safari</b>.
+              </div>
+            </div>
+          </div>
+
+          <div class="install-note">
+            <i class="fa-solid fa-shield-heart"></i>
+            Poradnik zniknie automatycznie, gdy uruchomisz Milk z ikony (tryb aplikacji).
+            <div class="tiny" style="margin-top:6px; opacity:.78;">
+              Problem? Napisz: <b>support@velorie.pl</b>
+            </div>
+          </div>
         </div>
       </div>
+
+    </div>
+  </section>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-wrap">
+        <img src="https://i.imgur.com/UNPIPSC.png" alt="Milk logo">
+      </div>
+      Milk
+    </div>
+    <div class="pill"><i class="fa-solid fa-star"></i> <span id="pointsPill">Zaloguj się</span></div>
+  </div>
+
+  <main class="container">
+
+    <!-- TAB: PUNKTY -->
+    <section id="tab-points" class="tab active">
+
+      <div class="opening-card" id="openingCard" title="Kliknij, aby zobaczyć godziny otwarcia">
+        <div class="opening-status">
+          <span class="status-dot" id="openDot"></span>
+          <span id="openText">Sprawdzam status...</span>
+        </div>
+        <div class="opening-hint" id="openHint">Kliknij, aby zobaczyć godziny otwarcia</div>
+        <div class="opening-hours" id="openingHours"></div>
+      </div>
+
+      <div class="points-hero">
+        <div>
+          <div class="tiny">Twoje punkty</div>
+          <div class="points-count" id="pointsCount">—</div>
+          <div class="points-sub">
+            <div class="chip"><i class="fa-solid fa-receipt"></i> 10 zł = 1 pkt</div>
+          </div>
+        </div>
+
+        <button class="btn btn-ghost btn-small" id="showCodeBtn">
+          <i class="fa-solid fa-id-card"></i> Milk ID
+        </button>
+      </div>
+
+      <div class="progress"><div id="pointsProgress"></div></div>
+
+      <div class="card">
+        <div class="subtitle">Szybkie akcje</div>
+        <div class="quick-grid">
+          <button class="quick" data-go="rewards">
+            <i class="fa-solid fa-gift"></i>
+            <b>Nagrody</b>
+            <span>Wymień punkty</span>
+          </button>
+
+          <button class="quick" data-go="order">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <b>Zamów i odbierz</b>
+            <span>Płatność na miejscu</span>
+          </button>
+
+          <button class="quick" data-go="res">
+            <i class="fa-solid fa-calendar-check"></i>
+            <b>Rezerwuj</b>
+            <span>Stolik w 10s</span>
+          </button>
+        </div>
+
+        <a class="eatmi-banner" href="https://www.eatmi.pl" target="_blank" rel="noopener">
+          <div class="eatmi-left">
+            <div class="eatmi-logo">
+              <img src="https://i.imgur.com/XrTPEHC.png" alt="Eatmi logo">
+            </div>
+            <div class="eatmi-text">
+              <b>Eatmi</b>
+              <span>Zamawiaj online szybciej i wygodniej</span>
+            </div>
+          </div>
+          <div class="eatmi-cta">
+            Przejdź <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <div class="subtitle">Historia punktów</div>
+        <div id="pointsHistory" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- TAB: NAGRODY -->
+    <section id="tab-rewards" class="tab">
+      <div class="card">
+        <div class="title">Nagrody</div>
+        <p class="muted">Kliknij „Wymień”, a pokażemy Ci kod do odbioru w lokalu.</p>
+      </div>
+      <div class="card" id="rewardsList"></div>
+    </section>
+
+    <!-- TAB: ZAMÓW I ODBIERZ -->
+    <section id="tab-order" class="tab">
+      <div class="card">
+        <div class="title">Zamów i odbierz</div>
+        <p class="muted">
+          Złóż zamówienie w aplikacji, odbierz w lokalu. <b>Płatność na miejscu</b> (gotówka/karta).
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="subtitle">Menu</div>
+        <div class="tiny" id="menuHint" style="opacity:.78;margin:-4px 0 10px">
+          Ładuję menu…
+        </div>
+
+        <!-- ✅ NOWE: Tylko kategorie, dopiero po kliknięciu produkty -->
+        <div id="categoriesBar" class="categories-bar"></div>
+        <div id="menuList" class="menu-list"></div>
+      </div>
+
+      <div class="card stack">
+        <div class="subtitle">Koszyk</div>
+        <div id="cartList" class="stack"></div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;font-weight:900;font-size:1.05rem">
+          <span>Razem</span><span id="cartTotal">0 zł</span>
+        </div>
+
+        <!-- ✅ WYMAGANE: imię i nazwisko + telefon -->
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label>Imię i nazwisko (wymagane)</label>
+            <input type="text" id="orderCustomerName" placeholder="Jan Kowalski" required>
+          </div>
+          <div>
+            <label>Telefon (wymagane)</label>
+            <input type="tel" id="orderCustomerPhone" placeholder="+48 700 000 000" required>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:6px">
+          <div>
+            <label>Godzina odbioru</label>
+            <input type="time" id="pickupTime" required step="900">
+            <div class="tiny" id="pickupRuleHint" style="margin-top:6px;opacity:.78;text-align:center"></div>
+          </div>
+          <div>
+            <label>Lokal</label>
+            <select id="pickupLocation">
+              <option>Słupsk</option>
+              <option value="Rowy" disabled>Rowy (chwilowo niedostępna)</option>
+            </select>
+            <div class="tiny" style="margin-top:6px;opacity:.78;text-align:center">
+              Rowy jest chwilowo niedostępne.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>Uwagi (opcjonalnie)</label>
+          <textarea id="orderNotes" placeholder="np. bez bitej śmietany, alergie, itp."></textarea>
+        </div>
+
+        <button class="btn btn-primary btn-wide" id="submitOrderBtn">
+          Złóż zamówienie <i class="fa-solid fa-check"></i>
+        </button>
+        <div class="tiny" style="text-align:center">
+          Płatność na miejscu przy odbiorze.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="subtitle">Twoje zamówienia</div>
+        <div id="ordersList" class="muted"></div>
+      </div>
+
+      <!-- ✅ NOWE: Pływający przycisk podsumowania -->
+      <button id="orderSummaryFab" class="order-fab" style="display:none;">
+        <span class="fab-left">
+          <i class="fa-solid fa-receipt"></i>
+          <b>Podsumowanie</b>
+        </span>
+        <span class="fab-right">
+          <span id="fabItems">0</span> • <span id="fabTotal">0 zł</span>
+        </span>
+      </button>
+    </section>
+
+    <!-- TAB: REZERWACJE -->
+    <section id="tab-res" class="tab">
+      <div class="card">
+        <div class="title">Rezerwacje</div>
+        <p class="muted">Zarezerwuj stolik w kilka sekund. Potwierdzenie dostaniesz SMS lub telefonicznie.</p>
+      </div>
+
+      <div class="card">
+        <div class="subtitle">Formularz rezerwacji</div>
+        <form id="reservationForm" class="stack">
+          <div>
+            <label>Imię i nazwisko</label>
+            <input name="name" required placeholder="Jan Kowalski">
+          </div>
+
+          <div>
+            <label>Telefon</label>
+            <input name="phone" required placeholder="+48 700 000 000">
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Data</label>
+              <input type="date" name="date" required>
+            </div>
+            <div>
+              <label>Godzina</label>
+              <input type="time" name="time" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Ilość osób</label>
+              <select name="guests" required>
+                <option value="1">1 osoba</option>
+                <option value="2" selected>2 osoby</option>
+                <option value="3">3 osoby</option>
+                <option value="4">4 osoby</option>
+                <option value="5+">5+ osób</option>
+              </select>
+            </div>
+            <div>
+              <label>Strefa</label>
+              <select name="room" required>
+                <option>Sala frontowa</option>
+                <option>Sala główna</option>
+                <option>Kącik dla dzieci</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label>Uwagi (opcjonalnie)</label>
+            <textarea name="notes" placeholder="np. urodziny, alergie"></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-wide">
+            Zarezerwuj <i class="fa-solid fa-check"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="subtitle">Twoje rezerwacje</div>
+        <div id="reservationsList" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- TAB: KONTO -->
+    <section id="tab-account" class="tab">
+      <div id="accountLoggedOut" class="stack">
+        <div class="card">
+          <div class="title">Konto</div>
+          <p class="muted">Zaloguj się, aby synchronizować punkty, nagrody i rezerwacje na wszystkich urządzeniach.</p>
+        </div>
+
+        <div class="card auth-wrap">
+          <div class="subtitle">Zaloguj się</div>
+
+          <button class="btn auth-btn google" id="loginGoogle">
+            <i class="fa-brands fa-google"></i> Kontynuuj z Google
+          </button>
+
+          <div class="auth-sep"><span>lub</span></div>
+
+          <form id="loginEmailForm" class="stack">
+            <div>
+              <label>Email</label>
+              <input type="email" name="email" placeholder="np. klient@mail.com" required>
+            </div>
+            <div>
+              <label>Hasło (opcjonalnie)</label>
+              <input type="password" name="password" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary btn-wide">
+              Zaloguj się <i class="fa-solid fa-right-to-bracket"></i>
+            </button>
+            <div class="tiny" style="text-align:center;opacity:.75">
+              Jeśli nie używasz haseł — wpisz sam email (backend może tworzyć konto automatycznie).
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="accountLoggedIn" class="stack" style="display:none">
+        <div class="card account-hero">
+          <div class="avatar" id="avatar">MK</div>
+          <div>
+            <div class="account-name" id="accName">Użytkownik</div>
+            <div class="account-mail" id="accEmail">user@mail.com</div>
+            <div class="tiny" style="margin-top:2px">Zalogowano</div>
+          </div>
+          <div style="margin-left:auto">
+            <button class="btn btn-ghost btn-small" id="logoutBtn">Wyloguj</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="subtitle">Ustawienia</div>
+          <div class="list">
+            <div class="list-item" data-open="personal">
+              <div class="list-left">
+                <div class="li-ico"><i class="fa-solid fa-user"></i></div>
+                <div>
+                  <div class="li-title">Dane osobowe</div>
+                  <div class="li-sub">Imię, telefon, email</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right" style="opacity:.6"></i>
+            </div>
+
+            <div class="list-item" data-open="language">
+              <div class="list-left">
+                <div class="li-ico"><i class="fa-solid fa-language"></i></div>
+                <div>
+                  <div class="li-title">Język</div>
+                  <div class="li-sub">Polski / English</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right" style="opacity:.6"></i>
+            </div>
+
+            <div class="list-item" data-open="about">
+              <div class="list-left">
+                <div class="li-ico"><i class="fa-solid fa-circle-info"></i></div>
+                <div>
+                  <div class="li-title">O nas</div>
+                  <div class="li-sub">MilkShake Bar Słupsk & Rowy</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right" style="opacity:.6"></i>
+            </div>
+
+            <div class="list-item" data-open="help">
+              <div class="list-left">
+                <div class="li-ico"><i class="fa-solid fa-life-ring"></i></div>
+                <div>
+                  <div class="li-title">Pomoc</div>
+                  <div class="li-sub">Kontakt i informacje</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right" style="opacity:.6"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="subtitle">Synchronizacja</div>
+          <button class="btn btn-primary btn-wide" id="syncBtn">
+            Odśwież dane z serwera <i class="fa-solid fa-rotate"></i>
+          </button>
+          <div class="tiny" style="text-align:center;opacity:.78;margin-top:8px">
+            Pobiera: punkty, historię, nagrody, zamówienia, rezerwacje (jeśli endpointy istnieją).
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SUBPAGES -->
+  <section class="subpage" id="page-personal">
+    <div class="sub-top">
+      <button class="back-btn" data-back><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="sub-title">Dane osobowe</div>
+    </div>
+    <div class="container stack">
+      <div class="card stack">
+        <div>
+          <label>Imię i nazwisko</label>
+          <input id="personalName" placeholder="Jan Kowalski">
+        </div>
+        <div>
+          <label>Telefon</label>
+          <input id="personalPhone" placeholder="+48 700 000 000">
+        </div>
+        <div>
+          <label>Email</label>
+          <input id="personalEmail" placeholder="mail@adres.com">
+        </div>
+        <button class="btn btn-primary btn-wide" id="savePersonalBtn">Zapisz zmiany</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="subpage" id="page-language">
+    <div class="sub-top">
+      <button class="back-btn" data-back><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="sub-title">Język</div>
+    </div>
+    <div class="container stack">
+      <div class="card stack">
+        <button class="btn btn-ghost btn-wide" data-lang="pl">🇵🇱 Polski</button>
+        <button class="btn btn-ghost btn-wide" data-lang="en">🇬🇧 English</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="subpage" id="page-about">
+    <div class="sub-top">
+      <button class="back-btn" data-back><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="sub-title">O nas</div>
+    </div>
+    <div class="container stack">
+      <div class="card">
+        <div class="subtitle">MilkShake Bar</div>
+        <p class="muted">
+          Kremowe milkshake’i, desery i burgery w Słupsku oraz Rowach.
+          Tworzymy miejsce pełne energii i słodkich wspomnień.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="subpage" id="page-help">
+    <div class="sub-top">
+      <button class="back-btn" data-back><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="sub-title">Pomoc</div>
+    </div>
+    <div class="container stack">
+      <div class="card stack">
+        <div class="subtitle">Developer aplikacji</div>
+        <p class="muted">Aplikacja została wykonana przez <b>Velorie Design</b>.</p>
+        <a class="btn btn-primary btn-wide" href="https://www.desing.velorie.pl" target="_blank" rel="noopener">
+          www.desing.velorie.pl <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav" aria-label="Dolne menu">
+    <div class="nav-wrap">
+      <button class="nav-btn active" data-tab="points">
+        <i class="fa-solid fa-star"></i><div class="lbl">Punkty</div>
+      </button>
+      <button class="nav-btn" data-tab="rewards">
+        <i class="fa-solid fa-gift"></i><div class="lbl">Nagrody</div>
+      </button>
+      <button class="nav-btn" data-tab="order">
+        <i class="fa-solid fa-bag-shopping"></i><div class="lbl">Zamów</div>
+      </button>
+      <button class="nav-btn" data-tab="res">
+        <i class="fa-solid fa-calendar-check"></i><div class="lbl">Rezerwuj</div>
+      </button>
+      <button class="nav-btn" data-tab="account">
+        <i class="fa-solid fa-user"></i><div class="lbl">Konto</div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-check-circle"></i><span id="toastText"></span>
+  </div>
+
+  <!-- MODAL: KOD LOJALNOŚCIOWY -->
+  <div id="codeModal" class="modal">
+    <div class="modal-backdrop" data-close></div>
+
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="codeTitle">
+      <div class="modal-handle"></div>
+
+      <div class="modal-header">
+        <div>
+          <div class="tiny">Twój kod lojalnościowy</div>
+          <div id="codeTitle" class="modal-title">Milk ID</div>
+        </div>
+        <button class="modal-close" data-close aria-label="Zamknij">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-code-box">
+        <div class="modal-code" id="loyaltyCode">000000</div>
+        <div class="tiny" style="opacity:.9;text-align:center;margin-top:6px;">
+          Pokaż obsłudze przy kasie
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-wide" id="copyCodeBtn">
+          <i class="fa-solid fa-copy"></i> Kopiuj kod
+        </button>
+      </div>
+
+      <p class="tiny" style="text-align:center;margin-top:8px;">
+        Kod jest stały i zawsze przypisany do Twojego konta.
+      </p>
     </div>
   </div>
 
-  <script>
-  <script>
-/* =========================================================
-   MILK PWA — SCRIPT (CZĘŚĆ 2/2)
-   Zmiany:
-   ✅ Usunięte pobieranie menu z menu.json (menu wbudowane poniżej)
-   ✅ Nowe nagrody:
-      - Milkshake do 30 PLN — 25 pkt
-      - Zestaw burger do 60 PLN — 50 pkt
-      - Zamówienie do 120 PLN — 100 pkt
-   ✅ Usunięty przycisk "Odśwież dane z serwera" z ustawień (HTML już go nie ma)
-   ========================================================= */
+<script>
+  // ---------- PWA ----------
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+  }
 
-(() => {
-  /* -------------------------
-     Helpers / State
-  ------------------------- */
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
-  const nowISO = () => new Date().toISOString();
-  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  // ---------- Helpers / API ----------
+  const API = {
+    async json(url, opts = {}) {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+        ...opts,
+      });
 
-  const LS = {
-    get(key, fallback){
-      try { return JSON.parse(localStorage.getItem(key) ?? JSON.stringify(fallback)); }
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const text = await res.text();
+
+      let data = null;
+      if (ct.includes("application/json")) {
+        try { data = JSON.parse(text); } catch { data = null; }
+      }
+
+      if (!res.ok) {
+        const msg =
+          (data && (data.message || data.error)) ||
+          (text && text.slice(0, 180)) ||
+          `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
+
+      if (!ct.includes("application/json") && text.trim().startsWith("<")) {
+        throw new Error("Backend zwrócił HTML zamiast JSON (sprawdź routing / endpoint).");
+      }
+
+      if (data !== null) return data;
+      if (!text) return null;
+      try { return JSON.parse(text); } catch { return text; }
+    },
+
+    async getMy(urlBase, email) {
+      const e = encodeURIComponent(email || "");
+      try {
+        return await API.json(`${urlBase}?email=${e}`);
+      } catch {
+        return await API.json(urlBase, {
+          method: "POST",
+          body: JSON.stringify({ email }),
+        });
+      }
+    }
+  };
+
+  // ---------- Toast ----------
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+  function showToast(msg, danger = false) {
+    toastText.textContent = msg;
+    toast.classList.toggle("danger", danger);
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3200);
+  }
+
+  // ---------- Storage ----------
+  const store = {
+    get(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
       catch { return fallback; }
     },
-    set(key, val){
-      localStorage.setItem(key, JSON.stringify(val));
-    },
-    del(key){ localStorage.removeItem(key); }
+    set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+    del(key) { localStorage.removeItem(key); }
   };
 
-  const toastWrap = $("#toastWrap");
-  function toast(title, msg="", icon="fa-circle-info"){
-    const el = document.createElement("div");
-    el.className = "toast";
-    el.innerHTML = `
-      <i class="fa-solid ${icon}"></i>
-      <div>
-        <b>${escapeHtml(title)}</b>
-        <span>${escapeHtml(msg)}</span>
-      </div>
-    `;
-    toastWrap.appendChild(el);
-    setTimeout(() => { el.style.opacity="0"; el.style.transform="translateY(-6px)"; }, 2500);
-    setTimeout(() => el.remove(), 3100);
-  }
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
+  // ---------- Auth / user gating ----------
+  function getUser() { return store.get("user", null); }
+  function isLoggedIn() { return !!getUser()?.email; }
+
+  function requireLogin(actionName = "tej akcji") {
+    if (isLoggedIn()) return true;
+    showToast(`Zaloguj się, aby użyć ${actionName}.`, true);
+    openTab("account");
+    return false;
   }
 
-  /* -------------------------
-     Embedded MENU (NO menu.json)
-  ------------------------- */
-  const MENU = {
-    schemaVersion: "1.0",
-    currency: "PLN",
-    items: [
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Espresso","tag":"espresso","desc":"35 ml","price":11},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Podwójne espresso","tag":"espresso","desc":"70 ml","price":16},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Affogato (espresso z lodami)","tag":"deser kawowy","desc":"","price":"22/27","variants":[{"label":"wariant 1","price":22,"size":null},{"label":"wariant 2","price":27,"size":null}]},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Kawa czarna","tag":"klasyka","desc":"200/300 ml","price":"12/17","variants":[{"label":"200","price":12,"size":"200"},{"label":"300 ml","price":17,"size":"300 ml"}]},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Kawa biała","tag":"klasyka","desc":"200/300 ml","price":"12/17","variants":[{"label":"200","price":12,"size":"200"},{"label":"300 ml","price":17,"size":"300 ml"}]},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Cappuccino","tag":"klasyka","desc":"200/300 ml","price":"13/18","variants":[{"label":"200","price":13,"size":"200"},{"label":"300 ml","price":18,"size":"300 ml"}]},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Latte","tag":"klasyka","desc":"200/300 ml","price":"13/18","variants":[{"label":"200","price":13,"size":"200"},{"label":"300 ml","price":18,"size":"300 ml"}]},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Kawa mrożona","tag":"na zimno","desc":"300 ml","price":26},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Frappe słony karmel","tag":"na zimno","desc":"Podwójne espresso, kostki lodu, mleko, słony karmel","price":27},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Gorąca czekolada","tag":"na ciepło","desc":"200 ml","price":21},
-      {"category":"kawa-herbata","categoryLabel":"Kawa","title":"Dodatkowe espresso","tag":"dodatek","desc":"","price":5},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"Zielona","tag":"klasyka","desc":"","price":15},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"English breakfast","tag":"klasyka","desc":"","price":15},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"Piekielna herbata","tag":"rozgrzewająca","desc":"","price":22},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"Czort","tag":"rozgrzewająca","desc":"","price":22},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"Mon Cheri","tag":"rozgrzewająca","desc":"","price":22},
-      {"category":"kawa-herbata","categoryLabel":"Herbata","title":"Domowa herbata mrożona","tag":"na zimno","desc":"500 ml","price":26},
-      {"category":"kawa-herbata","categoryLabel":"Matcha","title":"Matcha latte","tag":"matcha","desc":"","price":20},
-      {"category":"kawa-herbata","categoryLabel":"Matcha","title":"Iced matcha","tag":"matcha","desc":"","price":25},
+  // ---------- Tabs ----------
+  const tabs = {
+    points: document.getElementById("tab-points"),
+    rewards: document.getElementById("tab-rewards"),
+    order: document.getElementById("tab-order"),
+    res: document.getElementById("tab-res"),
+    account: document.getElementById("tab-account"),
+  };
+  const navButtons = document.querySelectorAll(".nav-btn");
+  function openTab(name) {
+    Object.entries(tabs).forEach(([k, el]) => el.classList.toggle("active", k === name));
+    navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    renderTopPill();
+    if (name === "order") {
+      prefillOrderCheckout();
+      renderPickupRuleHintAndMin();
+    }
+    setTimeout(renderOrderFab, 50);
+  }
+  navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
+  document.querySelectorAll("[data-go]").forEach((b) =>
+    b.addEventListener("click", () => openTab(b.dataset.go))
+  );
 
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Cytrusowa","tag":"lemoniada","desc":"400/1200 ml","price":"15/30","variants":[{"label":"400","price":15,"size":"400"},{"label":"1200 ml","price":30,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Arbuzowa","tag":"lemoniada","desc":"400/1200 ml","price":"17/35","variants":[{"label":"400","price":17,"size":"400"},{"label":"1200 ml","price":35,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Ananasowa","tag":"lemoniada","desc":"400/1200 ml","price":"17/35","variants":[{"label":"400","price":17,"size":"400"},{"label":"1200 ml","price":35,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Gruszkowa","tag":"lemoniada","desc":"400/1200 ml","price":"17/35","variants":[{"label":"400","price":17,"size":"400"},{"label":"1200 ml","price":35,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Malinowa zimna","tag":"lemoniada","desc":"400/1200 ml","price":"17/35","variants":[{"label":"400","price":17,"size":"400"},{"label":"1200 ml","price":35,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Lemoniada","title":"Malinowa ciepła","tag":"lemoniada","desc":"400/1200 ml","price":"17/35","variants":[{"label":"400","price":17,"size":"400"},{"label":"1200 ml","price":35,"size":"1200 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Napoje","title":"Woda z kranu","tag":"","desc":"","price":0},
-      {"category":"napoje-soki","categoryLabel":"Napoje","title":"Woda niegazowana","tag":"","desc":"500 ml","price":8},
-      {"category":"napoje-soki","categoryLabel":"Napoje","title":"Woda gazowana","tag":"","desc":"500 ml","price":8},
-      {"category":"napoje-soki","categoryLabel":"Napoje","title":"Pepsi","tag":"","desc":"330 ml","price":9},
-      {"category":"napoje-soki","categoryLabel":"Napoje","title":"Pepsi Max","tag":"","desc":"330 ml","price":9},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Pomarańczowy","tag":"świeży sok","desc":"300 ml","price":19},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Grejpfrutowy","tag":"świeży sok","desc":"300 ml","price":22},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Pomarańczowo-grejpfrutowy","tag":"świeży sok","desc":"300 ml","price":22},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Jabłkowy","tag":"świeży sok","desc":"300 ml","price":19},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Jabłkowo-gruszkowy","tag":"świeży sok","desc":"300 ml","price":19},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Marchewka-jabłko-pomarańcza","tag":"świeży sok","desc":"300 ml","price":19},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Burak-jabłko-pomarańcza-seler","tag":"świeży sok","desc":"300 ml","price":22},
-      {"category":"napoje-soki","categoryLabel":"Świeże soki","title":"Jabłko-seler-kiwi","tag":"świeży sok","desc":"300 ml","price":22},
-      {"category":"napoje-soki","categoryLabel":"Smoothies","title":"Zielony","tag":"smoothies","desc":"350 ml • szpinak, kiwi, pomarańcza, gruszka","price":29},
-      {"category":"napoje-soki","categoryLabel":"Smoothies","title":"Żółty","tag":"smoothies","desc":"350 ml • banan, jabłko, ananas, mango","price":29},
-      {"category":"napoje-soki","categoryLabel":"Smoothies","title":"Pomarańczowy","tag":"smoothies","desc":"350 ml • banan, pomarańcza, mango, nerkowce, limonka","price":29},
-      {"category":"napoje-soki","categoryLabel":"Smoothies","title":"Czerwony","tag":"smoothies","desc":"350 ml • truskawki, maliny, banan, ananas","price":29},
-      {"category":"napoje-soki","categoryLabel":"Piwo","title":"Corona","tag":"piwo","desc":"330 ml","price":15},
-      {"category":"napoje-soki","categoryLabel":"Piwo","title":"Piwo bezalkoholowe","tag":"piwo","desc":"","price":14},
-      {"category":"napoje-soki","categoryLabel":"Piwo","title":"IPA","tag":"piwo","desc":"0,5 l","price":19},
-      {"category":"napoje-soki","categoryLabel":"Piwo","title":"Lager","tag":"piwo","desc":"Zapytaj o dostępność","price":17},
-      {"category":"napoje-soki","categoryLabel":"Wino & Aperitiff","title":"Sauvignon blanc (białe wytrawne) – Skarby Mołdawii","tag":"wino-aperitiff","desc":"170/500/700 ml","price":"22/64/89","variants":[{"label":"170","price":22,"size":"170"},{"label":"500","price":64,"size":"500"},{"label":"700 ml","price":89,"size":"700 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Wino & Aperitiff","title":"Cabernet sauvignon (czerwone wytrawne) – Skarby Mołdawii","tag":"wino-aperitiff","desc":"170/500/700 ml","price":"22/64/89","variants":[{"label":"170","price":22,"size":"170"},{"label":"500","price":64,"size":"500"},{"label":"700 ml","price":89,"size":"700 ml"}]},
-      {"category":"napoje-soki","categoryLabel":"Wino & Aperitiff","title":"Hugo","tag":"wino-aperitiff","desc":"Prosecco, woda gazowana, syrop z czarnego bzu, mięta i limonka","price":35},
-      {"category":"napoje-soki","categoryLabel":"Wino & Aperitiff","title":"Prosecco (wytrawne wino musujące)","tag":"wino-aperitiff","desc":"","price":26},
+  // ---------- Milk ID ----------
+  function generate6DigitCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
 
-      {"category":"shake","categoryLabel":"Shakes","title":"Śmietankowy","tag":"klasyka","desc":"","price":18},
-      {"category":"shake","categoryLabel":"Shakes","title":"Waniliowy","tag":"klasyka","desc":"","price":19},
-      {"category":"shake","categoryLabel":"Shakes","title":"Czekoladowy","tag":"klasyka","desc":"","price":19},
-      {"category":"shake","categoryLabel":"Shakes","title":"Straciatella","tag":"klasyka","desc":"","price":19},
-      {"category":"shake","categoryLabel":"Shakes","title":"Chałwa","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Krówka","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Daim","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Milky Way","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Oreo","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Snickers","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Ptasie mleczko waniliowe","tag":"klasyka","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kinder Bueno","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Reese's Peanut Butter","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Nutella","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Raffaello","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Skittles","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Ferrero Rocher","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Maxi King","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Masło orzechowe","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kawowy","tag":"klasyka","desc":"","price":24},
-      {"category":"shake","categoryLabel":"Shakes","title":"Ciasteczkowy Potwór","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Pistacjusz","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Marshall","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Cringe","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Cheesecake","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Gonzo","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Johny Pierniczony","tag":"vip","desc":"","price":37},
-      {"category":"shake","categoryLabel":"Shakes","title":"Banan + maliny","tag":"best-of","desc":"","price":26},
-      {"category":"shake","categoryLabel":"Shakes","title":"Mango + truskawki","tag":"best-of","desc":"","price":26},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kiwi + mango","tag":"best-of","desc":"","price":26},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kinder bueno + maliny","tag":"best-of","desc":"","price":28},
-      {"category":"shake","categoryLabel":"Shakes","title":"Oreo + masło orzechowe","tag":"best-of","desc":"","price":28},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kawa + słony karmel","tag":"best-of","desc":"","price":29},
-      {"category":"shake","categoryLabel":"Shakes","title":"Kawa + Nutella","tag":"best-of","desc":"","price":29},
-      {"category":"shake","categoryLabel":"Shakes","title":"Ptasie mleczko + maliny","tag":"best-of","desc":"","price":28},
-      {"category":"shake","categoryLabel":"Shakes","title":"Raffaello + jagody","tag":"best-of","desc":"","price":28},
-      {"category":"shake","categoryLabel":"Shakes","title":"Bananowy","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Czarna porzeczka","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Malinowy","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Mango","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Truskawkowy","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes","title":"Jagodowy","tag":"owocowe","desc":"","price":22},
-      {"category":"shake","categoryLabel":"Shakes proteinowe","title":"Jagodowy muffin","tag":"proteinowe","desc":"","price":32},
-      {"category":"shake","categoryLabel":"Shakes proteinowe","title":"Słony karmel","tag":"proteinowe","desc":"","price":28},
-      {"category":"shake","categoryLabel":"Shakes proteinowe","title":"Truskawkowe love","tag":"proteinowe","desc":"","price":28},
+  function getMilkId() {
+    const user = getUser();
+    if (user?.milkId && String(user.milkId).length === 6) return String(user.milkId);
 
-      {"category":"deser","categoryLabel":"Lody włoskie","title":"Lody włoskie śmietankowe (małe)","tag":"lody-wloskie","desc":"150 g","price":11},
-      {"category":"deser","categoryLabel":"Lody włoskie","title":"Lody włoskie śmietankowe (duże)","tag":"lody-wloskie","desc":"250 g","price":16},
-      {"category":"deser","categoryLabel":"Dodatki","title":"Mus owocowy lub polewa","tag":"lody-wloskie","desc":"","price":6},
-      {"category":"deser","categoryLabel":"Dodatki","title":"M&Ms","tag":"lody-wloskie","desc":"","price":6},
-      {"category":"deser","categoryLabel":"Dodatki","title":"Owoce","tag":"lody-wloskie","desc":"","price":14},
-      {"category":"deser","categoryLabel":"Dodatki","title":"Bita śmietana","tag":"lody-wloskie","desc":"","price":6},
-      {"category":"deser","categoryLabel":"Desery lodowe","title":"Troll","tag":"desery-lodowe","desc":"","price":24},
-      {"category":"deser","categoryLabel":"Desery lodowe","title":"Owocowa aleja","tag":"desery-lodowe","desc":"","price":38},
-      {"category":"deser","categoryLabel":"Desery lodowe","title":"Grzeszna truskawka","tag":"desery-lodowe","desc":"","price":38},
-      {"category":"deser","categoryLabel":"Desery lodowe","title":"Oreo Sundae","tag":"desery-lodowe","desc":"","price":29},
-      {"category":"deser","categoryLabel":"Gofry amerykańskie","title":"Z syropem klonowym, jajkiem sadzonym i bekonem","tag":"gofry-amerykanskie","desc":"pół / cały","price":"28/44","variants":[{"label":"pół","price":28,"size":"pół"},{"label":"cały","price":44,"size":"cały"}]},
-      {"category":"deser","categoryLabel":"Gofry amerykańskie","title":"American Pie z pieczonymi jabłkami, cynamonem, domową kruszonką i lodami","tag":"gofry-amerykanskie","desc":"pół / cały","price":"27/49","variants":[{"label":"pół","price":27,"size":"pół"},{"label":"cały","price":49,"size":"cały"}]},
-      {"category":"deser","categoryLabel":"Gofry amerykańskie","title":"Z dżemem z czarnej porzeczki i polewą Lotus Biscoff","tag":"gofry-amerykanskie","desc":"pół / cały","price":"26/48","variants":[{"label":"pół","price":26,"size":"pół"},{"label":"cały","price":48,"size":"cały"}]},
-      {"category":"deser","categoryLabel":"Gofry amerykańskie","title":"Dubajski z truskawkami","tag":"gofry-amerykanskie","desc":"pół / cały","price":"32/54","variants":[{"label":"pół","price":32,"size":"pół"},{"label":"cały","price":54,"size":"cały"}]},
-      {"category":"deser","categoryLabel":"Gofry amerykańskie","title":"Cheesecake z serkiem Philadelphia, masą ciasteczkową, kruszonką i truskawkami","tag":"gofry-amerykanskie","desc":"pół / cały","price":"28/50","variants":[{"label":"pół","price":28,"size":"pół"},{"label":"cały","price":50,"size":"cały"}]},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z syropem klonowym i lodami","tag":"pancakes","desc":"3 szt.","price":29},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z owocami, musem truskawkowym i lodami","tag":"pancakes","desc":"3 szt.","price":36},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z Nutellą, truskawkami i lodami","tag":"pancakes","desc":"3 szt.","price":36},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z masą Kinder Bueno, malinami i lodami","tag":"pancakes","desc":"3 szt.","price":39},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z masą Raffaello, truskawkami i lodami","tag":"pancakes","desc":"3 szt.","price":39},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Z dubajską pistacją i truskawkami","tag":"pancakes","desc":"3 szt.","price":39},
-      {"category":"deser","categoryLabel":"Pancakes","title":"Hello USA","tag":"pancakes","desc":"syrop klonowy, bekon, 2 jaja sadzone","price":39},
+    const email = (user?.email || "").toLowerCase();
+    const key = email ? ("milkIdByEmail:" + email) : "milkIdAnonymous";
+    let code = store.get(key, null);
+    if (!code || String(code).length !== 6) {
+      code = generate6DigitCode();
+      store.set(key, code);
+    }
 
-      {"category":"texmex","categoryLabel":"Quesadillas","title":"Pollo","tag":"quesadillas","desc":"","price":45},
-      {"category":"texmex","categoryLabel":"Quesadillas","title":"Torro","tag":"quesadillas","desc":"","price":46},
-      {"category":"texmex","categoryLabel":"Quesadillas","title":"Camaron","tag":"quesadillas","desc":"","price":49},
-      {"category":"texmex","categoryLabel":"Quesadillas","title":"Verduras","tag":"quesadillas","desc":"","price":42},
-      {"category":"texmex","categoryLabel":"Fajita","title":"Fajita z kurczakiem","tag":"fajita","desc":"","price":59},
-      {"category":"texmex","categoryLabel":"Fajita","title":"Fajita z krewetkami","tag":"fajita","desc":"","price":69},
-      {"category":"texmex","categoryLabel":"Fajita","title":"Fajita z polędwicą wołową","tag":"fajita","desc":"","price":79},
-      {"category":"texmex","categoryLabel":"Churros","title":"Churros (6 szt.) z sosem czekoladowym i truskawkami","tag":"churros","desc":"","price":33},
-      {"category":"texmex","categoryLabel":"Churros","title":"Churros (6 szt.) ze słonym karmelem i precelkami","tag":"churros","desc":"","price":32},
-      {"category":"texmex","categoryLabel":"Pasta","title":"Tagiatelle z krewetkami","tag":"pasta","desc":"","price":51},
-      {"category":"texmex","categoryLabel":"Pasta","title":"Vege Pasta","tag":"pasta","desc":"","price":44},
-      {"category":"texmex","categoryLabel":"NY Chinatown Stir Fry","title":"Vege (z nerkowcami)","tag":"stir-fry","desc":"","price":39},
-      {"category":"texmex","categoryLabel":"NY Chinatown Stir Fry","title":"Z kurczakiem 90g","tag":"stir-fry","desc":"","price":47},
-      {"category":"texmex","categoryLabel":"NY Chinatown Stir Fry","title":"Z wołowiną 90g","tag":"stir-fry","desc":"","price":55},
-      {"category":"texmex","categoryLabel":"NY Chinatown Stir Fry","title":"Z krewetkami (16/20) 7 szt.","tag":"stir-fry","desc":"","price":51},
-      {"category":"texmex","categoryLabel":"Dodatki","title":"Dodatkowe nerkowce 20g","tag":"stir-fry","desc":"","price":8},
-      {"category":"texmex","categoryLabel":"Sałaty","title":"Cezar","tag":"salaty","desc":"","price":49},
-      {"category":"texmex","categoryLabel":"Sałaty","title":"Vege Cezar","tag":"salaty","desc":"","price":42},
-      {"category":"texmex","categoryLabel":"Sałaty","title":"Ale burak","tag":"salaty","desc":"","price":44},
-      {"category":"texmex","categoryLabel":"Sałaty","title":"Alabama","tag":"salaty","desc":"","price":51},
+    if (user?.email) {
+      user.milkId = String(code);
+      store.set("user", user);
+    }
 
-      {"category":"kanapki","categoryLabel":"Startery","title":"Frytki","tag":"startery","desc":"150 g","price":15},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Frytki z batatów","tag":"startery","desc":"150 g","price":19},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Frytki z serem, bekonem i majonezem sriracha","tag":"startery","desc":"","price":30},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Krążki cebulowe (5 szt.) z sosem sweet chili","tag":"startery","desc":"","price":18},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Krewetki w tempurze (3 szt.) z sosem sweet chili","tag":"startery","desc":"","price":21},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Krewetki w tempurze (6 szt.) z sosem sweet chili","tag":"startery","desc":"","price":39},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Nachos z serem, guacamole, śmietaną, salsą i jalapeno","tag":"startery","desc":"","price":41},
-      {"category":"kanapki","categoryLabel":"Startery","title":"Nachos z chili con carne, serem, śmietaną, guacamole i jalapeno","tag":"startery","desc":"","price":49},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Rostbef","tag":"kanapki","desc":"60 g / 100 g","price":"42/58","variants":[{"label":"60 g","price":42,"size":"60 g"},{"label":"100 g","price":58,"size":"100 g"}]},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Cotto","tag":"kanapki","desc":"70 g / 120 g","price":"37/49","variants":[{"label":"70 g","price":37,"size":"70 g"},{"label":"120 g","price":49,"size":"120 g"}]},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Kura","tag":"kanapki","desc":"","price":46},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Club sandwich","tag":"kanapki","desc":"","price":38},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Cotto club","tag":"kanapki","desc":"","price":36},
-      {"category":"kanapki","categoryLabel":"Kanapki","title":"Vege club","tag":"kanapki","desc":"","price":36},
-      {"category":"kanapki","categoryLabel":"Dania główne","title":"Tatar z polędwicy wołowej","tag":"dania-glowne","desc":"100 g","price":51},
-      {"category":"kanapki","categoryLabel":"Dania główne","title":"Żebro wieprzowe","tag":"dania-glowne","desc":"450 g","price":75},
-      {"category":"kanapki","categoryLabel":"Dania główne","title":"Stek","tag":"dania-glowne","desc":"","price":125},
-      {"category":"kanapki","categoryLabel":"Dania główne","title":"Kurczak supreme","tag":"dania-glowne","desc":"","price":65},
-      {"category":"kanapki","categoryLabel":"Zestawy","title":"Burger + frytki lub sałatka","tag":"zestawy","desc":"oszczędzasz 5 PLN","price":"+12","variants":[{"label":"dopłata","price":12.0,"size":null}]},
-      {"category":"kanapki","categoryLabel":"Zestawy","title":"Burger + frytki/sałatka + lemoniada cytrusowa","tag":"zestawy","desc":"oszczędzasz 10 PLN","price":"+22","variants":[{"label":"dopłata","price":22.0,"size":null}]},
-      {"category":"kanapki","categoryLabel":"Zestawy","title":"Zamień frytki na krążki cebulowe","tag":"zestawy","desc":"","price":15},
-      {"category":"kanapki","categoryLabel":"Zestawy","title":"Zamień frytki na mini nachos","tag":"zestawy","desc":"","price":18},
-      {"category":"kanapki","categoryLabel":"Zestawy","title":"Zamień frytki na bataty","tag":"zestawy","desc":"","price":14},
+    return String(code);
+  }
 
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Prostak","tag":"wolowy","desc":"mały / średni / duży","price":"30/38/46","variants":[{"label":"mały","price":30,"size":"mały"},{"label":"średni","price":38,"size":"średni"},{"label":"duży","price":46,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Sergio","tag":"wolowy","desc":"mały / średni / duży","price":"32/40/48","variants":[{"label":"mały","price":32,"size":"mały"},{"label":"średni","price":40,"size":"średni"},{"label":"duży","price":48,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Boston","tag":"wolowy","desc":"mały / średni / duży","price":"34/42/50","variants":[{"label":"mały","price":34,"size":"mały"},{"label":"średni","price":42,"size":"średni"},{"label":"duży","price":50,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Pleśniak","tag":"wolowy","desc":"mały / średni / duży","price":"38/46/54","variants":[{"label":"mały","price":38,"size":"mały"},{"label":"średni","price":46,"size":"średni"},{"label":"duży","price":54,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Bajpas","tag":"wolowy","desc":"mały / średni / duży","price":"36/44/52","variants":[{"label":"mały","price":36,"size":"mały"},{"label":"średni","price":44,"size":"średni"},{"label":"duży","price":52,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Burakoza","tag":"wolowy","desc":"mały / średni / duży","price":"38/46/54","variants":[{"label":"mały","price":38,"size":"mały"},{"label":"średni","price":46,"size":"średni"},{"label":"duży","price":54,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"New York","tag":"wolowy","desc":"mały / średni / duży","price":"38/46/54","variants":[{"label":"mały","price":38,"size":"mały"},{"label":"średni","price":46,"size":"średni"},{"label":"duży","price":54,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Złodziej","tag":"wolowy","desc":"mały / średni / duży","price":"38/46/54","variants":[{"label":"mały","price":38,"size":"mały"},{"label":"średni","price":46,"size":"średni"},{"label":"duży","price":54,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery wołowe Black Angus","title":"Missisipi","tag":"wolowy","desc":"mały / średni / duży","price":"38/46/54","variants":[{"label":"mały","price":38,"size":"mały"},{"label":"średni","price":46,"size":"średni"},{"label":"duży","price":54,"size":"duży"}]},
-      {"category":"burger","categoryLabel":"Burgery z kurczakiem","title":"Kura","tag":"kurczak","desc":"","price":43},
-      {"category":"burger","categoryLabel":"Burgery z kurczakiem","title":"Żółtodziób","tag":"kurczak","desc":"","price":43},
+  // ---------- Top pill ----------
+  const pointsPillEl = document.getElementById("pointsPill");
+  function renderTopPill() {
+    const user = getUser();
+    if (!user?.email) {
+      pointsPillEl.textContent = "Zaloguj się";
+      return;
+    }
+    const pts = store.get("points", 0);
+    pointsPillEl.textContent = pts + " pkt";
+  }
 
-      {"category":"sniadania","categoryLabel":"Napoje do śniadania","title":"Kawa filtrowana (z dolewką)","tag":"sniadania","desc":"","price":12},
-      {"category":"sniadania","categoryLabel":"Napoje do śniadania","title":"Herbata śniadaniowa","tag":"sniadania","desc":"","price":9},
-      {"category":"sniadania","categoryLabel":"Napoje do śniadania","title":"Świeży sok","tag":"sniadania","desc":"0,2 l","price":18},
-      {"category":"sniadania","categoryLabel":"Napoje do śniadania","title":"Mimoza","tag":"sniadania","desc":"","price":31},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Granola","tag":"sniadania","desc":"","price":44},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Tost francuski w panko","tag":"sniadania","desc":"","price":44},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Jajito burrito","tag":"sniadania","desc":"","price":37},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Czerwona szakszuka","tag":"sniadania","desc":"","price":39},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Egg royal","tag":"sniadania","desc":"","price":45},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Jajecznica","tag":"sniadania","desc":"","price":33},
-      {"category":"sniadania","categoryLabel":"Śniadania","title":"Omlet francuski","tag":"sniadania","desc":"","price":37},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Rostbef","tag":"kanapki-sniadaniowe","desc":"60 g / 100 g","price":"42/58","variants":[{"label":"60 g","price":42,"size":"60 g"},{"label":"100 g","price":58,"size":"100 g"}]},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Cotto","tag":"kanapki-sniadaniowe","desc":"70 g / 120 g","price":"37/49","variants":[{"label":"70 g","price":37,"size":"70 g"},{"label":"120 g","price":49,"size":"120 g"}]},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Kura","tag":"kanapki-sniadaniowe","desc":"","price":46},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Club sandwich","tag":"kanapki-sniadaniowe","desc":"","price":38},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Cotto club","tag":"kanapki-sniadaniowe","desc":"","price":36},
-      {"category":"sniadania","categoryLabel":"Kanapki śniadaniowe","title":"Vege club","tag":"kanapki-sniadaniowe","desc":"","price":36},
-      {"category":"sniadania","categoryLabel":"Full milkshake breakfast","title":"Duży full milkshake breakfast","tag":"zestaw-sniadaniowy","desc":"","price":53},
-      {"category":"sniadania","categoryLabel":"Full milkshake breakfast","title":"Mały full milkshake breakfast","tag":"zestaw-sniadaniowy","desc":"","price":42},
-      {"category":"sniadania","categoryLabel":"Chiquita","title":"Chiquita","tag":"chiquita","desc":"","price":41},
-      {"category":"sniadania","categoryLabel":"Chiquita","title":"Chiquita z chorizo","tag":"chiquita","desc":"80 g","price":39},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Frankfurterka","tag":"sniadania-keto","desc":"","price":7},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Chorizo","tag":"sniadania-keto","desc":"70 g","price":8},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"½ awokado","tag":"sniadania-keto","desc":"","price":9},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Twarożek","tag":"sniadania-keto","desc":"80 g","price":7},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Ogórek zielony","tag":"sniadania-keto","desc":"7 plastrów","price":5},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Pomidorki koktajlowe","tag":"sniadania-keto","desc":"80 g","price":5},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Bekon","tag":"sniadania-keto","desc":"2 plastry","price":4},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Jajo","tag":"sniadania-keto","desc":"","price":4},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Masło","tag":"sniadania-keto","desc":"10 g","price":2},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Chleb maślany","tag":"sniadania-keto","desc":"80 g","price":6},
-      {"category":"sniadania","categoryLabel":"Śniadanie KETO – dodatki","title":"Gravlax","tag":"sniadania-keto","desc":"50 g","price":15}
-    ]
+  // ---------- Opening hours / status ----------
+  const openingCardEl = document.getElementById("openingCard");
+  const openDotEl = document.getElementById("openDot");
+  const openTextEl = document.getElementById("openText");
+  const openHoursEl = document.getElementById("openingHours");
+  const openHintEl = document.getElementById("openHint");
+
+  const openingSchedule = {
+    0: { label: "niedziela", open: "09:00", close: "21:00" },
+    1: { label: "poniedziałek", open: "08:00", close: "21:00" },
+    2: { label: "wtorek", open: "08:00", close: "21:00" },
+    3: { label: "środa", open: "08:00", close: "21:00" },
+    4: { label: "czwartek", open: "08:00", close: "21:00" },
+    5: { label: "piątek", open: "08:00", close: "22:00" },
+    6: { label: "sobota", open: "09:00", close: "22:00" },
   };
 
-  // categories display order + labels (must match HTML chips data-cat)
-  const CAT_LABEL = {
-    "kawa-herbata": "Kawa",
-    "napoje-soki": "Napoje",
-    "shake": "Shakes",
-    "deser": "Desery",
-    "texmex": "Tex Mex",
-    "kanapki": "Kanapki",
-    "burger": "Burgery",
-    "sniadania": "Śniadania"
-  };
-
-  /* -------------------------
-     Rewards (NEW)
-  ------------------------- */
-  const REWARDS = [
-    { id:"milkshake30", title:"Milkshake do 30 PLN", subtitle:"Nagroda do wykorzystania w barze", points:25, icon:"fa-ice-cream" },
-    { id:"burger60", title:"Zestaw burger o wartości do 60 PLN", subtitle:"Nagroda do wykorzystania w barze", points:50, icon:"fa-burger" },
-    { id:"order120", title:"Zamówienie do 120 PLN", subtitle:"Nagroda do wykorzystania w barze", points:100, icon:"fa-receipt" },
-  ];
-
-  /* -------------------------
-     Local "account" / identity
-     (Simple mock: email + name)
-  ------------------------- */
-  const state = {
-    // profile
-    profile: LS.get("milk_profile", { loggedIn:false, email:"", name:"" }),
-    // points/history
-    points: LS.get("milk_points", 0),
-    history: LS.get("milk_points_history", []),
-    // milkId per-email
-    milkIdMap: LS.get("milk_milkid_map", {}), // email -> 6-digit string
-    // cart
-    cart: LS.get("milk_cart_v1", []), // {key,title,variantLabel,price,qty,category}
-    // reservations
-    reservations: LS.get("milk_res_local", []), // fallback list
-    // ui
-    activeNav: "points",
-    activeCategory: "kawa-herbata",
-    install: { deferredPrompt:null, platform:"android" }
-  };
-
-  // one-time history reset helper (as in your previous code base)
-  if (!LS.get("milk_pointsHistory_reset_once", false)) {
-    // keep current history; do not wipe by default. If you previously had forced reset, uncomment next line:
-    // state.history = []; LS.set("milk_points_history", state.history);
-    LS.set("milk_pointsHistory_reset_once", true);
+  function toMinutes(hhmm) {
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
   }
 
-  function saveAll(){
-    LS.set("milk_profile", state.profile);
-    LS.set("milk_points", state.points);
-    LS.set("milk_points_history", state.history);
-    LS.set("milk_milkid_map", state.milkIdMap);
-    LS.set("milk_cart_v1", state.cart);
-    LS.set("milk_res_local", state.reservations);
-  }
-
-  /* -------------------------
-     Elements
-  ------------------------- */
-  const el = {
-    pointsNum: $("#pointsNum"),
-    pointsPill: $("#pointsPill"),
-    topSub: $("#topSub"),
-
-    // pages
-    pages: {
-      points: $("#pagePoints"),
-      rewards: $("#pageRewards"),
-      order: $("#pageOrder"),
-      res: $("#pageRes"),
-      account: $("#pageAccount")
-    },
-    navBtns: $$(".navBtn"),
-
-    // hours
-    hoursToggle: $("#hoursToggle"),
-    hoursList: $("#hoursList"),
-    statusDot: $("#statusDot"),
-    openStatus: $("#openStatus"),
-    openHint: $("#openHint"),
-
-    // history
-    historyList: $("#historyList"),
-    historyCount: $("#historyCount"),
-
-    // actions
-    btnShowMilkId: $("#btnShowMilkId"),
-    btnLogin: $("#btnLogin"),
-    btnOpenEatmi: $("#btnOpenEatmi"),
-
-    // milk id modal
-    milkIdOverlay: $("#milkIdOverlay"),
-    milkIdClose: $("#milkIdClose"),
-    milkIdGoLogin: $("#milkIdGoLogin"),
-    milkIdValue: $("#milkIdValue"),
-    milkIdCopy: $("#milkIdCopy"),
-
-    // rewards
-    rewardList: $("#rewardList"),
-
-    // order
-    orderCategories: $("#orderCategories"),
-    menuGrid: $("#menuGrid"),
-    cartFab: $("#cartFab"),
-    cartBadge: $("#cartBadge"),
-    btnOrderInfo: $("#btnOrderInfo"),
-
-    // cart modal
-    cartOverlay: $("#cartOverlay"),
-    cartClose: $("#cartClose"),
-    cartList: $("#cartList"),
-    cartTotal: $("#cartTotal"),
-    cartClear: $("#cartClear"),
-    cartCheckout: $("#cartCheckout"),
-    orderName: $("#orderName"),
-    orderPhone: $("#orderPhone"),
-    orderPickupTime: $("#orderPickupTime"),
-    orderPickupPlace: $("#orderPickupPlace"),
-    orderNote: $("#orderNote"),
-
-    // reservations
-    resName: $("#resName"),
-    resPhone: $("#resPhone"),
-    resDate: $("#resDate"),
-    resTime: $("#resTime"),
-    resPeople: $("#resPeople"),
-    resPlace: $("#resPlace"),
-    resNote: $("#resNote"),
-    btnResSubmit: $("#btnResSubmit"),
-    resList: $("#resList"),
-    resCount: $("#resCount"),
-
-    // account
-    accHint: $("#accHint"),
-    accountBox: $("#accountBox"),
-    btnOpenLogin: $("#btnOpenLogin"),
-    btnOpenEmailLogin: $("#btnOpenEmailLogin"),
-    btnLogout: $("#btnLogout"),
-
-    btnSettingsPersonal: $("#btnSettingsPersonal"),
-    btnSettingsLang: $("#btnSettingsLang"),
-    btnSettingsHelp: $("#btnSettingsHelp"),
-    btnSettingsAbout: $("#btnSettingsAbout"),
-
-    // install
-    installOverlay: $("#installOverlay"),
-    installClose: $("#installClose"),
-    installAndroid: $("#installAndroid"),
-    installIos: $("#installIos"),
-    installBtn: $("#installBtn"),
-    installSteps: $("#installSteps"),
-  };
-
-  /* -------------------------
-     Opening hours (simple)
-  ------------------------- */
-  const HOURS = [
-    { d:"Pon", t:"10:00–22:00" },
-    { d:"Wto", t:"10:00–22:00" },
-    { d:"Śro", t:"10:00–22:00" },
-    { d:"Czw", t:"10:00–22:00" },
-    { d:"Pią", t:"10:00–23:00" },
-    { d:"Sob", t:"10:00–23:00" },
-    { d:"Nie", t:"10:00–22:00" },
-  ];
-
-  function getTodayIndex(){
-    const d = new Date();
-    // JS: 0=Sun..6=Sat => convert to 0=Mon..6=Sun
-    const js = d.getDay();
-    return (js + 6) % 7;
-  }
-  function parseHHMM(s){
-    const [h,m] = String(s).split(":").map(n=>parseInt(n,10));
-    return (h*60 + m);
-  }
-  function isOpenNow(){
-    // based on today's hours only; simple ranges like "10:00–22:00"
-    const idx = getTodayIndex();
-    const range = HOURS[idx].t;
-    const m = range.match(/(\d{1,2}:\d{2})\D+(\d{1,2}:\d{2})/);
-    if(!m) return {open:false, label:"Zamknięte", hint:"Godziny dostępne po rozwinięciu"};
-    const start = parseHHMM(m[1]);
-    const end = parseHHMM(m[2]);
+  function renderOpeningHours() {
     const now = new Date();
-    const cur = now.getHours()*60 + now.getMinutes();
-    const open = (cur >= start && cur <= end);
-    return {
-      open,
-      label: open ? "Otwarte" : "Zamknięte",
-      hint: open ? `Dziś do ${m[2]}` : `Dziś od ${m[1]}`
-    };
-  }
-  function renderHours(){
-    el.hoursList.innerHTML = "";
-    HOURS.forEach((h, i) => {
-      const row = document.createElement("div");
-      row.className = "hoursRow";
-      row.innerHTML = `<span>${h.d}</span><span>${h.t}</span>`;
-      el.hoursList.appendChild(row);
-    });
-    const s = isOpenNow();
-    el.statusDot.classList.toggle("open", s.open);
-    el.statusDot.classList.toggle("closed", !s.open);
-    el.openStatus.textContent = s.label;
-    el.openHint.textContent = s.hint + " • kliknij, aby rozwinąć";
-  }
+    const day = now.getDay();
+    const minutesNow = now.getHours() * 60 + now.getMinutes();
 
-  /* -------------------------
-     Milk ID
-  ------------------------- */
-  function ensureMilkId(){
-    if(!state.profile.loggedIn || !state.profile.email) return null;
-    const email = state.profile.email.toLowerCase().trim();
-    if(!state.milkIdMap[email]){
-      state.milkIdMap[email] = String(Math.floor(100000 + Math.random()*900000));
-      saveAll();
-    }
-    return state.milkIdMap[email];
-  }
+    const today = openingSchedule[day];
+    const openM = toMinutes(today.open);
+    const closeM = toMinutes(today.close);
+    const isOpen = minutesNow >= openM && minutesNow < closeM;
 
-  function openMilkIdModal(){
-    if(!state.profile.loggedIn){
-      toast("Zaloguj się", "Aby mieć Milk ID, zaloguj się w zakładce Konto.", "fa-user");
-      el.milkIdValue.value = "------";
-    } else {
-      const code = ensureMilkId();
-      el.milkIdValue.value = code ?? "------";
-    }
-    el.milkIdOverlay.classList.add("show");
-  }
-  function closeMilkIdModal(){ el.milkIdOverlay.classList.remove("show"); }
+    openDotEl.classList.remove("open", "closed");
+    openDotEl.classList.add(isOpen ? "open" : "closed");
+    openTextEl.textContent = isOpen ? "Jesteśmy Otwarci" : "Jesteśmy Zamknięci";
 
-  /* -------------------------
-     Points / History
-  ------------------------- */
-  function addHistory(type, pointsDelta, note){
-    const item = {
-      id: crypto?.randomUUID?.() ?? String(Math.random()).slice(2),
-      ts: nowISO(),
-      type,
-      delta: pointsDelta,
-      note: note ?? ""
-    };
-    state.history.unshift(item);
-    if(state.history.length > 80) state.history.length = 80;
-    saveAll();
-  }
-
-  function renderPoints(){
-    el.pointsNum.textContent = String(state.points ?? 0);
-    el.topSub.textContent = state.profile.loggedIn
-      ? `Zalogowano: ${state.profile.email}`
-      : "Aplikacja lojalnościowa";
-  }
-
-  function fmtTime(iso){
-    try{
-      const d = new Date(iso);
-      return d.toLocaleString("pl-PL", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }catch{ return iso; }
-  }
-
-  function renderHistory(){
-    el.historyList.innerHTML = "";
-    const list = state.history ?? [];
-    el.historyCount.textContent = `${list.length} wpisów`;
-
-    if(list.length === 0){
-      el.historyList.innerHTML = `<div class="muted" style="font-size:12px;">Brak historii — zrób pierwszy zakup.</div>`;
-      return;
-    }
-
-    list.slice(0, 20).forEach(h => {
-      const box = document.createElement("div");
-      box.className = "reward"; // reuse style
-      const sign = (h.delta >= 0 ? "+" : "");
-      const icon = h.delta >= 0 ? "fa-circle-plus" : "fa-circle-minus";
-      box.innerHTML = `
-        <div class="rewardIcon"><i class="fa-solid ${icon}"></i></div>
-        <div class="rewardMain">
-          <b>${escapeHtml(h.type)}</b>
-          <span>${escapeHtml(h.note || fmtTime(h.ts))}</span>
-        </div>
-        <div class="rewardRight">
-          <div class="pts">${sign}${h.delta} pkt</div>
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    openHoursEl.innerHTML = order.map((d) => {
+      const s = openingSchedule[d];
+      const isToday = d === day;
+      return `
+        <div class="${isToday ? "today" : ""}">
+          <b>${s.label}</b> ${s.open}–${s.close}
         </div>
       `;
-      el.historyList.appendChild(box);
-    });
+    }).join("");
   }
 
-  /* -------------------------
-     Rewards
-  ------------------------- */
-  function renderRewards(){
-    el.rewardList.innerHTML = "";
-    REWARDS.forEach(r => {
-      const can = (state.points >= r.points);
-      const row = document.createElement("div");
-      row.className = "reward";
-      row.innerHTML = `
-        <div class="rewardIcon"><i class="fa-solid ${r.icon}"></i></div>
-        <div class="rewardMain">
-          <b>${escapeHtml(r.title)}</b>
-          <span>${escapeHtml(r.subtitle)}</span>
-        </div>
-        <div class="rewardRight">
-          <div class="pts">${r.points} pkt</div>
-          <button class="btn small ${can ? "primary" : ""}" data-reward="${r.id}" ${can ? "" : "disabled"}>
-            ${can ? "Odbierz" : "Za mało"}
-          </button>
-        </div>
-      `;
-      el.rewardList.appendChild(row);
-    });
+  openingCardEl?.addEventListener("click", () => {
+    openingCardEl.classList.toggle("expanded");
+    const expanded = openingCardEl.classList.contains("expanded");
+    openHintEl.textContent = expanded
+      ? "Kliknij, aby ukryć godziny otwarcia"
+      : "Kliknij, aby zobaczyć godziny otwarcia";
+  });
 
-    el.rewardList.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-reward]");
-      if(!btn) return;
-      const id = btn.getAttribute("data-reward");
-      const r = REWARDS.find(x => x.id === id);
-      if(!r) return;
+  renderOpeningHours();
+  setInterval(renderOpeningHours, 60 * 1000);
 
-      if(!state.profile.loggedIn){
-        toast("Zaloguj się", "Do odbioru nagrody wymagane jest konto (Milk ID).", "fa-user");
-        go("account");
-        return;
-      }
-      if(state.points < r.points){
-        toast("Za mało punktów", "Zbierz więcej punktów, żeby odebrać nagrodę.", "fa-triangle-exclamation");
-        return;
-      }
-
-      // redeem locally (you can swap to /api/rewards/redeem later)
-      state.points -= r.points;
-      addHistory("Odebrano nagrodę", -r.points, r.title);
-      renderAll();
-      toast("Gotowe!", `Odebrano: ${r.title}`, "fa-gift");
-    }, { once:true });
-  }
-
-  /* -------------------------
-     Order: variants + cart
-  ------------------------- */
-  function priceLabel(item){
-    if(item.variants?.length){
-      const min = Math.min(...item.variants.map(v => Number(v.price)));
-      const max = Math.max(...item.variants.map(v => Number(v.price)));
-      return (min === max) ? `${min} PLN` : `${min}–${max} PLN`;
+  // ---------- One-time clear (opcjonalne) ----------
+  (function clearHistoryOnce() {
+    const didClear = store.get("didClearHistoryOnce", false);
+    if (!didClear) {
+      store.set("pointsHistory", []);
+      store.set("didClearHistoryOnce", true);
     }
-    if(typeof item.price === "number") return `${item.price} PLN`;
-    // string like "12/17" or "+12"
-    const p = String(item.price);
-    if(p.startsWith("+")){
-      const v = Number(p.replace("+",""));
-      return `+${v} PLN`;
+  })();
+
+  // ---------- Modal: code ----------
+  const loyaltyCodeEl = document.getElementById("loyaltyCode");
+  const showCodeBtn = document.getElementById("showCodeBtn");
+  const copyCodeBtn = document.getElementById("copyCodeBtn");
+  const codeModal = document.getElementById("codeModal");
+
+  function renderMilkIdModal() {
+    loyaltyCodeEl.textContent = getMilkId();
+  }
+
+  function openCodeModal() {
+    if (!requireLogin("Milk ID")) return;
+    renderMilkIdModal();
+    codeModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+  function closeCodeModal() {
+    codeModal.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+
+  showCodeBtn?.addEventListener("click", openCodeModal);
+  codeModal?.querySelectorAll("[data-close]")?.forEach((el) =>
+    el.addEventListener("click", closeCodeModal)
+  );
+  copyCodeBtn?.addEventListener("click", async () => {
+    const code = loyaltyCodeEl.textContent;
+    try {
+      await navigator.clipboard.writeText(code);
+      showToast("Kod skopiowany ✅");
+    } catch {
+      showToast("Nie udało się skopiować 🤏", true);
     }
-    if(p.includes("/")){
-      const parts = p.split("/").map(x => Number(String(x).replace(",", ".").trim())).filter(n => !Number.isNaN(n));
-      if(parts.length) return `${Math.min(...parts)}–${Math.max(...parts)} PLN`;
-    }
-    return `${p} PLN`;
-  }
+  });
 
-  function normalizeItems(){
-    // create stable keys and ensure categoryLabel fallback
-    return MENU.items.map((it, idx) => ({
-      ...it,
-      categoryLabel: it.categoryLabel || CAT_LABEL[it.category] || it.category,
-      _id: it._id || `${it.category}:${it.title}:${idx}`
-    }));
-  }
-  const MENU_ITEMS = normalizeItems();
+  // ---------- Points ----------
+  const pointsCountEl = document.getElementById("pointsCount");
+  const pointsProgressEl = document.getElementById("pointsProgress");
+  const historyEl = document.getElementById("pointsHistory");
 
-  function setActiveCategory(cat){
-    state.activeCategory = cat;
-    $$(".chip", el.orderCategories).forEach(c => c.classList.toggle("active", c.dataset.cat === cat));
-    renderMenuGrid();
-  }
+  function renderPoints() {
+    const user = getUser();
+    const pts = store.get("points", 0);
 
-  function renderMenuGrid(){
-    const cat = state.activeCategory;
-    const items = MENU_ITEMS.filter(i => i.category === cat);
+    pointsCountEl.textContent = user?.email ? pts : "—";
+    renderTopPill();
 
-    el.menuGrid.innerHTML = "";
-    if(items.length === 0){
-      el.menuGrid.innerHTML = `<div class="muted" style="font-size:12px;">Brak pozycji w tej kategorii.</div>`;
-      return;
-    }
+    const pct = user?.email ? Math.min(100, pts % 100) : 0;
+    pointsProgressEl.style.width = pct + "%";
 
-    items.forEach(item => {
-      const row = document.createElement("div");
-      row.className = "menuItem";
-      row.innerHTML = `
-        <div class="left">
-          <b>${escapeHtml(item.title)}</b>
-          <div class="desc">${escapeHtml((item.desc || item.tag || "").trim())}</div>
-        </div>
-        <div class="right">
-          <div class="price">${escapeHtml(priceLabel(item))}</div>
-          <button class="btn small primary" data-add="${escapeHtml(item._id)}">
-            <i class="fa-solid fa-plus"></i> Dodaj
-          </button>
-        </div>
-      `;
-      el.menuGrid.appendChild(row);
-    });
-  }
-
-  function cartKeyFor(itemId, variantLabel){
-    return `${itemId}::${variantLabel || ""}`;
-  }
-
-  function addToCart(item, variant=null){
-    const title = item.title;
-    const variantLabel = variant?.label || "";
-    const price = Number(variant?.price ?? item.price ?? 0);
-    const key = cartKeyFor(item._id, variantLabel);
-
-    let line = state.cart.find(x => x.key === key);
-    if(!line){
-      line = { key, itemId: item._id, title, variantLabel, price, qty: 0, category: item.category };
-      state.cart.push(line);
-    }
-    line.qty += 1;
-    if(line.qty > 99) line.qty = 99;
-    saveAll();
-    renderCartFab();
-    toast("Dodano do koszyka", variantLabel ? `${title} • ${variantLabel}` : title, "fa-basket-shopping");
-  }
-
-  function openVariantPicker(item){
-    // if no variants, add directly
-    if(!item.variants?.length){
-      addToCart(item, null);
-      return;
-    }
-
-    // Use cart modal as picker quick (simple prompt-like)
-    const opts = item.variants.map(v => `${v.label} — ${v.price} PLN`).join("\n");
-    const picked = prompt(`Wybierz wariant:\n${opts}\n\nWpisz dokładnie nazwę wariantu (np. "${item.variants[0].label}")`);
-    if(!picked) return;
-
-    const v = item.variants.find(x => String(x.label).toLowerCase().trim() === String(picked).toLowerCase().trim());
-    if(!v){
-      toast("Nie znaleziono wariantu", "Spróbuj ponownie i wpisz nazwę wariantu dokładnie.", "fa-triangle-exclamation");
-      return;
-    }
-    addToCart(item, v);
-  }
-
-  function cartTotals(){
-    const sum = (state.cart || []).reduce((a, l) => a + (Number(l.price)||0) * (Number(l.qty)||0), 0);
-    const qty = (state.cart || []).reduce((a, l) => a + (Number(l.qty)||0), 0);
-    return { sum, qty };
-  }
-
-  function renderCartFab(){
-    const { qty } = cartTotals();
-    el.cartBadge.textContent = String(qty);
-    el.cartFab.classList.toggle("hide", qty === 0 || state.activeNav !== "order");
-  }
-
-  function openCart(){
-    renderCartModal();
-    el.cartOverlay.classList.add("show");
-  }
-  function closeCart(){ el.cartOverlay.classList.remove("show"); }
-
-  function renderCartModal(){
-    el.cartList.innerHTML = "";
-    const lines = state.cart || [];
-    if(lines.length === 0){
-      el.cartList.innerHTML = `<div class="muted" style="font-size:12px;">Koszyk jest pusty.</div>`;
-    } else {
-      lines.forEach(line => {
-        const row = document.createElement("div");
-        row.className = "menuItem";
-        row.innerHTML = `
-          <div class="left">
-            <b>${escapeHtml(line.title)}</b>
-            <div class="desc">${escapeHtml(line.variantLabel || "—")}</div>
+    const hist = store.get("pointsHistory", []);
+    historyEl.innerHTML = user?.email
+      ? (hist.length
+          ? hist.map(h => `
+              <div style="padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.06)">
+                <b>${h.text}</b><div class="tiny">${h.date}</div>
+              </div>`).join("")
+          : `<div class="empty">
+              <div class="icon"><i class="fa-solid fa-clock"></i></div>
+              <div>
+                <b>Historia punktów jest pusta</b>
+                <div class="tiny">Punkty pojawią się po pierwszym naliczeniu.</div>
+              </div>
+            </div>`)
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się</b>
+            <div class="tiny">Aby zbierać punkty i używać Milk ID.</div>
           </div>
-          <div class="right" style="align-items:flex-end;">
-            <div class="price">${escapeHtml(line.price)} PLN</div>
-            <div class="row" style="gap:8px;">
-              <button class="btn small" data-dec="${escapeHtml(line.key)}"><i class="fa-solid fa-minus"></i></button>
-              <div class="pts">${line.qty}</div>
-              <button class="btn small" data-inc="${escapeHtml(line.key)}"><i class="fa-solid fa-plus"></i></button>
+        </div>`;
+  }
+
+  // ---------- Rewards (fallback lista) ----------
+  const rewardsFallback = [
+    { id: "shake_small", title: "Milkshake mały", cost: 80, icon: "fa-ice-cream", desc: "Dowolny smak" },
+    { id: "shake_big", title: "Milkshake duży", cost: 120, icon: "fa-glass-whiskey", desc: "Z dodatkami" },
+    { id: "dessert", title: "Dowolny deser", cost: 150, icon: "fa-cookie-bite", desc: "Z gabloty" },
+    { id: "breakfast", title: "Śniadanie", cost: 200, icon: "fa-egg", desc: "Na miejscu" },
+  ];
+  const rewardsListEl = document.getElementById("rewardsList");
+
+  function getRewardsFromStore() {
+    return store.get("rewardsCatalog", rewardsFallback);
+  }
+
+  function renderRewards() {
+    const user = getUser();
+    const pts = store.get("points", 0);
+
+    if (!user?.email) {
+      rewardsListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się, aby wymieniać nagrody</b>
+            <div class="tiny">Po zalogowaniu przypiszemy Milk ID do Twojego maila.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const rewards = getRewardsFromStore();
+    rewardsListEl.innerHTML = rewards.map((r) => {
+      const disabled = pts < r.cost;
+      return `
+        <div class="reward">
+          <div class="reward-left">
+            <div class="reward-ico"><i class="fa-solid ${r.icon || "fa-gift"}"></i></div>
+            <div>
+              <div class="reward-title">${r.title}</div>
+              <div class="tiny">${r.desc || ""}</div>
+              <div class="muted">Koszt: <b>${r.cost} pkt</b></div>
             </div>
           </div>
-        `;
-        el.cartList.appendChild(row);
+          <div style="text-align:right;min-width:88px">
+            <div style="font-weight:900">${r.cost} pkt</div>
+            <button class="btn btn-primary btn-small"
+              ${disabled ? "disabled style='opacity:.5;cursor:not-allowed'" : ""}
+              data-redeem="${r.id}">
+              Wymień
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    rewardsListEl.querySelectorAll("[data-redeem]").forEach((btn) => {
+      btn.addEventListener("click", () => redeemReward(btn.dataset.redeem));
+    });
+  }
+
+  async function redeemReward(rewardId) {
+    if (!requireLogin("wymiany nagród")) return;
+
+    const user = getUser();
+    const email = user.email;
+    const milkId = getMilkId();
+
+    try {
+      const res = await API.json("/api/rewards/redeem", {
+        method: "POST",
+        body: JSON.stringify({ email, milkId, rewardId }),
       });
+
+      if (typeof res?.points === "number") store.set("points", res.points);
+      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+
+      const code = res?.code || res?.rewardCode;
+      if (code) {
+        showToast("Nagroda wymieniona ✅");
+        alert("Kod do odbioru nagrody:\n\n" + code + "\n\nPokaż w lokalu.");
+      } else {
+        showToast("Nagroda wymieniona ✅");
+      }
+
+      renderPoints();
+      renderRewards();
+      return;
+    } catch (e) {
+      console.warn("redeem server failed -> local fallback", e);
     }
-    const { sum } = cartTotals();
-    el.cartTotal.textContent = `${sum.toFixed(0)} PLN`;
+
+    const rewards = getRewardsFromStore();
+    const r = rewards.find((x) => x.id === rewardId);
+    if (!r) return;
+
+    const pts = store.get("points", 0);
+    if (pts < r.cost) {
+      showToast("Masz za mało punktów 😅", true);
+      return;
+    }
+
+    store.set("points", pts - r.cost);
+    const hist = store.get("pointsHistory", []);
+    hist.unshift({ text: `Wymieniono: -${r.cost} pkt (${r.title})`, date: new Date().toLocaleString("pl-PL") });
+    store.set("pointsHistory", hist);
+
+    renderPoints();
+    renderRewards();
+    showToast(`Nagroda odebrana: ${r.title} 🎁`);
   }
 
-  function incLine(key){
-    const l = state.cart.find(x => x.key === key);
-    if(!l) return;
-    l.qty = clamp((l.qty||0) + 1, 1, 99);
-    saveAll();
-    renderCartModal();
-    renderCartFab();
-  }
-  function decLine(key){
-    const idx = state.cart.findIndex(x => x.key === key);
-    if(idx === -1) return;
-    const l = state.cart[idx];
-    l.qty = (l.qty||0) - 1;
-    if(l.qty <= 0) state.cart.splice(idx, 1);
-    saveAll();
-    renderCartModal();
-    renderCartFab();
+  // ---------- Profile helpers ----------
+  function getPersonal() {
+    const user = getUser();
+    const profile = store.get("profile", {});
+    return {
+      name: profile.name || user?.name || "",
+      phone: profile.phone || user?.phone || "",
+      email: profile.email || user?.email || "",
+    };
   }
 
-  function clearCart(){
-    state.cart = [];
-    saveAll();
-    renderCartModal();
-    renderCartFab();
-    toast("Koszyk wyczyszczony", "", "fa-trash");
+  function prefillPersonalUI() {
+    const p = getPersonal();
+    const nameInput = document.getElementById("personalName");
+    const phoneInput = document.getElementById("personalPhone");
+    const emailInput = document.getElementById("personalEmail");
+    if (nameInput && !nameInput.value) nameInput.value = p.name || "";
+    if (phoneInput && !phoneInput.value) phoneInput.value = p.phone || "";
+    if (emailInput && !emailInput.value) emailInput.value = p.email || "";
   }
 
-  function minPickupMinutes(){
-    const d = new Date();
-    const day = d.getDay(); // 0 sun..6 sat
-    // Mon-Thu 30min, Fri-Sun 45min (per your earlier rules)
-    // Mon(1) Tue(2) Wed(3) Thu(4)
-    if(day >= 1 && day <= 4) return 30;
+  function prefillReservationForm() {
+    const p = getPersonal();
+    const name = document.querySelector("#reservationForm input[name='name']");
+    const phone = document.querySelector("#reservationForm input[name='phone']");
+    if (name && !name.value && p.name) name.value = p.name;
+    if (phone && !phone.value && p.phone) phone.value = p.phone;
+  }
+
+  // ✅ Prefill checkout w zamówieniach
+  function prefillOrderCheckout() {
+    const p = getPersonal();
+    const nameEl = document.getElementById("orderCustomerName");
+    const phoneEl = document.getElementById("orderCustomerPhone");
+    if (nameEl && !nameEl.value && p.name) nameEl.value = p.name;
+    if (phoneEl && !phoneEl.value && p.phone) phoneEl.value = p.phone;
+  }
+
+  // ---------- Order time rules (Mon-Thu: 30min, Fri-Sun: 45min) ----------
+  const pickupTimeEl = document.getElementById("pickupTime");
+  const pickupRuleHintEl = document.getElementById("pickupRuleHint");
+
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function minutesToHHMM(mins){
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${pad2(h)}:${pad2(m)}`;
+  }
+  function ceilToQuarterMinutes(totalMins){
+    return Math.ceil(totalMins / 15) * 15;
+  }
+  function getLeadMinutesForToday(now = new Date()){
+    const d = now.getDay();
+    if (d >= 1 && d <= 4) return 30;
     return 45;
   }
-
-  function validatePickupTime(t){
-    if(!t) return { ok:false, msg:"Wybierz godzinę odbioru." };
-    const [hh, mm] = t.split(":").map(n=>parseInt(n,10));
-    if(Number.isNaN(hh) || Number.isNaN(mm)) return { ok:false, msg:"Nieprawidłowa godzina." };
-
-    const d = new Date();
-    const target = new Date(d);
-    target.setHours(hh, mm, 0, 0);
-
-    const minM = minPickupMinutes();
-    const minTarget = new Date(d.getTime() + minM*60000);
-    if(target < minTarget){
-      return { ok:false, msg:`Zbyt wcześnie. Minimalnie +${minM} min.` };
+  function computeMinPickupTime(now = new Date()){
+    const lead = getLeadMinutesForToday(now);
+    const nowM = now.getHours()*60 + now.getMinutes();
+    const base = ceilToQuarterMinutes(nowM);
+    const minM = base + lead;
+    return { minM, lead, baseM: base };
+  }
+  function renderPickupRuleHintAndMin(){
+    if (!pickupTimeEl || !pickupRuleHintEl) return;
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const hhmm = minutesToHHMM(minM);
+    pickupRuleHintEl.innerHTML = `Najwcześniej możesz ustawić odbiór na <b>${hhmm}</b> (minimalnie pełne ${lead} min).`;
+    if (!pickupTimeEl.value) {
+      pickupTimeEl.value = hhmm;
+    } else {
+      const chosen = toMinutes(pickupTimeEl.value);
+      if (chosen < minM) pickupTimeEl.value = hhmm;
     }
-    return { ok:true };
+  }
+  pickupTimeEl?.addEventListener("focus", renderPickupRuleHintAndMin);
+  pickupTimeEl?.addEventListener("change", () => {
+    const { minM } = computeMinPickupTime(new Date());
+    const chosen = pickupTimeEl.value ? toMinutes(pickupTimeEl.value) : null;
+    if (chosen !== null && chosen < minM) {
+      showToast("Godzina odbioru jest za wcześnie — ustaw późniejszą ⏰", true);
+      pickupTimeEl.value = minutesToHHMM(minM);
+    }
+  });
+
+  // ---------- Menu from menu.json ----------
+  const menuListEl = document.getElementById("menuList");
+  const menuHintEl = document.getElementById("menuHint");
+  let menuItems = []; // dynamicznie
+
+  // ✅ NOWE: Kategorie (stałe)
+  const CATEGORIES = [
+    "Kawa i herbata",
+    "Napoje i soki",
+    "Shakes",
+    "Desery",
+    "Tex Mex",
+    "Kanapki",
+    "Burgery",
+    "Śniadania",
+  ];
+  const categoriesBarEl = document.getElementById("categoriesBar");
+  let activeCategory = CATEGORIES[0];
+
+  function renderCategories(){
+    if (!categoriesBarEl) return;
+    categoriesBarEl.innerHTML = CATEGORIES.map(c => `
+      <button class="cat-chip ${c === activeCategory ? "active" : ""}" data-cat="${c}">
+        ${c}
+      </button>
+    `).join("");
+    categoriesBarEl.querySelectorAll("[data-cat]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeCategory = btn.dataset.cat;
+        renderCategories();
+        renderMenu();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
   }
 
-  async function checkout(){
-    const { sum, qty } = cartTotals();
-    if(qty === 0){
-      toast("Koszyk pusty", "Dodaj produkty do koszyka.", "fa-basket-shopping");
-      return;
-    }
+  function normalizeMenuJson(raw){
+    const arr =
+      Array.isArray(raw) ? raw :
+      Array.isArray(raw?.items) ? raw.items :
+      Array.isArray(raw?.menu) ? raw.menu :
+      Array.isArray(raw?.products) ? raw.products :
+      Array.isArray(raw?.data) ? raw.data :
+      [];
 
-    const name = (el.orderName.value || "").trim();
-    const phone = (el.orderPhone.value || "").trim();
-    const pickupTime = (el.orderPickupTime.value || "").trim();
-    const place = (el.orderPickupPlace.value || "Słupsk").trim();
-    const note = (el.orderNote.value || "").trim();
+    const safe = arr
+      .filter(Boolean)
+      .map((x, idx) => {
+        const id = x.id || x._id || x.sku || `m${idx+1}`;
+        const title = x.title || x.name || x.nazwa || "Pozycja";
+        const desc = x.desc || x.description || x.opis || "";
+        const priceRaw = x.price ?? x.cena ?? x.cost ?? 0;
+        const price = Number(String(priceRaw).replace(",", "."));
+        const icon = x.icon || x.fa || "fa-bag-shopping";
 
-    if(!name || name.length < 3){
-      toast("Uzupełnij dane", "Podaj imię i nazwisko.", "fa-triangle-exclamation");
-      return;
-    }
-    if(!phone || phone.length < 7){
-      toast("Uzupełnij dane", "Podaj numer telefonu.", "fa-triangle-exclamation");
-      return;
-    }
-    if(place === "Rowy"){
-      toast("Rowy niedostępne", "Na razie odbiór dostępny tylko w Słupsku.", "fa-triangle-exclamation");
-      return;
-    }
+        // ✅ NOWE: kategoria
+        const category = x.category || x.kategoria || x.cat || x.group || "Inne";
 
-    const vt = validatePickupTime(pickupTime);
-    if(!vt.ok){
-      toast("Godzina odbioru", vt.msg, "fa-clock");
-      return;
-    }
+        return { id, title, desc, price: Number.isFinite(price) ? price : 0, icon, category };
+      });
 
-    const payload = {
-      createdAt: nowISO(),
-      customer: { name, phone, email: state.profile.loggedIn ? state.profile.email : "" },
-      pickup: { time: pickupTime, place, note },
-      items: (state.cart || []).map(l => ({
-        title: l.title,
-        variant: l.variantLabel || "",
-        price: l.price,
-        qty: l.qty
-      })),
-      total: sum,
-      currency: MENU.currency || "PLN"
-    };
+    return safe;
+  }
 
-    // Try server API (optional). If fails, keep locally.
-    let sent = false;
+  async function loadMenuFromJson(){
     try{
-      const res = await fetch("/api/orders", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      if(res.ok) sent = true;
-    }catch{}
+      menuHintEl.textContent = "Ładuję menu…";
+      const raw = await API.json("menu.json", { method: "GET", headers: {} });
+      const normalized = normalizeMenuJson(raw);
 
-    if(sent){
-      toast("Zamówienie wysłane", `Suma: ${sum.toFixed(0)} PLN`, "fa-check");
-    } else {
-      // local fallback
-      const localOrders = LS.get("milk_orders_local", []);
-      localOrders.unshift({ id: crypto?.randomUUID?.() ?? String(Math.random()).slice(2), ...payload, _local:true });
-      LS.set("milk_orders_local", localOrders);
-      toast("Zapisano lokalnie", "Brak połączenia z serwerem — zamówienie zapisane na urządzeniu.", "fa-wifi");
-    }
-
-    // Optional: award points based on order value (simple rule)
-    // If you already have your own points rules on backend, you can remove this.
-    const earned = Math.max(0, Math.floor(sum / 10)); // 1 pkt per 10 PLN
-    if(earned > 0){
-      state.points += earned;
-      addHistory("Punkty za zamówienie", +earned, `Zamówienie: ${sum.toFixed(0)} PLN`);
-    }
-
-    clearCart();
-    closeCart();
-    renderAll();
-  }
-
-  /* -------------------------
-     Reservations
-  ------------------------- */
-  async function submitReservation(){
-    if(!state.profile.loggedIn){
-      toast("Zaloguj się", "Rezerwacje wymagają konta (Milk ID).", "fa-user");
-      go("account");
-      return;
-    }
-
-    const name = (el.resName.value || "").trim();
-    const phone = (el.resPhone.value || "").trim();
-    const date = el.resDate.value;
-    const time = el.resTime.value;
-    const people = parseInt(el.resPeople.value || "0", 10);
-    const place = el.resPlace.value || "Słupsk";
-    const note = (el.resNote.value || "").trim();
-
-    if(!name || name.length < 3) return toast("Uzupełnij dane", "Podaj imię i nazwisko.", "fa-triangle-exclamation");
-    if(!phone || phone.length < 7) return toast("Uzupełnij dane", "Podaj numer telefonu.", "fa-triangle-exclamation");
-    if(!date) return toast("Data", "Wybierz datę.", "fa-calendar");
-    if(!time) return toast("Godzina", "Wybierz godzinę.", "fa-clock");
-    if(!people || people < 1) return toast("Liczba osób", "Wpisz liczbę osób.", "fa-users");
-
-    const payload = {
-      createdAt: nowISO(),
-      name,
-      phone,
-      date,
-      time,
-      people,
-      place,
-      note,
-      email: state.profile.email,
-      milkId: ensureMilkId()
-    };
-
-    let sent = false;
-    try{
-      const res = await fetch("/api/rezerwacje", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      if(res.ok) sent = true;
-    }catch{}
-
-    if(sent){
-      toast("Rezerwacja wysłana", `${date} ${time} • ${people} os.`, "fa-calendar-check");
-    } else {
-      state.reservations.unshift({ id: crypto?.randomUUID?.() ?? String(Math.random()).slice(2), ...payload, _local:true });
-      saveAll();
-      toast("Zapisano lokalnie", "Brak połączenia z serwerem — rezerwacja zapisana na urządzeniu.", "fa-wifi");
-    }
-
-    // clear form
-    el.resNote.value = "";
-    renderReservations();
-  }
-
-  function renderReservations(){
-    const list = state.reservations || [];
-    el.resCount.textContent = String(list.length);
-    el.resList.innerHTML = "";
-    if(list.length === 0){
-      el.resList.innerHTML = `<div class="muted" style="font-size:12px;">Brak rezerwacji.</div>`;
-      return;
-    }
-    list.slice(0, 20).forEach(r => {
-      const box = document.createElement("div");
-      box.className = "reward";
-      box.innerHTML = `
-        <div class="rewardIcon"><i class="fa-solid fa-calendar"></i></div>
-        <div class="rewardMain">
-          <b>${escapeHtml(r.date)} ${escapeHtml(r.time)} • ${escapeHtml(r.place || "—")}</b>
-          <span>${escapeHtml(r.people)} os. • ${escapeHtml(r.name)} ${r._local ? "• (lokalnie)" : ""}</span>
-        </div>
-        <div class="rewardRight">
-          <button class="btn small" data-res-del="${escapeHtml(r.id)}"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      `;
-      el.resList.appendChild(box);
-    });
-  }
-
-  function deleteReservationLocal(id){
-    const idx = (state.reservations || []).findIndex(x => x.id === id);
-    if(idx !== -1){
-      state.reservations.splice(idx, 1);
-      saveAll();
-      renderReservations();
-      toast("Usunięto", "Rezerwacja usunięta lokalnie.", "fa-trash");
-    }
-  }
-
-  /* -------------------------
-     Account (mock login)
-  ------------------------- */
-  function renderAccount(){
-    el.accHint.textContent = state.profile.loggedIn
-      ? `Zalogowano jako: ${state.profile.email}`
-      : "Zaloguj się, aby mieć Milk ID";
-
-    el.accountBox.innerHTML = "";
-
-    if(!state.profile.loggedIn){
-      const b1 = document.createElement("button");
-      b1.className = "btn primary full";
-      b1.id = "btnOpenLogin";
-      b1.innerHTML = `<i class="fa-brands fa-google"></i> Zaloguj (Google)`;
-      b1.onclick = () => quickLoginGoogle();
-
-      const b2 = document.createElement("button");
-      b2.className = "btn ghost full";
-      b2.id = "btnOpenEmailLogin";
-      b2.innerHTML = `<i class="fa-solid fa-envelope"></i> Zaloguj e-mail`;
-      b2.onclick = () => quickLoginEmail();
-
-      el.accountBox.appendChild(b1);
-      el.accountBox.appendChild(b2);
-    } else {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.boxShadow = "none";
-      card.innerHTML = `
-        <div class="cardPad">
-          <div class="row" style="justify-content:space-between; align-items:flex-start;">
-            <div>
-              <b style="font-size:13px;">Profil</b><br>
-              <span class="muted" style="font-size:12px;">${escapeHtml(state.profile.email)}</span>
-            </div>
-            <button class="btn small" id="btnShowMilkId2"><i class="fa-solid fa-id-card"></i> Milk ID</button>
-          </div>
-          <div class="sep"></div>
-          <div class="grid2">
-            <input class="input" id="profName" placeholder="Imię (opcjonalnie)" value="${escapeHtml(state.profile.name || "")}">
-            <button class="btn primary" id="profSave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
-          </div>
-        </div>
-      `;
-      el.accountBox.appendChild(card);
-
-      $("#btnShowMilkId2").onclick = openMilkIdModal;
-      $("#profSave").onclick = () => {
-        state.profile.name = ($("#profName").value || "").trim();
-        saveAll();
-        toast("Zapisano", "Dane profilu zapisane.", "fa-check");
-      };
-    }
-  }
-
-  function quickLoginGoogle(){
-    const email = prompt("Podaj e-mail (Google):");
-    if(!email) return;
-    state.profile.loggedIn = true;
-    state.profile.email = String(email).trim();
-    if(!state.profile.name) state.profile.name = "";
-    ensureMilkId();
-    saveAll();
-    toast("Zalogowano", state.profile.email, "fa-user-check");
-    renderAll();
-  }
-
-  function quickLoginEmail(){
-    const email = prompt("Podaj e-mail:");
-    if(!email) return;
-    state.profile.loggedIn = true;
-    state.profile.email = String(email).trim();
-    ensureMilkId();
-    saveAll();
-    toast("Zalogowano", state.profile.email, "fa-user-check");
-    renderAll();
-  }
-
-  function logout(){
-    state.profile = { loggedIn:false, email:"", name:"" };
-    saveAll();
-    toast("Wylogowano", "", "fa-right-from-bracket");
-    renderAll();
-  }
-
-  /* -------------------------
-     Navigation
-  ------------------------- */
-  function go(name){
-    state.activeNav = name;
-    Object.entries(el.pages).forEach(([k, node]) => node.classList.toggle("show", k === name));
-    el.navBtns.forEach(b => b.classList.toggle("active", b.dataset.nav === name));
-    renderCartFab();
-    // small UX
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  /* -------------------------
-     Install guide (PWA)
-  ------------------------- */
-  function setupInstall(){
-    // beforeinstallprompt (Android / Chromium)
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      state.install.deferredPrompt = e;
-      el.installBtn.classList.remove("hide");
-    });
-
-    // show install overlay if not standalone (simple heuristic)
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-    if(!isStandalone){
-      // do not force show; leave hidden unless user triggers (you can uncomment to auto show once)
-      // if(!LS.get("milk_install_seen", false)){
-      //   LS.set("milk_install_seen", true);
-      //   el.installOverlay.classList.add("show");
-      // }
-    }
-  }
-
-  function setInstallPlatform(p){
-    state.install.platform = p;
-    el.installAndroid.classList.toggle("primary", p === "android");
-    el.installIos.classList.toggle("primary", p === "ios");
-    el.installSteps.innerHTML = "";
-
-    if(p === "ios"){
-      el.installBtn.classList.add("hide");
-      el.installSteps.innerHTML = `
-        <div class="step"><i class="fa-solid fa-share"></i> Otwórz „Udostępnij” w Safari</div>
-        <div class="step"><i class="fa-solid fa-square-plus"></i> Wybierz „Dodaj do ekranu początkowego”</div>
-        <div class="step"><i class="fa-solid fa-check"></i> Potwierdź</div>
-      `;
-    } else {
-      // android
-      el.installSteps.innerHTML = `
-        <div class="step"><i class="fa-solid fa-ellipsis-vertical"></i> Otwórz menu przeglądarki</div>
-        <div class="step"><i class="fa-solid fa-download"></i> Kliknij „Zainstaluj aplikację”</div>
-        <div class="step"><i class="fa-solid fa-check"></i> Potwierdź instalację</div>
-      `;
-      if(state.install.deferredPrompt) el.installBtn.classList.remove("hide");
-    }
-  }
-
-  async function doInstall(){
-    if(!state.install.deferredPrompt){
-      toast("Instalacja", "Twoja przeglądarka nie udostępniła przycisku instalacji.", "fa-circle-info");
-      return;
-    }
-    state.install.deferredPrompt.prompt();
-    try{ await state.install.deferredPrompt.userChoice; }catch{}
-    state.install.deferredPrompt = null;
-    el.installBtn.classList.add("hide");
-    toast("Gotowe", "Jeśli zaakceptowałeś, aplikacja pojawi się na ekranie głównym.", "fa-check");
-  }
-
-  /* -------------------------
-     Events wiring
-  ------------------------- */
-  function wire(){
-    // nav
-    el.navBtns.forEach(btn => {
-      btn.addEventListener("click", () => go(btn.dataset.nav));
-    });
-    // quick nav buttons in points page
-    $$("[data-nav]").forEach(b => {
-      b.addEventListener("click", () => {
-        const target = b.getAttribute("data-nav");
-        go(target === "res" ? "res" : target);
-      });
-    });
-
-    // hours toggle
-    el.hoursToggle.addEventListener("click", () => {
-      el.hoursList.classList.toggle("show");
-    });
-
-    // milk id access
-    el.pointsPill.addEventListener("click", openMilkIdModal);
-    el.btnShowMilkId.addEventListener("click", openMilkIdModal);
-    el.milkIdClose.addEventListener("click", closeMilkIdModal);
-    el.milkIdGoLogin.addEventListener("click", () => { closeMilkIdModal(); go("account"); });
-    el.milkIdOverlay.addEventListener("click", (e) => { if(e.target === el.milkIdOverlay) closeMilkIdModal(); });
-    el.milkIdCopy.addEventListener("click", async () => {
-      const v = el.milkIdValue.value || "";
-      if(!v || v.includes("-")) return;
-      try{
-        await navigator.clipboard.writeText(v);
-        toast("Skopiowano", "Milk ID w schowku.", "fa-copy");
-      }catch{
-        toast("Nie udało się", "Przytrzymaj i skopiuj ręcznie.", "fa-triangle-exclamation");
+      if (!normalized.length) {
+        menuItems = [];
+        menuHintEl.textContent = "Brak pozycji w menu.json";
+        renderMenu();
+        return;
       }
-    });
 
-    // account shortcuts
-    el.btnLogin.addEventListener("click", () => go("account"));
-    el.btnOpenEatmi.addEventListener("click", () => {
-      window.open("https://eatmi.pl", "_blank");
-    });
+      menuItems = normalized;
+      store.set("menu_cache", menuItems);
+      menuHintEl.textContent = `Menu załadowane (${menuItems.length} pozycji)`;
+      renderMenu();
+      renderCart();
+    } catch(e){
+      console.warn("menu.json load failed", e);
+      const cached = store.get("menu_cache", []);
+      if (cached?.length) {
+        menuItems = cached;
+        menuHintEl.textContent = "Nie udało się pobrać menu.json — używam ostatniego menu z cache ⚠️";
+        renderMenu();
+        renderCart();
+      } else {
+        menuItems = [];
+        menuHintEl.textContent = "Nie udało się pobrać menu.json ⚠️";
+        menuListEl.innerHTML = `
+          <div class="empty">
+            <div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+              <b>Menu niedostępne</b>
+              <div class="tiny">Sprawdź czy plik <b>menu.json</b> jest obok <b>app.html</b>.</div>
+            </div>
+          </div>`;
+      }
+    }
+  }
 
-    // order categories
-    el.orderCategories.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if(!chip) return;
-      setActiveCategory(chip.dataset.cat);
-    });
+  // ---------- Order & pickup ----------
+  const cartListEl = document.getElementById("cartList");
+  const cartTotalEl = document.getElementById("cartTotal");
+  const submitOrderBtn = document.getElementById("submitOrderBtn");
+  const ordersListEl = document.getElementById("ordersList");
 
-    // add to cart from menu grid
-    el.menuGrid.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-add]");
-      if(!btn) return;
-      const id = btn.getAttribute("data-add");
-      const item = MENU_ITEMS.find(x => x._id === id);
-      if(!item) return;
-      openVariantPicker(item);
-    });
+  function getCart() { return store.get("orderCart", []); }
+  function setCart(c) { store.set("orderCart", c); }
 
-    // cart fab
-    el.cartFab.addEventListener("click", openCart);
+  function addToCart(id) {
+    if (!requireLogin("zamówień")) return;
+    const item = menuItems.find((x) => x.id === id);
+    if (!item) return;
+    const cart = getCart();
+    const existing = cart.find((c) => c.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ id, qty: 1 });
+    setCart(cart);
+    renderCart();
+    showToast(`Dodano: ${item.title}`);
+  }
 
-    // cart modal interactions
-    el.cartClose.addEventListener("click", closeCart);
-    el.cartOverlay.addEventListener("click", (e) => { if(e.target === el.cartOverlay) closeCart(); });
-    el.cartList.addEventListener("click", (e) => {
-      const inc = e.target.closest("[data-inc]");
-      const dec = e.target.closest("[data-dec]");
-      if(inc) return incLine(inc.getAttribute("data-inc"));
-      if(dec) return decLine(dec.getAttribute("data-dec"));
-    });
-    el.cartClear.addEventListener("click", clearCart);
-    el.cartCheckout.addEventListener("click", checkout);
+  function changeQty(id, delta) {
+    const cart = getCart();
+    const line = cart.find((c) => c.id === id);
+    if (!line) return;
+    line.qty += delta;
+    if (line.qty <= 0) {
+      const idx = cart.findIndex((c) => c.id === id);
+      cart.splice(idx, 1);
+    }
+    setCart(cart);
+    renderCart();
+  }
 
-    // order info
-    el.btnOrderInfo.addEventListener("click", () => {
-      const minM = minPickupMinutes();
-      toast("Info", `Minimalny czas przygotowania: ${minM} min. Odbiór: Słupsk.`, "fa-circle-info");
-    });
+  // ✅ NOWE: render menu tylko dla aktywnej kategorii
+  function renderMenu() {
+    if (!menuItems.length) {
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-utensils"></i></div>
+          <div>
+            <b>Brak menu</b>
+            <div class="tiny">Dodaj pozycje do <b>menu.json</b>, aby wyświetlić menu.</div>
+          </div>
+        </div>`;
+      return;
+    }
 
-    // reservations
-    el.btnResSubmit.addEventListener("click", submitReservation);
-    el.resList.addEventListener("click", (e) => {
-      const del = e.target.closest("[data-res-del]");
-      if(!del) return;
-      deleteReservationLocal(del.getAttribute("data-res-del"));
-    });
+    renderCategories();
 
-    // account login buttons
-    el.btnOpenLogin?.addEventListener("click", quickLoginGoogle);
-    el.btnOpenEmailLogin?.addEventListener("click", quickLoginEmail);
+    const list = menuItems.filter(m => (m.category || "Inne") === activeCategory);
 
-    // settings (simple toasts)
-    el.btnSettingsPersonal.addEventListener("click", () => toast("Dane osobowe", "Edytuj dane w profilu (Konto).", "fa-user-gear"));
-    el.btnSettingsLang.addEventListener("click", () => toast("Język", "PL (domyślnie).", "fa-language"));
-    el.btnSettingsHelp.addEventListener("click", () => toast("Pomoc", "Napisz do obsługi lub pokaż Milk ID w barze.", "fa-circle-question"));
-    el.btnSettingsAbout.addEventListener("click", () => toast("Milk", "Wersja PWA • tryb offline dla koszyka i rezerwacji.", "fa-circle-info"));
+    if (!list.length){
+      menuListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <b>Brak produktów w tej kategorii</b>
+            <div class="tiny">Dodaj produkty do: <b>${activeCategory}</b> w <b>menu.json</b>.</div>
+          </div>
+        </div>`;
+      return;
+    }
 
-    // logout
-    el.btnLogout.addEventListener("click", logout);
+    menuListEl.innerHTML = list.map((m) => `
+      <div class="menu-item">
+        <div class="menu-left">
+          <div class="menu-ico"><i class="fa-solid ${m.icon}"></i></div>
+          <div>
+            <div class="menu-title">${m.title}</div>
+            <div class="menu-desc">${m.desc || ""}</div>
+          </div>
+        </div>
+        <div style="text-align:right;min-width:88px">
+          <div class="menu-price">${m.price} zł</div>
+          <button class="btn btn-primary btn-small" data-add="${m.id}">Dodaj</button>
+        </div>
+      </div>
+    `).join("");
 
-    // install guide events
-    el.installClose.addEventListener("click", () => el.installOverlay.classList.remove("show"));
-    el.installAndroid.addEventListener("click", () => setInstallPlatform("android"));
-    el.installIos.addEventListener("click", () => setInstallPlatform("ios"));
-    el.installBtn.addEventListener("click", doInstall);
-
-    // optional: open install overlay via long press logo
-    $(".logo")?.addEventListener("dblclick", () => {
-      el.installOverlay.classList.add("show");
-      setInstallPlatform("android");
+    menuListEl.querySelectorAll("[data-add]").forEach((btn) => {
+      btn.addEventListener("click", () => addToCart(btn.dataset.add));
     });
   }
 
-  /* -------------------------
-     Render all
-  ------------------------- */
-  function renderAll(){
-    renderHours();
+  // ✅ NOWE: FAB podsumowania
+  const orderFab = document.getElementById("orderSummaryFab");
+  const fabItemsEl = document.getElementById("fabItems");
+  const fabTotalEl = document.getElementById("fabTotal");
+
+  function calcCartSummary(){
+    const cart = getCart();
+    let itemsCount = 0;
+    let total = 0;
+
+    cart.forEach(c => {
+      const m = menuItems.find(x => x.id === c.id);
+      if (!m) return;
+      itemsCount += c.qty;
+      total += (m.price * c.qty);
+    });
+
+    return { itemsCount, total };
+  }
+
+  function renderOrderFab(){
+    if (!orderFab) return;
+
+    const user = getUser();
+    const cart = getCart();
+    const visible = !!user?.email && cart.length && tabs.order.classList.contains("active");
+
+    if (!visible){
+      orderFab.style.display = "none";
+      return;
+    }
+
+    const { itemsCount, total } = calcCartSummary();
+    fabItemsEl.textContent = `${itemsCount} szt.`;
+    fabTotalEl.textContent = `${total} zł`;
+    orderFab.style.display = "flex";
+  }
+
+  orderFab?.addEventListener("click", () => {
+    const cartCard = cartListEl?.closest(".card");
+    cartCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  function renderCart() {
+    const user = getUser();
+    const cart = getCart();
+
+    if (!user?.email) {
+      cartListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <b>Zaloguj się, aby składać zamówienia</b>
+            <div class="tiny">Po zalogowaniu możesz „Zamów i odbierz”.</div>
+          </div>
+        </div>`;
+      cartTotalEl.textContent = "0 zł";
+      submitOrderBtn.disabled = true;
+      renderOrderFab();
+      return;
+    }
+
+    if (!cart.length) {
+      cartListEl.innerHTML = `
+        <div class="empty">
+          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div>
+            <b>Koszyk jest pusty</b>
+            <div class="tiny">Dodaj coś z menu.</div>
+          </div>
+        </div>`;
+      cartTotalEl.textContent = "0 zł";
+      submitOrderBtn.disabled = true;
+      renderOrderFab();
+      return;
+    }
+
+    submitOrderBtn.disabled = false;
+
+    let total = 0;
+    cartListEl.innerHTML = cart.map((c) => {
+      const m = menuItems.find((x) => x.id === c.id);
+      if (!m) return "";
+      const lineTotal = m.price * c.qty;
+      total += lineTotal;
+      return `
+        <div class="cart-line">
+          <div>
+            <b>${m.title}</b>
+            <div class="tiny">${m.price} zł x ${c.qty} = ${lineTotal} zł</div>
+          </div>
+          <div class="cart-actions">
+            <button class="qty-btn" data-qty="${c.id}" data-d="-1">−</button>
+            <b>${c.qty}</b>
+            <button class="qty-btn" data-qty="${c.id}" data-d="1">+</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    cartTotalEl.textContent = total + " zł";
+
+    cartListEl.querySelectorAll("[data-qty]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.qty;
+        const d = Number(btn.dataset.d);
+        changeQty(id, d);
+      });
+    });
+
+    renderOrderFab();
+  }
+
+  function cleanPhone(phone){
+    return String(phone || "").trim();
+  }
+  function validatePhoneBasic(phone){
+    const p = cleanPhone(phone);
+    const digits = p.replace(/\D/g, "");
+    return digits.length >= 7;
+  }
+
+  async function submitOrder() {
+    if (!requireLogin("zamówień")) return;
+
+    const cart = getCart();
+    if (!cart.length) {
+      showToast("Koszyk pusty 😅", true);
+      return;
+    }
+
+    const name = (document.getElementById("orderCustomerName")?.value || "").trim();
+    const phone = (document.getElementById("orderCustomerPhone")?.value || "").trim();
+    const pickupTime = document.getElementById("pickupTime").value;
+    const pickupLocation = document.getElementById("pickupLocation").value;
+    const notes = document.getElementById("orderNotes").value;
+
+    if (!name) { showToast("Podaj imię i nazwisko ✍️", true); return; }
+    if (!phone || !validatePhoneBasic(phone)) { showToast("Podaj poprawny numer telefonu 📞", true); return; }
+
+    if (String(pickupLocation).toLowerCase() === "rowy") {
+      showToast("Rowy jest chwilowo niedostępne.", true);
+      return;
+    }
+
+    if (!pickupTime) {
+      showToast("Ustaw godzinę odbioru ⏰", true);
+      return;
+    }
+
+    const { minM, lead } = computeMinPickupTime(new Date());
+    const chosenM = toMinutes(pickupTime);
+    if (chosenM < minM) {
+      showToast(`Za wcześnie. Minimalnie pełne ${lead} min — ustaw później.`, true);
+      document.getElementById("pickupTime").value = minutesToHHMM(minM);
+      renderPickupRuleHintAndMin();
+      return;
+    }
+
+    const items = cart.map((c) => {
+      const m = menuItems.find((x) => x.id === c.id);
+      return { title: m?.title || "Pozycja", qty: c.qty, price: Number(m?.price || 0) };
+    });
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+    const user = getUser();
+    const milkId = getMilkId();
+
+    const profile = store.get("profile", {});
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (!profile.email) profile.email = user?.email || "";
+    store.set("profile", profile);
+
+    const payload = {
+      source: "app",
+      email: user?.email || "",
+      milkId,
+      customerName: name,
+      customerPhone: phone,
+      pickupTime,
+      pickupLocation,
+      notes: notes || "",
+      items,
+      total,
+      status: "Przyjęte",
+      createdAt: new Date().toISOString(),
+      payment: "on_pickup",
+    };
+
+    try {
+      await API.json("/api/orders", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      setCart([]);
+      document.getElementById("orderNotes").value = "";
+      renderCart();
+      showToast("Zamówienie wysłane ✅");
+      await refreshOrdersFromServer();
+      openTab("order");
+    } catch (e) {
+      const local = store.get("orders_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("orders_local", local);
+
+      setCart([]);
+      renderCart();
+
+      showToast("Zamówienie zapisane lokalnie (brak endpointu) ⚠️", true);
+      await refreshOrdersFromServer();
+    }
+  }
+
+  submitOrderBtn?.addEventListener("click", submitOrder);
+
+  async function refreshOrdersFromServer() {
+    const user = getUser();
+    if (!user?.email) {
+      renderOrdersUI([], false);
+      return;
+    }
+
+    try {
+      const data = await API.getMy("/api/orders/my", user.email);
+      const orders = Array.isArray(data) ? data : (data?.orders || []);
+      renderOrdersUI(orders, false);
+    } catch {
+      const local = store.get("orders_local", []);
+      renderOrdersUI(local, true);
+    }
+  }
+
+  function renderOrdersUI(orders, isLocal = false) {
+    ordersListEl.innerHTML = orders.length
+      ? orders.map((o) => `
+          <div class="res-item">
+            <b>${(o.pickupLocation || "—")} • ${(o.pickupTime || "—")}</b>
+            <div class="tiny">Złożono: ${o.date || (o.createdAt ? new Date(o.createdAt).toLocaleString("pl-PL") : "—")}</div>
+            <div class="tiny">Status: <b>${o.status || "Przyjęte"}</b>${isLocal ? " (lokalnie)" : ""}</div>
+            <div class="tiny">Dane: <b>${o.customerName || "—"}</b> • ${o.customerPhone || "—"}</div>
+            <div style="margin-top:6px">
+              ${(o.items || []).map((i) => `• ${i.qty}x ${i.title}`).join("<br>")}
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;justify-content:space-between;font-weight:900">
+              <span>Razem</span><span>${o.total ?? 0} zł</span>
+            </div>
+            <div class="tiny" style="margin-top:4px">
+              Płatność na miejscu przy odbiorze.
+            </div>
+          </div>
+        `).join("")
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div>
+            <b>Brak zamówień</b>
+            <div class="tiny">Twoje zamówienia pojawią się tutaj.</div>
+          </div>
+        </div>`;
+  }
+
+  // ---------- Reservations ----------
+  const resForm = document.getElementById("reservationForm");
+  const resListEl = document.getElementById("reservationsList");
+
+  async function refreshReservationsFromServer() {
+    const user = getUser();
+    if (!user?.email) {
+      renderReservationsUI([], false);
+      return;
+    }
+
+    try {
+      const data = await API.getMy("/api/rezerwacje/my", user.email);
+      const list = Array.isArray(data) ? data : (data?.reservations || data?.list || []);
+      renderReservationsUI(list, false);
+      return;
+    } catch {}
+
+    try {
+      const all = await API.json("/api/rezerwacje");
+      const milkId = getMilkId();
+      const filtered = (Array.isArray(all) ? all : []).filter(r => {
+        const re = String(r.email || "").toLowerCase();
+        const rm = String(r.milkId || "");
+        return (re && re === user.email.toLowerCase()) || (rm && rm === milkId);
+      });
+      renderReservationsUI(filtered, false);
+    } catch {
+      const local = store.get("reservations_local", []);
+      renderReservationsUI(local, true);
+    }
+  }
+
+  function renderReservationsUI(list, isLocal = false) {
+    resListEl.innerHTML = list.length
+      ? list.map((r) => `
+          <div class="res-item">
+            <b>${r.date} • ${r.time}</b>
+            <div>${r.guests} os. • ${r.room}</div>
+            <div class="tiny">${r.name}, ${r.phone}</div>
+            ${r.notes ? `<div class="tiny">Uwagi: ${r.notes}</div>` : ""}
+            <div class="divider"></div>
+            <div class="res-actions">
+              ${isLocal ? `<button class="btn btn-ghost btn-small" data-del-local="${r._id || r.id}">Usuń</button>` : ``}
+            </div>
+          </div>
+        `).join("")
+      : `<div class="empty">
+          <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div>
+            <b>Brak rezerwacji</b>
+            <div class="tiny">Zarezerwuj stolik — zajmie to chwilkę.</div>
+          </div>
+        </div>`;
+
+    resListEl.querySelectorAll("[data-del-local]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.delLocal;
+        const newList = store.get("reservations_local", []).filter((x) => (x._id || x.id) !== id);
+        store.set("reservations_local", newList);
+        refreshReservationsFromServer();
+        showToast("Rezerwacja usunięta");
+      });
+    });
+  }
+
+  resForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!requireLogin("rezerwacji")) return;
+
+    const fd = new FormData(resForm);
+    const data = Object.fromEntries(fd.entries());
+
+    if (!data.name || !data.phone || !data.date || !data.time || !data.guests || !data.room) {
+      showToast("Uzupełnij wszystkie pola", true);
+      return;
+    }
+
+    const user = getUser();
+    const milkId = getMilkId();
+
+    const payload = {
+      name: String(data.name),
+      phone: String(data.phone),
+      date: String(data.date),
+      time: String(data.time),
+      guests: String(data.guests),
+      room: String(data.room),
+      notes: String(data.notes || ""),
+      email: String(user.email || ""),
+      milkId: String(milkId || ""),
+      source: "app",
+    };
+
+    try {
+      await API.json("/api/rezerwacje", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      const local = store.get("reservations_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("reservations_local", local);
+
+      resForm.reset();
+      prefillReservationForm();
+      showToast("Rezerwacja wysłana 🧡");
+      await refreshReservationsFromServer();
+      openTab("res");
+    } catch (err) {
+      const local = store.get("reservations_local", []);
+      local.unshift({ ...payload, _id: crypto.randomUUID() });
+      store.set("reservations_local", local);
+
+      resForm.reset();
+      prefillReservationForm();
+      showToast("Rezerwacja zapisana lokalnie (brak endpointu) ⚠️", true);
+      await refreshReservationsFromServer();
+    }
+  });
+
+  (function () {
+    if (!resForm) return;
+    const dateInput = resForm.querySelector("input[name='date']");
+    if (!dateInput) return;
+    dateInput.min = new Date().toISOString().split("T")[0];
+  })();
+
+  // ---------- Account / Auth ----------
+  const loggedOutEl = document.getElementById("accountLoggedOut");
+  const loggedInEl = document.getElementById("accountLoggedIn");
+  const avatarEl = document.getElementById("avatar");
+  const accNameEl = document.getElementById("accName");
+  const accEmailEl = document.getElementById("accEmail");
+
+  function renderAccount() {
+    const user = getUser();
+    const isLogged = !!user?.email;
+
+    loggedOutEl.style.display = isLogged ? "none" : "flex";
+    loggedInEl.style.display = isLogged ? "flex" : "none";
+
+    if (isLogged) {
+      const profile = getPersonal();
+      const initials = (profile.name || user.name || "Milk User")
+        .split(" ")
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
+      avatarEl.textContent = initials || "MK";
+      accNameEl.textContent = profile.name || user.name || "Użytkownik";
+      accEmailEl.textContent = profile.email || user.email || "";
+    }
+
     renderPoints();
-    renderHistory();
     renderRewards();
-    renderMenuGrid();
-    renderCartFab();
-    renderReservations();
+    renderCart();
+    prefillPersonalUI();
+    prefillReservationForm();
+    prefillOrderCheckout();
+    renderPickupRuleHintAndMin();
+    renderOrderFab();
+  }
+
+  <!-- ✅ CZĘŚĆ 2/2 — wklej w miejsce komentarza:
+     // --- CZĘŚĆ 2/2 będzie kontynuacją... (czyli na samym końcu <script> w części 1)
+-->
+
+  // ---------- Login / Logout ----------
+  const loginGoogleBtn = document.getElementById("loginGoogle");
+  const loginEmailForm = document.getElementById("loginEmailForm");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  async function loginWithEmail(email, password = "") {
+    email = String(email || "").trim().toLowerCase();
+    if (!email) {
+      showToast("Podaj email", true);
+      return;
+    }
+
+    // spróbuj backend
+    try {
+      const res = await API.json("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const user = {
+        email,
+        name: res?.name || res?.user?.name || store.get("profile", {})?.name || "",
+        phone: res?.phone || res?.user?.phone || store.get("profile", {})?.phone || "",
+        milkId: res?.milkId || res?.user?.milkId || store.get("user", {})?.milkId || "",
+        token: res?.token || res?.jwt || "",
+      };
+
+      store.set("user", user);
+
+      // jeśli serwer zwrócił punkty/historię
+      if (typeof res?.points === "number") store.set("points", res.points);
+      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+
+      // przypisz milkId do email (jeśli brak)
+      if (!user.milkId) {
+        user.milkId = getMilkId();
+        store.set("user", user);
+      }
+
+      showToast("Zalogowano ✅");
+      renderAccount();
+      await syncAll();
+      return;
+    } catch (e) {
+      console.warn("login server failed -> local fallback", e);
+    }
+
+    // fallback lokalny (fake login)
+    const user = {
+      email,
+      name: store.get("profile", {})?.name || "",
+      phone: store.get("profile", {})?.phone || "",
+      milkId: store.get("user", {})?.milkId || "",
+      token: "",
+    };
+    store.set("user", user);
+
+    // nadaj milkId powiązany z email
+    user.milkId = getMilkId();
+    store.set("user", user);
+
+    showToast("Zalogowano lokalnie ⚠️");
     renderAccount();
+    await syncAll();
   }
 
-  /* -------------------------
-     Service Worker
-  ------------------------- */
-  async function registerSW(){
-    if(!("serviceWorker" in navigator)) return;
-    try{
-      await navigator.serviceWorker.register("sw.js");
-    }catch{}
+  function fakeGoogleEmail() {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `google.user${rand}@gmail.com`;
   }
 
-  /* -------------------------
-     Boot
-  ------------------------- */
-  function boot(){
-    // default nav
-    go(state.activeNav || "points");
-    // default category
-    setActiveCategory(state.activeCategory || "kawa-herbata");
-    renderAll();
-    wire();
-    setupInstall();
-    setInstallPlatform("android");
-    registerSW();
+  loginGoogleBtn?.addEventListener("click", () => {
+    loginWithEmail(fakeGoogleEmail(), "");
+  });
+
+  loginEmailForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(loginEmailForm);
+    const email = fd.get("email");
+    const password = fd.get("password");
+    loginWithEmail(email, password);
+  });
+
+  logoutBtn?.addEventListener("click", () => {
+    store.del("user");
+    showToast("Wylogowano");
+    renderAccount();
+    openTab("account");
+  });
+
+  // ---------- Subpages ----------
+  const subpages = {
+    personal: document.getElementById("page-personal"),
+    language: document.getElementById("page-language"),
+    about: document.getElementById("page-about"),
+    help: document.getElementById("page-help"),
+  };
+
+  function openSubpage(name) {
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+    subpages[name]?.classList.add("active");
+    prefillPersonalUI();
   }
 
-  // Start
-  document.addEventListener("DOMContentLoaded", boot);
-})();
+  function closeSubpages() {
+    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+  }
+
+  document.querySelectorAll("[data-open]").forEach((el) => {
+    el.addEventListener("click", () => openSubpage(el.dataset.open));
+  });
+
+  document.querySelectorAll("[data-back]").forEach((btn) => {
+    btn.addEventListener("click", closeSubpages);
+  });
+
+  // ---------- Personal save ----------
+  const savePersonalBtn = document.getElementById("savePersonalBtn");
+  savePersonalBtn?.addEventListener("click", () => {
+    const name = (document.getElementById("personalName")?.value || "").trim();
+    const phone = (document.getElementById("personalPhone")?.value || "").trim();
+    const email = (document.getElementById("personalEmail")?.value || "").trim().toLowerCase();
+
+    const profile = store.get("profile", {});
+    if (name) profile.name = name;
+    if (phone) profile.phone = phone;
+    if (email) profile.email = email;
+    store.set("profile", profile);
+
+    // jeśli user zalogowany i ma email, uaktualnij dane w user (lokalnie)
+    const user = getUser();
+    if (user?.email) {
+      user.name = profile.name || user.name || "";
+      user.phone = profile.phone || user.phone || "";
+      store.set("user", user);
+    }
+
+    showToast("Zapisano ✅");
+    renderAccount();
+    closeSubpages();
+  });
+
+  // ---------- Language ----------
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      store.set("lang", btn.dataset.lang);
+      showToast("Zapisano język ✅");
+      closeSubpages();
+    });
+  });
+
+  // ---------- Sync ----------
+  const syncBtn = document.getElementById("syncBtn");
+
+  async function syncAll() {
+    if (!isLoggedIn()) return;
+
+    // punkty
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/milkpoints/my", user.email);
+      if (typeof data?.points === "number") store.set("points", data.points);
+      if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
+    } catch {}
+
+    // nagrody (posiadane / katalog)
+    try {
+      const user = getUser();
+      const data = await API.getMy("/api/rewards/my", user.email);
+      // katalog może być osobno, ale jeśli backend zwraca catalog:
+      if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
+    } catch {}
+
+    await refreshOrdersFromServer();
+    await refreshReservationsFromServer();
+
+    renderPoints();
+    renderRewards();
+    renderCart();
+    renderOrderFab();
+  }
+
+  syncBtn?.addEventListener("click", async () => {
+    if (!requireLogin("synchronizacji")) return;
+    showToast("Synchronizuję…");
+    await syncAll();
+    showToast("Zsynchronizowano ✅");
+  });
+
+  // ---------- Install guide ----------
+  const installGuide = document.getElementById("installGuide");
+  const platformBtns = document.querySelectorAll(".platform-btn");
+  const installPanes = document.querySelectorAll(".install-pane");
+  const androidInstallBtn = document.getElementById("androidInstallBtn");
+  const androidInstallHint = document.getElementById("androidInstallHint");
+
+  let deferredPrompt = null;
+
+  function isStandalone() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  }
+
+  function showInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.add("show");
+    installGuide.setAttribute("aria-hidden", "false");
+  }
+
+  function hideInstallGuide() {
+    if (!installGuide) return;
+    installGuide.classList.remove("show");
+    installGuide.setAttribute("aria-hidden", "true");
+  }
+
+  function setGuideTab(tab) {
+    platformBtns.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === tab));
+    installPanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === tab));
+  }
+
+  platformBtns.forEach((b) => {
+    b.addEventListener("click", () => setGuideTab(b.dataset.guideTab));
+  });
+
+  // klik w tło zamyka (żeby nie przeszkadzało)
+  installGuide?.addEventListener("click", (e) => {
+    if (e.target === installGuide) hideInstallGuide();
+  });
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (androidInstallBtn) androidInstallBtn.style.display = "inline-flex";
+    if (androidInstallHint) androidInstallHint.style.display = "none";
+  });
+
+  androidInstallBtn?.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch {}
+    deferredPrompt = null;
+    androidInstallBtn.style.display = "none";
+    if (androidInstallHint) androidInstallHint.style.display = "block";
+  });
+
+  // pokaż poradnik tylko, jeśli nie standalone i user nie zamknął
+  (function initInstallGuide() {
+    const dismissed = store.get("installGuideDismissed", false);
+    if (!isStandalone() && !dismissed) {
+      setTimeout(showInstallGuide, 900);
+    }
+  })();
+
+  // ESC zamyka poradnik
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideInstallGuide();
+  });
+
+  // kliknięcie gdzieś w UI może zamknąć poradnik na stałe (np. przy pierwszym użyciu)
+  installGuide?.addEventListener("pointerdown", () => {
+    store.set("installGuideDismissed", true);
+  });
+
+  // ---------- Init render ----------
+  function initUI() {
+    // domyślny tab
+    openTab("points");
+
+    // render bazowy
+    renderAccount();
+    renderOpeningHours();
+    renderCategories(); // ✅ ważne, żeby chipsy były od razu
+
+    // load menu + listy
+    loadMenuFromJson().then(() => {
+      renderMenu();
+      renderCart();
+      renderOrderFab();
+    });
+
+    refreshOrdersFromServer();
+    refreshReservationsFromServer();
+
+    // reaguj na zmiany w koszyku przy przełączaniu tabów
+    window.addEventListener("scroll", () => {
+      // delikatnie odśwież FAB w order
+      if (tabs.order.classList.contains("active")) renderOrderFab();
+    });
+  }
+
+  // ---------- Extra: ukryj FAB gdy user przejdzie na inny tab ----------
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setTimeout(renderOrderFab, 50));
+  });
+
+  // ---------- Start ----------
+  initUI(); 
 </script>
 
-  </script>
 </body>
 </html>
