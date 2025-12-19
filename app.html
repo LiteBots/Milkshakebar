@@ -1192,6 +1192,7 @@
   </div>
 
 <script>
+<script>
   // ---------- PWA ----------
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
@@ -1471,6 +1472,13 @@
         </div>`;
   }
 
+  // ✅ NOWOŚĆ: natychmiastowe odświeżenie UI po pobraniu punktów z bazy
+  function applyPointsFromServer(payload) {
+    if (payload && typeof payload.points === "number") store.set("points", payload.points);
+    if (payload && Array.isArray(payload.history)) store.set("pointsHistory", payload.history);
+    renderPoints(); // <-- klucz: od razu widać nowe punkty
+  }
+
   // ---------- Rewards (fallback lista) ----------
   const rewardsFallback = [
     { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, icon: "fa-ice-cream", desc: "Wartość do 30 PLN" },
@@ -1542,8 +1550,8 @@
         body: JSON.stringify({ email, milkId, rewardId }),
       });
 
-      if (typeof res?.points === "number") store.set("points", res.points);
-      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+      // ✅ NOWOŚĆ: jeśli backend zwrócił punkty/historię — od razu odśwież UI
+      applyPointsFromServer(res);
 
       const code = res?.code || res?.rewardCode;
       if (code) {
@@ -1553,7 +1561,6 @@
         showToast("Nagroda wymieniona ✅");
       }
 
-      renderPoints();
       renderRewards();
       return;
     } catch (e) {
@@ -1799,8 +1806,8 @@
 
       store.set("user", user);
 
-      if (typeof res?.points === "number") store.set("points", res.points);
-      if (Array.isArray(res?.history)) store.set("pointsHistory", res.history);
+      // ✅ NOWOŚĆ: jeśli login zwraca punkty/historię -> pokaż je natychmiast
+      applyPointsFromServer(res);
 
       if (!user.milkId) {
         user.milkId = getMilkId();
@@ -1809,7 +1816,9 @@
 
       showToast("Zalogowano ✅");
       renderAccount();
-      await syncAll();
+
+      // ✅ Nadal robimy sync, ale UI punktów już jest odświeżone (a jak serwer ma nowsze dane, nadpisze)
+      await syncAll({ immediateRender: true });
       openTab("points");
       return;
     } catch (e) {
@@ -1915,26 +1924,56 @@
   });
 
   // ---------- Sync (wywoływany po loginie) ----------
-  async function syncAll() {
+  // ✅ ZMIANA: w trakcie sync jak tylko dostaniemy punkty z bazy -> natychmiast renderPoints()
+  async function syncAll({ immediateRender = false } = {}) {
     if (!isLoggedIn()) return;
 
+    // 1) Punkty/historia
     try {
       const user = getUser();
       const data = await API.getMy("/api/milkpoints/my", user.email);
-      if (typeof data?.points === "number") store.set("points", data.points);
-      if (Array.isArray(data?.history)) store.set("pointsHistory", data.history);
+      applyPointsFromServer(data); // <-- odświeża UI od razu po odpowiedzi z bazy
     } catch {}
 
+    // 2) Katalog nagród
     try {
       const user = getUser();
       const data = await API.getMy("/api/rewards/my", user.email);
       if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
+      renderRewards();
     } catch {}
 
+    // 3) Rezerwacje
     await refreshReservationsFromServer();
 
-    renderPoints();
-    renderRewards();
+    if (immediateRender) {
+      // dodatkowe “dociśnięcie” UI (bez czekania na inne rzeczy)
+      renderPoints();
+      renderRewards();
+    }
+  }
+
+  // ✅ NOWOŚĆ: auto-odświeżanie punktów po powrocie do apki + co jakiś czas (gdy zalogowany)
+  function startAutoRefreshPoints() {
+    // co 25s (lekko, bez spamu)
+    setInterval(() => {
+      if (!isLoggedIn()) return;
+      // tylko punkty/historia, żeby było szybko
+      (async () => {
+        try {
+          const user = getUser();
+          const data = await API.getMy("/api/milkpoints/my", user.email);
+          applyPointsFromServer(data);
+        } catch {}
+      })();
+    }, 25000);
+
+    // gdy wracasz do karty/apki
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") return;
+      if (!isLoggedIn()) return;
+      syncAll({ immediateRender: true });
+    });
   }
 
   // ---------- Install guide ----------
@@ -2014,9 +2053,17 @@
     renderPoints();
     renderRewards();
     refreshReservationsFromServer();
+
+    // ✅ start auto refresh
+    startAutoRefreshPoints();
+
+    // ✅ jeśli user już zalogowany (np. po odświeżeniu strony), to natychmiast pobierz punkty z bazy i pokaż
+    if (isLoggedIn()) syncAll({ immediateRender: true });
   }
 
   initUI();
+</script>
+
 </script>
 
 </body>
