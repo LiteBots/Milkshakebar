@@ -913,6 +913,7 @@ app.get("/api/admin/stats", async (_req, res) => {
 app.get("/admin", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "admin.html")));
 app.get("/index.html", (_req, res) => res.redirect(301, "/"));
 app.get("/app", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "app.html")));
+app.get("/aplikacja", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "aplikacja.html"))
 
 // SPA fallback
 app.get("*", (req, res) => {
