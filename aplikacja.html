@@ -1,0 +1,1012 @@
+<!-- aplikacja.html (PODSTRONA: APLIKACJA MILK) — WERSJA: punkty + nagrody + rezerwacje -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Milk — aplikacja lojalnościowa | MilkShake Bar</title>
+  <meta name="description" content="Milk to aplikacja MilkShake Bar: Milk ID do zbierania punktów, nagrody za punkty i rezerwacje stolika." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180" />
+
+  <meta property="og:title" content="Milk — aplikacja lojalnościowa | MilkShake Bar" />
+  <meta property="og:description" content="Milk ID → punkty. Nagrody i rezerwacje w jednym miejscu." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://i.imgur.com/XIdoN0y.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    :root{
+      --primary:#FF6A00;
+      --secondary:#FF9100;
+      --bg:#FFF6EC;
+      --ink:#2B1300;
+      --muted:rgba(43,19,0,.72);
+      --card:#ffffff;
+      --line:rgba(255,106,0,.14);
+      --grad:linear-gradient(135deg,var(--primary),var(--secondary));
+      --shadow:0 16px 46px rgba(0,0,0,.10);
+      --shadow2:0 22px 70px rgba(0,0,0,.14);
+      --r:20px;
+
+      --glass: rgba(255,255,255,.84);
+      --glass2: rgba(255,255,255,.72);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Poppins',sans-serif;
+      color:var(--ink);
+      overflow-x:hidden;
+
+      /* ✅ JEDNO TŁO NA CAŁEJ STRONIE (poza footerem) */
+      background-image:url('https://i.imgur.com/XdaLKqJ.png');
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+      position:relative;
+      min-height:100vh;
+    }
+
+    /* globalna jasna/“mleczna” warstwa */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:rgba(255,246,236,.86);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+    /* Header (clean + sticky) */
+    .header{
+      position:fixed;top:0;left:0;width:100%;
+      padding:18px 0;
+      z-index:1000;
+      transition:all .28s ease;
+    }
+    .header.scrolled{
+      background:rgba(255,246,236,.88);
+      backdrop-filter:blur(12px);
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+      padding:14px 0;
+    }
+    .navbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .logo{
+      display:flex;align-items:center;gap:14px;
+      text-decoration:none;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:var(--primary);
+    }
+    .logo img{
+      width:48px;height:48px;border-radius:50%;
+      transition:transform .45s cubic-bezier(.175,.885,.32,1.275);
+    }
+    .logo:hover img{transform:rotate(360deg) scale(1.07)}
+    .nav-menu{list-style:none;display:flex;align-items:center;gap:22px}
+    .nav-link{
+      text-decoration:none;
+      color:var(--ink);
+      font-weight:800;
+      position:relative;
+      padding:6px 0;
+      opacity:.92;
+      outline:none;
+    }
+    .nav-link:focus-visible{
+      box-shadow:0 0 0 4px rgba(255,106,0,.18);
+      border-radius:10px;
+      padding:6px 10px;
+      margin:-6px -10px;
+    }
+    .nav-link::after{
+      content:'';
+      position:absolute;left:0;bottom:-6px;
+      width:100%;height:3px;border-radius:999px;
+      background:var(--grad);
+      transform:scaleX(0);
+      transform-origin:right;
+      transition:transform .35s cubic-bezier(.19,1,.22,1);
+    }
+    .nav-link:hover::after,.nav-link.active::after{transform:scaleX(1);transform-origin:left}
+    .hamburger{display:none;cursor:pointer;z-index:1001}
+
+    /* Mobile menu backdrop */
+    .menu-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.18);
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .25s ease;
+      z-index:999;
+    }
+    .menu-backdrop.active{opacity:1;pointer-events:auto;}
+
+    /* Buttons */
+    .btn{
+      border:0;
+      border-radius:999px;
+      padding:14px 22px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      transition:transform .25s ease, box-shadow .25s ease, filter .25s ease;
+      white-space:nowrap;
+    }
+    .btn-primary{
+      color:#fff;
+      background:var(--grad);
+      box-shadow:0 18px 50px rgba(255,106,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .btn-primary::before{
+      content:'';
+      position:absolute;inset:-2px;
+      background:linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+      opacity:.16;
+      pointer-events:none;
+      transform:translateX(-30%);
+    }
+    .btn-primary:hover{transform:translateY(-4px);box-shadow:0 26px 70px rgba(255,106,0,.58);filter:saturate(1.05)}
+    .btn-ghost{
+      color:var(--ink);
+      background:rgba(255,255,255,.76);
+      border:2px solid var(--line);
+      box-shadow:0 12px 36px rgba(0,0,0,.06);
+    }
+    .btn-ghost:hover{transform:translateY(-3px);box-shadow:0 16px 44px rgba(0,0,0,.08)}
+    .btn-xl{
+      padding:18px 30px;
+      font-size:1.05rem;
+      letter-spacing:.2px;
+    }
+
+    /* Page hero */
+    .hero{
+      min-height:100vh;
+      padding-top:108px;
+      display:flex;
+      align-items:center;
+      position:relative;
+      background:transparent;
+    }
+    .hero::before{ content:none; }
+
+    .hero-inner{
+      position:relative;z-index:1;
+      display:grid;
+      grid-template-columns:1.18fr .82fr;
+      gap:42px;
+      align-items:center;
+    }
+
+    /* subtle blob behind hero text */
+    .hero-inner > div:first-child{
+      position:relative;
+    }
+    .hero-inner > div:first-child::before{
+      content:'';
+      position:absolute;
+      left:-140px; top:-110px;
+      width:420px; height:420px;
+      background:radial-gradient(circle at 30% 30%, rgba(255,106,0,.16), transparent 55%),
+                 radial-gradient(circle at 70% 70%, rgba(255,145,0,.14), transparent 58%);
+      filter:blur(2px);
+      z-index:-1;
+      border-radius:999px;
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .chip{
+      width:max-content;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--glass2);
+      border:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(0,0,0,.06);
+      font-weight:900;
+      color:rgba(43,19,0,.86);
+    }
+    .chip i{color:var(--primary)}
+    h1{
+      font-size:clamp(2.8rem,5.8vw,5.1rem);
+      line-height:1.02;
+      letter-spacing:-.5px;
+      margin:16px 0 16px;
+    }
+    .grad-text{
+      background:var(--grad);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .lead{
+      font-size:1.12rem;
+      line-height:1.85;
+      color:var(--muted);
+      max-width:680px;
+    }
+
+    .kpi-row{
+      margin-top:20px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .kpi{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(0,0,0,.05);
+      box-shadow:0 10px 26px rgba(0,0,0,.05);
+      font-weight:900;
+      color:rgba(43,19,0,.84);
+    }
+    .kpi i{color:var(--primary)}
+
+    .cta{
+      margin-top:22px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Sections */
+    .section{
+      padding:86px 0;
+      position:relative;
+      background:transparent;
+    }
+    /* blob for sections */
+    .section::before{
+      content:'';
+      position:absolute;
+      inset:auto auto -140px -120px;
+      width:360px;height:360px;
+      background:radial-gradient(circle at 30% 30%, rgba(255,106,0,.12), transparent 60%),
+                 radial-gradient(circle at 70% 70%, rgba(255,145,0,.10), transparent 62%);
+      border-radius:999px;
+      pointer-events:none;
+      z-index:0;
+      opacity:.9;
+    }
+    .section > .container{position:relative; z-index:1;}
+
+    .section-title{
+      font-size:clamp(2.1rem,4.3vw,3.2rem);
+      font-weight:900;
+      text-align:center;
+      margin-bottom:18px;
+      letter-spacing:-.4px;
+    }
+    .section-sub{
+      text-align:center;
+      max-width:780px;
+      margin:0 auto 38px;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:1.05rem;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:16px;
+    }
+    .cardx{
+      background:rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px;
+      box-shadow:0 16px 40px rgba(0,0,0,.06);
+      transition:transform .25s ease, box-shadow .25s ease, filter .25s ease;
+      overflow:hidden;
+      position:relative;
+    }
+    .cardx::before{
+      content:'';
+      position:absolute;inset:0;
+      background:radial-gradient(circle at 20% 10%, rgba(255,106,0,.10), transparent 45%),
+                 radial-gradient(circle at 90% 90%, rgba(255,145,0,.10), transparent 45%);
+      pointer-events:none;
+    }
+    .cardx:hover{transform:translateY(-6px);box-shadow:0 22px 60px rgba(0,0,0,.10); filter:saturate(1.02)}
+    .cardx .topline{
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:10px;
+      position:relative;
+    }
+    .ic{
+      width:44px;height:44px;border-radius:16px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(255,106,0,.14), rgba(255,145,0,.16));
+      border:1px solid rgba(255,106,0,.16);
+      flex:0 0 auto;
+    }
+    .ic i{color:var(--primary)}
+    .cardx h3{font-size:1.08rem;font-weight:900;letter-spacing:-.2px}
+    .cardx p{margin-top:6px;color:var(--muted);line-height:1.7;font-size:.98rem;position:relative}
+
+    /* Steps */
+    .steps{
+      max-width:980px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:14px;
+    }
+    .step{
+      background:rgba(255,255,255,.90);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 14px 40px rgba(0,0,0,.06);
+      position:relative;
+      overflow:hidden;
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+    .step:hover{transform:translateY(-4px); box-shadow:0 18px 54px rgba(0,0,0,.09)}
+    .step::after{
+      content:'';
+      position:absolute;
+      inset:-2px;
+      background:radial-gradient(circle at 25% 25%, rgba(255,106,0,.10), transparent 55%);
+      pointer-events:none;
+    }
+    .step .n{
+      width:46px;height:46px;border-radius:16px;
+      display:grid;place-items:center;
+      background:var(--grad);
+      color:#fff;
+      font-weight:900;
+      box-shadow:0 14px 40px rgba(255,106,0,.35);
+      margin-bottom:12px;
+      position:relative;
+    }
+    .step h4{font-size:1.05rem;font-weight:900;margin-bottom:6px;position:relative}
+    .step p{color:var(--muted);line-height:1.75;font-size:.98rem;position:relative}
+
+    /* Footer (osobne tło) */
+    .footer{
+      background:#22110A;
+      color:#ccc;
+      padding:70px 0 42px;
+      margin-top:20px;
+    }
+    .footer-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+      gap:30px;
+      margin-bottom:34px;
+    }
+    .footer h4{color:#fff;font-size:1.2rem;margin-bottom:14px;position:relative}
+    .footer h4::after{
+      content:'';
+      position:absolute;left:0;bottom:-10px;
+      width:50px;height:3px;border-radius:999px;
+      background:var(--grad);
+    }
+    .footer a{color:#ccc;text-decoration:none}
+    .footer a:hover{color:#fff}
+    .socials{display:flex;gap:12px;margin-top:12px}
+    .socials a{
+      width:40px;height:40px;border-radius:50%;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.10);
+      transition:transform .2s ease, background .2s ease;
+      color:#fff;
+    }
+    .socials a:hover{transform:translateY(-4px);background:rgba(255,106,0,.85)}
+    .footer-bottom{
+      text-align:center;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:22px;
+      opacity:.82;
+      font-size:.92rem;
+    }
+
+    /* Fade-in */
+    .fade-in{
+      opacity:0;
+      transform:translateY(40px);
+      transition:opacity .85s ease, transform .85s cubic-bezier(.175,.885,.32,1.275);
+      will-change:opacity, transform;
+    }
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+
+    /* ------------------------------
+       PHONE (EXACT UIVERSE STRUCTURE)
+       ------------------------------ */
+    .phone-holder{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .card {
+      width: 300px;
+      height: 600px;
+      background: black;
+      border-radius: 40px;
+      border: 2px solid rgb(40, 40, 40);
+      padding: 7px;
+      position: relative;
+      box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.486);
+      transform: rotate(2deg);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover{
+      transform: rotate(0deg) translateY(-6px);
+      box-shadow: 0 22px 70px rgba(0,0,0,.40);
+    }
+
+    .card-int {
+      background-image:
+        linear-gradient(to bottom, rgba(255,255,255,.10), rgba(0,0,0,.22)),
+        url("https://imgur.com/9ERo8xF.png");
+      background-size: cover;
+      background-position: center;
+      height: 100%;
+      border-radius: 28px;
+      transition: all 0.6s ease-out;
+      overflow: hidden;
+      position: relative;
+      filter: brightness(1.18) contrast(1.06);
+    }
+    .card-int::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(255,255,255,.18), transparent 42%);
+      pointer-events:none;
+    }
+    .card:hover .card-int {
+      filter: brightness(1.22) contrast(1.06) saturate(1.06);
+      background-position: center;
+    }
+
+    .top {
+      position: absolute;
+      top: 0px;
+      right: 50%;
+      transform: translate(50%, 0%);
+      width: 36%;
+      height: 20px;
+      background-color: black;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+    .speaker {
+      position: absolute;
+      top: 3px;
+      right: 50%;
+      transform: translate(50%, 0%);
+      width: 42%;
+      height: 2px;
+      border-radius: 2px;
+      background-color: rgb(20, 20, 20);
+    }
+    .camera {
+      position: absolute;
+      top: 7px;
+      right: 84%;
+      transform: translate(50%, 0%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.048);
+    }
+    .int {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      top: 50%;
+      right: 50%;
+      transform: translate(50%, -50%);
+      background-color: rgba(0, 0, 255, 0.212);
+    }
+
+    .btn1, .btn2, .btn3, .btn4 { position: absolute; width: 2px; }
+    .btn1, .btn2, .btn3 {
+      height: 45px;
+      top: 30%;
+      right: -4px;
+      background-image: linear-gradient(to right, #111111, #222222, #333333, #464646, #595959);
+    }
+    .btn2, .btn3 { transform: scale(-1); left: -4px; }
+    .btn2, .btn3 { transform: scale(-1); height: 30px; }
+    .btn2 { top: 26% }
+    .btn3 { top: 36% }
+
+    .hello { display:none; }
+    .hidden { display:none; }
+
+    /* MOBILE HERO TITLE (nad telefonem) */
+    .mobile-hero-title{display:none; text-align:center}
+    .mobile-pill{
+      width:max-content;
+      margin:0 auto 10px;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(0,0,0,.06);
+      font-weight:900;
+      color:rgba(43,19,0,.86);
+    }
+    .mobile-pill i{color:var(--primary)}
+    .mobile-h1{
+      margin:0 0 8px;
+      font-size:clamp(1.9rem, 8.5vw, 2.8rem);
+      line-height:1.08;
+      letter-spacing:-.4px;
+    }
+    .mobile-p{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:1rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px){
+      .container{padding:0 16px}
+
+      /* menu mobilne */
+      .nav-menu{
+        position:fixed;top:0;right:-100%;
+        width:min(82%, 360px);
+        height:100vh;
+        background:rgba(255,255,255,.92);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        box-shadow:-10px 0 30px rgba(0,0,0,.1);
+        display:flex;
+        flex-direction:column;
+        justify-content:flex-start;
+        gap:26px;
+        padding:90px 22px 24px;
+        transition:right .45s cubic-bezier(.77,0,.175,1);
+        border-left:1px solid rgba(255,106,0,.10);
+        z-index:1000;
+      }
+      .nav-menu.active{right:0}
+      .nav-menu .nav-link{font-size:1.05rem}
+      .hamburger{display:block}
+
+      /* NA TELEFONIE: telefon na górze, potem tekst */
+      .hero{padding-top:82px; min-height:auto}
+      .hero-inner{
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+        text-align:center;
+      }
+      .hero-inner > div:first-child{order:2}
+      .hero-inner > .phone-holder{order:1}
+
+      .mobile-hero-title{display:block}
+      .chip{display:none}
+
+      .cta{justify-content:center}
+      .kpi-row{justify-content:center}
+
+      .grid-3{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr}
+
+      .card{width:260px;height:520px; transform:none}
+
+      .navbar > .btn.btn-primary{
+        padding:12px 14px !important;
+        font-size:.95rem;
+      }
+
+      h1{font-size:clamp(2.1rem, 9vw, 3.2rem); line-height:1.08}
+      .lead{font-size:1.02rem; line-height:1.75; max-width:unset}
+      .section{padding:64px 0}
+      .section-sub{font-size:1rem; margin-bottom:26px}
+      .hero-inner > div:first-child::before{display:none;}
+    }
+
+    @media (max-width: 560px){
+      .header{padding:14px 0}
+      .header.scrolled{padding:12px 0}
+      .logo img{width:42px;height:42px}
+
+      .cta{gap:10px}
+      .btn{width:100%}
+      .btn-xl{padding:16px 18px; font-size:1.02rem}
+
+      .kpi-row{gap:8px}
+      .kpi{width:100%; justify-content:center}
+
+      .cardx{padding:16px}
+      .step{padding:16px}
+
+      .card{width:230px;height:460px}
+    }
+
+    @media (max-width: 420px){
+      .nav-menu{width:88%}
+      .card{width:215px;height:430px}
+    }
+
+    /* Sticky CTA na dole (mobile) */
+    .mobile-cta{display:none}
+    @media (max-width: 560px){
+      .mobile-cta{
+        display:block;
+        position:fixed;
+        left:0; right:0; bottom:0;
+        padding:12px 14px;
+        background:rgba(255,246,236,.86);
+        backdrop-filter:blur(12px);
+        -webkit-backdrop-filter:blur(12px);
+        border-top:1px solid var(--line);
+        z-index:1200;
+      }
+      body{padding-bottom:86px}
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      .fade-in{transition:none}
+      .card,.card-int,.btn,.cardx,.step{transition:none}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="menu-backdrop" id="menuBackdrop" aria-hidden="true"></div>
+
+  <header class="header" id="header">
+    <div class="container">
+      <nav class="navbar">
+        <a class="logo" href="index.html#home" aria-label="Powrót na stronę główną">
+          <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar" />
+          <span>MilkShake Bar</span>
+        </a>
+
+        <ul class="nav-menu" id="navMenu" aria-label="Nawigacja">
+          <li><a class="nav-link" href="index.html#about">O nas</a></li>
+          <li><a class="nav-link" href="menu.html">Menu</a></li>
+          <li><a class="nav-link" href="index.html#reservation">Rezerwacje</a></li>
+          <li><a class="nav-link" href="index.html#location">Lokal</a></li>
+          <li><a class="nav-link active" href="aplikacja.html">Aplikacja Milk</a></li>
+        </ul>
+
+        <a class="btn btn-primary" href="app.html" style="padding:14px 20px">
+          Instaluj <i class="fas fa-download"></i>
+        </a>
+
+        <div class="hamburger" id="hamburger" role="button" tabindex="0" aria-label="Menu mobilne">
+          <i class="fas fa-bars fa-2x"></i>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-inner">
+          <!-- LEFT -->
+          <div>
+            <div class="chip fade-in">
+              <i class="fas fa-id-card"></i>
+              <span>Milk ID → punkty przy kasie (automatycznie)</span>
+            </div>
+
+            <h1 class="fade-in" style="transition-delay:.06s">
+              <span class="grad-text">Milk</span> — punkty, nagrody i rezerwacje
+              w jednym miejscu.
+            </h1>
+
+            <p class="lead fade-in" style="transition-delay:.12s">
+              Masz swój unikalny <b>Milk ID</b>. Podajesz go przy kasie, a my naliczamy punkty
+              za Twoje zakupy. W aplikacji możesz też <b>rezerwować stolik</b> oraz
+              <b>wymieniać punkty na nagrody</b> — szybko, prosto i bez stresu.
+            </p>
+
+            <div class="kpi-row fade-in" style="transition-delay:.16s">
+              <div class="kpi"><i class="fas fa-bolt"></i> Punkty za zakupy</div>
+              <div class="kpi"><i class="fas fa-gift"></i> Nagrody za punkty</div>
+              <div class="kpi"><i class="fas fa-calendar-check"></i> Rezerwacje w sekundę</div>
+            </div>
+
+            <div class="cta fade-in" style="transition-delay:.22s">
+              <a class="btn btn-primary btn-xl" href="app.html">
+                Instaluj aplikację <i class="fas fa-arrow-right"></i>
+              </a>
+              <a class="btn btn-ghost" href="index.html#reservation">
+                Rezerwuj z strony <i class="fas fa-calendar-check"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT (PHONE) -->
+          <div class="phone-holder fade-in" style="transition-delay:.10s">
+            <div class="mobile-hero-title">
+              <div class="mobile-pill">
+                <i class="fas fa-id-card"></i> Milk ID → punkty
+              </div>
+              <h1 class="mobile-h1"><span class="grad-text">Milk</span> w Twoim telefonie</h1>
+              <p class="mobile-p">Punkty, nagrody i rezerwacje — w jednym miejscu.</p>
+            </div>
+
+            <div class="card" aria-label="Podgląd aplikacji Milk na telefonie">
+              <div class="btn1"></div>
+              <div class="btn2"></div>
+              <div class="btn3"></div>
+              <div class="btn4"></div>
+
+              <div class="card-int">
+                <div class="hello">Hello <span class="hidden">uiverse</span></div>
+              </div>
+
+              <div class="top">
+                <div class="camera"><div class="int"></div></div>
+                <div class="speaker"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title fade-in">Co możesz robić w Milk</h2>
+        <p class="section-sub fade-in" style="transition-delay:.06s">
+          Zaprojektowane tak, żeby było szybkie, proste i wygodne — niezależnie czy wpadasz na milkshake’a,
+          czy planujesz spotkanie ze znajomymi.
+        </p>
+
+        <div class="grid-3">
+          <div class="cardx fade-in">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-id-card"></i></div>
+              <h3>Milk ID i punkty</h3>
+            </div>
+            <p>
+              Masz swój identyfikator <b>Milk ID</b>. Podajesz go przy kasie, a punkty wpadają
+              na konto automatycznie.
+            </p>
+          </div>
+
+          <div class="cardx fade-in" style="transition-delay:.06s">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-gift"></i></div>
+              <h3>Nagrody za punkty</h3>
+            </div>
+            <p>
+              Wymieniaj punkty na nagrody w aplikacji — bez papierowych kart, bez kombinowania.
+            </p>
+          </div>
+
+          <div class="cardx fade-in" style="transition-delay:.12s">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-calendar-check"></i></div>
+              <h3>Rezerwacje stolika</h3>
+            </div>
+            <p>
+              Rezerwujesz w kilka sekund. Wybierasz datę, godzinę i liczbę osób — gotowe.
+            </p>
+          </div>
+
+          <div class="cardx fade-in" style="transition-delay:.18s">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-bell"></i></div>
+              <h3>Ważne info w jednym miejscu</h3>
+            </div>
+            <p>
+              Najważniejsze rzeczy zawsze masz pod ręką: punkty, nagrody i Twoje rezerwacje.
+            </p>
+          </div>
+
+          <div class="cardx fade-in" style="transition-delay:.24s">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-heart"></i></div>
+              <h3>Stworzona „pod MilkShake Bar”</h3>
+            </div>
+            <p>
+              Wszystko jest dopasowane do Waszych wizyt: szybko, intuicyjnie i bez zbędnych kroków.
+            </p>
+          </div>
+
+          <div class="cardx fade-in" style="transition-delay:.30s">
+            <div class="topline">
+              <div class="ic"><i class="fas fa-shield-heart"></i></div>
+              <h3>Prosto i bezpiecznie</h3>
+            </div>
+            <p>
+              Minimum kliknięć, maksymalna wygoda — a Milk ID masz zawsze pod ręką.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" style="padding-top:40px">
+      <div class="container">
+        <h2 class="section-title fade-in">Jak działa zbieranie punktów</h2>
+        <p class="section-sub fade-in" style="transition-delay:.06s">
+          Trzy krótkie kroki. Zero komplikacji.
+        </p>
+
+        <div class="steps">
+          <div class="step fade-in">
+            <div class="n">1</div>
+            <h4>Otwórz Milk</h4>
+            <p>Masz w aplikacji swój <b>Milk ID</b> (identyfikator).</p>
+          </div>
+
+          <div class="step fade-in" style="transition-delay:.06s">
+            <div class="n">2</div>
+            <h4>Podaj Milk ID przy kasie</h4>
+            <p>Wystarczy podać identyfikator — reszta dzieje się automatycznie.</p>
+          </div>
+
+          <div class="step fade-in" style="transition-delay:.12s">
+            <div class="n">3</div>
+            <h4>Zgarniaj nagrody</h4>
+            <p>Wymieniaj punkty na nagrody i rezerwuj stolik, kiedy Ci pasuje.</p>
+          </div>
+        </div>
+
+        <div class="cta fade-in" style="justify-content:center;margin-top:26px;transition-delay:.16s">
+          <a class="btn btn-primary btn-xl" href="app.html">
+            Instaluj aplikację <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html#home" style="color:#fff">
+            <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar" />
+            <span>MilkShake Bar</span>
+          </a>
+          <p style="margin-top:10px;line-height:1.8;opacity:.9">
+            Milk: punkty lojalnościowe przez Milk ID, nagrody i rezerwacje — wszystko w jednym miejscu.
+          </p>
+          <div class="socials">
+            <a href="https://www.facebook.com/milkshakebar" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/milkshake_slupsk" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4>Nawigacja</h4>
+          <p><a href="menu.html">Menu</a></p>
+          <p><a href="index.html#reservation">Rezerwacje</a></p>
+          <p><a href="index.html#location">Lokal</a></p>
+          <p><a href="aplikacja.html">Aplikacja Milk</a></p>
+        </div>
+
+        <div>
+          <h4>Milk w skrócie</h4>
+          <p><i class="fas fa-id-card" style="color:#ff9100"></i> Milk ID przy kasie = punkty</p>
+          <p><i class="fas fa-gift" style="color:#ff9100"></i> Punkty → nagrody</p>
+          <p><i class="fas fa-calendar-check" style="color:#ff9100"></i> Rezerwacje</p>
+        </div>
+
+        <div>
+          <h4>Instalacja</h4>
+          <p style="line-height:1.8;opacity:.9">
+            Kliknij i przejdź do instalacji aplikacji Milk.
+          </p>
+          <div style="margin-top:14px">
+            <a class="btn btn-primary btn-xl" href="app.html" style="width:100%">
+              Instaluj aplikację <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2025 MilkShake Bar. Wszystkie prawa zastrzeżone.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky CTA na dole (tylko mobile) -->
+  <div class="mobile-cta" aria-label="Szybka instalacja aplikacji">
+    <a class="btn btn-primary" href="app.html">
+      Instaluj Milk <i class="fas fa-download"></i>
+    </a>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('header');
+      const navMenu = document.getElementById('navMenu');
+      const hamburger = document.getElementById('hamburger');
+      const backdrop = document.getElementById('menuBackdrop');
+
+      window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 40);
+      });
+
+      const openMenu = () => {
+        navMenu.classList.add('active');
+        backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+      const closeMenu = () => {
+        navMenu.classList.remove('active');
+        backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+      const toggleMenu = () => {
+        if (navMenu.classList.contains('active')) closeMenu();
+        else openMenu();
+      };
+
+      hamburger?.addEventListener('click', toggleMenu);
+      hamburger?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') toggleMenu();
+      });
+
+      backdrop?.addEventListener('click', closeMenu);
+      document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', closeMenu));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) closeMenu();
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    });
+  </script>
+</body>
+</html>
