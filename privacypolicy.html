@@ -1,1 +1,418 @@
-pol
+<!-- polityka-prywatnosci.html | MilkShake Bar -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polityka Prywatności | MilkShake Bar</title>
+
+  <meta name="description" content="Polityka prywatności MilkShake Bar – zasady przetwarzania danych osobowych, rejestracja, newsletter i komunikacja marketingowa." />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root{
+      --primary-color:#FF6A00;
+      --secondary-color:#FF9100;
+      --accent-color:#FFE0B2;
+      --background-light:#FFF6EC;
+      --background-dark:#22110A;
+      --text-color-dark:#2B1300;
+      --text-color-light:#FFFFFF;
+      --gradient-bg:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+      --shadow:0px 10px 30px rgba(0,0,0,0.12);
+      --radius:20px;
+      --muted:#7a5a44;
+      --card:#ffffff;
+      --border:#efe6de;
+      --success:#16A34A;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Poppins',sans-serif;
+      color:var(--text-color-dark);
+      background:var(--background-light);
+      overflow-x:hidden;
+    }
+    .container{max-width:1100px;margin:0 auto;padding:0 22px}
+    .header{
+      position:sticky;top:0;z-index:1000;
+      background:rgba(255,246,236,0.9);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(0,0,0,0.04);
+    }
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 0;
+    }
+    .logo{
+      display:flex;align-items:center;gap:12px;
+      text-decoration:none;color:var(--primary-color);
+      font-weight:800;font-size:1.15rem;
+    }
+    .logo img{
+      width:44px;height:44px;border-radius:50%;
+      box-shadow:0 8px 20px rgba(255,106,0,0.15);
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:12px 18px;border-radius:999px;
+      border:none;text-decoration:none;cursor:pointer;
+      font-weight:700;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .btn-primary{background:var(--gradient-bg);color:#fff;box-shadow:0 8px 22px rgba(255,106,0,0.35)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,106,0,0.45)}
+    .hero{
+      padding:54px 0 22px;
+      position:relative;
+      background-image:url('https://i.imgur.com/XdaLKqJ.png');
+      background-size:cover;background-position:center;
+    }
+    .hero::before{
+      content:"";position:absolute;inset:0;
+      background:rgba(255,246,236,0.88);
+      backdrop-filter:blur(10px);
+    }
+    .hero-inner{position:relative;display:grid;gap:18px;padding:28px 0}
+    .title{
+      font-size:clamp(2.2rem,4.6vw,3.4rem);
+      line-height:1.08;font-weight:900;
+      letter-spacing:-0.8px;
+    }
+    .title .hl{
+      background:var(--gradient-bg);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .subtitle{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:72ch}
+    .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(255,106,0,0.10);
+      border:1px solid rgba(255,106,0,0.18);
+      padding:8px 12px;border-radius:999px;
+      font-weight:700;color:#7a3c12;font-size:0.92rem;
+    }
+
+    .grid{
+      display:grid;gap:16px;
+      grid-template-columns: 1.25fr 0.75fr;
+      margin:22px 0 54px;
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+    .card h2{
+      font-size:1.5rem;font-weight:900;margin-bottom:10px;
+      background:var(--gradient-bg);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .card h3{font-size:1.12rem;margin:18px 0 8px}
+    .card p, .card li{line-height:1.75;color:#3b1d08}
+    .card ul{padding-left:18px;margin:8px 0}
+    .muted{color:var(--muted)}
+    .hr{height:1px;background:rgba(0,0,0,0.06);margin:18px 0}
+    .callout{
+      border-radius:16px;
+      padding:14px 14px;
+      background:linear-gradient(180deg, rgba(255,145,0,0.14), rgba(255,106,0,0.06));
+      border:1px solid rgba(255,106,0,0.18);
+    }
+    .callout strong{color:#6a2d07}
+    .list-compact li{margin:6px 0}
+    .small{font-size:0.92rem}
+    .kbd{
+      display:inline-block;
+      padding:2px 8px;border-radius:8px;
+      border:1px solid rgba(0,0,0,0.10);
+      background:rgba(255,255,255,0.8);
+      font-weight:800;
+      font-size:0.88rem;
+    }
+
+    .aside h3{font-size:1.05rem;margin-bottom:10px}
+    .info{
+      display:flex;gap:12px;align-items:flex-start;
+      padding:12px 12px;border-radius:16px;
+      background:#fff;border:1px solid var(--border);
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      margin-bottom:10px;
+    }
+    .info i{color:var(--primary-color);font-size:1.1rem;margin-top:2px}
+    .info .t{font-weight:900}
+    .footer{
+      background:var(--background-dark);
+      color:#d6c7bc;
+      padding:34px 0;
+      margin-top:34px;
+    }
+    .footer a{color:#fff;text-decoration:none}
+    .footer .bottom{
+      border-top:1px solid rgba(255,255,255,0.10);
+      margin-top:16px;padding-top:14px;
+      font-size:0.9rem;opacity:0.85;
+      display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    }
+
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="nav">
+        <a class="logo" href="/">
+          <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="MilkShake Bar">
+          <span>MilkShake Bar</span>
+        </a>
+        <a class="btn btn-primary" href="/#reservation">
+          Rezerwacja <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <h1 class="title">Polityka <span class="hl">Prywatności</span></h1>
+        <p class="subtitle">
+          Poniżej opisujemy, jak przetwarzamy Twoje dane osobowe w związku z rejestracją w usługach MilkShake Bar,
+          korzystaniem z serwisu <span class="kbd">MilkShakeBar.pl</span> oraz (za Twoją zgodą) komunikacją newsletterową i marketingową
+          dotyczącą również <span class="kbd">Eatmi.pl</span>.
+        </p>
+        <div class="badge-row">
+          <span class="pill"><i class="fa-solid fa-shield-heart"></i> RODO / GDPR</span>
+          <span class="pill"><i class="fa-solid fa-envelope-open-text"></i> Newsletter & marketing (za zgodą)</span>
+          <span class="pill"><i class="fa-solid fa-user-lock"></i> Dane do rejestracji</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="grid">
+      <!-- MAIN CONTENT -->
+      <article class="card">
+        <h2>1. Administrator danych</h2>
+        <p>
+          Administratorem Twoich danych osobowych jest:
+          <strong>MARCIN CHOJNACKI – MILKSHAKE BAR</strong>,
+          NIP: <strong>8271982077</strong>, REGON: <strong>100473965</strong>,
+          adres: <strong>ul. Szczecińska 17, 76-200 Słupsk, Polska</strong>.
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>2. Jakie dane przetwarzamy</h2>
+        <ul class="list-compact">
+          <li><strong>Dane rejestracyjne</strong> – np. adres e-mail, hasło (w postaci zaszyfrowanej/haszowanej), opcjonalnie imię/nazwisko, numer telefonu (jeśli wymagany w danej usłudze).</li>
+          <li><strong>Dane związane z korzystaniem z konta</strong> – np. identyfikator użytkownika, historia logowań, ustawienia konta.</li>
+          <li><strong>Dane komunikacyjne</strong> – treść zgłoszeń i wiadomości wysyłanych do nas (np. przez formularz lub e-mail).</li>
+          <li><strong>Dane techniczne</strong> – np. adres IP, typ urządzenia/przeglądarki, logi serwera (w zakresie niezbędnym do bezpieczeństwa i działania serwisu).</li>
+        </ul>
+
+        <div class="hr"></div>
+
+        <h2>3. Cele i podstawy prawne przetwarzania</h2>
+
+        <h3>3.1 Rejestracja i prowadzenie konta</h3>
+        <p>
+          Przetwarzamy dane, aby utworzyć i obsługiwać konto użytkownika oraz umożliwić korzystanie z funkcji serwisu.
+          <br><span class="muted small">
+            Podstawa prawna: art. 6 ust. 1 lit. b RODO (wykonanie umowy / świadczenie usługi).
+          </span>
+        </p>
+
+        <h3>3.2 Kontakt i obsługa zapytań</h3>
+        <p>
+          Jeśli kontaktujesz się z nami, przetwarzamy dane w celu odpowiedzi i prowadzenia korespondencji.
+          <br><span class="muted small">
+            Podstawa prawna: art. 6 ust. 1 lit. f RODO (uzasadniony interes – komunikacja i obsługa klienta) lub art. 6 ust. 1 lit. b RODO (jeśli sprawa dotyczy usługi).
+          </span>
+        </p>
+
+        <h3>3.3 Bezpieczeństwo i ochrona przed nadużyciami</h3>
+        <p>
+          Możemy przetwarzać dane techniczne i logi w celu zapewnienia bezpieczeństwa serwisu, wykrywania nadużyć i zapobiegania oszustwom.
+          <br><span class="muted small">
+            Podstawa prawna: art. 6 ust. 1 lit. f RODO (uzasadniony interes – bezpieczeństwo).
+          </span>
+        </p>
+
+        <h3>3.4 Newsletter, wiadomości marketingowe i reklamowe (ZA ZGODĄ)</h3>
+        <div class="callout">
+          <p>
+            Jeżeli podczas rejestracji <strong>zaakceptujesz newsletter</strong>, wyrażasz zgodę na otrzymywanie od nas wiadomości e-mail
+            obejmujących <strong>newsletter</strong>, <strong>komunikację marketingową</strong> i <strong>reklamową</strong>,
+            a także informacji związanych z działalnością i ofertą serwisów <strong>MilkShakeBar.pl</strong> oraz <strong>Eatmi.pl</strong>.
+          </p>
+          <p class="muted small">
+            Podstawa prawna: art. 6 ust. 1 lit. a RODO (zgoda). Zgodę możesz wycofać w dowolnym momencie (np. link „wypisz się” w wiadomości lub kontakt do administratora).
+          </p>
+        </div>
+
+        <div class="hr"></div>
+
+        <h2>4. Odbiorcy danych</h2>
+        <p>
+          Możemy udostępniać Twoje dane wyłącznie w niezbędnym zakresie następującym kategoriom odbiorców:
+        </p>
+        <ul class="list-compact">
+          <li><strong>Dostawcy hostingu i infrastruktury IT</strong> (serwery, utrzymanie systemów, kopie zapasowe).</li>
+          <li><strong>Dostawcy poczty / narzędzi newsletterowych</strong> (jeśli wyraziłeś zgodę na newsletter).</li>
+          <li><strong>Dostawcy wsparcia technicznego</strong> – gdy jest to konieczne do usunięcia awarii lub utrzymania serwisu.</li>
+          <li><strong>Uprawnione organy publiczne</strong> – wyłącznie, gdy wynika to z przepisów prawa.</li>
+        </ul>
+
+        <div class="hr"></div>
+
+        <h2>5. Przekazywanie danych poza EOG</h2>
+        <p>
+          Co do zasady nie planujemy przekazywać danych poza Europejski Obszar Gospodarczy (EOG).
+          Jeśli jednak korzystamy z dostawców działających poza EOG (np. część narzędzi mailingowych),
+          przekazanie może nastąpić wyłącznie przy zastosowaniu odpowiednich zabezpieczeń, np. standardowych klauzul umownych.
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>6. Okres przechowywania danych</h2>
+        <ul class="list-compact">
+          <li><strong>Dane konta</strong> – przez czas utrzymywania konta i świadczenia usług; po usunięciu konta mogą być przechowywane przez okres niezbędny do obrony roszczeń.</li>
+          <li><strong>Dane marketingowe/newsletter</strong> – do czasu wycofania zgody.</li>
+          <li><strong>Dane techniczne i logi</strong> – przez okres uzasadniony potrzebami bezpieczeństwa i działania serwisu (zwykle ograniczony czasowo).</li>
+        </ul>
+
+        <div class="hr"></div>
+
+        <h2>7. Twoje prawa</h2>
+        <p>Przysługują Ci prawa wynikające z RODO, w tym:</p>
+        <ul class="list-compact">
+          <li>prawo dostępu do danych,</li>
+          <li>prawo sprostowania danych,</li>
+          <li>prawo usunięcia danych („prawo do bycia zapomnianym”),</li>
+          <li>prawo ograniczenia przetwarzania,</li>
+          <li>prawo przenoszenia danych,</li>
+          <li>prawo sprzeciwu (gdy podstawą jest uzasadniony interes),</li>
+          <li>prawo wycofania zgody w dowolnym momencie (bez wpływu na zgodność przetwarzania przed wycofaniem),</li>
+          <li>prawo wniesienia skargi do organu nadzorczego (Prezes UODO).</li>
+        </ul>
+
+        <div class="hr"></div>
+
+        <h2>8. Dobrowolność podania danych</h2>
+        <p>
+          Podanie danych wymaganych do rejestracji jest dobrowolne, ale niezbędne do utworzenia konta i korzystania z jego funkcji.
+          Zgoda na newsletter/marketing jest dobrowolna i nie wpływa na możliwość rejestracji, o ile system nie oznacza jej jako obowiązkowej.
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>9. Zautomatyzowane podejmowanie decyzji i profilowanie</h2>
+        <p>
+          Co do zasady nie podejmujemy wobec Ciebie decyzji opartych wyłącznie na zautomatyzowanym przetwarzaniu, w tym profilowaniu,
+          które wywoływałoby skutki prawne lub w podobny sposób istotnie na Ciebie wpływało.
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>10. Bezpieczeństwo</h2>
+        <p>
+          Stosujemy środki techniczne i organizacyjne, aby chronić dane przed utratą, nieuprawnionym dostępem,
+          modyfikacją lub ujawnieniem (m.in. szyfrowane połączenia, kontrola dostępu, haszowanie haseł).
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>11. Zmiany polityki</h2>
+        <p>
+          Polityka może być aktualizowana, np. w razie zmian prawnych lub rozwoju funkcjonalności serwisu.
+          Aktualna wersja zawsze jest dostępna na tej stronie.
+        </p>
+
+        <p class="muted small" style="margin-top:14px;">
+          Ostatnia aktualizacja: <strong>21.12.2025</strong>
+        </p>
+      </article>
+
+      <!-- ASIDE -->
+      <aside class="aside">
+        <div class="card">
+          <h3><i class="fa-solid fa-circle-info" style="color:var(--primary-color)"></i> Szybkie informacje</h3>
+
+          <div class="info">
+            <i class="fa-solid fa-user-shield"></i>
+            <div>
+              <div class="t">Administrator</div>
+              <div class="small">
+                MARCIN CHOJNACKI – MILKSHAKE BAR<br>
+                NIP 8271982077 • REGON 100473965<br>
+                ul. Szczecińska 17, 76-200 Słupsk, Polska
+              </div>
+            </div>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <div class="t">Newsletter & marketing</div>
+              <div class="small">
+                Tylko po Twojej zgodzie przy rejestracji. Możesz się wypisać w każdej chwili.
+              </div>
+            </div>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-link"></i>
+            <div>
+              <div class="t">Dotyczy serwisów</div>
+              <div class="small">
+                MilkShakeBar.pl oraz Eatmi.pl (komunikacja marketingowa po zgodzie).
+              </div>
+            </div>
+          </div>
+
+          <div class="callout" style="margin-top:12px;">
+            <p class="small">
+              <strong>Przykładowa zgoda checkbox (do formularza rejestracji):</strong><br>
+              „Wyrażam zgodę na otrzymywanie newslettera oraz wiadomości marketingowych i reklamowych dotyczących MilkShakeBar.pl i Eatmi.pl drogą e-mail.”
+            </p>
+          </div>
+
+          <div class="hr"></div>
+
+          <a class="btn btn-primary" href="/" style="width:100%;justify-content:center;">
+            Wróć na stronę <i class="fa-solid fa-house"></i>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="bottom">
+        <span>© 2025 MilkShake Bar</span>
+        <span class="small">Polityka Prywatności • MilkShakeBar.pl</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
