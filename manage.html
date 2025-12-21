@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <!-- ✅ Anti-zoom + fullscreen PWA safe-area -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>MilkShake Bar — Manage (Użytkownicy)</title>
+
+  <!-- ✅ PWA -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FF6A00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root{
+      --primary:#FF6A00;
+      --secondary:#FF9100;
+      --accent:#FFE0B2;
+
+      --bg:#FFF6EC;
+      --bg2:#ffffff;
+      --text:#2B1300;
+      --muted: rgba(43,19,0,0.65);
+
+      --card: rgba(255,255,255,0.82);
+      --card2: rgba(255,255,255,0.92);
+      --border: rgba(43,19,0,0.12);
+
+      --shadow: 0px 10px 30px rgba(0,0,0,0.12);
+      --shadow2: 0px 18px 50px rgba(0,0,0,0.14);
+      --radius: 20px;
+
+      --good:#16A34A;
+      --bad:#DC2626;
+
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --glass: rgba(255,255,255,0.70);
+      --glass2: rgba(255,255,255,0.86);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.16), transparent 60%),
+        radial-gradient(800px 500px at 50% 90%, rgba(43,19,0,0.06), transparent 60%),
+        var(--bg);
+      overflow:hidden;
+      overscroll-behavior:none;
+    }
+
+    .app{
+      height:100dvh;
+      display:grid;
+      grid-template-columns:290px 1fr;
+    }
+
+    body.locked{
+      touch-action:none;
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
+    }
+    #lock, #lock *{ touch-action:manipulation; }
+
+    /* Sidebar */
+    .sidebar{
+      height:100%;
+      padding:22px;
+      border-right:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.66));
+      backdrop-filter: blur(12px);
+    }
+    .brand{
+      display:flex;align-items:center;gap:14px;
+      padding:14px 14px;border-radius:18px;
+      background: var(--glass2);
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .brand img{
+      width:44px;height:44px;border-radius:999px;object-fit:cover;
+      box-shadow:0 10px 25px rgba(0,0,0,0.12);
+    }
+    .brand .t1{font-weight:900;letter-spacing:.2px}
+    .brand .t2{font-size:.86rem;color:var(--muted)}
+    .nav{margin-top:18px;display:flex;flex-direction:column;gap:10px;}
+    .navbtn{
+      width:100%;
+      display:flex;align-items:center;gap:12px;
+      padding:12px 14px;border-radius:16px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.70);
+      color:var(--text);cursor:pointer;transition:.18s ease;text-align:left;
+      box-shadow:0 10px 25px rgba(0,0,0,0.06);
+    }
+    .navbtn:hover{transform:translateY(-1px); background: rgba(255,255,255,0.86)}
+    .navbtn.active{
+      background: linear-gradient(135deg, rgba(255,106,0,0.18), rgba(255,145,0,0.12));
+      border-color: rgba(255,145,0,0.35);
+      box-shadow:0 18px 40px rgba(255,106,0,0.12);
+    }
+    .navbtn i{width:18px;opacity:.95}
+    .navsep{
+      margin:12px 0 6px;
+      font-size:.82rem;color: rgba(43,19,0,0.55);
+      padding:0 6px;letter-spacing:.4px;text-transform:uppercase;
+    }
+    .sidefoot{
+      margin-top:14px;
+      padding:12px 14px;border-radius:16px;
+      background: rgba(255,255,255,0.70);
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:.9rem;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.06);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background: rgba(255,255,255,0.72);
+      border:1px solid var(--border);
+      font-size:.82rem;color:rgba(43,19,0,0.92);
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:99px;background:var(--bad);
+      box-shadow:0 0 0 3px rgba(220,38,38,0.18);
+    }
+    .dot.ok{background:var(--good); box-shadow:0 0 0 3px rgba(22,163,74,0.18);}
+
+    /* Main */
+    .main{
+      height:100%;
+      overflow:auto;
+      padding: calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
+    }
+    .topbar{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:14px;margin-bottom:18px;
+    }
+    .topbar h1{
+      font-size:1.9rem;line-height:1.15;font-weight:900;
+      margin-bottom:6px;letter-spacing:.2px;
+      background: var(--gradient);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .topbar p{color:var(--muted);max-width:720px}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .btn{
+      border:none;cursor:pointer;font-weight:800;
+      padding:12px 14px;border-radius:999px;
+      color:var(--text);
+      background: rgba(255,255,255,0.80);
+      border:1px solid var(--border);
+      transition:.18s ease;
+      display:inline-flex;gap:10px;align-items:center;white-space:nowrap;
+      box-shadow:0 12px 26px rgba(0,0,0,0.08);
+    }
+    .btn:hover{transform:translateY(-1px); background: rgba(255,255,255,0.92)}
+    .btn.primary{
+      color:#fff;
+      background: var(--gradient);
+      border-color: rgba(255,145,0,0.45);
+      box-shadow:0 14px 35px rgba(255,106,0,0.22);
+    }
+    .btn.danger{
+      color:#fff;
+      background: rgba(220,38,38,0.90);
+      border-color: rgba(220,38,38,0.35);
+      box-shadow:0 14px 35px rgba(220,38,38,0.16);
+    }
+
+    /* Cards / grid */
+    .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:14px;}
+    .card{
+      grid-column: span 12;
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      backdrop-filter: blur(12px);
+    }
+    .card h2{font-size:1.1rem;margin-bottom:10px;font-weight:900;letter-spacing:.2px;}
+    .kpis{display:grid;grid-template-columns: repeat(4, 1fr);gap:14px;margin-top:10px;}
+    .kpi{
+      background: rgba(255,255,255,0.78);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      display:flex;gap:12px;align-items:center;
+      box-shadow:0 12px 26px rgba(0,0,0,0.06);
+    }
+    .kpi i{font-size:1.05rem;opacity:.95;color: rgba(255,106,0,0.95)}
+    .kpi .num{font-weight:900;font-size:1.35rem}
+    .kpi .lbl{font-size:.86rem;color:var(--muted)}
+
+    /* Table */
+    table{width:100%;border-collapse:separate;border-spacing:0 10px;}
+    th{
+      text-align:left;font-size:.82rem;color:rgba(43,19,0,0.55);
+      font-weight:900;padding:0 10px 6px;letter-spacing:.35px;text-transform:uppercase;
+    }
+    td{
+      padding:12px 10px;background: rgba(255,255,255,0.86);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      color: var(--text);
+      vertical-align:top;
+    }
+    tr td:first-child{
+      border-left:1px solid var(--border);
+      border-top-left-radius:16px;border-bottom-left-radius:16px;
+    }
+    tr td:last-child{
+      border-right:1px solid var(--border);
+      border-top-right-radius:16px;border-bottom-right-radius:16px;
+    }
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background: rgba(255,255,255,0.86);
+      border:1px solid var(--border);
+      font-weight:900;font-size:.84rem;white-space:nowrap;
+      box-shadow:0 10px 22px rgba(0,0,0,0.05);
+    }
+    .tag i{color: rgba(255,106,0,0.95)}
+    .tag small{font-weight:700;color:rgba(43,19,0,0.55)}
+    .row-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+    .iconbtn{
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.86);
+      color:var(--text);cursor:pointer;
+      display:grid;place-items:center;transition:.15s ease;
+      box-shadow:0 10px 22px rgba(0,0,0,0.06);
+    }
+    .iconbtn:hover{transform:translateY(-1px); background: rgba(255,255,255,0.95)}
+    .iconbtn.ok{background: rgba(22,163,74,0.12);border-color: rgba(22,163,74,0.28);color:#0f5f2a}
+
+    /* Inputs */
+    .field{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+    .field label{font-weight:900;font-size:.9rem}
+    .input, .textarea{
+      width:100%;
+      padding:12px 14px;border-radius:16px;
+      border:2px solid rgba(43,19,0,0.10);
+      background: rgba(255,255,255,0.90);
+      color:var(--text);outline:none;font-family:Poppins;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .input:focus, .textarea:focus{
+      border-color: rgba(255,106,0,0.55);
+      box-shadow:0 10px 26px rgba(255,106,0,0.12);
+    }
+    .hint{margin-top:8px;color:var(--muted);font-size:.92rem}
+    .muted{color:rgba(43,19,0,0.62)}
+
+    /* Modals */
+    .modal, .lock{
+      position:fixed; inset:0;
+      display:none;align-items:center;justify-content:center;
+      z-index:9999;
+      background: rgba(0,0,0,0.42);
+      backdrop-filter: blur(10px);
+      padding:22px;
+    }
+    .modal.show, .lock.show{display:flex}
+    .modalbox{
+      width:min(980px, 100%);
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow2);
+      padding:18px;
+      color: var(--text);
+      max-height: min(92dvh, 920px);
+      overflow:auto;
+    }
+    .modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+    .modalhead h3{font-size:1.2rem;font-weight:900}
+    .modalgrid{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
+    .modalfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+
+    /* LOCKSCREEN */
+    .lockbox{
+      width:min(520px, 100%);
+      border-radius:30px;
+      border:1px solid rgba(255,255,255,0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
+      box-shadow: var(--shadow2);
+      padding:18px;
+      color: var(--text);
+    }
+    .locktop{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;}
+    .locktop .title{display:flex;flex-direction:column;gap:2px}
+    .locktop .title b{font-weight:900;font-size:1.1rem}
+    .locktop .title span{color:var(--muted);font-size:.92rem}
+    .pin{display:flex;gap:10px;justify-content:center;margin:14px 0 10px;}
+    .pin .dotpin{
+      width:14px;height:14px;border-radius:99px;
+      background: rgba(43,19,0,0.10);
+      border:1px solid rgba(43,19,0,0.12);
+      box-shadow: inset 0 6px 12px rgba(0,0,0,0.10);
+    }
+    .pin .dotpin.filled{
+      background: var(--gradient);
+      border-color: rgba(255,145,0,0.55);
+      box-shadow:0 10px 25px rgba(255,106,0,0.18);
+    }
+    .keypad{display:grid;grid-template-columns: repeat(3, 1fr);gap:12px;margin-top:12px;}
+    .key{
+      height:56px;border-radius:18px;
+      border:1px solid rgba(43,19,0,0.12);
+      background: rgba(255,255,255,0.86);
+      color:var(--text);font-weight:900;font-size:1.15rem;
+      cursor:pointer;transition:.15s ease;display:grid;place-items:center;
+      box-shadow:0 12px 26px rgba(0,0,0,0.06);
+    }
+    .key:hover{transform:translateY(-1px); background: rgba(255,255,255,0.95)}
+    .key.small{font-size:1rem}
+    .key.danger{
+      background: rgba(220,38,38,0.10);
+      border-color: rgba(220,38,38,0.22);
+      color:#8a0d0d;
+    }
+    .key.ok{
+      background: rgba(22,163,74,0.10);
+      border-color: rgba(22,163,74,0.22);
+      color:#0f5f2a;
+    }
+    .lockmsg{text-align:center;color:rgba(43,19,0,0.75);font-size:.92rem;min-height:22px;margin-top:10px;}
+
+    /* Toast */
+    #toast{
+      position:fixed;bottom:18px;right:18px;z-index:12000;
+      display:none;align-items:center;gap:10px;
+      padding:12px 14px;border-radius:999px;
+      background: rgba(22,163,74,0.14);
+      border:1px solid rgba(22,163,74,0.25);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      box-shadow:0 18px 45px rgba(0,0,0,0.18);
+      font-weight:900;
+    }
+    #toast i{color: var(--good)}
+
+    /* MOBILE drawer */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      z-index:80;
+      display:none;
+    }
+    .overlay.show{display:block}
+
+    @media (max-width: 1180px){
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+    }
+    @media (max-width: 920px){
+      body{overflow:auto}
+      .app{grid-template-columns:1fr}
+      .sidebar{
+        position:fixed; top:0; left:0; bottom:0;
+        width:min(86vw, 340px);
+        transform: translateX(-110%);
+        transition: transform .22s ease;
+        z-index:90;
+        border-right:1px solid var(--border);
+        box-shadow:0 30px 90px rgba(0,0,0,0.35);
+      }
+      .sidebar.open{transform: translateX(0)}
+      .main{
+        padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+        height:auto; overflow:visible;
+      }
+      .topbar{
+        position:sticky; top:0; z-index:40;
+        padding:12px; margin:-14px -14px 14px;
+        border-radius:18px;
+        background: rgba(255,255,255,0.86);
+        border:1px solid var(--border);
+        backdrop-filter: blur(12px);
+        flex-direction:column;
+        align-items:stretch;
+        box-shadow: var(--shadow);
+      }
+      #menuBtn{display:inline-flex !important}
+      table{min-width: 860px}
+      .modalgrid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOCKSCREEN -->
+  <div class="lock show" id="lock">
+    <div class="lockbox">
+      <div class="locktop">
+        <div class="title">
+          <b>MilkShake Bar — Manage</b>
+          <span>Wpisz PIN na klawiaturze ekranowej</span>
+        </div>
+        <span class="pill"><i class="fa-solid fa-lock"></i> PIN</span>
+      </div>
+
+      <div class="pin" aria-label="PIN">
+        <div class="dotpin" id="p1"></div>
+        <div class="dotpin" id="p2"></div>
+        <div class="dotpin" id="p3"></div>
+        <div class="dotpin" id="p4"></div>
+      </div>
+
+      <div class="keypad" id="keypad">
+        <button class="key" data-k="1">1</button>
+        <button class="key" data-k="2">2</button>
+        <button class="key" data-k="3">3</button>
+        <button class="key" data-k="4">4</button>
+        <button class="key" data-k="5">5</button>
+        <button class="key" data-k="6">6</button>
+        <button class="key" data-k="7">7</button>
+        <button class="key" data-k="8">8</button>
+        <button class="key" data-k="9">9</button>
+        <button class="key danger small" data-act="back"><i class="fa-solid fa-delete-left"></i></button>
+        <button class="key" data-k="0">0</button>
+        <button class="key ok small" data-act="ok"><i class="fa-solid fa-check"></i></button>
+      </div>
+
+      <div class="lockmsg" id="lockMsg"></div>
+    </div>
+  </div>
+
+  <div class="app" id="app" style="display:none">
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo">
+        <div>
+          <div class="t1">MilkShake Bar</div>
+          <div class="t2">Manage — Użytkownicy</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="navsep">Główne</div>
+        <button class="navbtn active" data-tab="users"><i class="fa-solid fa-users"></i> Użytkownicy</button>
+
+        <div class="navsep">Skróty</div>
+        <a class="navbtn" href="/admin" style="text-decoration:none">
+          <i class="fa-solid fa-arrow-left"></i> Wróć do panelu
+        </a>
+
+        <div class="sidefoot">
+          <span class="pill"><span class="dot" id="apiDot"></span> API</span>
+          <span class="pill" id="clock"><i class="fa-regular fa-clock"></i> —</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="title">Użytkownicy</h1>
+          <p id="subtitle">Wyszukuj, przeglądaj profil i historię aktywności klienta.</p>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="menuBtn" style="display:none"><i class="fa-solid fa-bars"></i> Menu</button>
+          <button class="btn" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Odśwież</button>
+          <button class="btn danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <section class="card" id="kpiCard">
+        <h2>Statystyki użytkowników</h2>
+        <div class="kpis">
+          <div class="kpi"><i class="fa-solid fa-users"></i><div><div class="num" id="kUsers">—</div><div class="lbl">Użytkownicy</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-id-badge"></i><div><div class="num" id="kWithMilkId">—</div><div class="lbl">Z Milk ID</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-star"></i><div><div class="num" id="kWithPoints">—</div><div class="lbl">Z punktami</div></div></div>
+          <div class="kpi"><i class="fa-solid fa-coins"></i><div><div class="num" id="kMilkosTotal">—</div><div class="lbl">Milkosy łącznie</div></div></div>
+        </div>
+      </section>
+
+      <!-- USERS LIST -->
+      <section class="card" id="tab-users">
+        <h2>Lista użytkowników</h2>
+
+        <div class="modalgrid" style="margin-top:6px">
+          <div class="field">
+            <label>Szukaj (email / Milk ID / imię / telefon)</label>
+            <input class="input" id="q" placeholder="np. jan@... albo 123456">
+          </div>
+          <div class="field">
+            <label>Limit</label>
+            <input class="input" id="limit" type="number" min="10" max="500" step="10" value="200">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+          <button class="btn" id="clearBtn"><i class="fa-solid fa-eraser"></i> Wyczyść</button>
+          <button class="btn primary" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Szukaj</button>
+        </div>
+
+        <div style="overflow:auto;margin-top:10px">
+          <table>
+            <thead>
+              <tr>
+                <th>Klient</th>
+                <th>Email / Milk ID</th>
+                <th>Punkty</th>
+                <th>Ostatnia aktywność</th>
+                <th style="text-align:right">Akcje</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+
+        <p class="hint">Kliknij profil, aby zobaczyć pełną historię konta.</p>
+      </section>
+    </main>
+  </div>
+
+  <!-- USER MODAL -->
+  <div class="modal" id="userModal" aria-hidden="true">
+    <div class="modalbox">
+      <div class="modalhead">
+        <h3 id="umTitle">Profil użytkownika</h3>
+        <button class="iconbtn" id="umClose" title="Zamknij"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <section class="card" style="margin-top:2px">
+        <h2>Dane klienta</h2>
+        <div id="umBasic" class="hint" style="margin-top:0"></div>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <h2>Historia (oś czasu)</h2>
+
+        <div class="modalgrid" style="margin-top:6px">
+          <div class="field">
+            <label>Filtr typu</label>
+            <select class="input" id="umType">
+              <option value="all">Wszystko</option>
+              <option value="reservation">Rezerwacje</option>
+              <option value="points_add">Doładowania punktów</option>
+              <option value="reward_redeem">Wymiany na nagrody</option>
+              <option value="reward_use">Użycia kodów nagród</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Limit zdarzeń</label>
+            <input class="input" id="umLimit" type="number" min="20" max="500" step="10" value="200">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
+          <button class="btn" id="umRefresh"><i class="fa-solid fa-rotate"></i> Odśwież</button>
+        </div>
+
+        <div id="umTimeline" style="margin-top:12px"></div>
+      </section>
+
+      <div class="modalfoot">
+        <button class="btn" id="umCopyEmail"><i class="fa-solid fa-copy"></i> Kopiuj email</button>
+        <button class="btn primary" id="umCopyMilkId"><i class="fa-solid fa-id-badge"></i> Kopiuj Milk ID</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastText"></span>
+  </div>
+
+  <script>
+    // ==========================
+    // Helpers
+    // ==========================
+    const $ = (q, el=document) => el.querySelector(q);
+    const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
+
+    const state = {
+      pin:"",
+      unlocked:false,
+      users:[],
+      userSelected:null, // {email, milkId, ...}
+      userTimeline:[],
+    };
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    function showToast(msg, bad=false){
+      const t = $("#toast");
+      $("#toastText").textContent = msg;
+      t.style.display = "flex";
+      t.style.background = bad ? "rgba(220,38,38,0.14)" : "rgba(22,163,74,0.14)";
+      t.style.borderColor = bad ? "rgba(220,38,38,0.25)" : "rgba(22,163,74,0.25)";
+      t.querySelector("i").style.color = bad ? "var(--bad)" : "var(--good)";
+      setTimeout(()=> t.style.display="none", 3200);
+    }
+
+    function setLockedFreeze(on){
+      document.body.classList.toggle("locked", !!on);
+    }
+    setLockedFreeze(true);
+
+    ["gesturestart","gesturechange","gestureend"].forEach(ev=>{
+      window.addEventListener(ev, (e)=> e.preventDefault(), {passive:false});
+    });
+
+    let lastTouchEnd = 0;
+    document.addEventListener("touchend", (e)=>{
+      const now = Date.now();
+      if(now - lastTouchEnd <= 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, {passive:false});
+
+    // ==========================
+    // ✅ Backend login (PIN not in frontend)
+    // POST /api/login {pin:"1234"} => {ok:true}
+    // ==========================
+    async function verifyPin(pin){
+      const res = await fetch("/api/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ pin })
+      });
+      const data = await res.json().catch(()=>({}));
+      return !!(res.ok && data && data.ok);
+    }
+
+    // ==========================
+    // Lock screen PIN
+    // ==========================
+    function renderPin(){
+      const dots = [$("#p1"), $("#p2"), $("#p3"), $("#p4")];
+      dots.forEach((d,i)=> d.classList.toggle("filled", i < state.pin.length));
+    }
+
+    function setLockMsg(msg, bad=false){
+      const el = $("#lockMsg");
+      el.textContent = msg || "";
+      el.style.color = bad ? "rgba(220,38,38,0.95)" : "rgba(43,19,0,0.75)";
+    }
+
+    function unlock(){
+      state.unlocked = true;
+      setLockedFreeze(false);
+      $("#lock").classList.remove("show");
+      $("#app").style.display = "grid";
+      showToast("Zalogowano ✅");
+      initApp();
+    }
+
+    function lock(){
+      state.unlocked = false;
+      state.pin = "";
+      renderPin();
+      $("#app").style.display = "none";
+      $("#lock").classList.add("show");
+      setLockedFreeze(true);
+      setLockMsg("");
+      closeUserModal();
+    }
+
+    let loginBusy = false;
+
+    $("#keypad").addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn || loginBusy) return;
+
+      const k = btn.getAttribute("data-k");
+      const act = btn.getAttribute("data-act");
+
+      if(k){
+        if(state.pin.length >= 4) return;
+        state.pin += k;
+        renderPin();
+        setLockMsg("");
+
+        if(state.pin.length === 4){
+          const entered = state.pin;
+          state.pin = "";
+          renderPin();
+
+          loginBusy = true;
+          try{
+            const ok = await verifyPin(entered);
+            if(ok) unlock();
+            else setLockMsg("Błędny PIN", true);
+          }catch{
+            setLockMsg("Błąd logowania", true);
+          }finally{
+            loginBusy = false;
+          }
+        }
+        return;
+      }
+
+      if(act === "back"){
+        state.pin = state.pin.slice(0, -1);
+        renderPin();
+        setLockMsg("");
+      }
+
+      if(act === "ok"){
+        const entered = state.pin;
+        state.pin = "";
+        renderPin();
+
+        loginBusy = true;
+        try{
+          const ok = await verifyPin(entered);
+          if(ok) unlock();
+          else setLockMsg("Błędny PIN", true);
+        }catch{
+          setLockMsg("Błąd logowania", true);
+        }finally{
+          loginBusy = false;
+        }
+      }
+    });
+
+    // total freeze system keyboard on lockscreen
+    window.addEventListener("keydown", (e)=>{
+      if(!$("#lock").classList.contains("show")) return;
+      e.preventDefault();
+    }, {passive:false});
+
+    $("#logoutBtn").addEventListener("click", lock);
+
+    // ==========================
+    // API Health
+    // ==========================
+    async function apiHealth(){
+      try{
+        const res = await fetch("/api/health", {cache:"no-store"});
+        const ok = res.ok;
+        $("#apiDot").classList.toggle("ok", ok);
+        $("#apiDot").classList.toggle("dot", true);
+      }catch{
+        $("#apiDot").classList.remove("ok");
+      }
+    }
+
+    // ==========================
+    // ✅ Users list (NEW ADMIN API)
+    // GET /api/admin/users?query=&limit=
+    // -> { ok:true, items:[{email,milkId,name,phone,points,lastActivityAt}] , stats:{...} }
+    // ==========================
+    async function loadUsers(){
+      const q = ($("#q").value || "").trim();
+      const limit = Math.max(10, Math.min(500, Number($("#limit").value) || 200));
+      try{
+        const url = `/api/admin/users?query=${encodeURIComponent(q)}&limit=${encodeURIComponent(String(limit))}`;
+        const res = await fetch(url, {cache:"no-store"});
+        const data = await res.json().catch(()=>null);
+
+        if(!res.ok || !data?.ok) throw new Error(data?.message || "Błąd pobierania użytkowników");
+
+        state.users = Array.isArray(data.items) ? data.items : [];
+        renderUsers();
+
+        const st = data.stats || {};
+        $("#kUsers").textContent = st.users ?? state.users.length ?? "—";
+        $("#kWithMilkId").textContent = st.withMilkId ?? "—";
+        $("#kWithPoints").textContent = st.withPoints ?? "—";
+        $("#kMilkosTotal").textContent = st.milkosTotal ?? "—";
+      }catch(err){
+        console.error(err);
+        state.users = [];
+        renderUsers();
+        showToast(err.message || "Nie udało się pobrać listy", true);
+      }
+    }
+
+    function renderUsers(){
+      const tb = $("#usersTbody");
+      tb.innerHTML = "";
+
+      if(!state.users.length){
+        tb.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
+              Brak wyników
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      for(const u of state.users){
+        const name = u.name || "—";
+        const phone = u.phone || "—";
+        const email = u.email || "—";
+        const milkId = u.milkId || "—";
+        const points = Number.isFinite(u.points) ? u.points : (u.points ?? "—");
+        const last = u.lastActivityAt ? new Date(u.lastActivityAt).toLocaleString("pl-PL") : "—";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <div style="font-weight:900">${escapeHtml(name)}</div>
+            <div style="margin-top:6px;color:rgba(43,19,0,0.70);font-size:.9rem">
+              <i class="fa-solid fa-phone" style="color:rgba(255,106,0,0.95)"></i>
+              ${escapeHtml(phone)}
+            </div>
+          </td>
+          <td>
+            <div class="tag" style="margin:0 8px 8px 0"><i class="fa-solid fa-envelope"></i> ${escapeHtml(email)}</div>
+            <div class="tag"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(milkId)}</div>
+          </td>
+          <td><span class="tag"><i class="fa-solid fa-star"></i> ${escapeHtml(points)} <small>pkt</small></span></td>
+          <td><span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(last)}</span></td>
+          <td>
+            <div class="row-actions">
+              <button class="iconbtn ok" title="Profil" data-act="open" data-email="${escapeHtml(email)}">
+                <i class="fa-solid fa-user"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tb.appendChild(tr);
+      }
+    }
+
+    $("#usersTbody").addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const act = btn.getAttribute("data-act");
+      const email = btn.getAttribute("data-email");
+      if(act === "open" && email){
+        await openUserByEmail(email);
+      }
+    });
+
+    // ==========================
+    // ✅ User details (NEW ADMIN API)
+    // GET /api/admin/users/details?email=...&type=all|...&limit=...
+    // -> { ok:true, user:{email,milkId,name,phone,points}, timeline:[{type,at,title,details,meta}] }
+    // ==========================
+    async function fetchUserDetails(email){
+      const type = ($("#umType").value || "all").trim();
+      const limit = Math.max(20, Math.min(500, Number($("#umLimit").value) || 200));
+
+      const url = `/api/admin/users/details?email=${encodeURIComponent(email)}&type=${encodeURIComponent(type)}&limit=${encodeURIComponent(String(limit))}`;
+      const res = await fetch(url, {cache:"no-store"});
+      const data = await res.json().catch(()=>null);
+
+      if(!res.ok || !data?.ok) throw new Error(data?.message || "Błąd pobierania profilu");
+      return data;
+    }
+
+    function openUserModal(){
+      $("#userModal").classList.add("show");
+      $("#userModal").setAttribute("aria-hidden","false");
+    }
+    function closeUserModal(){
+      $("#userModal").classList.remove("show");
+      $("#userModal").setAttribute("aria-hidden","true");
+      state.userSelected = null;
+      state.userTimeline = [];
+      $("#umBasic").innerHTML = "";
+      $("#umTimeline").innerHTML = "";
+    }
+    $("#umClose").addEventListener("click", closeUserModal);
+    $("#userModal").addEventListener("click", (e)=>{ if(e.target.id === "userModal") closeUserModal(); });
+
+    async function openUserByEmail(email){
+      try{
+        $("#umTitle").textContent = `Profil: ${email}`;
+        openUserModal();
+        $("#umBasic").innerHTML = `<span class="muted">Ładowanie…</span>`;
+        $("#umTimeline").innerHTML = `<span class="muted">Ładowanie…</span>`;
+
+        const data = await fetchUserDetails(email);
+        state.userSelected = data.user || { email };
+        state.userTimeline = Array.isArray(data.timeline) ? data.timeline : [];
+
+        renderUserBasic();
+        renderTimeline();
+      }catch(err){
+        console.error(err);
+        showToast(err.message || "Błąd profilu", true);
+        $("#umBasic").innerHTML = `<span class="muted">Nie udało się wczytać profilu.</span>`;
+        $("#umTimeline").innerHTML = `<span class="muted">—</span>`;
+      }
+    }
+
+    function renderUserBasic(){
+      const u = state.userSelected || {};
+      const name = u.name || "—";
+      const phone = u.phone || "—";
+      const email = u.email || "—";
+      const milkId = u.milkId || "—";
+      const points = Number.isFinite(u.points) ? u.points : (u.points ?? "—");
+
+      $("#umBasic").innerHTML = `
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-user"></i> ${escapeHtml(name)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-phone"></i> ${escapeHtml(phone)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-envelope"></i> ${escapeHtml(email)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(milkId)}</div>
+        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-star"></i> ${escapeHtml(points)} <small>pkt</small></div>
+      `;
+    }
+
+    function iconForType(t){
+      switch(t){
+        case "reservation": return "fa-calendar-check";
+        case "points_add": return "fa-plus";
+        case "reward_redeem": return "fa-gift";
+        case "reward_use": return "fa-ticket";
+        default: return "fa-bolt";
+      }
+    }
+    function labelForType(t){
+      switch(t){
+        case "reservation": return "Rezerwacja";
+        case "points_add": return "Doładowanie punktów";
+        case "reward_redeem": return "Wymiana na nagrodę";
+        case "reward_use": return "Użycie kodu";
+        default: return "Akcja";
+      }
+    }
+
+    function renderTimeline(){
+      const box = $("#umTimeline");
+      const list = state.userTimeline || [];
+
+      if(!list.length){
+        box.innerHTML = `<span class="muted">Brak zdarzeń do wyświetlenia.</span>`;
+        return;
+      }
+
+      box.innerHTML = list.map(ev=>{
+        const at = ev.at ? new Date(ev.at).toLocaleString("pl-PL") : (ev.date || "—");
+        const title = ev.title || labelForType(ev.type);
+        const details = ev.details || "";
+        const meta = ev.meta ? JSON.stringify(ev.meta) : "";
+        return `
+          <div style="border:1px solid rgba(43,19,0,0.12);background:rgba(255,255,255,0.86);border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 10px 22px rgba(0,0,0,0.06)">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+              <span class="tag"><i class="fa-solid ${iconForType(ev.type)}"></i> ${escapeHtml(title)}</span>
+              <span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(at)}</span>
+            </div>
+            ${details ? `<div style="margin-top:10px;color:rgba(43,19,0,0.75);line-height:1.6">${escapeHtml(details)}</div>` : ""}
+            ${meta && meta !== "{}" ? `<div class="hint" style="margin-top:10px"><b>meta:</b> ${escapeHtml(meta)}</div>` : ""}
+          </div>
+        `;
+      }).join("");
+    }
+
+    $("#umRefresh").addEventListener("click", async ()=>{
+      const u = state.userSelected;
+      if(!u?.email) return;
+      try{
+        $("#umTimeline").innerHTML = `<span class="muted">Ładowanie…</span>`;
+        const data = await fetchUserDetails(u.email);
+        state.userSelected = data.user || u;
+        state.userTimeline = Array.isArray(data.timeline) ? data.timeline : [];
+        renderUserBasic();
+        renderTimeline();
+        showToast("Odświeżono ✅");
+      }catch(err){
+        console.error(err);
+        showToast(err.message || "Błąd odświeżania", true);
+      }
+    });
+
+    $("#umType").addEventListener("change", ()=> $("#umRefresh").click());
+
+    $("#umCopyEmail").addEventListener("click", async ()=>{
+      const email = state.userSelected?.email || "";
+      if(!email) return;
+      try{ await navigator.clipboard.writeText(email); showToast("Skopiowano email ✅"); }catch{ showToast("Nie udało się skopiować", true); }
+    });
+    $("#umCopyMilkId").addEventListener("click", async ()=>{
+      const milkId = state.userSelected?.milkId || "";
+      if(!milkId || milkId === "—") return showToast("Brak Milk ID", true);
+      try{ await navigator.clipboard.writeText(milkId); showToast("Skopiowano Milk ID ✅"); }catch{ showToast("Nie udało się skopiować", true); }
+    });
+
+    // ==========================
+    // Search UI
+    // ==========================
+    $("#searchBtn").addEventListener("click", loadUsers);
+    $("#clearBtn").addEventListener("click", ()=>{
+      $("#q").value = "";
+      $("#limit").value = "200";
+      loadUsers();
+    });
+
+    // ==========================
+    // Mobile drawer sidebar
+    // ==========================
+    const sidebar = document.querySelector(".sidebar");
+    const overlay = document.getElementById("overlay");
+    const menuBtn = document.getElementById("menuBtn");
+
+    function openMenu(){ sidebar?.classList.add("open"); overlay?.classList.add("show"); }
+    function closeMenu(){ sidebar?.classList.remove("open"); overlay?.classList.remove("show"); }
+
+    menuBtn?.addEventListener("click", ()=>{
+      if(sidebar?.classList.contains("open")) closeMenu();
+      else openMenu();
+    });
+    overlay?.addEventListener("click", closeMenu);
+
+    window.addEventListener("resize", ()=>{
+      if(!window.matchMedia("(max-width: 920px)").matches) closeMenu();
+    });
+
+    // ==========================
+    // Init
+    // ==========================
+    async function initApp(){
+      await apiHealth();
+      await loadUsers();
+    }
+
+    $("#refreshBtn").addEventListener("click", async ()=>{
+      await apiHealth();
+      await loadUsers();
+      showToast("Odświeżono ✅");
+    });
+
+    setInterval(()=>{
+      const now = new Date();
+      $("#clock").innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"})}`;
+    }, 1000);
+
+    setInterval(apiHealth, 6000);
+
+    renderPin();
+  </script>
+</body>
+</html>
