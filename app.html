@@ -367,9 +367,6 @@
     .li-sub{font-size:.85rem;opacity:.7}
 
     .auth-wrap{display:grid;gap:10px;}
-    .auth-sep{display:flex;align-items:center;gap:10px;margin:6px 0;}
-    .auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:rgba(0,0,0,.08);}
-    .auth-sep span{font-size:.85rem;opacity:.7;font-weight:800;}
 
     .subpage{
       position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column;
@@ -808,6 +805,23 @@
     <!-- TAB: PUNKTY -->
     <section id="tab-points" class="tab active">
 
+      <!-- NEWSLETTER BAR (pokazuje się tylko po zalogowaniu i jeśli nie zapisano na tym koncie) -->
+      <div id="newsletterBar" class="card" style="padding:12px 12px; display:none;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;">
+          <div style="font-weight:900;">
+            Zapisz się na newsletter
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex:1 1 280px;min-width:240px;">
+            <input id="newsletterEmail" type="email" placeholder="Wpisz email" style="flex:1 1 auto;">
+            <button id="newsletterSaveBtn" class="btn btn-primary btn-small" style="white-space:nowrap;">
+              Zapisz się
+            </button>
+          </div>
+        </div>
+        <div class="tiny" style="margin-top:6px;opacity:.72;"></div>
+      </div>
+
       <div class="opening-card" id="openingCard" title="Kliknij, aby zobaczyć godziny otwarcia">
         <div class="opening-status">
           <span class="status-dot" id="openDot"></span>
@@ -957,42 +971,82 @@
           <p class="muted">Zaloguj się, aby synchronizować punkty, nagrody i rezerwacje na wszystkich urządzeniach.</p>
         </div>
 
-        <div class="card auth-wrap">
-          <div class="subtitle">Zaloguj się</div>
+        <!-- JEDNA KAFELKA: rejestracja / logowanie -->
+        <div class="card auth-wrap" id="authCard">
 
-          <form id="loginEmailForm" class="stack">
-            <div>
-              <label>Email</label>
-              <input type="email" name="email" placeholder="np. klient@mail.com" required>
-            </div>
-            <div>
-              <label>Hasło</label>
-              <input type="password" name="password" placeholder="••••••••" required minlength="6">
-            </div>
-            <button class="btn btn-primary btn-wide" type="submit">
-              Zaloguj się <i class="fa-solid fa-right-to-bracket"></i>
-            </button>
-          </form>
+          <!-- VIEW: REGISTER -->
+          <div id="authRegisterView">
+            <div class="subtitle">Zarejestruj się</div>
 
-          <div class="auth-sep"><span>albo</span></div>
+            <form id="registerForm" class="stack">
+              <div>
+                <label>Email</label>
+                <input type="email" name="email" placeholder="np. klient@mail.com" required>
+              </div>
 
-          <div class="subtitle" style="margin-top:2px">Zarejestruj się</div>
-          <form id="registerForm" class="stack">
-            <div>
-              <label>Email</label>
-              <input type="email" name="email" placeholder="np. klient@mail.com" required>
-            </div>
-            <div>
-              <label>Hasło</label>
-              <input type="password" name="password" placeholder="Ustaw hasło" required minlength="6">
-            </div>
-            <button class="btn btn-ghost btn-wide" type="submit">
-              Utwórz konto <i class="fa-solid fa-user-plus"></i>
-            </button>
-            <div class="tiny" style="text-align:center;opacity:.75">
-              Jeśli email już istnieje — rejestracja zostanie zablokowana.
-            </div>
-          </form>
+              <div>
+                <label>Hasło</label>
+                <input type="password" name="password" placeholder="Ustaw hasło" required minlength="6">
+              </div>
+
+              <!-- Newsletter (opcjonalny) -->
+              <label style="display:flex;gap:10px;align-items:flex-start;font-weight:800;">
+                <input type="checkbox" name="newsletter" style="width:auto;transform:translateY(3px);">
+                <span>Chcę otrzymywać newsletter</span>
+              </label>
+
+              <!-- Zgody (WYMAGANE) -->
+              <label style="display:flex;gap:10px;align-items:flex-start;font-weight:900;">
+                <input type="checkbox" id="consentsAll" name="consentsAll" style="width:auto;transform:translateY(3px);" required>
+                <span>
+                  Akceptuję wszystkie zgody
+                  <span class="tiny" style="display:block;margin-top:4px;opacity:.75;font-weight:800;">
+                    <a href="privacypolicy.html" style="color:var(--link);text-decoration:none;font-weight:900;">
+                      Polityka prywatności
+                    </a>
+                  </span>
+                </span>
+              </label>
+
+              <button class="btn btn-primary btn-wide" type="submit">
+                Utwórz konto <i class="fa-solid fa-user-plus"></i>
+              </button>
+
+              <div class="tiny" style="text-align:center;opacity:.78">
+                Masz już konto?
+                <button type="button" class="btn btn-ghost btn-small" id="switchToLoginBtn" style="margin-left:6px;">
+                  Zaloguj się
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- VIEW: LOGIN -->
+          <div id="authLoginView" style="display:none">
+            <div class="subtitle">Zaloguj się</div>
+
+            <form id="loginEmailForm" class="stack">
+              <div>
+                <label>Email</label>
+                <input type="email" name="email" placeholder="np. klient@mail.com" required>
+              </div>
+              <div>
+                <label>Hasło</label>
+                <input type="password" name="password" placeholder="••••••••" required minlength="6">
+              </div>
+              <button class="btn btn-primary btn-wide" type="submit">
+                Zaloguj się <i class="fa-solid fa-right-to-bracket"></i>
+              </button>
+
+              <div class="tiny" style="text-align:center;opacity:.78">
+                Nie masz konta?
+                <button type="button" class="btn btn-ghost btn-small" id="switchToRegisterBtn" style="margin-left:6px;">
+                  Zarejestruj się
+                </button>
+              </div>
+            </form>
+          </div>
+
         </div>
       </div>
 
@@ -1191,878 +1245,964 @@
     </div>
   </div>
 
-<script>
-  // ---------- PWA ----------
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
-  }
+  <script>
+   // ---------- PWA ----------
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+}
 
-  // ---------- Helpers / API ----------
-  const API = {
-    async json(url, opts = {}) {
-      const res = await fetch(url, {
-        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
-        ...opts,
-      });
+// ---------- Helpers / API ----------
+const API = {
+  async json(url, opts = {}) {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+      ...opts,
+    });
 
-      const ct = (res.headers.get("content-type") || "").toLowerCase();
-      const text = await res.text();
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const text = await res.text();
 
-      let data = null;
-      if (ct.includes("application/json")) {
-        try { data = JSON.parse(text); } catch { data = null; }
-      }
-
-      if (!res.ok) {
-        const msg =
-          (data && (data.message || data.error)) ||
-          (text && text.slice(0, 180)) ||
-          `HTTP ${res.status}`;
-        throw new Error(msg);
-      }
-
-      if (!ct.includes("application/json") && text.trim().startsWith("<")) {
-        throw new Error("Backend zwrócił HTML zamiast JSON (sprawdź routing / endpoint).");
-      }
-
-      if (data !== null) return data;
-      if (!text) return null;
-      try { return JSON.parse(text); } catch { return text; }
-    },
-
-    async getMy(urlBase, email) {
-      const e = encodeURIComponent(email || "");
-      try {
-        return await API.json(`${urlBase}?email=${e}`);
-      } catch {
-        return await API.json(urlBase, {
-          method: "POST",
-          body: JSON.stringify({ email }),
-        });
-      }
-    }
-  };
-
-  // ---------- Toast ----------
-  const toast = document.getElementById("toast");
-  const toastText = document.getElementById("toastText");
-  function showToast(msg, danger = false) {
-    toastText.textContent = msg;
-    toast.classList.toggle("danger", danger);
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 3200);
-  }
-
-  // ---------- Storage ----------
-  const store = {
-    get(key, fallback) {
-      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-      catch { return fallback; }
-    },
-    set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
-    del(key) { localStorage.removeItem(key); }
-  };
-
-  // ---------- Auth / user gating ----------
-  function getUser() { return store.get("user", null); }
-  function isLoggedIn() { return !!getUser()?.email; }
-
-  function requireLogin(actionName = "tej akcji") {
-    if (isLoggedIn()) return true;
-    showToast(`Zaloguj się, aby użyć ${actionName}.`, true);
-    openTab("account");
-    return false;
-  }
-
-  // ---------- Tabs ----------
-  const tabs = {
-    points: document.getElementById("tab-points"),
-    rewards: document.getElementById("tab-rewards"),
-    res: document.getElementById("tab-res"),
-    account: document.getElementById("tab-account"),
-  };
-  const navButtons = document.querySelectorAll(".nav-btn");
-  function openTab(name) {
-    Object.entries(tabs).forEach(([k, el]) => el.classList.toggle("active", k === name));
-    navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    renderTopPill();
-  }
-  navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
-  document.querySelectorAll("[data-go]").forEach((b) =>
-    b.addEventListener("click", () => openTab(b.dataset.go))
-  );
-
-  // ---------- Milk ID ----------
-  function generate6DigitCode() {
-    return String(Math.floor(100000 + Math.random() * 900000));
-  }
-
-  function getMilkId() {
-    const user = getUser();
-    if (user?.milkId && String(user.milkId).length === 6) return String(user.milkId);
-
-    const email = (user?.email || "").toLowerCase();
-    const key = email ? ("milkIdByEmail:" + email) : "milkIdAnonymous";
-    let code = store.get(key, null);
-    if (!code || String(code).length !== 6) {
-      code = generate6DigitCode();
-      store.set(key, code);
+    let data = null;
+    if (ct.includes("application/json")) {
+      try { data = JSON.parse(text); } catch { data = null; }
     }
 
-    if (user?.email) {
-      user.milkId = String(code);
-      store.set("user", user);
+    if (!res.ok) {
+      const msg =
+        (data && (data.message || data.error)) ||
+        (text && text.slice(0, 180)) ||
+        `HTTP ${res.status}`;
+      throw new Error(msg);
     }
 
-    return String(code);
-  }
-
-  // ---------- Top pill ----------
-  const pointsPillEl = document.getElementById("pointsPill");
-  function renderTopPill() {
-    const user = getUser();
-    if (!user?.email) {
-      pointsPillEl.textContent = "Zaloguj się";
-      return;
+    if (!ct.includes("application/json") && text.trim().startsWith("<")) {
+      throw new Error("Backend zwrócił HTML zamiast JSON (sprawdź routing / endpoint).");
     }
-    const pts = store.get("points", 0);
-    pointsPillEl.textContent = pts + " pkt";
-  }
 
-  // ---------- Opening hours / status ----------
-  const openingCardEl = document.getElementById("openingCard");
-  const openDotEl = document.getElementById("openDot");
-  const openTextEl = document.getElementById("openText");
-  const openHoursEl = document.getElementById("openingHours");
-  const openHintEl = document.getElementById("openHint");
+    if (data !== null) return data;
+    if (!text) return null;
+    try { return JSON.parse(text); } catch { return text; }
+  },
 
-  const openingSchedule = {
-    0: { label: "niedziela", open: "09:00", close: "21:00" },
-    1: { label: "poniedziałek", open: "08:00", close: "21:00" },
-    2: { label: "wtorek", open: "08:00", close: "21:00" },
-    3: { label: "środa", open: "08:00", close: "21:00" },
-    4: { label: "czwartek", open: "08:00", close: "21:00" },
-    5: { label: "piątek", open: "08:00", close: "22:00" },
-    6: { label: "sobota", open: "09:00", close: "22:00" },
-  };
-
-  function toMinutes(hhmm) {
-    const [h, m] = hhmm.split(":").map(Number);
-    return h * 60 + m;
-  }
-
-  function renderOpeningHours() {
-    const now = new Date();
-    const day = now.getDay();
-    const minutesNow = now.getHours() * 60 + now.getMinutes();
-
-    const today = openingSchedule[day];
-    const openM = toMinutes(today.open);
-    const closeM = toMinutes(today.close);
-    const isOpen = minutesNow >= openM && minutesNow < closeM;
-
-    openDotEl.classList.remove("open", "closed");
-    openDotEl.classList.add(isOpen ? "open" : "closed");
-    openTextEl.textContent = isOpen ? "Jesteśmy Otwarci" : "Jesteśmy Zamknięci";
-
-    const order = [1, 2, 3, 4, 5, 6, 0];
-    openHoursEl.innerHTML = order.map((d) => {
-      const s = openingSchedule[d];
-      const isToday = d === day;
-      return `
-        <div class="${isToday ? "today" : ""}">
-          <b>${s.label}</b> ${s.open}–${s.close}
-        </div>
-      `;
-    }).join("");
-  }
-
-  openingCardEl?.addEventListener("click", () => {
-    openingCardEl.classList.toggle("expanded");
-    const expanded = openingCardEl.classList.contains("expanded");
-    openHintEl.textContent = expanded
-      ? "Kliknij, aby ukryć godziny otwarcia"
-      : "Kliknij, aby zobaczyć godziny otwarcia";
-  });
-
-  renderOpeningHours();
-  setInterval(renderOpeningHours, 60 * 1000);
-
-  // ---------- One-time clear (opcjonalne) ----------
-  (function clearHistoryOnce() {
-    const didClear = store.get("didClearHistoryOnce", false);
-    if (!didClear) {
-      store.set("pointsHistory", []);
-      store.set("didClearHistoryOnce", true);
-    }
-  })();
-
-  // ---------- Modal: code ----------
-  const loyaltyCodeEl = document.getElementById("loyaltyCode");
-  const showCodeBtn = document.getElementById("showCodeBtn");
-  const copyCodeBtn = document.getElementById("copyCodeBtn");
-  const codeModal = document.getElementById("codeModal");
-
-  function renderMilkIdModal() {
-    loyaltyCodeEl.textContent = getMilkId();
-  }
-
-  function openCodeModal() {
-    if (!requireLogin("Milk ID")) return;
-    renderMilkIdModal();
-    codeModal.classList.add("show");
-    document.body.style.overflow = "hidden";
-  }
-  function closeCodeModal() {
-    codeModal.classList.remove("show");
-    document.body.style.overflow = "";
-  }
-
-  showCodeBtn?.addEventListener("click", openCodeModal);
-  codeModal?.querySelectorAll("[data-close]")?.forEach((el) =>
-    el.addEventListener("click", closeCodeModal)
-  );
-  copyCodeBtn?.addEventListener("click", async () => {
-    const code = loyaltyCodeEl.textContent;
+  async getMy(urlBase, email) {
+    const e = encodeURIComponent(email || "");
     try {
-      await navigator.clipboard.writeText(code);
-      showToast("Kod skopiowany ✅");
+      return await API.json(`${urlBase}?email=${e}`);
     } catch {
-      showToast("Nie udało się skopiować 🤏", true);
+      return await API.json(urlBase, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
     }
-  });
+  }
+};
 
-  // ---------- Points ----------
-  const pointsCountEl = document.getElementById("pointsCount");
-  const pointsProgressEl = document.getElementById("pointsProgress");
-  const historyEl = document.getElementById("pointsHistory");
+// ---------- Toast ----------
+const toast = document.getElementById("toast");
+const toastText = document.getElementById("toastText");
+function showToast(msg, danger = false) {
+  toastText.textContent = msg;
+  toast.classList.toggle("danger", danger);
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3200);
+}
 
-  function renderPoints() {
-    const user = getUser();
-    const pts = store.get("points", 0);
+// ---------- Storage ----------
+const store = {
+  get(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+    catch { return fallback; }
+  },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+  del(key) { localStorage.removeItem(key); }
+};
 
-    pointsCountEl.textContent = user?.email ? pts : "—";
-    renderTopPill();
+// ---------- Auth / user gating ----------
+function getUser() { return store.get("user", null); }
+function isLoggedIn() { return !!getUser()?.email; }
 
-    const pct = user?.email ? Math.min(100, pts % 100) : 0;
-    pointsProgressEl.style.width = pct + "%";
+function requireLogin(actionName = "tej akcji") {
+  if (isLoggedIn()) return true;
+  showToast(`Zaloguj się, aby użyć ${actionName}.`, true);
+  openTab("account");
+  return false;
+}
 
-    const hist = store.get("pointsHistory", []);
-    historyEl.innerHTML = user?.email
-      ? (hist.length
-          ? hist.map(h => `
-              <div style="padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.06)">
-                <b>${h.text}</b><div class="tiny">${h.date}</div>
-              </div>`).join("")
-          : `<div class="empty">
-              <div class="icon"><i class="fa-solid fa-clock"></i></div>
-              <div>
-                <b>Historia punktów jest pusta</b>
-                <div class="tiny">Punkty pojawią się po pierwszym naliczeniu.</div>
-              </div>
-            </div>`)
-      : `<div class="empty">
-          <div class="icon"><i class="fa-solid fa-user"></i></div>
-          <div>
-            <b>Zaloguj się</b>
-            <div class="tiny">Aby zbierać punkty i używać Milk ID.</div>
-          </div>
-        </div>`;
+// ---------- Tabs ----------
+const tabs = {
+  points: document.getElementById("tab-points"),
+  rewards: document.getElementById("tab-rewards"),
+  res: document.getElementById("tab-res"),
+  account: document.getElementById("tab-account"),
+};
+const navButtons = document.querySelectorAll(".nav-btn");
+function openTab(name) {
+  Object.entries(tabs).forEach(([k, el]) => el.classList.toggle("active", k === name));
+  navButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  renderTopPill();
+  renderNewsletterBar(); // ✅ nowość
+}
+navButtons.forEach((btn) => btn.addEventListener("click", () => openTab(btn.dataset.tab)));
+document.querySelectorAll("[data-go]").forEach((b) =>
+  b.addEventListener("click", () => openTab(b.dataset.go))
+);
+
+// ---------- Milk ID ----------
+function generate6DigitCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function getMilkId() {
+  const user = getUser();
+  if (user?.milkId && String(user.milkId).length === 6) return String(user.milkId);
+
+  const email = (user?.email || "").toLowerCase();
+  const key = email ? ("milkIdByEmail:" + email) : "milkIdAnonymous";
+  let code = store.get(key, null);
+  if (!code || String(code).length !== 6) {
+    code = generate6DigitCode();
+    store.set(key, code);
   }
 
-  // ✅ NOWOŚĆ: natychmiastowe odświeżenie UI po pobraniu punktów z bazy
-  function applyPointsFromServer(payload) {
-    if (payload && typeof payload.points === "number") store.set("points", payload.points);
-    if (payload && Array.isArray(payload.history)) store.set("pointsHistory", payload.history);
-    renderPoints(); // <-- klucz: od razu widać nowe punkty
+  if (user?.email) {
+    user.milkId = String(code);
+    store.set("user", user);
   }
 
-  // ---------- Rewards (fallback lista) ----------
-  const rewardsFallback = [
-    { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, icon: "fa-ice-cream", desc: "Wartość do 30 PLN" },
-    { id: "burger_set_60", title: "Zestaw burger do 60 PLN", cost: 50, icon: "fa-burger", desc: "Wartość do 60 PLN" },
-    { id: "order_120", title: "Zamówienie do 120 PLN", cost: 100, icon: "fa-receipt", desc: "Wartość do 120 PLN" },
-  ];
-  const rewardsListEl = document.getElementById("rewardsList");
+  return String(code);
+}
 
-  function getRewardsFromStore() {
-    return store.get("rewardsCatalog", rewardsFallback);
+// ---------- Top pill ----------
+const pointsPillEl = document.getElementById("pointsPill");
+function renderTopPill() {
+  const user = getUser();
+  if (!user?.email) {
+    pointsPillEl.textContent = "Zaloguj się";
+    return;
   }
+  const pts = store.get("points", 0);
+  pointsPillEl.textContent = pts + " pkt";
+}
 
-  function renderRewards() {
-    const user = getUser();
-    const pts = store.get("points", 0);
+// ---------- Opening hours / status ----------
+const openingCardEl = document.getElementById("openingCard");
+const openDotEl = document.getElementById("openDot");
+const openTextEl = document.getElementById("openText");
+const openHoursEl = document.getElementById("openingHours");
+const openHintEl = document.getElementById("openHint");
 
-    if (!user?.email) {
-      rewardsListEl.innerHTML = `
-        <div class="empty">
-          <div class="icon"><i class="fa-solid fa-user"></i></div>
-          <div>
-            <b>Zaloguj się, aby wymieniać nagrody</b>
-            <div class="tiny">Po zalogowaniu przypiszemy Milk ID do Twojego maila.</div>
-          </div>
-        </div>`;
-      return;
-    }
+const openingSchedule = {
+  0: { label: "niedziela", open: "09:00", close: "21:00" },
+  1: { label: "poniedziałek", open: "08:00", close: "21:00" },
+  2: { label: "wtorek", open: "08:00", close: "21:00" },
+  3: { label: "środa", open: "08:00", close: "21:00" },
+  4: { label: "czwartek", open: "08:00", close: "21:00" },
+  5: { label: "piątek", open: "08:00", close: "22:00" },
+  6: { label: "sobota", open: "09:00", close: "22:00" },
+};
 
-    const rewards = getRewardsFromStore();
-    rewardsListEl.innerHTML = rewards.map((r) => {
-      const disabled = pts < r.cost;
-      return `
-        <div class="reward">
-          <div class="reward-left">
-            <div class="reward-ico"><i class="fa-solid ${r.icon || "fa-gift"}"></i></div>
+function toMinutes(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function renderOpeningHours() {
+  const now = new Date();
+  const day = now.getDay();
+  const minutesNow = now.getHours() * 60 + now.getMinutes();
+
+  const today = openingSchedule[day];
+  const openM = toMinutes(today.open);
+  const closeM = toMinutes(today.close);
+  const isOpen = minutesNow >= openM && minutesNow < closeM;
+
+  openDotEl.classList.remove("open", "closed");
+  openDotEl.classList.add(isOpen ? "open" : "closed");
+  openTextEl.textContent = isOpen ? "Jesteśmy Otwarci" : "Jesteśmy Zamknięci";
+
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  openHoursEl.innerHTML = order.map((d) => {
+    const s = openingSchedule[d];
+    const isToday = d === day;
+    return `
+      <div class="${isToday ? "today" : ""}">
+        <b>${s.label}</b> ${s.open}–${s.close}
+      </div>
+    `;
+  }).join("");
+}
+
+openingCardEl?.addEventListener("click", () => {
+  openingCardEl.classList.toggle("expanded");
+  const expanded = openingCardEl.classList.contains("expanded");
+  openHintEl.textContent = expanded
+    ? "Kliknij, aby ukryć godziny otwarcia"
+    : "Kliknij, aby zobaczyć godziny otwarcia";
+});
+
+renderOpeningHours();
+setInterval(renderOpeningHours, 60 * 1000);
+
+// ---------- One-time clear (opcjonalne) ----------
+(function clearHistoryOnce() {
+  const didClear = store.get("didClearHistoryOnce", false);
+  if (!didClear) {
+    store.set("pointsHistory", []);
+    store.set("didClearHistoryOnce", true);
+  }
+})();
+
+// ---------- Modal: code ----------
+const loyaltyCodeEl = document.getElementById("loyaltyCode");
+const showCodeBtn = document.getElementById("showCodeBtn");
+const copyCodeBtn = document.getElementById("copyCodeBtn");
+const codeModal = document.getElementById("codeModal");
+
+function renderMilkIdModal() {
+  loyaltyCodeEl.textContent = getMilkId();
+}
+
+function openCodeModal() {
+  if (!requireLogin("Milk ID")) return;
+  renderMilkIdModal();
+  codeModal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeCodeModal() {
+  codeModal.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+showCodeBtn?.addEventListener("click", openCodeModal);
+codeModal?.querySelectorAll("[data-close]")?.forEach((el) =>
+  el.addEventListener("click", closeCodeModal)
+);
+copyCodeBtn?.addEventListener("click", async () => {
+  const code = loyaltyCodeEl.textContent;
+  try {
+    await navigator.clipboard.writeText(code);
+    showToast("Kod skopiowany ✅");
+  } catch {
+    showToast("Nie udało się skopiować 🤏", true);
+  }
+});
+
+// ---------- Points ----------
+const pointsCountEl = document.getElementById("pointsCount");
+const pointsProgressEl = document.getElementById("pointsProgress");
+const historyEl = document.getElementById("pointsHistory");
+
+function renderPoints() {
+  const user = getUser();
+  const pts = store.get("points", 0);
+
+  pointsCountEl.textContent = user?.email ? pts : "—";
+  renderTopPill();
+
+  const pct = user?.email ? Math.min(100, pts % 100) : 0;
+  pointsProgressEl.style.width = pct + "%";
+
+  const hist = store.get("pointsHistory", []);
+  historyEl.innerHTML = user?.email
+    ? (hist.length
+        ? hist.map(h => `
+            <div style="padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.06)">
+              <b>${h.text}</b><div class="tiny">${h.date}</div>
+            </div>`).join("")
+        : `<div class="empty">
+            <div class="icon"><i class="fa-solid fa-clock"></i></div>
             <div>
-              <div class="reward-title">${r.title}</div>
-              <div class="tiny">${r.desc || ""}</div>
-              <div class="muted">Koszt: <b>${r.cost} pkt</b></div>
+              <b>Historia punktów jest pusta</b>
+              <div class="tiny">Punkty pojawią się po pierwszym naliczeniu.</div>
             </div>
-          </div>
-          <div style="text-align:right;min-width:88px">
-            <div style="font-weight:900">${r.cost} pkt</div>
-            <button class="btn btn-primary btn-small"
-              ${disabled ? "disabled style='opacity:.5;cursor:not-allowed'" : ""}
-              data-redeem="${r.id}">
-              Wymień
-            </button>
+          </div>`)
+    : `<div class="empty">
+        <div class="icon"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <b>Zaloguj się</b>
+          <div class="tiny">Aby zbierać punkty i używać Milk ID.</div>
+        </div>
+      </div>`;
+}
+
+// ✅ NOWOŚĆ: natychmiastowe odświeżenie UI po pobraniu punktów z bazy
+function applyPointsFromServer(payload) {
+  if (payload && typeof payload.points === "number") store.set("points", payload.points);
+  if (payload && Array.isArray(payload.history)) store.set("pointsHistory", payload.history);
+  renderPoints();
+}
+
+// ---------- Rewards (fallback lista) ----------
+const rewardsFallback = [
+  { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, icon: "fa-ice-cream", desc: "Wartość do 30 PLN" },
+  { id: "burger_set_60", title: "Zestaw burger do 60 PLN", cost: 50, icon: "fa-burger", desc: "Wartość do 60 PLN" },
+  { id: "order_120", title: "Zamówienie do 120 PLN", cost: 100, icon: "fa-receipt", desc: "Wartość do 120 PLN" },
+];
+const rewardsListEl = document.getElementById("rewardsList");
+
+function getRewardsFromStore() {
+  return store.get("rewardsCatalog", rewardsFallback);
+}
+
+function renderRewards() {
+  const user = getUser();
+  const pts = store.get("points", 0);
+
+  if (!user?.email) {
+    rewardsListEl.innerHTML = `
+      <div class="empty">
+        <div class="icon"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <b>Zaloguj się, aby wymieniać nagrody</b>
+          <div class="tiny">Po zalogowaniu przypiszemy Milk ID do Twojego maila.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const rewards = getRewardsFromStore();
+  rewardsListEl.innerHTML = rewards.map((r) => {
+    const disabled = pts < r.cost;
+    return `
+      <div class="reward">
+        <div class="reward-left">
+          <div class="reward-ico"><i class="fa-solid ${r.icon || "fa-gift"}"></i></div>
+          <div>
+            <div class="reward-title">${r.title}</div>
+            <div class="tiny">${r.desc || ""}</div>
+            <div class="muted">Koszt: <b>${r.cost} pkt</b></div>
           </div>
         </div>
-      `;
-    }).join("");
+        <div style="text-align:right;min-width:88px">
+          <div style="font-weight:900">${r.cost} pkt</div>
+          <button class="btn btn-primary btn-small"
+            ${disabled ? "disabled style='opacity:.5;cursor:not-allowed'" : ""}
+            data-redeem="${r.id}">
+            Wymień
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-    rewardsListEl.querySelectorAll("[data-redeem]").forEach((btn) => {
-      btn.addEventListener("click", () => redeemReward(btn.dataset.redeem));
+  rewardsListEl.querySelectorAll("[data-redeem]").forEach((btn) => {
+    btn.addEventListener("click", () => redeemReward(btn.dataset.redeem));
+  });
+}
+
+async function redeemReward(rewardId) {
+  if (!requireLogin("wymiany nagród")) return;
+
+  const user = getUser();
+  const email = user.email;
+  const milkId = getMilkId();
+
+  try {
+    const res = await API.json("/api/rewards/redeem", {
+      method: "POST",
+      body: JSON.stringify({ email, milkId, rewardId }),
     });
-  }
 
-  async function redeemReward(rewardId) {
-    if (!requireLogin("wymiany nagród")) return;
+    applyPointsFromServer(res);
 
-    const user = getUser();
-    const email = user.email;
-    const milkId = getMilkId();
-
-    try {
-      const res = await API.json("/api/rewards/redeem", {
-        method: "POST",
-        body: JSON.stringify({ email, milkId, rewardId }),
-      });
-
-      // ✅ NOWOŚĆ: jeśli backend zwrócił punkty/historię — od razu odśwież UI
-      applyPointsFromServer(res);
-
-      const code = res?.code || res?.rewardCode;
-      if (code) {
-        showToast("Nagroda wymieniona ✅");
-        alert("Kod do odbioru nagrody:\n\n" + code + "\n\nPokaż w lokalu.");
-      } else {
-        showToast("Nagroda wymieniona ✅");
-      }
-
-      renderRewards();
-      return;
-    } catch (e) {
-      console.warn("redeem server failed -> local fallback", e);
+    const code = res?.code || res?.rewardCode;
+    if (code) {
+      showToast("Nagroda wymieniona ✅");
+      alert("Kod do odbioru nagrody:\n\n" + code + "\n\nPokaż w lokalu.");
+    } else {
+      showToast("Nagroda wymieniona ✅");
     }
 
-    const rewards = getRewardsFromStore();
-    const r = rewards.find((x) => x.id === rewardId);
-    if (!r) return;
-
-    const pts = store.get("points", 0);
-    if (pts < r.cost) {
-      showToast("Masz za mało punktów 😅", true);
-      return;
-    }
-
-    store.set("points", pts - r.cost);
-    const hist = store.get("pointsHistory", []);
-    hist.unshift({ text: `Wymieniono: -${r.cost} pkt (${r.title})`, date: new Date().toLocaleString("pl-PL") });
-    store.set("pointsHistory", hist);
-
-    renderPoints();
     renderRewards();
-    showToast(`Nagroda odebrana: ${r.title} 🎁`);
+    return;
+  } catch (e) {
+    console.warn("redeem server failed -> local fallback", e);
   }
 
-  // ---------- Profile helpers ----------
-  function getPersonal() {
-    const user = getUser();
-    const profile = store.get("profile", {});
-    return {
-      name: profile.name || user?.name || "",
-      phone: profile.phone || user?.phone || "",
-      email: profile.email || user?.email || "",
-    };
+  const rewards = getRewardsFromStore();
+  const r = rewards.find((x) => x.id === rewardId);
+  if (!r) return;
+
+  const pts = store.get("points", 0);
+  if (pts < r.cost) {
+    showToast("Masz za mało punktów 😅", true);
+    return;
   }
 
-  function prefillPersonalUI() {
-    const p = getPersonal();
-    const nameInput = document.getElementById("personalName");
-    const phoneInput = document.getElementById("personalPhone");
-    const emailInput = document.getElementById("personalEmail");
-    if (nameInput && !nameInput.value) nameInput.value = p.name || "";
-    if (phoneInput && !phoneInput.value) phoneInput.value = p.phone || "";
-    if (emailInput && !emailInput.value) emailInput.value = p.email || "";
+  store.set("points", pts - r.cost);
+  const hist = store.get("pointsHistory", []);
+  hist.unshift({ text: `Wymieniono: -${r.cost} pkt (${r.title})`, date: new Date().toLocaleString("pl-PL") });
+  store.set("pointsHistory", hist);
+
+  renderPoints();
+  renderRewards();
+  showToast(`Nagroda odebrana: ${r.title} 🎁`);
+}
+
+// ---------- Profile helpers ----------
+function getPersonal() {
+  const user = getUser();
+  const profile = store.get("profile", {});
+  return {
+    name: profile.name || user?.name || "",
+    phone: profile.phone || user?.phone || "",
+    email: profile.email || user?.email || "",
+  };
+}
+
+function prefillPersonalUI() {
+  const p = getPersonal();
+  const nameInput = document.getElementById("personalName");
+  const phoneInput = document.getElementById("personalPhone");
+  const emailInput = document.getElementById("personalEmail");
+  if (nameInput && !nameInput.value) nameInput.value = p.name || "";
+  if (phoneInput && !phoneInput.value) phoneInput.value = p.phone || "";
+  if (emailInput && !emailInput.value) emailInput.value = p.email || "";
+}
+
+function prefillReservationForm() {
+  const p = getPersonal();
+  const name = document.querySelector("#reservationForm input[name='name']");
+  const phone = document.querySelector("#reservationForm input[name='phone']");
+  if (name && !name.value && p.name) name.value = p.name;
+  if (phone && !phone.value && p.phone) phone.value = p.phone;
+}
+
+// ---------- Reservations ----------
+const resForm = document.getElementById("reservationForm");
+const resListEl = document.getElementById("reservationsList");
+
+async function refreshReservationsFromServer() {
+  const user = getUser();
+  if (!user?.email) {
+    renderReservationsUI([], false);
+    return;
   }
 
-  function prefillReservationForm() {
-    const p = getPersonal();
-    const name = document.querySelector("#reservationForm input[name='name']");
-    const phone = document.querySelector("#reservationForm input[name='phone']");
-    if (name && !name.value && p.name) name.value = p.name;
-    if (phone && !phone.value && p.phone) phone.value = p.phone;
-  }
+  try {
+    const data = await API.getMy("/api/rezerwacje/my", user.email);
+    const list = Array.isArray(data) ? data : (data?.reservations || data?.list || []);
+    renderReservationsUI(list, false);
+    return;
+  } catch {}
 
-  // ---------- Reservations ----------
-  const resForm = document.getElementById("reservationForm");
-  const resListEl = document.getElementById("reservationsList");
-
-  async function refreshReservationsFromServer() {
-    const user = getUser();
-    if (!user?.email) {
-      renderReservationsUI([], false);
-      return;
-    }
-
-    try {
-      const data = await API.getMy("/api/rezerwacje/my", user.email);
-      const list = Array.isArray(data) ? data : (data?.reservations || data?.list || []);
-      renderReservationsUI(list, false);
-      return;
-    } catch {}
-
-    try {
-      const all = await API.json("/api/rezerwacje");
-      const milkId = getMilkId();
-      const filtered = (Array.isArray(all) ? all : []).filter(r => {
-        const re = String(r.email || "").toLowerCase();
-        const rm = String(r.milkId || "");
-        return (re && re === user.email.toLowerCase()) || (rm && rm === milkId);
-      });
-      renderReservationsUI(filtered, false);
-    } catch {
-      const local = store.get("reservations_local", []);
-      renderReservationsUI(local, true);
-    }
-  }
-
-  function renderReservationsUI(list, isLocal = false) {
-    resListEl.innerHTML = list.length
-      ? list.map((r) => `
-          <div class="res-item">
-            <b>${r.date} • ${r.time}</b>
-            <div>${r.guests} os. • ${r.room}</div>
-            <div class="tiny">${r.name}, ${r.phone}</div>
-            ${r.notes ? `<div class="tiny">Uwagi: ${r.notes}</div>` : ""}
-            <div class="divider"></div>
-            <div class="res-actions">
-              ${isLocal ? `<button class="btn btn-ghost btn-small" data-del-local="${r._id || r.id}">Usuń</button>` : ``}
-            </div>
-          </div>
-        `).join("")
-      : `<div class="empty">
-          <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
-          <div>
-            <b>Brak rezerwacji</b>
-            <div class="tiny">Zarezerwuj stolik — zajmie to chwilkę.</div>
-          </div>
-        </div>`;
-
-    resListEl.querySelectorAll("[data-del-local]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.delLocal;
-        const newList = store.get("reservations_local", []).filter((x) => (x._id || x.id) !== id);
-        store.set("reservations_local", newList);
-        refreshReservationsFromServer();
-        showToast("Rezerwacja usunięta");
-      });
+  try {
+    const all = await API.json("/api/rezerwacje");
+    const milkId = getMilkId();
+    const filtered = (Array.isArray(all) ? all : []).filter(r => {
+      const re = String(r.email || "").toLowerCase();
+      const rm = String(r.milkId || "");
+      return (re && re === user.email.toLowerCase()) || (rm && rm === milkId);
     });
+    renderReservationsUI(filtered, false);
+  } catch {
+    const local = store.get("reservations_local", []);
+    renderReservationsUI(local, true);
+  }
+}
+
+function renderReservationsUI(list, isLocal = false) {
+  resListEl.innerHTML = list.length
+    ? list.map((r) => `
+        <div class="res-item">
+          <b>${r.date} • ${r.time}</b>
+          <div>${r.guests} os. • ${r.room}</div>
+          <div class="tiny">${r.name}, ${r.phone}</div>
+          ${r.notes ? `<div class="tiny">Uwagi: ${r.notes}</div>` : ""}
+          <div class="divider"></div>
+          <div class="res-actions">
+            ${isLocal ? `<button class="btn btn-ghost btn-small" data-del-local="${r._id || r.id}">Usuń</button>` : ``}
+          </div>
+        </div>
+      `).join("")
+    : `<div class="empty">
+        <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <div>
+          <b>Brak rezerwacji</b>
+          <div class="tiny">Zarezerwuj stolik — zajmie to chwilkę.</div>
+        </div>
+      </div>`;
+
+  resListEl.querySelectorAll("[data-del-local]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.delLocal;
+      const newList = store.get("reservations_local", []).filter((x) => (x._id || x.id) !== id);
+      store.set("reservations_local", newList);
+      refreshReservationsFromServer();
+      showToast("Rezerwacja usunięta");
+    });
+  });
+}
+
+resForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!requireLogin("rezerwacji")) return;
+
+  const fd = new FormData(resForm);
+  const data = Object.fromEntries(fd.entries());
+
+  if (!data.name || !data.phone || !data.date || !data.time || !data.guests || !data.room) {
+    showToast("Uzupełnij wszystkie pola", true);
+    return;
   }
 
-  resForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!requireLogin("rezerwacji")) return;
+  const user = getUser();
+  const milkId = getMilkId();
 
-    const fd = new FormData(resForm);
-    const data = Object.fromEntries(fd.entries());
-
-    if (!data.name || !data.phone || !data.date || !data.time || !data.guests || !data.room) {
-      showToast("Uzupełnij wszystkie pola", true);
-      return;
-    }
-
-    const user = getUser();
-    const milkId = getMilkId();
-
-    const payload = {
-      name: String(data.name),
-      phone: String(data.phone),
-      date: String(data.date),
-      time: String(data.time),
-      guests: String(data.guests),
-      room: String(data.room),
-      notes: String(data.notes || ""),
-      email: String(user.email || ""),
-      milkId: String(milkId || ""),
-      source: "app",
-    };
-
-    try {
-      await API.json("/api/rezerwacje", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-
-      const local = store.get("reservations_local", []);
-      local.unshift({ ...payload, _id: crypto.randomUUID() });
-      store.set("reservations_local", local);
-
-      resForm.reset();
-      prefillReservationForm();
-      showToast("Rezerwacja wysłana 🧡");
-      await refreshReservationsFromServer();
-      openTab("res");
-    } catch (err) {
-      const local = store.get("reservations_local", []);
-      local.unshift({ ...payload, _id: crypto.randomUUID() });
-      store.set("reservations_local", local);
-
-      resForm.reset();
-      prefillReservationForm();
-      showToast("Rezerwacja zapisana lokalnie (brak endpointu) ⚠️", true);
-      await refreshReservationsFromServer();
-    }
-  });
-
-  (function () {
-    if (!resForm) return;
-    const dateInput = resForm.querySelector("input[name='date']");
-    if (!dateInput) return;
-    dateInput.min = new Date().toISOString().split("T")[0];
-  })();
-
-  // ---------- Account / Auth ----------
-  const loggedOutEl = document.getElementById("accountLoggedOut");
-  const loggedInEl = document.getElementById("accountLoggedIn");
-  const avatarEl = document.getElementById("avatar");
-  const accNameEl = document.getElementById("accName");
-  const accEmailEl = document.getElementById("accEmail");
-
-  function renderAccount() {
-    const user = getUser();
-    const isLogged = !!user?.email;
-
-    loggedOutEl.style.display = isLogged ? "none" : "flex";
-    loggedInEl.style.display = isLogged ? "flex" : "none";
-
-    if (isLogged) {
-      const profile = getPersonal();
-      const initials = (profile.name || user.name || "Milk User")
-        .split(" ")
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase();
-
-      avatarEl.textContent = initials || "MK";
-      accNameEl.textContent = profile.name || user.name || "Użytkownik";
-      accEmailEl.textContent = profile.email || user.email || "";
-    }
-
-    renderPoints();
-    renderRewards();
-    prefillPersonalUI();
-    prefillReservationForm();
-  }
-
-  // ---------- Login / Register / Logout ----------
-  const loginEmailForm = document.getElementById("loginEmailForm");
-  const registerForm = document.getElementById("registerForm");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  async function loginWithEmail(email, password) {
-    email = String(email || "").trim().toLowerCase();
-    password = String(password || "").trim();
-
-    if (!email) { showToast("Podaj email", true); return; }
-    if (!password) { showToast("Podaj hasło", true); return; }
-
-    try {
-      const res = await API.json("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const user = {
-        email,
-        name: res?.name || res?.user?.name || store.get("profile", {})?.name || "",
-        phone: res?.phone || res?.user?.phone || store.get("profile", {})?.phone || "",
-        milkId: res?.milkId || res?.user?.milkId || store.get("user", {})?.milkId || "",
-        token: res?.token || res?.jwt || "",
-      };
-
-      store.set("user", user);
-
-      // ✅ NOWOŚĆ: jeśli login zwraca punkty/historię -> pokaż je natychmiast
-      applyPointsFromServer(res);
-
-      if (!user.milkId) {
-        user.milkId = getMilkId();
-        store.set("user", user);
-      }
-
-      showToast("Zalogowano ✅");
-      renderAccount();
-
-      // ✅ Nadal robimy sync, ale UI punktów już jest odświeżone (a jak serwer ma nowsze dane, nadpisze)
-      await syncAll({ immediateRender: true });
-      openTab("points");
-      return;
-    } catch (e) {
-      showToast(e.message || "Błędny email lub hasło", true);
-    }
-  }
-
-  loginEmailForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const fd = new FormData(loginEmailForm);
-    const email = fd.get("email");
-    const password = fd.get("password");
-    loginWithEmail(email, password);
-  });
-
-  registerForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const fd = new FormData(registerForm);
-    const email = String(fd.get("email") || "").trim().toLowerCase();
-    const password = String(fd.get("password") || "").trim();
-
-    if (!email) { showToast("Podaj email", true); return; }
-    if (!password || password.length < 6) { showToast("Hasło min. 6 znaków", true); return; }
-
-    try {
-      await API.json("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
-      showToast("Konto utworzone ✅ Zaloguj się.");
-      registerForm.reset();
-      openTab("account");
-    } catch (err) {
-      showToast(err.message || "Nie udało się zarejestrować", true);
-    }
-  });
-
-  logoutBtn?.addEventListener("click", () => {
-    store.del("user");
-    showToast("Wylogowano");
-    renderAccount();
-    openTab("account");
-  });
-
-  // ---------- Subpages ----------
-  const subpages = {
-    personal: document.getElementById("page-personal"),
-    language: document.getElementById("page-language"),
-    about: document.getElementById("page-about"),
-    help: document.getElementById("page-help"),
+  const payload = {
+    name: String(data.name),
+    phone: String(data.phone),
+    date: String(data.date),
+    time: String(data.time),
+    guests: String(data.guests),
+    room: String(data.room),
+    notes: String(data.notes || ""),
+    email: String(user.email || ""),
+    milkId: String(milkId || ""),
+    source: "app",
   };
 
-  function openSubpage(name) {
-    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
-    subpages[name]?.classList.add("active");
-    prefillPersonalUI();
+  try {
+    await API.json("/api/rezerwacje", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    const local = store.get("reservations_local", []);
+    local.unshift({ ...payload, _id: crypto.randomUUID() });
+    store.set("reservations_local", local);
+
+    resForm.reset();
+    prefillReservationForm();
+    showToast("Rezerwacja wysłana 🧡");
+    await refreshReservationsFromServer();
+    openTab("res");
+  } catch (err) {
+    const local = store.get("reservations_local", []);
+    local.unshift({ ...payload, _id: crypto.randomUUID() });
+    store.set("reservations_local", local);
+
+    resForm.reset();
+    prefillReservationForm();
+    showToast("Rezerwacja zapisana lokalnie (brak endpointu) ⚠️", true);
+    await refreshReservationsFromServer();
+  }
+});
+
+(function () {
+  if (!resForm) return;
+  const dateInput = resForm.querySelector("input[name='date']");
+  if (!dateInput) return;
+  dateInput.min = new Date().toISOString().split("T")[0];
+})();
+
+// ---------- Account / Auth ----------
+const loggedOutEl = document.getElementById("accountLoggedOut");
+const loggedInEl = document.getElementById("accountLoggedIn");
+const avatarEl = document.getElementById("avatar");
+const accNameEl = document.getElementById("accName");
+const accEmailEl = document.getElementById("accEmail");
+
+// UI auth switch (jedna kafelka)
+const authRegisterView = document.getElementById("authRegisterView");
+const authLoginView = document.getElementById("authLoginView");
+const switchToLoginBtn = document.getElementById("switchToLoginBtn");
+const switchToRegisterBtn = document.getElementById("switchToRegisterBtn");
+
+function showAuthView(which) {
+  const isLogin = which === "login";
+  if (authRegisterView) authRegisterView.style.display = isLogin ? "none" : "block";
+  if (authLoginView) authLoginView.style.display = isLogin ? "block" : "none";
+}
+
+switchToLoginBtn?.addEventListener("click", () => showAuthView("login"));
+switchToRegisterBtn?.addEventListener("click", () => showAuthView("register"));
+
+function renderAccount() {
+  const user = getUser();
+  const isLogged = !!user?.email;
+
+  loggedOutEl.style.display = isLogged ? "none" : "flex";
+  loggedInEl.style.display = isLogged ? "flex" : "none";
+
+  if (isLogged) {
+    const profile = getPersonal();
+    const initials = (profile.name || user.name || "Milk User")
+      .split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+
+    avatarEl.textContent = initials || "MK";
+    accNameEl.textContent = profile.name || user.name || "Użytkownik";
+    accEmailEl.textContent = profile.email || user.email || "";
   }
 
-  function closeSubpages() {
-    Object.values(subpages).forEach((p) => p?.classList.remove("active"));
-  }
+  renderPoints();
+  renderRewards();
+  prefillPersonalUI();
+  prefillReservationForm();
+  renderNewsletterBar();
+}
 
-  document.querySelectorAll("[data-open]").forEach((el) => {
-    el.addEventListener("click", () => openSubpage(el.dataset.open));
-  });
+// ---------- Login / Register / Logout ----------
+const loginEmailForm = document.getElementById("loginEmailForm");
+const registerForm = document.getElementById("registerForm");
+const logoutBtn = document.getElementById("logoutBtn");
 
-  document.querySelectorAll("[data-back]").forEach((btn) => {
-    btn.addEventListener("click", closeSubpages);
-  });
+// Register: wymagane zgody
+const consentsAllEl = document.getElementById("consentsAll");
 
-  // ---------- Personal save ----------
-  const savePersonalBtn = document.getElementById("savePersonalBtn");
-  savePersonalBtn?.addEventListener("click", () => {
-    const name = (document.getElementById("personalName")?.value || "").trim();
-    const phone = (document.getElementById("personalPhone")?.value || "").trim();
-    const email = (document.getElementById("personalEmail")?.value || "").trim().toLowerCase();
+async function loginWithEmail(email, password) {
+  email = String(email || "").trim().toLowerCase();
+  password = String(password || "").trim();
 
-    const profile = store.get("profile", {});
-    if (name) profile.name = name;
-    if (phone) profile.phone = phone;
-    if (email) profile.email = email;
-    store.set("profile", profile);
+  if (!email) { showToast("Podaj email", true); return; }
+  if (!password) { showToast("Podaj hasło", true); return; }
 
-    const user = getUser();
-    if (user?.email) {
-      user.name = profile.name || user.name || "";
-      user.phone = profile.phone || user.phone || "";
+  try {
+    const res = await API.json("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    const user = {
+      email,
+      name: res?.name || res?.user?.name || store.get("profile", {})?.name || "",
+      phone: res?.phone || res?.user?.phone || store.get("profile", {})?.phone || "",
+      milkId: res?.milkId || res?.user?.milkId || store.get("user", {})?.milkId || "",
+      token: res?.token || res?.jwt || "",
+    };
+
+    store.set("user", user);
+
+    applyPointsFromServer(res);
+
+    if (!user.milkId) {
+      user.milkId = getMilkId();
       store.set("user", user);
     }
 
-    showToast("Zapisano ✅");
+    showToast("Zalogowano ✅");
     renderAccount();
+
+    await syncAll({ immediateRender: true });
+    openTab("points");
+    return;
+  } catch (e) {
+    showToast(e.message || "Błędny email lub hasło", true);
+  }
+}
+
+loginEmailForm?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const fd = new FormData(loginEmailForm);
+  const email = fd.get("email");
+  const password = fd.get("password");
+  loginWithEmail(email, password);
+});
+
+registerForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(registerForm);
+  const email = String(fd.get("email") || "").trim().toLowerCase();
+  const password = String(fd.get("password") || "").trim();
+
+  // checkboxy
+  const wantsNewsletter = !!fd.get("newsletter");
+  const consentsAll = !!fd.get("consentsAll");
+
+  if (!email) { showToast("Podaj email", true); return; }
+  if (!password || password.length < 6) { showToast("Hasło min. 6 znaków", true); return; }
+  if (!consentsAll) { showToast("Zaakceptuj wszystkie zgody", true); return; }
+
+  try {
+    await API.json("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ email, password, newsletter: wantsNewsletter, consentsAll: true }),
+    });
+    showToast("Konto utworzone ✅ Zaloguj się.");
+    registerForm.reset();
+    if (consentsAllEl) consentsAllEl.checked = false;
+    showAuthView("login");
+    openTab("account");
+  } catch (err) {
+    showToast(err.message || "Nie udało się zarejestrować", true);
+  }
+});
+
+logoutBtn?.addEventListener("click", () => {
+  store.del("user");
+  showToast("Wylogowano");
+  renderAccount();
+  openTab("account");
+});
+
+// ---------- Subpages ----------
+const subpages = {
+  personal: document.getElementById("page-personal"),
+  language: document.getElementById("page-language"),
+  about: document.getElementById("page-about"),
+  help: document.getElementById("page-help"),
+};
+
+function openSubpage(name) {
+  Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+  subpages[name]?.classList.add("active");
+  prefillPersonalUI();
+}
+
+function closeSubpages() {
+  Object.values(subpages).forEach((p) => p?.classList.remove("active"));
+}
+
+document.querySelectorAll("[data-open]").forEach((el) => {
+  el.addEventListener("click", () => openSubpage(el.dataset.open));
+});
+
+document.querySelectorAll("[data-back]").forEach((btn) => {
+  btn.addEventListener("click", closeSubpages);
+});
+
+// ---------- Personal save ----------
+const savePersonalBtn = document.getElementById("savePersonalBtn");
+savePersonalBtn?.addEventListener("click", () => {
+  const name = (document.getElementById("personalName")?.value || "").trim();
+  const phone = (document.getElementById("personalPhone")?.value || "").trim();
+  const email = (document.getElementById("personalEmail")?.value || "").trim().toLowerCase();
+
+  const profile = store.get("profile", {});
+  if (name) profile.name = name;
+  if (phone) profile.phone = phone;
+  if (email) profile.email = email;
+  store.set("profile", profile);
+
+  const user = getUser();
+  if (user?.email) {
+    user.name = profile.name || user.name || "";
+    user.phone = profile.phone || user.phone || "";
+    store.set("user", user);
+  }
+
+  showToast("Zapisano ✅");
+  renderAccount();
+  closeSubpages();
+});
+
+// ---------- Language ----------
+document.querySelectorAll("[data-lang]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    store.set("lang", btn.dataset.lang);
+    showToast("Zapisano język ✅");
     closeSubpages();
   });
+});
 
-  // ---------- Language ----------
-  document.querySelectorAll("[data-lang]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      store.set("lang", btn.dataset.lang);
-      showToast("Zapisano język ✅");
-      closeSubpages();
-    });
-  });
+// ---------- Sync (wywoływany po loginie) ----------
+async function syncAll({ immediateRender = false } = {}) {
+  if (!isLoggedIn()) return;
 
-  // ---------- Sync (wywoływany po loginie) ----------
-  // ✅ ZMIANA: w trakcie sync jak tylko dostaniemy punkty z bazy -> natychmiast renderPoints()
-  async function syncAll({ immediateRender = false } = {}) {
-    if (!isLoggedIn()) return;
+  // 1) Punkty/historia
+  try {
+    const user = getUser();
+    const data = await API.getMy("/api/milkpoints/my", user.email);
+    applyPointsFromServer(data);
+  } catch {}
 
-    // 1) Punkty/historia
-    try {
-      const user = getUser();
-      const data = await API.getMy("/api/milkpoints/my", user.email);
-      applyPointsFromServer(data); // <-- odświeża UI od razu po odpowiedzi z bazy
-    } catch {}
+  // 2) Katalog nagród
+  try {
+    const user = getUser();
+    const data = await API.getMy("/api/rewards/my", user.email);
+    if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
+    renderRewards();
+  } catch {}
 
-    // 2) Katalog nagród
-    try {
-      const user = getUser();
-      const data = await API.getMy("/api/rewards/my", user.email);
-      if (Array.isArray(data?.catalog)) store.set("rewardsCatalog", data.catalog);
-      renderRewards();
-    } catch {}
+  // 3) Rezerwacje
+  await refreshReservationsFromServer();
 
-    // 3) Rezerwacje
-    await refreshReservationsFromServer();
-
-    if (immediateRender) {
-      // dodatkowe “dociśnięcie” UI (bez czekania na inne rzeczy)
-      renderPoints();
-      renderRewards();
-    }
-  }
-
-  // ✅ NOWOŚĆ: auto-odświeżanie punktów po powrocie do apki + co jakiś czas (gdy zalogowany)
-  function startAutoRefreshPoints() {
-    // co 25s (lekko, bez spamu)
-    setInterval(() => {
-      if (!isLoggedIn()) return;
-      // tylko punkty/historia, żeby było szybko
-      (async () => {
-        try {
-          const user = getUser();
-          const data = await API.getMy("/api/milkpoints/my", user.email);
-          applyPointsFromServer(data);
-        } catch {}
-      })();
-    }, 25000);
-
-    // gdy wracasz do karty/apki
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState !== "visible") return;
-      if (!isLoggedIn()) return;
-      syncAll({ immediateRender: true });
-    });
-  }
-
-  // ---------- Install guide ----------
-  const installGuide = document.getElementById("installGuide");
-  const platformBtns = document.querySelectorAll(".platform-btn");
-  const installPanes = document.querySelectorAll(".install-pane");
-  const androidInstallBtn = document.getElementById("androidInstallBtn");
-  const androidInstallHint = document.getElementById("androidInstallHint");
-
-  let deferredPrompt = null;
-
-  function isStandalone() {
-    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-  }
-
-  function showInstallGuide() {
-    if (!installGuide) return;
-    installGuide.classList.add("show");
-    installGuide.setAttribute("aria-hidden", "false");
-  }
-
-  function hideInstallGuide() {
-    if (!installGuide) return;
-    installGuide.classList.remove("show");
-    installGuide.setAttribute("aria-hidden", "true");
-  }
-
-  function setGuideTab(tab) {
-    platformBtns.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === tab));
-    installPanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === tab));
-  }
-
-  platformBtns.forEach((b) => {
-    b.addEventListener("click", () => setGuideTab(b.dataset.guideTab));
-  });
-
-  installGuide?.addEventListener("click", (e) => {
-    if (e.target === installGuide) hideInstallGuide();
-  });
-
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (androidInstallBtn) androidInstallBtn.style.display = "inline-flex";
-    if (androidInstallHint) androidInstallHint.style.display = "none";
-  });
-
-  androidInstallBtn?.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch {}
-    deferredPrompt = null;
-    androidInstallBtn.style.display = "none";
-    if (androidInstallHint) androidInstallHint.style.display = "block";
-  });
-
-  (function initInstallGuide() {
-    const dismissed = store.get("installGuideDismissed", false);
-    if (!isStandalone() && !dismissed) {
-      setTimeout(showInstallGuide, 900);
-    }
-  })();
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") hideInstallGuide();
-  });
-
-  installGuide?.addEventListener("pointerdown", () => {
-    store.set("installGuideDismissed", true);
-  });
-
-  // ---------- Init render ----------
-  function initUI() {
-    openTab("points");
-    renderAccount();
-    renderOpeningHours();
+  if (immediateRender) {
     renderPoints();
     renderRewards();
-    refreshReservationsFromServer();
+  }
+}
 
-    // ✅ start auto refresh
-    startAutoRefreshPoints();
+// ✅ auto-odświeżanie punktów
+function startAutoRefreshPoints() {
+  setInterval(() => {
+    if (!isLoggedIn()) return;
+    (async () => {
+      try {
+        const user = getUser();
+        const data = await API.getMy("/api/milkpoints/my", user.email);
+        applyPointsFromServer(data);
+      } catch {}
+    })();
+  }, 25000);
 
-    // ✅ jeśli user już zalogowany (np. po odświeżeniu strony), to natychmiast pobierz punkty z bazy i pokaż
-    if (isLoggedIn()) syncAll({ immediateRender: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    if (!isLoggedIn()) return;
+    syncAll({ immediateRender: true });
+  });
+}
+
+// ---------- Install guide ----------
+const installGuide = document.getElementById("installGuide");
+const platformBtns = document.querySelectorAll(".platform-btn");
+const installPanes = document.querySelectorAll(".install-pane");
+const androidInstallBtn = document.getElementById("androidInstallBtn");
+const androidInstallHint = document.getElementById("androidInstallHint");
+
+let deferredPrompt = null;
+
+function isStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+}
+
+function showInstallGuide() {
+  if (!installGuide) return;
+  installGuide.classList.add("show");
+  installGuide.setAttribute("aria-hidden", "false");
+}
+
+function hideInstallGuide() {
+  if (!installGuide) return;
+  installGuide.classList.remove("show");
+  installGuide.setAttribute("aria-hidden", "true");
+}
+
+function setGuideTab(tab) {
+  platformBtns.forEach((b) => b.classList.toggle("active", b.dataset.guideTab === tab));
+  installPanes.forEach((p) => p.classList.toggle("active", p.dataset.guidePane === tab));
+}
+
+platformBtns.forEach((b) => {
+  b.addEventListener("click", () => setGuideTab(b.dataset.guideTab));
+});
+
+installGuide?.addEventListener("click", (e) => {
+  if (e.target === installGuide) hideInstallGuide();
+});
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (androidInstallBtn) androidInstallBtn.style.display = "inline-flex";
+  if (androidInstallHint) androidInstallHint.style.display = "none";
+});
+
+androidInstallBtn?.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  try { await deferredPrompt.userChoice; } catch {}
+  deferredPrompt = null;
+  androidInstallBtn.style.display = "none";
+  if (androidInstallHint) androidInstallHint.style.display = "block";
+});
+
+(function initInstallGuide() {
+  const dismissed = store.get("installGuideDismissed", false);
+  if (!isStandalone() && !dismissed) {
+    setTimeout(showInstallGuide, 900);
+  }
+})();
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") hideInstallGuide();
+});
+
+installGuide?.addEventListener("pointerdown", () => {
+  store.set("installGuideDismissed", true);
+});
+
+// ---------- NEWSLETTER (frontend gotowy, backend zrobimy później) ----------
+const newsletterBarEl = document.getElementById("newsletterBar");
+const newsletterEmailEl = document.getElementById("newsletterEmail");
+const newsletterSaveBtn = document.getElementById("newsletterSaveBtn");
+
+function newsletterKeyForUser() {
+  const user = getUser();
+  const email = (user?.email || "").toLowerCase();
+  return email ? `newsletterSaved:${email}` : "newsletterSaved:anonymous";
+}
+
+function hasNewsletterSaved() {
+  return !!store.get(newsletterKeyForUser(), false);
+}
+
+function renderNewsletterBar() {
+  // pokazuj tylko na tab "points" i tylko gdy zalogowany i jeszcze nie zapisany
+  const activePoints = document.getElementById("tab-points")?.classList.contains("active");
+  if (!newsletterBarEl) return;
+
+  if (!activePoints || !isLoggedIn() || hasNewsletterSaved()) {
+    newsletterBarEl.style.display = "none";
+    return;
   }
 
-  initUI();
+  newsletterBarEl.style.display = "block";
 
-</script>
+  // prefill: konto email
+  const user = getUser();
+  if (newsletterEmailEl && !newsletterEmailEl.value) newsletterEmailEl.value = user?.email || "";
+}
+
+async function saveNewsletterEmail() {
+  if (!isLoggedIn()) return;
+  const email = String(newsletterEmailEl?.value || "").trim().toLowerCase();
+  if (!email || !email.includes("@")) {
+    showToast("Podaj poprawny email", true);
+    return;
+  }
+
+  // backend: w przyszłości zapis do MongoDB: collection "newsletter"
+  // teraz: tylko localStorage (żeby już nigdy nie pokazać na tym koncie)
+  try {
+    // docelowo:
+    // await API.json("/api/newsletter/subscribe", { method:"POST", body: JSON.stringify({ email, userEmail: getUser().email }) });
+
+    store.set(newsletterKeyForUser(), true);
+    showToast("Zapisano ✅");
+    renderNewsletterBar();
+  } catch (e) {
+    showToast(e.message || "Nie udało się zapisać", true);
+  }
+}
+
+newsletterSaveBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  saveNewsletterEmail();
+});
+newsletterEmailEl?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    saveNewsletterEmail();
+  }
+});
+
+// ---------- Init render ----------
+function initUI() {
+  openTab("points");
+  renderAccount();
+  renderOpeningHours();
+  renderPoints();
+  renderRewards();
+  refreshReservationsFromServer();
+  renderNewsletterBar();
+
+  startAutoRefreshPoints();
+
+  if (isLoggedIn()) syncAll({ immediateRender: true });
+
+  // domyślnie widok rejestracji w kafelce
+  showAuthView("register");
+}
+
+initUI();
+
+  </script>
 
 </body>
 </html>
