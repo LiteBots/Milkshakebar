@@ -3,6 +3,7 @@
 // ✅ milkid (6 cyfr per user) + codeid (kody nagród do realizacji)
 // ✅ admin: naliczanie punktów po milkId + realizacja kodów
 // ✅ NOWE: rewards_history (historia wykorzystania kodów) + API /api/admin/rewards/history
+// ✅ NOWE: manage panel API + login przez MCPass
 // ❌ NO orders (na razie nie używamy "zamów i odbierz")
 
 const express = require("express");
@@ -30,8 +31,12 @@ const MONGO_URL = process.env.MONGO_URL;
 const ADMIN_PIN = process.env.ADMIN_PIN || "";
 const CLIENTS_PIN = process.env.CLIENTS_PIN || "";
 
+// ✅ NEW: manage panel pass
+const MCPass = process.env.MCPass || "";
+
 if (!MONGO_URL) console.error("❌ Brak MONGO_URL w zmiennych środowiskowych!");
 if (!ADMIN_PIN) console.error("❌ Brak ADMIN_PIN w zmiennych środowiskowych! (Panel admin nie zaloguje się)");
+if (!MCPass) console.error("⚠️ Brak MCPass w zmiennych środowiskowych! (manage.html nie zaloguje się)");
 
 // ==========================
 // MongoDB connect + ensure collections
@@ -45,8 +50,18 @@ mongoose
       const existing = await db.listCollections().toArray();
       const names = new Set(existing.map((c) => c.name));
 
-      // ✅ dodane rewards_history
-      const mustHave = ["milkpoint", "milkid", "codeid", "rewards", "rewards_history"];
+      // ✅ ensure collections (dopisałem też users/reservations żeby było pewniej)
+      const mustHave = [
+        "users",
+        "reservations",
+        "milkpoint",
+        "milkid",
+        "codeid",
+        "rewards",
+        "rewards_history",
+        "happybars",
+      ];
+
       for (const name of mustHave) {
         if (!names.has(name)) {
           await db.createCollection(name);
@@ -152,7 +167,7 @@ const RewardSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-// ✅ NOWE: rewards_history – historia wykorzystania kodów (oddzielna kolekcja)
+// ✅ rewards_history – historia wykorzystania kodów (oddzielna kolekcja)
 const RewardHistorySchema = new mongoose.Schema(
   {
     code: { type: String, required: true, unique: true, index: true }, // 1 wpis na kod (bo kod jednorazowy)
@@ -236,6 +251,17 @@ function calcPointsFromAmountPLN(amountPln) {
   return Math.floor(a / 10);
 }
 
+// helper: safe date from string/date
+function toDateSafe(v) {
+  try {
+    if (!v) return null;
+    const d = v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  } catch {
+    return null;
+  }
+}
+
 // Serwerowy katalog nagród (rewardId -> tytuł/koszt)
 const REWARDS_CATALOG = [
   { id: "milkshake_30", title: "Milkshake do 30 PLN", cost: 25, desc: "Wartość do 30 PLN" },
@@ -255,7 +281,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 // ==========================
-// API — ADMIN LOGIN (PIN)
+// API — ADMIN LOGIN (PIN)  (admin.html)
 // ==========================
 app.post("/api/login", (req, res) => {
   const pin = String(req.body?.pin || "");
@@ -269,6 +295,24 @@ app.post("/api/login", (req, res) => {
 
   if (pin === ADMIN_PIN) return res.json({ ok: true });
   return res.status(401).json({ ok: false, message: "Błędny PIN" });
+});
+
+// ==========================
+// ✅ API — MANAGE LOGIN (manage.html)
+// login przez Railway Variable: MCPass
+// ==========================
+app.post("/api/manage/login", (req, res) => {
+  const pass = String(req.body?.pass || req.body?.pin || "");
+
+  if (!MCPass) {
+    return res.status(500).json({
+      ok: false,
+      message: "Brak MCPass w zmiennych środowiskowych (Railway Variables).",
+    });
+  }
+
+  if (pass === MCPass) return res.json({ ok: true });
+  return res.status(401).json({ ok: false, message: "Błędne hasło" });
 });
 
 app.post("/api/clients/unlock", (req, res) => {
@@ -684,7 +728,6 @@ app.post("/api/rewards/redeem", async (req, res) => {
 
 // ✅ zapis do historii (rewards_history) – jednorazowy wpis per kod
 async function writeRewardUseHistoryOnce({ code, name, rewardId, email, milkId, note, usedAt }) {
-  // kod jest unikalny, więc jak wpis istnieje, to nic nie robimy
   await RewardHistory.updateOne(
     { code },
     {
@@ -721,7 +764,6 @@ async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
     throw err;
   }
 
-  // jeśli już użyty, zwróć konflikt – ale możesz też odczytać historię
   if (doc.status === "used") {
     const err = new Error("Kod został już wykorzystany.");
     err.status = 409;
@@ -742,10 +784,8 @@ async function useRewardCodeCommon({ codeRaw, usedByRaw }) {
   doc.usedBy = usedBy || "";
   await doc.save();
 
-  // oznacz historię nagród (opcjonalnie)
   await Reward.updateMany({ code }, { $set: { status: "redeemed" } }).catch(() => {});
 
-  // ✅ zapis do rewards_history (tylko raz na kod)
   await writeRewardUseHistoryOnce({
     code: doc.code,
     name: doc.title,
@@ -804,7 +844,6 @@ app.post("/api/codeid/use", async (req, res) => {
       usedByRaw: req.body?.usedBy,
     });
 
-    // zachowaj kompatybilność: zwróć też pola jak dawniej
     return res.json({
       ...out,
       message: "Kod wykorzystany i zablokowany ✅",
@@ -819,17 +858,14 @@ app.post("/api/codeid/use", async (req, res) => {
   }
 });
 
-// ✅ ENDPOINT DLA PANELU ADMINA (pasuje do Twojego frontu)
 // POST /api/admin/rewards/use { code, note }
 app.post("/api/admin/rewards/use", async (req, res) => {
   try {
     const out = await useRewardCodeCommon({
       codeRaw: req.body?.code,
-      usedByRaw: req.body?.note, // notatka z panelu
+      usedByRaw: req.body?.note,
     });
 
-    // Forma idealnie pod Twój admin.html:
-    // { ok:true, code, name, used:true, usedAt, note }
     return res.json({
       ok: true,
       code: out.code,
@@ -846,7 +882,6 @@ app.post("/api/admin/rewards/use", async (req, res) => {
   }
 });
 
-// ✅ NOWE API: HISTORIA WYKORZYSTANIA KODÓW (dla admin panelu)
 // GET /api/admin/rewards/history
 app.get("/api/admin/rewards/history", async (req, res) => {
   try {
@@ -858,8 +893,6 @@ app.get("/api/admin/rewards/history", async (req, res) => {
       .limit(limit)
       .lean();
 
-    // Ujednolicona forma dla frontu:
-    // items: [{ code, name, note, usedAt, email, milkId, used:true }]
     const out = items.map((x) => ({
       code: x.code,
       name: x.name || "",
@@ -875,6 +908,201 @@ app.get("/api/admin/rewards/history", async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ ok: false, items: [], message: "Błąd pobierania historii" });
+  }
+});
+
+// ==========================
+// ✅ MANAGE API (manage.html)
+// ==========================
+
+// GET /api/manage/users?query=&limit=
+app.get("/api/manage/users", async (req, res) => {
+  try {
+    const q = String(req.query?.query || "").trim().toLowerCase();
+    const limitRaw = Number(req.query?.limit);
+    const limit = Number.isFinite(limitRaw) ? Math.max(10, Math.min(500, Math.floor(limitRaw))) : 200;
+
+    const users = await User.find({}, { email: 1, milkId: 1, createdAt: 1, lastLoginAt: 1 })
+      .sort({ lastLoginAt: -1, createdAt: -1 })
+      .limit(3000)
+      .lean();
+
+    const mpDocs = await MilkPoint.find({}, { email: 1, points: 1, updatedAt: 1 }).lean();
+    const mpMap = new Map(mpDocs.map((d) => [String(d.email || "").toLowerCase(), d]));
+
+    const lastRes = await Reservation.aggregate([
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$email", name: { $first: "$name" }, phone: { $first: "$phone" }, createdAt: { $first: "$createdAt" } } },
+    ]);
+
+    const resMap = new Map(lastRes.map((d) => [String(d._id || "").toLowerCase(), d]));
+
+    let items = users.map((u) => {
+      const email = String(u.email || "").toLowerCase();
+      const mp = mpMap.get(email);
+      const lr = resMap.get(email);
+
+      const points = Number(mp?.points) || 0;
+      const lastA =
+        toDateSafe(lr?.createdAt) ||
+        toDateSafe(mp?.updatedAt) ||
+        toDateSafe(u.lastLoginAt) ||
+        toDateSafe(u.createdAt);
+
+      return {
+        email: u.email,
+        milkId: u.milkId || "",
+        name: lr?.name || "",
+        phone: lr?.phone || "",
+        points,
+        lastActivityAt: lastA ? lastA.toISOString() : null,
+      };
+    });
+
+    if (q) {
+      items = items.filter((x) => {
+        const hay = `${x.email || ""} ${x.milkId || ""} ${x.name || ""} ${x.phone || ""}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    items = items
+      .sort((a, b) => (toDateSafe(b.lastActivityAt)?.getTime() || 0) - (toDateSafe(a.lastActivityAt)?.getTime() || 0))
+      .slice(0, limit);
+
+    const milkosTotal = mpDocs.reduce((sum, d) => sum + (Number(d.points) || 0), 0);
+    const withPoints = mpDocs.filter((d) => (Number(d.points) || 0) > 0).length;
+    const withMilkId = users.filter((u) => !!u.milkId).length;
+
+    return res.json({
+      ok: true,
+      items,
+      stats: {
+        users: users.length,
+        withMilkId,
+        withPoints,
+        milkosTotal,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ ok: false, message: "Błąd pobierania użytkowników", items: [], stats: {} });
+  }
+});
+
+// GET /api/manage/users/details?email=&type=&limit=
+app.get("/api/manage/users/details", async (req, res) => {
+  try {
+    const email = normEmail(req.query?.email);
+    const type = String(req.query?.type || "all").trim();
+    const limitRaw = Number(req.query?.limit);
+    const limit = Number.isFinite(limitRaw) ? Math.max(20, Math.min(500, Math.floor(limitRaw))) : 200;
+
+    if (!email) return res.status(400).json({ ok: false, message: "Brak email." });
+
+    const user = await User.findOne({ email }, { email: 1, milkId: 1, createdAt: 1, lastLoginAt: 1 }).lean();
+    if (!user) return res.status(404).json({ ok: false, message: "Nie znaleziono użytkownika." });
+
+    const mp = await MilkPoint.findOne({ email }, { points: 1, history: 1, updatedAt: 1 }).lean();
+    const points = Number(mp?.points) || 0;
+
+    const lastR = await Reservation.findOne({ email }).sort({ createdAt: -1 }).lean();
+    const name = lastR?.name || "";
+    const phone = lastR?.phone || "";
+
+    const timeline = [];
+
+    // reservations
+    if (type === "all" || type === "reservation") {
+      const rs = await Reservation.find({ email }).sort({ createdAt: -1 }).limit(limit).lean();
+      for (const r of rs) {
+        timeline.push({
+          type: "reservation",
+          at: r.createdAt || null,
+          title: "Rezerwacja",
+          details: `${r.date || "—"} ${r.time || ""} • ${r.guests || "—"} os. • ${r.room || "—"}${
+            r.notes ? ` • ${r.notes}` : ""
+          }`,
+          meta: { source: r.source || "index", milkId: r.milkId || "" },
+        });
+      }
+    }
+
+    // points_add from mp.history (Naliczenie:)
+    if (type === "all" || type === "points_add") {
+      const h = Array.isArray(mp?.history) ? mp.history : [];
+      for (const it of h.slice(0, limit)) {
+        const t = String(it?.text || "");
+        const isAdd = t.toLowerCase().includes("naliczenie:");
+        if (!isAdd) continue;
+
+        timeline.push({
+          type: "points_add",
+          at: null,
+          date: it?.date || "",
+          title: "Doładowanie punktów",
+          details: it?.text || "",
+          meta: it?.meta || {},
+        });
+      }
+    }
+
+    // reward_redeem from mp.history (Wymieniono:)
+    if (type === "all" || type === "reward_redeem") {
+      const h = Array.isArray(mp?.history) ? mp.history : [];
+      for (const it of h.slice(0, limit)) {
+        const t = String(it?.text || "");
+        const isRedeem = t.toLowerCase().includes("wymieniono:");
+        if (!isRedeem) continue;
+
+        timeline.push({
+          type: "reward_redeem",
+          at: null,
+          date: it?.date || "",
+          title: "Wymiana na nagrodę",
+          details: it?.text || "",
+          meta: it?.meta || {},
+        });
+      }
+    }
+
+    // reward_use from rewards_history (by email)
+    if (type === "all" || type === "reward_use") {
+      const used = await RewardHistory.find({ email }).sort({ usedAt: -1, createdAt: -1 }).limit(limit).lean();
+      for (const x of used) {
+        timeline.push({
+          type: "reward_use",
+          at: x.usedAt || x.createdAt || null,
+          title: "Użycie kodu nagrody",
+          details: `${x.code || "—"} • ${x.name || "—"}${x.note ? ` • ${x.note}` : ""}`,
+          meta: { milkId: x.milkId || "", rewardId: x.rewardId || "" },
+        });
+      }
+    }
+
+    const norm = timeline
+      .map((ev) => {
+        const at = ev.at ? new Date(ev.at) : ev.date ? new Date(ev.date) : null;
+        return { ...ev, _ts: at && !isNaN(at.getTime()) ? at.getTime() : 0 };
+      })
+      .sort((a, b) => b._ts - a._ts)
+      .slice(0, limit)
+      .map(({ _ts, ...rest }) => rest);
+
+    return res.json({
+      ok: true,
+      user: {
+        email: user.email,
+        milkId: user.milkId || "",
+        name,
+        phone,
+        points,
+      },
+      timeline: norm,
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ ok: false, message: "Błąd profilu", user: null, timeline: [] });
   }
 });
 
@@ -903,7 +1131,14 @@ app.get("/api/admin/stats", async (_req, res) => {
     });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok: false, users: 0, products: 0, reservations: 0, milkosTotal: 0, usersWithPoints: 0 });
+    res.status(500).json({
+      ok: false,
+      users: 0,
+      products: 0,
+      reservations: 0,
+      milkosTotal: 0,
+      usersWithPoints: 0,
+    });
   }
 });
 
@@ -911,11 +1146,10 @@ app.get("/api/admin/stats", async (_req, res) => {
 // Routes
 // ==========================
 app.get("/admin", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "admin.html")));
+app.get("/manage", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "manage.html"))); // ✅ NEW
 app.get("/index.html", (_req, res) => res.redirect(301, "/"));
 app.get("/app", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "app.html")));
-app.get("/aplikacja", (_req, res) =>
-  res.sendFile(path.join(PUBLIC_DIR, "aplikacja.html"))
-);
+app.get("/aplikacja", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "aplikacja.html")));
 
 // SPA fallback
 app.get("*", (req, res) => {
