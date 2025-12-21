@@ -308,40 +308,30 @@
     .locktop .title{display:flex;flex-direction:column;gap:2px}
     .locktop .title b{font-weight:900;font-size:1.1rem}
     .locktop .title span{color:var(--muted);font-size:.92rem}
-    .pin{display:flex;gap:10px;justify-content:center;margin:14px 0 10px;}
-    .pin .dotpin{
-      width:14px;height:14px;border-radius:99px;
-      background: rgba(43,19,0,0.10);
-      border:1px solid rgba(43,19,0,0.12);
-      box-shadow: inset 0 6px 12px rgba(0,0,0,0.10);
+
+    .lockform{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .pin .dotpin.filled{
-      background: var(--gradient);
-      border-color: rgba(255,145,0,0.55);
-      box-shadow:0 10px 25px rgba(255,106,0,0.18);
+    .lockrow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
     }
-    .keypad{display:grid;grid-template-columns: repeat(3, 1fr);gap:12px;margin-top:12px;}
-    .key{
-      height:56px;border-radius:18px;
+    .eye{
+      width:46px;height:46px;border-radius:16px;
       border:1px solid rgba(43,19,0,0.12);
       background: rgba(255,255,255,0.86);
-      color:var(--text);font-weight:900;font-size:1.15rem;
-      cursor:pointer;transition:.15s ease;display:grid;place-items:center;
+      cursor:pointer;
+      display:grid;place-items:center;
       box-shadow:0 12px 26px rgba(0,0,0,0.06);
+      transition:.15s ease;
     }
-    .key:hover{transform:translateY(-1px); background: rgba(255,255,255,0.95)}
-    .key.small{font-size:1rem}
-    .key.danger{
-      background: rgba(220,38,38,0.10);
-      border-color: rgba(220,38,38,0.22);
-      color:#8a0d0d;
-    }
-    .key.ok{
-      background: rgba(22,163,74,0.10);
-      border-color: rgba(22,163,74,0.22);
-      color:#0f5f2a;
-    }
-    .lockmsg{text-align:center;color:rgba(43,19,0,0.75);font-size:.92rem;min-height:22px;margin-top:10px;}
+    .eye:hover{transform:translateY(-1px); background: rgba(255,255,255,0.95)}
+    .lockmsg{text-align:center;color:rgba(43,19,0,0.75);font-size:.92rem;min-height:22px;margin-top:8px;}
 
     /* Toast */
     #toast{
@@ -413,34 +403,37 @@
       <div class="locktop">
         <div class="title">
           <b>MilkShake Bar — Manage</b>
-          <span>Wpisz PIN na klawiaturze ekranowej</span>
+          <span>Wpisz hasło (max 10 znaków)</span>
         </div>
-        <span class="pill"><i class="fa-solid fa-lock"></i> PIN</span>
+        <span class="pill"><i class="fa-solid fa-lock"></i> HASŁO</span>
       </div>
 
-      <div class="pin" aria-label="PIN">
-        <div class="dotpin" id="p1"></div>
-        <div class="dotpin" id="p2"></div>
-        <div class="dotpin" id="p3"></div>
-        <div class="dotpin" id="p4"></div>
-      </div>
+      <div class="lockform">
+        <div class="field" style="margin-top:0">
+          <label for="passInput">Hasło</label>
+          <div class="lockrow">
+            <input
+              class="input"
+              id="passInput"
+              type="password"
+              inputmode="text"
+              autocomplete="current-password"
+              maxlength="10"
+              placeholder="••••••••••"
+              style="flex:1;min-width:220px"
+            />
+            <button class="eye" id="togglePass" type="button" title="Pokaż/ukryj">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+            <button class="btn primary" id="loginBtn" type="button">
+              <i class="fa-solid fa-right-to-bracket"></i> Zaloguj
+            </button>
+          </div>
+          <div class="hint">Hasło jest w Railway Variables pod nazwą <b>MCPass</b>.</div>
+        </div>
 
-      <div class="keypad" id="keypad">
-        <button class="key" data-k="1">1</button>
-        <button class="key" data-k="2">2</button>
-        <button class="key" data-k="3">3</button>
-        <button class="key" data-k="4">4</button>
-        <button class="key" data-k="5">5</button>
-        <button class="key" data-k="6">6</button>
-        <button class="key" data-k="7">7</button>
-        <button class="key" data-k="8">8</button>
-        <button class="key" data-k="9">9</button>
-        <button class="key danger small" data-act="back"><i class="fa-solid fa-delete-left"></i></button>
-        <button class="key" data-k="0">0</button>
-        <button class="key ok small" data-act="ok"><i class="fa-solid fa-check"></i></button>
+        <div class="lockmsg" id="lockMsg"></div>
       </div>
-
-      <div class="lockmsg" id="lockMsg"></div>
     </div>
   </div>
 
@@ -600,10 +593,9 @@
     const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
 
     const state = {
-      pin:"",
       unlocked:false,
       users:[],
-      userSelected:null, // {email, milkId, ...}
+      userSelected:null,
       userTimeline:[],
     };
 
@@ -639,32 +631,25 @@
       lastTouchEnd = now;
     }, {passive:false});
 
-    // ==========================
-    // ✅ Backend login (PIN not in frontend)
-    // POST /api/login {pin:"1234"} => {ok:true}
-    // ==========================
-    async function verifyPin(pin){
-      const res = await fetch("/api/login", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ pin })
-      });
-      const data = await res.json().catch(()=>({}));
-      return !!(res.ok && data && data.ok);
-    }
-
-    // ==========================
-    // Lock screen PIN
-    // ==========================
-    function renderPin(){
-      const dots = [$("#p1"), $("#p2"), $("#p3"), $("#p4")];
-      dots.forEach((d,i)=> d.classList.toggle("filled", i < state.pin.length));
-    }
-
     function setLockMsg(msg, bad=false){
       const el = $("#lockMsg");
       el.textContent = msg || "";
       el.style.color = bad ? "rgba(220,38,38,0.95)" : "rgba(43,19,0,0.75)";
+    }
+
+    // ==========================
+    // ✅ Backend login for manage.html
+    // POST /api/manage/login { pass:"..." } => {ok:true}
+    // (hasło jest w Railway Variables: MCPass)
+    // ==========================
+    async function verifyManagePass(pass){
+      const res = await fetch("/api/manage/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ pass })
+      });
+      const data = await res.json().catch(()=>({}));
+      return !!(res.ok && data && data.ok);
     }
 
     function unlock(){
@@ -678,8 +663,9 @@
 
     function lock(){
       state.unlocked = false;
-      state.pin = "";
-      renderPin();
+      $("#passInput").value = "";
+      $("#passInput").type = "password";
+      $("#togglePass i").className = "fa-solid fa-eye";
       $("#app").style.display = "none";
       $("#lock").classList.add("show");
       setLockedFreeze(true);
@@ -687,71 +673,65 @@
       closeUserModal();
     }
 
-    let loginBusy = false;
+    $("#logoutBtn").addEventListener("click", lock);
 
-    $("#keypad").addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn || loginBusy) return;
-
-      const k = btn.getAttribute("data-k");
-      const act = btn.getAttribute("data-act");
-
-      if(k){
-        if(state.pin.length >= 4) return;
-        state.pin += k;
-        renderPin();
-        setLockMsg("");
-
-        if(state.pin.length === 4){
-          const entered = state.pin;
-          state.pin = "";
-          renderPin();
-
-          loginBusy = true;
-          try{
-            const ok = await verifyPin(entered);
-            if(ok) unlock();
-            else setLockMsg("Błędny PIN", true);
-          }catch{
-            setLockMsg("Błąd logowania", true);
-          }finally{
-            loginBusy = false;
-          }
-        }
-        return;
-      }
-
-      if(act === "back"){
-        state.pin = state.pin.slice(0, -1);
-        renderPin();
-        setLockMsg("");
-      }
-
-      if(act === "ok"){
-        const entered = state.pin;
-        state.pin = "";
-        renderPin();
-
-        loginBusy = true;
-        try{
-          const ok = await verifyPin(entered);
-          if(ok) unlock();
-          else setLockMsg("Błędny PIN", true);
-        }catch{
-          setLockMsg("Błąd logowania", true);
-        }finally{
-          loginBusy = false;
-        }
-      }
-    });
-
-    // total freeze system keyboard on lockscreen
+    // total freeze system keyboard on lockscreen (poza polem hasła)
     window.addEventListener("keydown", (e)=>{
       if(!$("#lock").classList.contains("show")) return;
+      const a = document.activeElement;
+      const isPass = a && a.id === "passInput";
+      if(isPass) return; // pozwól pisać w polu hasła
       e.preventDefault();
     }, {passive:false});
 
-    $("#logoutBtn").addEventListener("click", lock);
+    // Limit 10 znaków + brak spacji na początku
+    $("#passInput").addEventListener("input", ()=>{
+      const el = $("#passInput");
+      // twardy limit (na wszelki wypadek)
+      if(el.value.length > 10) el.value = el.value.slice(0,10);
+      // opcjonalnie: obetnij leading spaces
+      if(el.value.startsWith(" ")) el.value = el.value.trimStart();
+      setLockMsg("");
+    });
+
+    $("#togglePass").addEventListener("click", ()=>{
+      const inp = $("#passInput");
+      const i = $("#togglePass i");
+      const show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      i.className = show ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+      inp.focus();
+    });
+
+    let loginBusy = false;
+
+    async function tryLogin(){
+      if(loginBusy) return;
+      const pass = String($("#passInput").value || "").trim();
+      if(!pass) return setLockMsg("Wpisz hasło", true);
+      if(pass.length > 10) return setLockMsg("Max 10 znaków", true);
+
+      loginBusy = true;
+      $("#loginBtn").disabled = true;
+      $("#loginBtn").style.opacity = "0.75";
+
+      try{
+        const ok = await verifyManagePass(pass);
+        if(ok) unlock();
+        else setLockMsg("Błędne hasło", true);
+      }catch{
+        setLockMsg("Błąd logowania", true);
+      }finally{
+        loginBusy = false;
+        $("#loginBtn").disabled = false;
+        $("#loginBtn").style.opacity = "1";
+      }
+    }
+
+    $("#loginBtn").addEventListener("click", tryLogin);
+    $("#passInput").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") tryLogin();
+    });
 
     // ==========================
     // API Health
@@ -768,7 +748,7 @@
     }
 
     // ==========================
-    // ✅ Users list (NEW ADMIN API)
+    // ✅ Users list (ADMIN API)
     // GET /api/admin/users?query=&limit=
     // -> { ok:true, items:[{email,milkId,name,phone,points,lastActivityAt}] , stats:{...} }
     // ==========================
@@ -859,7 +839,7 @@
     });
 
     // ==========================
-    // ✅ User details (NEW ADMIN API)
+    // ✅ User details (ADMIN API)
     // GET /api/admin/users/details?email=...&type=all|...&limit=...
     // -> { ok:true, user:{email,milkId,name,phone,points}, timeline:[{type,at,title,details,meta}] }
     // ==========================
@@ -1055,7 +1035,8 @@
 
     setInterval(apiHealth, 6000);
 
-    renderPin();
+    // Focus on pass field at start
+    setTimeout(()=> $("#passInput")?.focus(), 120);
   </script>
 </body>
 </html>
