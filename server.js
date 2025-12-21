@@ -4,6 +4,7 @@
 // ✅ admin: naliczanie punktów po milkId + realizacja kodów
 // ✅ NOWE: rewards_history (historia wykorzystania kodów) + API /api/admin/rewards/history
 // ✅ NOWE: manage panel API + login przez MCPass
+// ✅ NOWE: newsletter collection + endpoint /api/newsletter/subscribe
 // ❌ NO orders (na razie nie używamy "zamów i odbierz")
 
 const express = require("express");
@@ -51,18 +52,17 @@ mongoose
       const names = new Set(existing.map((c) => c.name));
 
       // ✅ ensure collections (dopisałem też users/reservations żeby było pewniej)
-     const mustHave = [
-  "users",
-  "reservations",
-  "milkpoint",
-  "milkid",
-  "codeid",
-  "rewards",
-  "rewards_history",
-  "happybars",
-  "newsletter", // ✅ NEW
-];
-
+      const mustHave = [
+        "users",
+        "reservations",
+        "milkpoint",
+        "milkid",
+        "codeid",
+        "rewards",
+        "rewards_history",
+        "happybars",
+        "newsletter", // ✅ NEW
+      ];
 
       for (const name of mustHave) {
         if (!names.has(name)) {
@@ -186,6 +186,17 @@ const RewardHistorySchema = new mongoose.Schema(
   { minimize: false }
 );
 
+// ✅ newsletter (kolekcja: newsletter)
+const NewsletterSchema = new mongoose.Schema(
+  {
+    email: { type: String, required: true, unique: true, index: true },
+    source: { type: String, default: "app" }, // np. "app"
+    userEmail: { type: String, default: "" }, // opcjonalnie email zalogowanego usera
+    createdAt: { type: Date, default: Date.now },
+  },
+  { minimize: false }
+);
+
 // Kolekcje NA SZTYWNO:
 const Reservation = mongoose.model("Reservation", ReservationSchema, "reservations");
 const HappyBar = mongoose.model("HappyBar", HappySchema, "happybars");
@@ -195,6 +206,7 @@ const MilkId = mongoose.model("MilkId", MilkIdSchema, "milkid");
 const CodeId = mongoose.model("CodeId", CodeIdSchema, "codeid");
 const Reward = mongoose.model("Reward", RewardSchema, "rewards");
 const RewardHistory = mongoose.model("RewardHistory", RewardHistorySchema, "rewards_history");
+const Newsletter = mongoose.model("Newsletter", NewsletterSchema, "newsletter"); // ✅ NEW
 
 // products do statystyk (jeśli masz)
 const Product = mongoose.model("Product", new mongoose.Schema({}, { strict: false }), "products");
@@ -444,6 +456,45 @@ app.get("/api/milkid/:milkid", async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ ok: false, message: "Błąd lookup" });
+  }
+});
+
+// ==========================
+// ✅ NEWSLETTER (zapisy z apki)
+// ==========================
+// POST /api/newsletter/subscribe { email, source?, userEmail? }
+app.post("/api/newsletter/subscribe", async (req, res) => {
+  try {
+    const email = normEmail(req.body?.email);
+    const source = String(req.body?.source || "app");
+    const userEmail = normEmail(req.body?.userEmail || "");
+
+    if (!email || !email.includes("@")) {
+      return res.status(400).json({ ok: false, message: "Podaj poprawny email." });
+    }
+
+    // Idempotentnie: nie dubluj emaili
+    await Newsletter.updateOne(
+      { email },
+      {
+        $setOnInsert: {
+          email,
+          source,
+          userEmail: userEmail || "",
+          createdAt: new Date(),
+        },
+      },
+      { upsert: true }
+    );
+
+    return res.json({ ok: true });
+  } catch (e) {
+    // Przy wyścigu na unique index też zwróć OK
+    const msg = String(e?.message || "");
+    if (msg.includes("E11000")) return res.json({ ok: true });
+
+    console.error(e);
+    return res.status(500).json({ ok: false, message: "Błąd zapisu newslettera" });
   }
 });
 
@@ -701,7 +752,12 @@ app.post("/api/rewards/redeem", async (req, res) => {
         $inc: { points: -reward.cost },
         $push: {
           history: {
-            $each: [{ text: `Wymieniono: -${reward.cost} pkt (${reward.title}) • Kod: ${code}`, date: new Date().toLocaleString("pl-PL") }],
+            $each: [
+              {
+                text: `Wymieniono: -${reward.cost} pkt (${reward.title}) • Kod: ${code}`,
+                date: new Date().toLocaleString("pl-PL"),
+              },
+            ],
             $position: 0,
           },
         },
