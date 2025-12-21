@@ -51,16 +51,18 @@ mongoose
       const names = new Set(existing.map((c) => c.name));
 
       // ✅ ensure collections (dopisałem też users/reservations żeby było pewniej)
-      const mustHave = [
-        "users",
-        "reservations",
-        "milkpoint",
-        "milkid",
-        "codeid",
-        "rewards",
-        "rewards_history",
-        "happybars",
-      ];
+     const mustHave = [
+  "users",
+  "reservations",
+  "milkpoint",
+  "milkid",
+  "codeid",
+  "rewards",
+  "rewards_history",
+  "happybars",
+  "newsletter", // ✅ NEW
+];
+
 
       for (const name of mustHave) {
         if (!names.has(name)) {
