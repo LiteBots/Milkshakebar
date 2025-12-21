@@ -188,6 +188,16 @@
       box-shadow: 0 14px 35px rgba(220,38,38,0.16);
     }
 
+    /* ✅ Small action button for notes in table */
+    .btn.small{
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:.86rem;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+      gap:8px;
+    }
+
     /* Cards / grid */
     .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:14px;}
     .card{
@@ -510,7 +520,7 @@
       .kpi .lbl{font-size:.8rem}
 
       /* Tables: safe horizontal scroll */
-      table{min-width: 980px}
+      table{min-width: 920px}
       .card{padding:14px}
     }
   </style>
@@ -771,6 +781,25 @@
     </main>
   </div>
 
+  <!-- ✅ NOTES MODAL (full note view) -->
+  <div class="modal" id="notesModal" aria-hidden="true">
+    <div class="modalbox">
+      <div class="modalhead">
+        <h3>Uwagi do rezerwacji</h3>
+        <button class="iconbtn" id="notesClose" title="Zamknij"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="field" style="margin-top:0">
+        <label>Treść</label>
+        <textarea class="textarea" id="notesText" readonly placeholder="Brak uwag..."></textarea>
+      </div>
+
+      <div class="modalfoot">
+        <button class="btn primary" id="notesOk"><i class="fa-solid fa-check"></i> OK</button>
+      </div>
+    </div>
+  </div>
+
   <!-- EDIT MODAL -->
   <div class="modal" id="editModal" aria-hidden="true">
     <div class="modalbox">
@@ -1008,6 +1037,23 @@
     $$(".navbtn").forEach(b => b.addEventListener("click", ()=> showTab(b.dataset.tab)));
 
     // ==========================
+    // ✅ Notes modal
+    // ==========================
+    function openNotesModal(text){
+      $("#notesText").value = (text || "").trim() || "Brak uwag.";
+      $("#notesModal").classList.add("show");
+      $("#notesModal").setAttribute("aria-hidden","false");
+    }
+    function closeNotesModal(){
+      $("#notesModal").classList.remove("show");
+      $("#notesModal").setAttribute("aria-hidden","true");
+      $("#notesText").value = "";
+    }
+    $("#notesClose").addEventListener("click", closeNotesModal);
+    $("#notesOk").addEventListener("click", closeNotesModal);
+    $("#notesModal").addEventListener("click", (e)=>{ if(e.target.id === "notesModal") closeNotesModal(); });
+
+    // ==========================
     // API (panel / backend)
     // ==========================
     async function apiHealth(){
@@ -1078,6 +1124,7 @@
         const src = (r.source || "index");
         const created = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
         const notes = (r.notes || "").trim();
+        const hasNotes = notes.length > 0;
 
         tr.innerHTML = `
           <td>
@@ -1090,14 +1137,18 @@
           </td>
           <td><span class="tag"><i class="fa-solid fa-user-group"></i> ${escapeHtml(r.guests || "—")} <small>os.</small></span></td>
           <td><span class="tag"><i class="fa-solid fa-door-open"></i> ${escapeHtml(r.room || "—")}</span></td>
-          <td title="${escapeHtml(notes || "")}">
-            ${notes
-              ? `<div style="font-weight:800;line-height:1.35;max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                   <i class="fa-solid fa-note-sticky" style="color:rgba(255,106,0,0.95);margin-right:8px"></i>${escapeHtml(notes)}
-                 </div>`
-              : `<span class="muted">—</span>`
+
+          <!-- ✅ Uwagi jako przycisk (bez wpływu na layout) -->
+          <td>
+            ${
+              hasNotes
+                ? `<button class="btn small" data-act="note" data-id="${r._id}">
+                     <i class="fa-solid fa-note-sticky"></i> Zobacz uwagę
+                   </button>`
+                : `<span class="muted">—</span>`
             }
           </td>
+
           <td><span class="tag"><i class="fa-solid fa-globe"></i> ${escapeHtml(src)}</span></td>
           <td>
             <div class="row-actions">
@@ -1113,6 +1164,7 @@
     $("#resTbody").addEventListener("click", async (e)=>{
       const btn = e.target.closest("button");
       if(!btn) return;
+
       const id = btn.getAttribute("data-id");
       const act = btn.getAttribute("data-act");
       if(!id || !act) return;
@@ -1120,9 +1172,16 @@
       const r = state.reservations.find(x => x._id === id);
       if(!r) return;
 
+      if(act === "note"){
+        openNotesModal(r.notes || "");
+        return;
+      }
+
       if(act === "edit"){
         openEdit(r);
+        return;
       }
+
       if(act === "del"){
         if(!confirm("Usunąć rezerwację?")) return;
         try{
