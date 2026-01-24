@@ -80,7 +80,7 @@
     .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
     .brand span { color: var(--primary); }
 
-    .header-actions { display: flex; gap: 12px; }
+    .header-actions { display: flex; gap: 10px; }
     .icon-btn {
       width: 40px; height: 40px; border-radius: 50%;
       background: var(--bg-surface); border: 1px solid var(--border);
@@ -97,12 +97,27 @@
       animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
+    /* --- SETTINGS STYLES --- */
+    .settings-list { margin-top: 20px; }
+    .settings-item {
+      display: flex; align-items: center; gap: 15px; padding: 16px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-m); margin-bottom: 10px; cursor: pointer;
+      transition: 0.2s;
+    }
+    .settings-item:active { transform: scale(0.98); background: var(--bg-body); }
+    .settings-item i:not(.chevron) { width: 24px; color: var(--primary); font-size: 1.1rem; }
+    .settings-item .label { flex: 1; font-weight: 600; font-size: 0.95rem; }
+    .settings-item .chevron { font-size: 0.8rem; color: var(--text-sub); }
+    .user-profile-header { text-align: center; padding: 20px 0; }
+    .user-avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: 0 auto 10px; }
+
     /* --- COMPONENT: LOYALTY CARD --- */
     .loyalty-card-premium {
-      background: #111; /* Always dark base */
+      background: #111;
       color: white;
       border-radius: var(--radius-l);
-      padding: 24px; margin: 0 24px 24px;
+      padding: 24px; margin: 0 24px 20px;
       position: relative; overflow: hidden;
       box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.1);
@@ -121,7 +136,56 @@
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
 
-    /* --- COMPONENT: ACTIVITY LIST --- */
+    /* --- AD BANNER --- */
+    .ad-banner {
+      margin: 0 24px 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .ad-logo { width: 50px; height: 50px; object-fit: contain; border-radius: 10px; }
+    .ad-content { flex: 1; }
+    .ad-title { font-weight: 800; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px; }
+    .ad-desc { font-size: 0.75rem; color: var(--text-sub); line-height: 1.3; }
+    .ad-btn { background: #000; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
+    body.dark-mode .ad-btn { background: var(--primary); }
+
+    /* --- WALLET VISUALS --- */
+    .milk-card {
+      background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
+      color: white; border-radius: 20px; padding: 24px;
+      position: relative; overflow: hidden; margin-bottom: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      aspect-ratio: 1.58 / 1;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .milk-card::after {
+        content: ''; position: absolute; top: -20%; right: -10%;
+        width: 150px; height: 150px; background: var(--primary);
+        filter: blur(80px); opacity: 0.3; border-radius: 50%;
+    }
+    .milk-card-top { display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+    .milk-card-name { font-weight: 800; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; }
+    .milk-card-chip { width: 45px; height: 35px; background: linear-gradient(135deg, #d4af37 0%, #f9e29c 100%); border-radius: 6px; }
+    .milk-card-balance { z-index: 2; }
+    .milk-card-num { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 15px; }
+    
+    .wallet-info-box {
+        background: rgba(255, 102, 0, 0.1);
+        border: 1px dashed var(--primary);
+        padding: 15px; border-radius: var(--radius-m);
+        margin-bottom: 24px; text-align: center;
+        font-size: 0.85rem; color: var(--text-main);
+    }
+
+    /* --- ACTIVITY LIST --- */
     .section-title { font-size: 1.1rem; font-weight: 700; margin: 24px 0 12px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
     .activity-list { padding: 0 24px; }
     .activity-item {
@@ -159,14 +223,32 @@
     .menu-price { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
 
     /* --- RESERVATION VISUALS --- */
-    .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
+    .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
     .table-select {
       border: 2px solid var(--border); border-radius: var(--radius-m);
       padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;
-      background: var(--bg-surface);
+      background: var(--bg-surface); font-size: 0.8rem; font-weight: 600;
     }
     .table-select.selected { border-color: var(--primary); background: rgba(255,102,0,0.05); color: var(--primary); }
-    .table-select i { font-size: 1.5rem; display: block; margin-bottom: 8px; opacity: 0.5; }
+    .table-select i { font-size: 1.2rem; display: block; margin-bottom: 6px; opacity: 0.6; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); }
+    .form-control {
+      width: 100%; padding: 14px; background: var(--bg-body); 
+      border: 1px solid var(--border); border-radius: var(--radius-m); 
+      color: var(--text-main); font-family: inherit; font-size: 0.9rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* --- GRID SELECTION FOR GIFT --- */
+    .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .amount-chip {
+      padding: 12px 5px; border: 1px solid var(--border); border-radius: var(--radius-m);
+      text-align: center; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      background: var(--bg-surface); transition: 0.2s;
+    }
+    .amount-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
 
     /* --- BOTTOM NAV & FAB --- */
     .bottom-nav {
@@ -210,6 +292,8 @@
       max-height: 85vh; overflow-y: auto;
     }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    
+    .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; }
 
     /* QR Scan Animation */
     .qr-box { width: 180px; height: 180px; margin: 20px auto; position: relative; overflow: hidden; border-radius: 15px; }
@@ -228,7 +312,9 @@
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
     
     .card { background: var(--bg-surface); border-radius: var(--radius-l); padding: 20px; margin: 0 24px 16px; border: 1px solid var(--border); }
-    .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+    .btn-main:active { opacity: 0.8; }
+    .btn-outline { width: 100%; padding: 14px; border-radius: var(--radius-m); background: transparent; color: var(--text-main); border: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-bottom: 30px;}
     
     /* Toast */
     .toast {
@@ -256,6 +342,9 @@
       <button class="icon-btn" onclick="showCart()">
         <i class="fas fa-shopping-bag"></i>
         <div class="badge" id="cart-badge" style="display: none;">0</div>
+      </button>
+      <button class="icon-btn" onclick="openModal('settings-modal')">
+        <i class="fas fa-cog"></i>
       </button>
     </div>
   </header>
@@ -285,12 +374,21 @@
       </div>
     </div>
 
+    <a href="https://www.eatmi.pl" target="_blank" class="ad-banner">
+      <img src="https://i.imgur.com/rcaqjLK.png" alt="Eatmi Logo" class="ad-logo">
+      <div class="ad-content">
+        <div class="ad-title">Eatmi - Zamów z dowozem</div>
+        <div class="ad-desc">Boxy śniadaniowe i lunchowe pod wskazany adres</div>
+      </div>
+      <div class="ad-btn">WWW</div>
+    </a>
+
     <div class="section-title">
       Ostatnia aktywność
       <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600; cursor: pointer;">Historia</span>
     </div>
 
-    <div class="activity-list" id="activity-container">
+    <div class="activity-list" id="activity-container-home">
       </div>
 
   </section>
@@ -305,40 +403,210 @@
     <div class="section-title">Zarezerwuj Stolik</div>
     
     <div class="card">
-      <label style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; display: block;">Wybierz strefę</label>
+      <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block;">Wybierz strefę</label>
       <div class="table-grid">
-        <div class="table-select selected" onclick="selectZone(this)">
-          <i class="fas fa-couch"></i> Wewnątrz
+        <div class="table-select selected" onclick="selectZone(this, 'Sala frontowa')">
+          <i class="fas fa-door-open"></i> Sala frontowa
         </div>
-        <div class="table-select" onclick="selectZone(this)">
-          <i class="fas fa-tree"></i> Ogródek
+        <div class="table-select" onclick="selectZone(this, 'Sala główna')">
+          <i class="fas fa-chair"></i> Sala główna
         </div>
-        <div class="table-select" onclick="selectZone(this)">
-          <i class="fas fa-gamepad"></i> Strefa Gry
+        <div class="table-select" onclick="selectZone(this, 'Przy kąciku dla dzieci')">
+          <i class="fas fa-child"></i> Kącik dzieci
         </div>
-        <div class="table-select" onclick="selectZone(this)">
-          <i class="fas fa-user-friends"></i> VIP Box
+        <div class="table-select" onclick="selectZone(this, 'VIP Box')">
+          <i class="fas fa-crown"></i> VIP Box
         </div>
       </div>
 
-      <div style="margin-top: 20px;">
-        <label style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; display: block;">Data i Godzina</label>
-        <input type="datetime-local" style="width: 100%; padding: 12px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit;">
+      <div class="form-group">
+        <label>Imię i Nazwisko</label>
+        <input type="text" class="form-control" placeholder="np. Jan Kowalski">
       </div>
 
-      <button class="btn-main" style="margin-top: 25px;" onclick="submitReservation()">Potwierdź rezerwację</button>
+      <div class="form-group">
+        <label>Numer telefonu</label>
+        <input type="tel" class="form-control" placeholder="+48 000 000 000">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data i Godzina</label>
+          <input type="datetime-local" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Ilość osób</label>
+          <select class="form-control">
+            <script>
+              for(let i=1; i<=20; i++) {
+                document.write(`<option value="${i}">${i} ${i===1 ? 'osoba' : (i<5 ? 'osoby' : 'osób')}</option>`);
+              }
+            </script>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Dodatkowe informacje (alergie itp.)</label>
+        <textarea class="form-control" rows="2" placeholder="Opcjonalnie..."></textarea>
+      </div>
+
+      <button class="btn-main" style="margin-top: 10px;" onclick="submitReservation()">Potwierdź rezerwację</button>
     </div>
   </section>
 
   <section id="view-wallet" class="view-section">
-    <div class="section-title">Portfel</div>
-    <div class="card" style="text-align: center; padding: 40px;">
-      <i class="fas fa-wallet" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-      <h3>45.50 zł</h3>
-      <p style="color: var(--text-sub);">Dostępne środki</p>
-      <button class="btn-main" style="margin-top: 20px;">Doładuj konto</button>
+    <div class="section-title">Mój Portfel</div>
+    
+    <div style="padding: 0 24px;">
+        <div class="milk-card">
+            <div class="milk-card-top">
+                <div class="milk-card-name">MilkCard</div>
+                <div class="milk-card-chip"></div>
+            </div>
+            <div class="milk-card-balance">
+                <div style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px;">Saldo karty</div>
+                <div style="font-size: 2rem; font-weight: 800;">45.50 PLN</div>
+            </div>
+            <div class="milk-card-num">**** **** **** 8829</div>
+        </div>
+
+        <div class="wallet-info-box">
+            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie w lokalu</strong>.
+        </div>
+
+        <button class="btn-main" style="margin-bottom: 12px;" onclick="openModal('topup-modal')">
+            <i class="fas fa-plus-circle"></i> Doładuj kartę online
+        </button>
+        
+        <button class="btn-outline" onclick="openModal('gift-modal')">
+            <i class="fas fa-gift" style="margin-right: 8px;"></i> Kup kartę na prezent
+        </button>
+    </div>
+
+    <div class="section-title">Historia transakcji</div>
+    <div class="activity-list" id="activity-container-wallet">
     </div>
   </section>
+
+  <div class="modal-overlay" id="settings-modal" onclick="closeModal('settings-modal')">
+    <div class="modal-sheet full" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2>Ustawienia</h2>
+            <button class="icon-btn" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="user-profile-header">
+            <div class="user-avatar">M</div>
+            <h3 id="set-name-display">Mikołaj</h3>
+            <p style="color: var(--text-sub); font-size: 0.9rem;" id="set-email-display">mikolaj@example.com</p>
+        </div>
+
+        <div class="settings-list">
+            <div class="settings-item" onclick="showToast('Otwieranie edycji danych...')">
+                <i class="fas fa-user-circle"></i>
+                <div class="label">Dane osobowe</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+            
+            <div class="settings-item" onclick="showToast('Zmieniono język na Angielski')">
+                <i class="fas fa-language"></i>
+                <div class="label">Język (Polski / English)</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <div class="settings-item" onclick="showToast('Ustawienia powiadomień')">
+                <i class="fas fa-bell"></i>
+                <div class="label">Powiadomienia PUSH</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <div class="settings-item" onclick="showToast('Bezpieczeństwo i Biometria')">
+                <i class="fas fa-shield-alt"></i>
+                <div class="label">Bezpieczeństwo (FaceID/PIN)</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <div class="settings-item" onclick="showToast('Otwieranie Milk for Business...')">
+                <i class="fas fa-briefcase"></i>
+                <div class="label">Milk for Business</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 15px 0;">
+
+            <div class="settings-item" onclick="showToast('Wersja aplikacji 2.4.0')">
+                <i class="fas fa-info-circle"></i>
+                <div class="label">O nas</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <div class="settings-item" onclick="showToast('Centrum pomocy')">
+                <i class="fas fa-question-circle"></i>
+                <div class="label">Pomoc</div>
+                <i class="fas fa-chevron-right chevron"></i>
+            </div>
+
+            <div class="settings-item" onclick="location.reload()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
+                <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+                <div class="label">Wyloguj się</div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="topup-modal" onclick="closeModal('topup-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Doładuj MilkCard</h3>
+        <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wpisz kwotę, o jaką chcesz zasilić swoją kartę.</p>
+        
+        <div class="form-group">
+            <label>Kwota doładowania (PLN)</label>
+            <input type="number" class="form-control" placeholder="0.00" style="font-size: 1.5rem; font-weight: 700; text-align: center;">
+        </div>
+
+        <button class="btn-main" onclick="processPayment('Twoja karta została doładowana!')">
+            Przejdź do płatności
+        </button>
+        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('topup-modal')">Anuluj</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="gift-modal" onclick="closeModal('gift-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Karta Prepaid na Prezent</h3>
+        <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wybierz kwotę i podaj dane osoby obdarowywanej.</p>
+        
+        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: block;">Wybierz wartość karty</label>
+        <div class="amount-grid">
+            <div class="amount-chip" onclick="selectAmount(this, 50)">50 PLN</div>
+            <div class="amount-chip selected" onclick="selectAmount(this, 100)">100 PLN</div>
+            <div class="amount-chip" onclick="selectAmount(this, 200)">200 PLN</div>
+            <div class="amount-chip" onclick="selectAmount(this, 500)">500 PLN</div>
+            <div class="amount-chip" onclick="selectAmount(this, 1000)">1000 PLN</div>
+        </div>
+
+        <div class="form-group">
+            <label>Imię i Nazwisko obdarowanego</label>
+            <input type="text" class="form-control" placeholder="Kto otrzyma prezent?">
+        </div>
+
+        <div class="form-group">
+            <label>Numer telefonu</label>
+            <input type="tel" class="form-control" placeholder="+48 000 000 000">
+        </div>
+
+        <div class="form-group">
+            <label>Adres E-mail</label>
+            <input type="email" class="form-control" placeholder="email@przyklad.pl">
+        </div>
+
+        <button class="btn-main" onclick="processPayment('Karta podarunkowa została wysłana!')">
+            Kup i wyślij prezent
+        </button>
+        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('gift-modal')">Anuluj</button>
+    </div>
+  </div>
 
   <div class="modal-overlay" id="qr-modal" onclick="closeModal('qr-modal')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -403,27 +671,30 @@
   ];
 
   const activities = [
-    { type: 'order', title: 'Dostawa #4829', date: 'Dziś, 14:30', val: '- 45.00 zł', icon: 'fa-motorcycle' },
-    { type: 'res', title: 'Rezerwacja Stolika', date: 'Wczoraj, 18:00', val: '2 os.', icon: 'fa-calendar-check' },
-    { type: 'money', title: 'Doładowanie Prepaid', date: '22 Sty, 09:15', val: '+ 100.00 zł', icon: 'fa-wallet' },
-    { type: 'order', title: 'Odbiór Osobisty', date: '20 Sty, 12:45', val: '- 19.50 zł', icon: 'fa-shopping-bag' }
+    { type: 'order', title: 'Płatność MilkCard', date: 'Dziś, 14:30', val: '- 45.00 zł', icon: 'fa-shopping-cart' },
+    { type: 'money', title: 'Doładowanie przy kasie', date: 'Wczoraj, 10:20', val: '+ 50.00 zł', icon: 'fa-cash-register' },
+    { type: 'money', title: 'Doładowanie Online', date: '22 Sty, 09:15', val: '+ 100.00 zł', icon: 'fa-globe' },
+    { type: 'order', title: 'Płatność MilkCard', date: '20 Sty, 12:45', val: '- 19.50 zł', icon: 'fa-ice-cream' }
   ];
 
   let cart = [];
+  let selectedZone = 'Sala frontowa';
+  let selectedGiftAmount = 100;
 
   // --- INIT ---
   document.addEventListener('DOMContentLoaded', () => {
     renderActivities();
     renderMenu();
-    // Animation for loyalty bar
     setTimeout(() => {
-      document.querySelector('.loyalty-progress-fill').style.width = '83%';
+      const fill = document.querySelector('.loyalty-progress-fill');
+      if(fill) fill.style.width = '83%';
     }, 500);
   });
 
   // --- RENDERING ---
   function renderActivities() {
-    const container = document.getElementById('activity-container');
+    const homeContainer = document.getElementById('activity-container-home');
+    const walletContainer = document.getElementById('activity-container-wallet');
     let html = '';
 
     activities.forEach(item => {
@@ -447,11 +718,14 @@
         </div>
       `;
     });
-    container.innerHTML = html;
+    
+    if(homeContainer) homeContainer.innerHTML = html;
+    if(walletContainer) walletContainer.innerHTML = html;
   }
 
   function renderMenu() {
     const container = document.getElementById('menu-container');
+    if(!container) return;
     let html = '';
     products.forEach(p => {
       html += `
@@ -473,12 +747,9 @@
   function switchTab(tabId, event) {
     if(event) event.preventDefault();
     
-    // Hide all views
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-    // Show target
     document.getElementById('view-' + tabId).classList.add('active');
     
-    // Update Icons
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     
     const navs = document.querySelectorAll('.nav-item');
@@ -491,8 +762,31 @@
   }
 
   // --- MODALS & ACTIONS ---
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
   function openQR() {
-    document.getElementById('qr-modal').classList.add('open');
+    openModal('qr-modal');
+  }
+
+  function selectAmount(el, val) {
+    document.querySelectorAll('.amount-chip').forEach(x => x.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedGiftAmount = val;
+  }
+
+  function processPayment(msg) {
+    showToast("Przekierowanie do płatności...");
+    setTimeout(() => {
+        closeModal('topup-modal');
+        closeModal('gift-modal');
+        showToast(msg);
+    }, 2000);
   }
 
   function openProduct(id) {
@@ -519,11 +813,7 @@
       </div>
     `;
     
-    document.getElementById('product-modal').classList.add('open');
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
+    openModal('product-modal');
   }
 
   function addToCart(id) {
@@ -541,9 +831,10 @@
     else showToast(`Masz ${cart.length} produktów w koszyku`);
   }
 
-  function selectZone(el) {
+  function selectZone(el, zoneName) {
     document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
     el.classList.add('selected');
+    selectedZone = zoneName;
   }
 
   function submitReservation() {
