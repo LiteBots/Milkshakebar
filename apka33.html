@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Milkly | Premium App</title>
+  
+  <meta name="theme-color" content="#FF6600">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      /* Palette - Premium Flat */
+      --primary: #FF6600;
+      --primary-glow: rgba(255, 102, 0, 0.3);
+      --bg-body: #F2F4F6;
+      --bg-surface: #FFFFFF;
+      --text-main: #111827;
+      --text-sub: #6B7280;
+      --border: #E5E7EB;
+      
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      
+      --radius-l: 24px;
+      --radius-m: 16px;
+      
+      --nav-height: 85px;
+      --fab-size: 64px;
+      
+      /* Activity Colors */
+      --color-order: #FF6600;
+      --color-res: #3B82F6;
+      --color-money: #10B981;
+    }
+
+    body.dark-mode {
+      --bg-body: #0F0F0F;
+      --bg-surface: #1C1C1E;
+      --text-main: #FFFFFF;
+      --text-sub: #9CA3AF;
+      --border: #2D2D30;
+      --glass-bg: rgba(28, 28, 30, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary-glow: rgba(255, 102, 0, 0.5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+      transition: background 0.3s, color 0.3s;
+      padding-bottom: calc(var(--nav-height) + 30px);
+    }
+
+    /* --- LAYOUT --- */
+    .app-container {
+      max-width: 480px; margin: 0 auto; min-height: 100vh;
+      position: relative; background: var(--bg-body);
+      box-shadow: 0 0 40px rgba(0,0,0,0.05);
+    }
+
+    /* --- HEADER --- */
+    .app-header {
+      padding: 15px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 90;
+      background: var(--bg-body);
+      transition: background 0.3s;
+    }
+    .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .brand span { color: var(--primary); }
+
+    .header-actions { display: flex; gap: 12px; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main); font-size: 1rem; cursor: pointer;
+      position: relative; transition: 0.2s;
+    }
+    .icon-btn:active { transform: scale(0.9); }
+    .badge {
+      position: absolute; top: -2px; right: -2px;
+      background: var(--primary); color: white;
+      font-size: 0.65rem; padding: 2px 5px; border-radius: 10px;
+      border: 2px solid var(--bg-surface);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* --- COMPONENT: LOYALTY CARD --- */
+    .loyalty-card-premium {
+      background: #111; /* Always dark base */
+      color: white;
+      border-radius: var(--radius-l);
+      padding: 24px; margin: 0 24px 24px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .loyalty-card-premium::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: 0.2;
+    }
+    .loyalty-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 2; }
+    .points-big { font-size: 2.5rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+    .points-label { font-size: 0.85rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    
+    .loyalty-progress-bg { background: rgba(255,255,255,0.15); height: 6px; border-radius: 10px; margin-bottom: 8px; position: relative; z-index: 2; }
+    .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
+    .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
+
+    /* --- COMPONENT: ACTIVITY LIST --- */
+    .section-title { font-size: 1.1rem; font-weight: 700; margin: 24px 0 12px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .activity-list { padding: 0 24px; }
+    .activity-item {
+      display: flex; align-items: center; gap: 15px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      padding: 16px; border-radius: var(--radius-m);
+      margin-bottom: 12px; transition: transform 0.1s;
+    }
+    .activity-item:active { transform: scale(0.98); }
+
+    .act-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .act-icon.type-order { background: rgba(255, 102, 0, 0.1); color: var(--color-order); }
+    .act-icon.type-res { background: rgba(59, 130, 246, 0.1); color: var(--color-res); }
+    .act-icon.type-money { background: rgba(16, 185, 129, 0.1); color: var(--color-money); }
+
+    .act-content { flex: 1; }
+    .act-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .act-date { font-size: 0.75rem; color: var(--text-sub); }
+    .act-value { font-weight: 700; font-size: 0.9rem; }
+    .act-value.positive { color: var(--color-money); }
+
+    /* --- MENU GRID --- */
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
+    .menu-card {
+      background: var(--bg-surface); border-radius: var(--radius-m);
+      border: 1px solid var(--border); overflow: hidden;
+      display: flex; flex-direction: column; cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .menu-card:active { transform: scale(0.96); }
+    .menu-img-box { height: 120px; width: 100%; background: #eee; }
+    .menu-img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .menu-content { padding: 12px; }
+    .menu-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; line-height: 1.3; }
+    .menu-price { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
+
+    /* --- RESERVATION VISUALS --- */
+    .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
+    .table-select {
+      border: 2px solid var(--border); border-radius: var(--radius-m);
+      padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;
+      background: var(--bg-surface);
+    }
+    .table-select.selected { border-color: var(--primary); background: rgba(255,102,0,0.05); color: var(--primary); }
+    .table-select i { font-size: 1.5rem; display: block; margin-bottom: 8px; opacity: 0.5; }
+
+    /* --- BOTTOM NAV & FAB --- */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: var(--nav-height);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 20px 10px 20px; z-index: 1000;
+      border-radius: 24px 24px 0 0;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item i { font-size: 1.4rem; transition: transform 0.2s; }
+    .nav-item.active i { transform: translateY(-3px); }
+
+    .fab-container { position: relative; top: -25px; width: var(--fab-size); height: var(--fab-size); flex-shrink: 0; margin: 0 10px; }
+    .fab-btn {
+      width: 100%; height: 100%; background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;
+      box-shadow: 0 10px 25px var(--primary-glow); border: 5px solid var(--bg-body); cursor: pointer;
+      animation: pulse 3s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 var(--primary-glow); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 102, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
+    }
+
+    /* --- MODALS --- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+      z-index: 2000; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-sheet {
+      width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface);
+      border-radius: 30px 30px 0 0; padding: 30px 24px 40px;
+      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      max-height: 85vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+    /* QR Scan Animation */
+    .qr-box { width: 180px; height: 180px; margin: 20px auto; position: relative; overflow: hidden; border-radius: 15px; }
+    .qr-box img { width: 100%; height: 100%; }
+    .scan-line {
+      position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+      background: var(--primary); box-shadow: 0 0 15px var(--primary);
+      animation: scan 2s infinite ease-in-out;
+    }
+    @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
+    @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
+
+    /* Utils */
+    .view-section { display: none; padding-bottom: 20px; animation: fadeIn 0.3s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    
+    .card { background: var(--bg-surface); border-radius: var(--radius-l); padding: 20px; margin: 0 24px 16px; border: 1px solid var(--border); }
+    .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    
+    /* Toast */
+    .toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: var(--bg-surface); color: var(--text-main);
+      padding: 12px 20px; border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 10px;
+      z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border);
+    }
+    .toast.visible { transform: translateX(-50%) translateY(0); }
+    .toast i { color: var(--primary); }
+
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="app-header">
+    <div class="brand">Milkly<span>.</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+      <button class="icon-btn" onclick="showCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <div class="badge" id="cart-badge" style="display: none;">0</div>
+      </button>
+    </div>
+  </header>
+
+  <section id="view-home" class="view-section active">
+    
+    <div style="padding: 10px 24px 20px;">
+      <h2 style="font-size: 1.8rem; line-height: 1.2;">Cześć Mikołaj, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span></h2>
+    </div>
+
+    <div class="loyalty-card-premium" onclick="openQR()">
+      <div class="loyalty-top">
+        <div>
+          <div class="points-label">Dostępne Punkty</div>
+          <div class="points-big">1250</div>
+        </div>
+        <i class="fas fa-crown" style="font-size: 1.5rem; color: #FFD700;"></i>
+      </div>
+      
+      <div class="loyalty-progress-bg">
+        <div class="loyalty-progress-fill" style="width: 75%;"></div>
+      </div>
+      
+      <div class="loyalty-footer">
+        <span>Status: Gold</span>
+        <span>250 do nagrody</span>
+      </div>
+    </div>
+
+    <div class="section-title">
+      Ostatnia aktywność
+      <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600; cursor: pointer;">Historia</span>
+    </div>
+
+    <div class="activity-list" id="activity-container">
+      </div>
+
+  </section>
+
+  <section id="view-menu" class="view-section">
+    <div class="section-title">Nasze Menu</div>
+    <div class="menu-grid" id="menu-container">
+      </div>
+  </section>
+
+  <section id="view-reservation" class="view-section">
+    <div class="section-title">Zarezerwuj Stolik</div>
+    
+    <div class="card">
+      <label style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; display: block;">Wybierz strefę</label>
+      <div class="table-grid">
+        <div class="table-select selected" onclick="selectZone(this)">
+          <i class="fas fa-couch"></i> Wewnątrz
+        </div>
+        <div class="table-select" onclick="selectZone(this)">
+          <i class="fas fa-tree"></i> Ogródek
+        </div>
+        <div class="table-select" onclick="selectZone(this)">
+          <i class="fas fa-gamepad"></i> Strefa Gry
+        </div>
+        <div class="table-select" onclick="selectZone(this)">
+          <i class="fas fa-user-friends"></i> VIP Box
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <label style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; display: block;">Data i Godzina</label>
+        <input type="datetime-local" style="width: 100%; padding: 12px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit;">
+      </div>
+
+      <button class="btn-main" style="margin-top: 25px;" onclick="submitReservation()">Potwierdź rezerwację</button>
+    </div>
+  </section>
+
+  <section id="view-wallet" class="view-section">
+    <div class="section-title">Portfel</div>
+    <div class="card" style="text-align: center; padding: 40px;">
+      <i class="fas fa-wallet" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+      <h3>45.50 zł</h3>
+      <p style="color: var(--text-sub);">Dostępne środki</p>
+      <button class="btn-main" style="margin-top: 20px;">Doładuj konto</button>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="qr-modal" onclick="closeModal('qr-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div style="text-align: center;">
+        <h3>Twój kod członkowski</h3>
+        <p style="color: var(--text-sub); margin-bottom: 20px;">Pokaż ten kod bariście, aby nabić punkty.</p>
+        
+        <div class="qr-box">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MilklyUser123">
+          <div class="scan-line"></div>
+        </div>
+
+        <button class="btn-main" style="background: var(--bg-body); color: var(--text-main); margin-top: 10px;" onclick="closeModal('qr-modal')">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="product-modal" onclick="closeModal('product-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div id="product-detail-content"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active" onclick="switchTab('home', event)">
+      <i class="fas fa-home"></i> <span>Start</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('menu', event)">
+      <i class="fas fa-hamburger"></i> <span>Menu</span>
+    </a>
+    
+    <div class="fab-container" onclick="openQR()">
+      <div class="fab-btn">
+        <i class="fas fa-qrcode"></i>
+      </div>
+    </div>
+
+    <a href="#" class="nav-item" onclick="switchTab('reservation', event)">
+      <i class="fas fa-calendar-alt"></i> <span>Stolik</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('wallet', event)">
+      <i class="fas fa-wallet"></i> <span>Portfel</span>
+    </a>
+  </nav>
+
+</div>
+
+<div id="toast" class="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toast-msg">Sukces</span>
+</div>
+
+<script>
+  // --- DATA ---
+  const products = [
+    { id: 1, name: "Oreo Dream Shake", price: 19.00, img: "https://i.imgur.com/kfE4j7j.jpeg", cal: 450, desc: "Kultowy smak ciasteczek w formie szejka." },
+    { id: 2, name: "Berry Blast", price: 18.50, img: "https://i.imgur.com/7Bx2X7g.png", cal: 320, desc: "Moc witamin z leśnych owoców." },
+    { id: 3, name: "Double Choco", price: 21.00, img: "https://i.imgur.com/dsMynF5.png", cal: 560, desc: "Dla prawdziwych fanów czekolady." },
+    { id: 4, name: "Pancake Tower", price: 24.00, img: "https://i.imgur.com/GRvCj6z.png", cal: 600, desc: "Wieża puszystych naleśników z syropem." },
+    { id: 5, name: "Pistacchio Ice", price: 24.00, img: "https://i.imgur.com/XIdoN0y.png", cal: 380, desc: "Prawdziwa sycylijska pistacja." },
+    { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
+  ];
+
+  const activities = [
+    { type: 'order', title: 'Dostawa #4829', date: 'Dziś, 14:30', val: '- 45.00 zł', icon: 'fa-motorcycle' },
+    { type: 'res', title: 'Rezerwacja Stolika', date: 'Wczoraj, 18:00', val: '2 os.', icon: 'fa-calendar-check' },
+    { type: 'money', title: 'Doładowanie Prepaid', date: '22 Sty, 09:15', val: '+ 100.00 zł', icon: 'fa-wallet' },
+    { type: 'order', title: 'Odbiór Osobisty', date: '20 Sty, 12:45', val: '- 19.50 zł', icon: 'fa-shopping-bag' }
+  ];
+
+  let cart = [];
+
+  // --- INIT ---
+  document.addEventListener('DOMContentLoaded', () => {
+    renderActivities();
+    renderMenu();
+    // Animation for loyalty bar
+    setTimeout(() => {
+      document.querySelector('.loyalty-progress-fill').style.width = '83%';
+    }, 500);
+  });
+
+  // --- RENDERING ---
+  function renderActivities() {
+    const container = document.getElementById('activity-container');
+    let html = '';
+
+    activities.forEach(item => {
+      let typeClass = '';
+      let valClass = '';
+      
+      if(item.type === 'order') { typeClass = 'type-order'; }
+      if(item.type === 'res') { typeClass = 'type-res'; }
+      if(item.type === 'money') { typeClass = 'type-money'; valClass = 'positive'; }
+
+      html += `
+        <div class="activity-item">
+          <div class="act-icon ${typeClass}">
+            <i class="fas ${item.icon}"></i>
+          </div>
+          <div class="act-content">
+            <div class="act-title">${item.title}</div>
+            <div class="act-date">${item.date}</div>
+          </div>
+          <div class="act-value ${valClass}">${item.val}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderMenu() {
+    const container = document.getElementById('menu-container');
+    let html = '';
+    products.forEach(p => {
+      html += `
+        <div class="menu-card" onclick="openProduct(${p.id})">
+          <div class="menu-img-box">
+            <img src="${p.img}" alt="${p.name}">
+          </div>
+          <div class="menu-content">
+            <div class="menu-title">${p.name}</div>
+            <div class="menu-price">${p.price.toFixed(2)} zł</div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // --- NAVIGATION ---
+  function switchTab(tabId, event) {
+    if(event) event.preventDefault();
+    
+    // Hide all views
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    // Show target
+    document.getElementById('view-' + tabId).classList.add('active');
+    
+    // Update Icons
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    
+    const navs = document.querySelectorAll('.nav-item');
+    if(tabId === 'home') navs[0].classList.add('active');
+    if(tabId === 'menu') navs[1].classList.add('active');
+    if(tabId === 'reservation') navs[2].classList.add('active');
+    if(tabId === 'wallet') navs[3].classList.add('active');
+    
+    window.scrollTo(0,0);
+  }
+
+  // --- MODALS & ACTIONS ---
+  function openQR() {
+    document.getElementById('qr-modal').classList.add('open');
+  }
+
+  function openProduct(id) {
+    const p = products.find(x => x.id === id);
+    const content = document.getElementById('product-detail-content');
+    
+    content.innerHTML = `
+      <div style="text-align:center; margin-bottom: 20px;">
+        <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+      </div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
+      <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
+      
+      <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
+        <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
+        <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+        <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
+        <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
+          Dodaj do koszyka
+        </button>
+      </div>
+    `;
+    
+    document.getElementById('product-modal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function addToCart(id) {
+    cart.push(id);
+    const badge = document.getElementById('cart-badge');
+    badge.innerText = cart.length;
+    badge.style.display = 'flex';
+    
+    closeModal('product-modal');
+    showToast('Dodano do koszyka!');
+  }
+
+  function showCart() {
+    if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
+    else showToast(`Masz ${cart.length} produktów w koszyku`);
+  }
+
+  function selectZone(el) {
+    document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function submitReservation() {
+    showToast('Rezerwacja wysłana! 📅');
+    setTimeout(() => switchTab('home'), 1500);
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  function showToast(msg, success = true) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').innerText = msg;
+    t.classList.add('visible');
+    setTimeout(() => t.classList.remove('visible'), 2500);
+  }
+
+</script>
+</body>
+</html>
