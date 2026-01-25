@@ -597,7 +597,7 @@
         </div>
 
         <div class="wallet-info-box">
-            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie v lokalu</strong>.
+            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie w lokalu</strong>.
         </div>
 
         <button class="btn-main" style="margin-bottom: 12px;" onclick="openModal('topup-modal')">
@@ -918,9 +918,9 @@
   let selectedZone = 'Sala frontowa';
   let selectedGiftAmount = 100;
 
-  // --- INIT & LOADER LOGIC ---
+  // --- INIT & LOADER LOGIC (ZMIENIONO NA 3 SEKUNDY) ---
   document.addEventListener('DOMContentLoaded', () => {
-    // 5-sekundowy loader
+    // 3-sekundowy loader (3000ms)
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         const main = document.getElementById('main-app');
@@ -928,14 +928,13 @@
         splash.style.opacity = '0';
         splash.style.visibility = 'hidden';
         main.style.opacity = '1';
-        document.body.style.overflow = 'auto'; // Przywrócenie skrolowania
+        document.body.style.overflow = 'auto'; 
         
-        // Animacja paska po wejściu
         setTimeout(() => {
             const fill = document.querySelector('.loyalty-progress-fill');
             if(fill) fill.style.width = '83%';
         }, 500);
-    }, 5000);
+    }, 3000);
 
     renderActivities();
     renderMenu();
