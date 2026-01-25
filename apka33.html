@@ -59,12 +59,57 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       background-color: var(--bg-body);
-      overflow-x: hidden;
+      overflow: hidden; /* Zablokowane przewijanie podczas loadera */
       overscroll-behavior-y: none;
       transition: background 0.3s, color 0.3s;
       padding-bottom: calc(var(--nav-height) + 30px);
-      /* Globalny padding góry dla bezpieczeństwa */
       padding-top: var(--safe-top);
+    }
+
+    /* --- LOADER / SPLASH SCREEN --- */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+    }
+    
+    .loader-content {
+      text-align: center;
+      animation: splashPop 0.6s ease-out;
+    }
+
+    .loader-logo {
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .loader-logo span { color: var(--primary); }
+
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+
+    .loader-text {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     /* --- LAYOUT --- */
@@ -72,6 +117,8 @@
       max-width: 480px; margin: 0 auto; min-height: 100vh;
       position: relative; background: var(--bg-body);
       box-shadow: 0 0 40px rgba(0,0,0,0.05);
+      opacity: 0; /* Ukryta na starcie */
+      transition: opacity 0.5s ease;
     }
 
     /* --- HEADER --- */
@@ -83,7 +130,6 @@
       z-index: 90;
       background: var(--bg-body);
       transition: background 0.3s;
-      /* Dodatkowy margines wewnętrzny uwzględniający notch na szczycie */
       margin-top: 10px;
     }
     .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
@@ -120,6 +166,21 @@
     .settings-item .chevron { font-size: 0.8rem; color: var(--text-sub); }
     .user-profile-header { text-align: center; padding: 20px 0; }
     .user-avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: 0 auto 10px; }
+
+    /* --- ORDER TYPE SELECTION --- */
+    .order-type-container {
+      display: flex; flex-direction: column; gap: 16px; padding: 24px;
+    }
+    .order-type-card {
+      background: var(--bg-surface); border: 2px solid var(--border);
+      border-radius: var(--radius-l); padding: 24px; display: flex;
+      align-items: center; gap: 20px; cursor: pointer; transition: 0.3s;
+    }
+    .order-type-card:active { transform: scale(0.97); }
+    .order-type-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
+    .order-type-icon { font-size: 2rem; color: var(--primary); }
+    .order-type-info h3 { margin-bottom: 4px; }
+    .order-type-info p { font-size: 0.85rem; color: var(--text-sub); }
 
     /* --- COMPONENT: LOYALTY CARD --- */
     .loyalty-card-premium {
@@ -297,7 +358,6 @@
     }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
     
-    /* Full screen settings modal padding adjust */
     .modal-sheet.full { 
       height: 100vh; max-height: 100vh; border-radius: 0; 
       padding-top: calc(20px + var(--safe-top));
@@ -319,10 +379,31 @@
     .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
     .btn-outline { width: 100%; padding: 14px; border-radius: var(--radius-m); background: transparent; color: var(--text-main); border: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-bottom: 30px;}
     
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative; width: 50px; height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc; transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
+        background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
     /* Animations & Keyframes */
     @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
     @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes spin { from{transform: rotate(0deg);} to{transform: rotate(360deg);} }
+    @keyframes splashPop { 
+        0% { opacity: 0; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1); }
+    }
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 var(--primary-glow); }
       70% { box-shadow: 0 0 0 15px rgba(255, 102, 0, 0); }
@@ -345,7 +426,15 @@
 </head>
 <body>
 
-<div class="app-container">
+<div id="splash-screen">
+  <div class="loader-content">
+    <div class="loader-logo">Milkly<span>.</span></div>
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Wczytywanie doznań</div>
+  </div>
+</div>
+
+<div class="app-container" id="main-app">
 
   <header class="app-header">
     <div class="brand">Milkly<span>.</span></div>
@@ -405,10 +494,34 @@
 
   </section>
 
-  <section id="view-menu" class="view-section">
-    <div class="section-title">Nasze Menu</div>
-    <div class="menu-grid" id="menu-container">
-      </div>
+  <section id="view-order" class="view-section">
+    <div id="order-type-selection">
+        <div class="section-title">Jak chcesz zamówić?</div>
+        <div class="order-type-container">
+            <div class="order-type-card" onclick="selectOrderType('pickup')">
+                <div class="order-type-icon"><i class="fas fa-store"></i></div>
+                <div class="order-type-info">
+                    <h3>Zamów z odbiorem</h3>
+                    <p>Odbierz osobiście w lokalu bez kolejki</p>
+                </div>
+            </div>
+            <div class="order-type-card" onclick="selectOrderType('delivery')">
+                <div class="order-type-icon"><i class="fas fa-truck"></i></div>
+                <div class="order-type-info">
+                    <h3>Zamów z dowozem</h3>
+                    <p>Dostarczymy pod Twoje drzwi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-view-actual" style="display: none;">
+        <div class="section-title" style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-arrow-left" onclick="backToOrderType()" style="cursor: pointer; color: var(--primary);"></i>
+            Nasze Menu
+        </div>
+        <div class="menu-grid" id="menu-container"></div>
+    </div>
   </section>
 
   <section id="view-reservation" class="view-section">
@@ -484,7 +597,7 @@
         </div>
 
         <div class="wallet-info-box">
-            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie w lokalu</strong>.
+            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie v lokalu</strong>.
         </div>
 
         <button class="btn-main" style="margin-bottom: 12px;" onclick="openModal('topup-modal')">
@@ -515,31 +628,31 @@
         </div>
 
         <div class="settings-list">
-            <div class="settings-item" onclick="showToast('Otwieranie edycji danych...')">
+            <div class="settings-item" onclick="openModal('modal-personal-data')">
                 <i class="fas fa-user-circle"></i>
                 <div class="label">Dane osobowe</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
             
-            <div class="settings-item" onclick="showToast('Zmieniono język na Angielski')">
+            <div class="settings-item" onclick="openModal('modal-language')">
                 <i class="fas fa-language"></i>
-                <div class="label">Język (Polski / English)</div>
+                <div class="label">Język (Polski)</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="showToast('Ustawienia powiadomień')">
+            <div class="settings-item" onclick="openModal('modal-notifications')">
                 <i class="fas fa-bell"></i>
                 <div class="label">Powiadomienia PUSH</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="showToast('Bezpieczeństwo i Biometria')">
+            <div class="settings-item" onclick="openModal('modal-security')">
                 <i class="fas fa-shield-alt"></i>
                 <div class="label">Bezpieczeństwo (FaceID/PIN)</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="showToast('Otwieranie Milk for Business...')">
+            <div class="settings-item" onclick="openModal('modal-business')">
                 <i class="fas fa-briefcase"></i>
                 <div class="label">Milk for Business</div>
                 <i class="fas fa-chevron-right chevron"></i>
@@ -547,13 +660,13 @@
 
             <hr style="border: none; border-top: 1px solid var(--border); margin: 15px 0;">
 
-            <div class="settings-item" onclick="showToast('Wersja aplikacji 2.4.0')">
+            <div class="settings-item" onclick="openModal('modal-about')">
                 <i class="fas fa-info-circle"></i>
                 <div class="label">O nas</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="showToast('Centrum pomocy')">
+            <div class="settings-item" onclick="openModal('modal-help')">
                 <i class="fas fa-question-circle"></i>
                 <div class="label">Pomoc</div>
                 <i class="fas fa-chevron-right chevron"></i>
@@ -564,6 +677,118 @@
                 <div class="label">Wyloguj się</div>
             </div>
         </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-personal-data" onclick="closeModal('modal-personal-data')">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+          <h3>Dane osobowe</h3>
+          <div class="form-group" style="margin-top:20px;">
+              <label>Imię</label>
+              <input type="text" class="form-control" value="Mikołaj">
+          </div>
+          <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" value="mikolaj@example.com">
+          </div>
+          <div class="form-group">
+              <label>Telefon</label>
+              <input type="tel" class="form-control" value="+48 123 456 789">
+          </div>
+          <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')">Zapisz zmiany</button>
+      </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-language" onclick="closeModal('modal-language')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Wybierz język</h3>
+        <div class="settings-list">
+            <div class="settings-item" onclick="showToast('Ustawiono Polski'); closeModal('modal-language')">
+                <div class="label">Polski</div>
+                <i class="fas fa-check" style="color:var(--primary)"></i>
+            </div>
+            <div class="settings-item" onclick="showToast('Language set to English'); closeModal('modal-language')">
+                <div class="label">English</div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-notifications" onclick="closeModal('modal-notifications')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Powiadomienia</h3>
+        <div class="settings-item" style="cursor:default">
+            <div class="label">Powiadomienia o promocjach</div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="settings-item" style="cursor:default">
+            <div class="label">Status zamówienia</div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-notifications')">Gotowe</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-security" onclick="closeModal('modal-security')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Bezpieczeństwo</h3>
+        <div class="settings-item" style="cursor:default">
+            <div class="label">Logowanie biometryczne</div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="settings-item" onclick="showToast('Zmień PIN...')">
+            <div class="label">Zmień kod PIN</div>
+            <i class="fas fa-chevron-right chevron"></i>
+        </div>
+        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-security')">Zamknij</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-business" onclick="closeModal('modal-business')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Milk for Business</h3>
+        <p style="color:var(--text-sub); margin-bottom:20px;">Chcesz dołączyć do programu dla firm i zamawiać posiłki dla swoich pracowników?</p>
+        <button class="btn-main" onclick="showToast('Wysłano zgłoszenie do doradcy')">Dowiedz się więcej</button>
+        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-business')">Powrót</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>O Milkly</h3>
+        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.4.0 (2026)</p>
+        <p style="font-size:0.9rem; line-height:1.5;">Milkly to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
+        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-help" onclick="closeModal('modal-help')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3>Centrum Pomocy</h3>
+        <div class="settings-list">
+            <div class="settings-item" onclick="showToast('Czat z konsultantem...')">
+                <i class="fas fa-comments"></i>
+                <div class="label">Czat na żywo</div>
+            </div>
+            <div class="settings-item" onclick="showToast('Łączenie z infolinią...')">
+                <i class="fas fa-phone"></i>
+                <div class="label">Zadzwoń do nas</div>
+            </div>
+            <div class="settings-item" onclick="showToast('FAQ wczytane')">
+                <i class="fas fa-book"></i>
+                <div class="label">Najczęściej zadawane pytania</div>
+            </div>
+        </div>
+        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-help')">Zamknij</button>
     </div>
   </div>
 
@@ -646,8 +871,8 @@
     <a href="#" class="nav-item active" onclick="switchTab('home', event)">
       <i class="fas fa-home"></i> <span>Start</span>
     </a>
-    <a href="#" class="nav-item" onclick="switchTab('menu', event)">
-      <i class="fas fa-hamburger"></i> <span>Menu</span>
+    <a href="#" class="nav-item" onclick="switchTab('order', event)">
+      <i class="fas fa-shopping-basket"></i> <span>Zamów</span>
     </a>
     
     <div class="fab-container" onclick="openQR()">
@@ -693,14 +918,27 @@
   let selectedZone = 'Sala frontowa';
   let selectedGiftAmount = 100;
 
-  // --- INIT ---
+  // --- INIT & LOADER LOGIC ---
   document.addEventListener('DOMContentLoaded', () => {
+    // 5-sekundowy loader
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        const main = document.getElementById('main-app');
+        
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        main.style.opacity = '1';
+        document.body.style.overflow = 'auto'; // Przywrócenie skrolowania
+        
+        // Animacja paska po wejściu
+        setTimeout(() => {
+            const fill = document.querySelector('.loyalty-progress-fill');
+            if(fill) fill.style.width = '83%';
+        }, 500);
+    }, 5000);
+
     renderActivities();
     renderMenu();
-    setTimeout(() => {
-      const fill = document.querySelector('.loyalty-progress-fill');
-      if(fill) fill.style.width = '83%';
-    }, 500);
   });
 
   // --- RENDERING ---
@@ -766,11 +1004,24 @@
     
     const navs = document.querySelectorAll('.nav-item');
     if(tabId === 'home') navs[0].classList.add('active');
-    if(tabId === 'menu') navs[1].classList.add('active');
+    if(tabId === 'order') navs[1].classList.add('active');
     if(tabId === 'reservation') navs[2].classList.add('active');
     if(tabId === 'wallet') navs[3].classList.add('active');
+
+    if(tabId === 'order') backToOrderType();
     
     window.scrollTo(0,0);
+  }
+
+  function selectOrderType(type) {
+      document.getElementById('order-type-selection').style.display = 'none';
+      document.getElementById('menu-view-actual').style.display = 'block';
+      showToast(type === 'pickup' ? 'Wybrano odbiór osobisty' : 'Wybrano dowóz');
+  }
+
+  function backToOrderType() {
+      document.getElementById('order-type-selection').style.display = 'block';
+      document.getElementById('menu-view-actual').style.display = 'none';
   }
 
   // --- MODALS & ACTIONS ---
