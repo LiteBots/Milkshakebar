@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Milkly | Premium App</title>
-  
+  <title>Milkmi | Premium App</title>
+   
   <meta name="theme-color" content="#FF6600">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -23,16 +23,16 @@
       --text-main: #111827;
       --text-sub: #6B7280;
       --border: #E5E7EB;
-      
+       
       --glass-bg: rgba(255, 255, 255, 0.85);
       --glass-border: rgba(255, 255, 255, 0.5);
-      
+       
       --radius-l: 24px;
       --radius-m: 16px;
-      
+       
       --nav-height: 85px;
       --fab-size: 64px;
-      
+       
       /* Activity Colors */
       --color-order: #FF6600;
       --color-res: #3B82F6;
@@ -54,7 +54,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    
+     
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
@@ -78,7 +78,7 @@
       z-index: 9999;
       transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
     }
-    
+     
     .loader-content {
       text-align: center;
       animation: splashPop 0.6s ease-out;
@@ -201,7 +201,7 @@
     .loyalty-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 2; }
     .points-big { font-size: 2.5rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
     .points-label { font-size: 0.85rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-    
+     
     .loyalty-progress-bg { background: rgba(255,255,255,0.15); height: 6px; border-radius: 10px; margin-bottom: 8px; position: relative; z-index: 2; }
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
@@ -246,7 +246,7 @@
     .milk-card-chip { width: 45px; height: 35px; background: linear-gradient(135deg, #d4af37 0%, #f9e29c 100%); border-radius: 6px; }
     .milk-card-balance { z-index: 2; }
     .milk-card-num { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 15px; }
-    
+     
     .wallet-info-box {
         background: rgba(255, 102, 0, 0.1);
         border: 1px dashed var(--primary);
@@ -357,7 +357,7 @@
       max-height: 85vh; overflow-y: auto;
     }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
-    
+     
     .modal-sheet.full { 
       height: 100vh; max-height: 100vh; border-radius: 0; 
       padding-top: calc(20px + var(--safe-top));
@@ -374,11 +374,11 @@
     /* Utils */
     .view-section { display: none; padding-bottom: 20px; animation: fadeIn 0.3s ease; }
     .view-section.active { display: block; }
-    
+     
     .card { background: var(--bg-surface); border-radius: var(--radius-l); padding: 20px; margin: 0 24px 16px; border: 1px solid var(--border); }
     .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
     .btn-outline { width: 100%; padding: 14px; border-radius: var(--radius-m); background: transparent; color: var(--text-main); border: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-bottom: 30px;}
-    
+     
     /* Toggle Switch */
     .toggle-switch {
         position: relative; width: 50px; height: 26px;
@@ -428,7 +428,7 @@
 
 <div id="splash-screen">
   <div class="loader-content">
-    <div class="loader-logo">Milkly<span>.</span></div>
+    <div class="loader-logo">Milkmi<span>.</span></div>
     <div class="loader-spinner"></div>
     <div class="loader-text">Wczytywanie doznań</div>
   </div>
@@ -437,7 +437,7 @@
 <div class="app-container" id="main-app">
 
   <header class="app-header">
-    <div class="brand">Milkly<span>.</span></div>
+    <div class="brand">Milkmi<span>.</span></div>
     <div class="header-actions">
       <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
       <button class="icon-btn" onclick="showCart()">
@@ -451,7 +451,7 @@
   </header>
 
   <section id="view-home" class="view-section active">
-    
+     
     <div style="padding: 10px 24px 20px;">
       <h2 style="font-size: 1.8rem; line-height: 1.2;">Cześć Mikołaj, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span></h2>
     </div>
@@ -464,11 +464,11 @@
         </div>
         <i class="fas fa-crown" style="font-size: 1.5rem; color: #FFD700;"></i>
       </div>
-      
+       
       <div class="loyalty-progress-bg">
         <div class="loyalty-progress-fill" style="width: 75%;"></div>
       </div>
-      
+       
       <div class="loyalty-footer">
         <span>Status: Gold</span>
         <span>250 do nagrody</span>
@@ -526,7 +526,7 @@
 
   <section id="view-reservation" class="view-section">
     <div class="section-title">Zarezerwuj Stolik</div>
-    
+     
     <div class="card">
       <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block;">Wybierz strefę</label>
       <div class="table-grid">
@@ -582,7 +582,7 @@
 
   <section id="view-wallet" class="view-section">
     <div class="section-title">Mój Portfel</div>
-    
+     
     <div style="padding: 0 24px;">
         <div class="milk-card">
             <div class="milk-card-top">
@@ -633,7 +633,7 @@
                 <div class="label">Dane osobowe</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
-            
+             
             <div class="settings-item" onclick="openModal('modal-language')">
                 <i class="fas fa-language"></i>
                 <div class="label">Język (Polski)</div>
@@ -764,9 +764,9 @@
 
   <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>O Milkly</h3>
+        <h3>O Milkmi</h3>
         <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.4.0 (2026)</p>
-        <p style="font-size:0.9rem; line-height:1.5;">Milkly to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
+        <p style="font-size:0.9rem; line-height:1.5;">Milkmi to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
     </div>
   </div>
@@ -796,7 +796,7 @@
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3>Doładuj MilkCard</h3>
         <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wpisz kwotę, o jaką chcesz zasilić swoją kartę.</p>
-        
+         
         <div class="form-group">
             <label>Kwota doładowania (PLN)</label>
             <input type="number" class="form-control" placeholder="0.00" style="font-size: 1.5rem; font-weight: 700; text-align: center;">
@@ -813,7 +813,7 @@
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3>Karta Prepaid na Prezent</h3>
         <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wybierz kwotę i podaj dane osoby obdarowywanej.</p>
-        
+         
         <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: block;">Wybierz wartość karty</label>
         <div class="amount-grid">
             <div class="amount-chip" onclick="selectAmount(this, 50)">50 PLN</div>
@@ -850,9 +850,9 @@
       <div style="text-align: center;">
         <h3>Twój kod członkowski</h3>
         <p style="color: var(--text-sub); margin-bottom: 20px;">Pokaż ten kod bariście, aby nabić punkty.</p>
-        
+         
         <div class="qr-box">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MilklyUser123">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MilkmiUser123">
           <div class="scan-line"></div>
         </div>
 
@@ -874,7 +874,7 @@
     <a href="#" class="nav-item" onclick="switchTab('order', event)">
       <i class="fas fa-shopping-basket"></i> <span>Zamów</span>
     </a>
-    
+     
     <div class="fab-container" onclick="openQR()">
       <div class="fab-btn">
         <i class="fas fa-qrcode"></i>
@@ -924,12 +924,12 @@
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         const main = document.getElementById('main-app');
-        
+         
         splash.style.opacity = '0';
         splash.style.visibility = 'hidden';
         main.style.opacity = '1';
         document.body.style.overflow = 'auto'; 
-        
+         
         setTimeout(() => {
             const fill = document.querySelector('.loyalty-progress-fill');
             if(fill) fill.style.width = '83%';
@@ -949,7 +949,7 @@
     activities.forEach(item => {
       let typeClass = '';
       let valClass = '';
-      
+       
       if(item.type === 'order') { typeClass = 'type-order'; }
       if(item.type === 'res') { typeClass = 'type-res'; }
       if(item.type === 'money') { typeClass = 'type-money'; valClass = 'positive'; }
@@ -967,7 +967,7 @@
         </div>
       `;
     });
-    
+     
     if(homeContainer) homeContainer.innerHTML = html;
     if(walletContainer) walletContainer.innerHTML = html;
   }
@@ -995,12 +995,12 @@
   // --- NAVIGATION ---
   function switchTab(tabId, event) {
     if(event) event.preventDefault();
-    
+     
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.getElementById('view-' + tabId).classList.add('active');
-    
+     
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    
+     
     const navs = document.querySelectorAll('.nav-item');
     if(tabId === 'home') navs[0].classList.add('active');
     if(tabId === 'order') navs[1].classList.add('active');
@@ -1008,7 +1008,7 @@
     if(tabId === 'wallet') navs[3].classList.add('active');
 
     if(tabId === 'order') backToOrderType();
-    
+     
     window.scrollTo(0,0);
   }
 
@@ -1054,14 +1054,14 @@
   function openProduct(id) {
     const p = products.find(x => x.id === id);
     const content = document.getElementById('product-detail-content');
-    
+     
     content.innerHTML = `
       <div style="text-align:center; margin-bottom: 20px;">
         <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
       </div>
       <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
       <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
-      
+       
       <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
         <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
         <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
@@ -1074,7 +1074,7 @@
         </button>
       </div>
     `;
-    
+     
     openModal('product-modal');
   }
 
@@ -1083,7 +1083,7 @@
     const badge = document.getElementById('cart-badge');
     badge.innerText = cart.length;
     badge.style.display = 'flex';
-    
+     
     closeModal('product-modal');
     showToast('Dodano do koszyka!');
   }
