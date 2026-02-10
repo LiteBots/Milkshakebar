@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -351,7 +350,6 @@
 
 <body>
 
-  <!-- HAPPY HOUR TOP BAR -->
   <div id="happyBar" style="
     position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
     background: linear-gradient(90deg, #FF6A00, #FF9100);
@@ -642,7 +640,6 @@
     <span id="reservation-toast-text">Rezerwacja została złożona.</span>
   </div>
 
-  <!-- ✅ socket.io ładowane PRZED io() -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
   <script>
@@ -735,6 +732,16 @@
         if (inputs.date) {
           const today = new Date();
           inputs.date.setAttribute('min', today.toISOString().split('T')[0]);
+
+          // --- DODANO BLOKADĘ DATY 14.02.2026 ---
+          inputs.date.addEventListener('change', function() {
+            if (this.value === '2026-02-14') {
+              this.value = ''; // Wyczyść pole
+              updateSummary(); // Zaktualizuj podsumowanie
+              showReservationToast('Blokada możliwości rezerwacji 14.02 w Celu dokonania rezerwacji prosimy o kontakt telefoniczny : 733033100', true);
+            }
+          });
+          // ----------------------------------------
         }
 
         function updateSummary() {
