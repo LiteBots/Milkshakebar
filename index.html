@@ -124,6 +124,16 @@
       transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(255, 106, 0, 0.7);
     }
+    .btn-outline {
+        padding: 14px 30px; border-radius: 50px; font-weight: 600;
+        text-decoration: none; cursor: pointer; transition: all 0.3s ease;
+        border: 2px solid var(--primary-color); background: transparent; color: var(--primary-color);
+        display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-outline:hover {
+        background: var(--primary-color); color: white;
+    }
+
     .hamburger { display: none; }
 
     .hero {
@@ -256,6 +266,65 @@
       opacity: 1; transform: translateY(0); pointer-events: auto;
     }
     .reservation-toast i { font-size: 1rem; }
+
+    /* ---- STYLES FOR FULLSCREEN MODAL ---- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85); /* Dark background */
+      z-index: 99999; /* Highest Z-Index */
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    .modal-overlay.active {
+      opacity: 1; pointer-events: auto;
+    }
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 25px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+    .modal-icon {
+      font-size: 3rem; color: var(--error-color); margin-bottom: 20px;
+    }
+    .modal-title {
+      font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; color: var(--text-color-dark);
+    }
+    .modal-text {
+      font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; color: #555;
+    }
+    .modal-btn-call {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      background: var(--success-color); color: white;
+      text-decoration: none; font-weight: 700; font-size: 1.2rem;
+      padding: 16px 32px; border-radius: 50px;
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+      transition: all 0.3s ease;
+      width: 100%; margin-bottom: 15px;
+    }
+    .modal-btn-call:hover {
+      transform: translateY(-3px); box-shadow: 0 10px 25px rgba(22, 163, 74, 0.6);
+    }
+    .modal-btn-close {
+      background: transparent; border: 2px solid #ddd;
+      color: #777; font-weight: 600; padding: 12px 25px;
+      border-radius: 50px; cursor: pointer; transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+    .modal-btn-close:hover {
+      background: #f5f5f5; border-color: #ccc; color: #333;
+    }
+    /* ------------------------------------- */
 
     @media(max-width: 992px) {
       .nav-menu {
@@ -640,6 +709,20 @@
     <span id="reservation-toast-text">Rezerwacja została złożona.</span>
   </div>
 
+  <div id="block-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="fas fa-calendar-times"></i></div>
+      <h3 class="modal-title">Rezerwacja niemożliwa</h3>
+      <p class="modal-text">Blokada możliwości rezerwacji 14.02.<br>W celu dokonania rezerwacji prosimy o kontakt telefoniczny.</p>
+      
+      <a href="tel:733033100" class="modal-btn-call">
+        <i class="fas fa-phone"></i> Zadzwoń: 733 033 100
+      </a>
+      
+      <button class="modal-btn-close" id="close-block-modal">Zamknij</button>
+    </div>
+  </div>
+
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
   <script>
@@ -729,20 +812,38 @@
           notes: document.getElementById('summary-notes')
         };
 
+        // --- MODAL LOGIC ---
+        const blockModal = document.getElementById('block-modal');
+        const closeModalBtn = document.getElementById('close-block-modal');
+
+        function openModal() {
+          blockModal.classList.add('active');
+        }
+
+        function closeModal() {
+          blockModal.classList.remove('active');
+        }
+
+        if(closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+        // Zamknięcie po kliknięciu w tło
+        blockModal.addEventListener('click', (e) => {
+           if(e.target === blockModal) closeModal();
+        });
+
         if (inputs.date) {
           const today = new Date();
           inputs.date.setAttribute('min', today.toISOString().split('T')[0]);
 
-          // --- DODANO BLOKADĘ DATY 14.02.2026 ---
           inputs.date.addEventListener('change', function() {
+            // SPRAWDZANIE DATY 14.02.2026
             if (this.value === '2026-02-14') {
-              this.value = ''; // Wyczyść pole
-              updateSummary(); // Zaktualizuj podsumowanie
-              showReservationToast('Blokada możliwości rezerwacji 14.02 w Celu dokonania rezerwacji prosimy o kontakt telefoniczny : 733033100', true);
+              this.value = ''; // Wyczyść niepoprawną datę
+              updateSummary(); // Odśwież widok
+              openModal();     // Otwórz duży modal
             }
           });
-          // ----------------------------------------
         }
+        // ------------------
 
         function updateSummary() {
           summary.name.textContent  = inputs.name.value || '—';
