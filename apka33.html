@@ -124,7 +124,7 @@
     /* --- HEADER --- */
     .app-header {
       padding: 15px 24px;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: flex-start;
       position: sticky; 
       top: 0; 
       z-index: 90;
@@ -132,10 +132,23 @@
       transition: background 0.3s;
       margin-top: 10px;
     }
-    .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .brand-container {
+      display: flex; flex-direction: column;
+    }
+    .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
     .brand span { color: var(--primary); }
+    
+    .location-selector {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.8rem; color: var(--text-sub); margin-top: 5px;
+        background: var(--bg-surface); padding: 4px 10px; border-radius: 20px;
+        border: 1px solid var(--border); width: fit-content; cursor: pointer;
+        transition: 0.2s;
+    }
+    .location-selector:active { transform: scale(0.95); background: var(--border); }
+    .location-selector i { color: var(--primary); }
 
-    .header-actions { display: flex; gap: 10px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; height: 40px;}
     .icon-btn {
       width: 40px; height: 40px; border-radius: 50%;
       background: var(--bg-surface); border: 1px solid var(--border);
@@ -173,14 +186,14 @@
     }
     .order-type-card {
       background: var(--bg-surface); border: 2px solid var(--border);
-      border-radius: var(--radius-l); padding: 24px; display: flex;
+      border-radius: var(--radius-l); padding: 30px 24px; display: flex;
       align-items: center; gap: 20px; cursor: pointer; transition: 0.3s;
     }
     .order-type-card:active { transform: scale(0.97); }
     .order-type-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
-    .order-type-icon { font-size: 2rem; color: var(--primary); }
-    .order-type-info h3 { margin-bottom: 4px; }
-    .order-type-info p { font-size: 0.85rem; color: var(--text-sub); }
+    .order-type-icon { font-size: 2.5rem; color: var(--primary); background: rgba(255, 102, 0, 0.1); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .order-type-info h3 { margin-bottom: 4px; font-size: 1.2rem; }
+    .order-type-info p { font-size: 0.9rem; color: var(--text-sub); }
 
     /* --- COMPONENT: LOYALTY CARD --- */
     .loyalty-card-premium {
@@ -205,6 +218,36 @@
     .loyalty-progress-bg { background: rgba(255,255,255,0.15); height: 6px; border-radius: 10px; margin-bottom: 8px; position: relative; z-index: 2; }
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
+
+    /* --- REWARDS SECTION --- */
+    .rewards-scroller {
+        display: flex; overflow-x: auto; gap: 12px; padding: 0 24px;
+        padding-bottom: 10px; scrollbar-width: none; /* Firefox */
+        margin-bottom: 20px;
+    }
+    .rewards-scroller::-webkit-scrollbar { display: none; }
+    
+    .reward-card {
+        min-width: 140px; width: 140px;
+        background: var(--bg-surface); border: 1px solid var(--border);
+        border-radius: var(--radius-m); padding: 10px;
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; position: relative;
+    }
+    .reward-img { width: 60px; height: 60px; object-fit: contain; margin-bottom: 8px; }
+    .reward-cost { 
+        background: var(--bg-body); color: var(--primary); 
+        font-weight: 800; font-size: 0.8rem; padding: 4px 10px; 
+        border-radius: 20px; margin-bottom: 5px;
+    }
+    .reward-name { font-weight: 700; font-size: 0.8rem; line-height: 1.2; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center; }
+    .btn-redeem {
+        width: 100%; border: none; background: #111; color: white;
+        font-size: 0.7rem; font-weight: 700; padding: 6px; border-radius: 8px; cursor: pointer;
+    }
+    .btn-redeem:disabled { background: #ccc; cursor: not-allowed; }
+    body.dark-mode .btn-redeem { background: var(--primary); color: #fff; }
+
 
     /* --- AD BANNER --- */
     .ad-banner {
@@ -437,7 +480,14 @@
 <div class="app-container" id="main-app">
 
   <header class="app-header">
-    <div class="brand">MilkMi<span>.</span></div>
+    <div class="brand-container">
+        <div class="brand">MilkMi<span>.</span></div>
+        <div class="location-selector" onclick="openModal('modal-location')">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="header-loc-text">Słupsk, Szczecińska 17</span>
+            <i class="fas fa-chevron-down" style="font-size:0.7rem; color:var(--text-sub); margin-left:2px;"></i>
+        </div>
+    </div>
     <div class="header-actions">
       <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
       <button class="icon-btn" onclick="showCart()">
@@ -460,7 +510,7 @@
       <div class="loyalty-top">
         <div>
           <div class="points-label">Dostępne Milkosy</div>
-          <div class="points-big">1250</div>
+          <div class="points-big" id="user-points">1250</div>
         </div>
         <i class="fas fa-crown" style="font-size: 1.5rem; color: #FFD700;"></i>
       </div>
@@ -474,12 +524,19 @@
         <span>250 do nagrody</span>
       </div>
     </div>
+    
+    <div class="section-title">
+        Nagrody za punkty
+        <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">Sklep</span>
+    </div>
+    <div class="rewards-scroller" id="rewards-container">
+        </div>
 
     <a href="https://www.eatmi.pl" target="_blank" class="ad-banner">
       <img src="https://i.imgur.com/rcaqjLK.png" alt="Eatmi Logo" class="ad-logo">
       <div class="ad-content">
-        <div class="ad-title">Eatmi - Zamów z dowozem</div>
-        <div class="ad-desc">Boxy śniadaniowe i lunchowe pod wskazany adres</div>
+        <div class="ad-title">Eatmi - Dieta pudełkowa</div>
+        <div class="ad-desc">Zdrowe posiłki każdego dnia.</div>
       </div>
       <div class="ad-btn">WWW</div>
     </a>
@@ -498,18 +555,11 @@
     <div id="order-type-selection">
         <div class="section-title">Jak chcesz zamówić?</div>
         <div class="order-type-container">
-            <div class="order-type-card" onclick="selectOrderType('pickup')">
+            <div class="order-type-card" onclick="selectOrderType('pickup')" style="width: 100%; justify-content: center; flex-direction: column; text-align: center;">
                 <div class="order-type-icon"><i class="fas fa-store"></i></div>
                 <div class="order-type-info">
-                    <h3>Zamów z odbiorem</h3>
-                    <p>Odbierz osobiście w lokalu bez kolejki</p>
-                </div>
-            </div>
-            <div class="order-type-card" onclick="selectOrderType('delivery')">
-                <div class="order-type-icon"><i class="fas fa-truck"></i></div>
-                <div class="order-type-info">
-                    <h3>Zamów z dowozem</h3>
-                    <p>Dostarczymy pod Twoje drzwi</p>
+                    <h3>Odbiór osobisty / Na miejscu</h3>
+                    <p>Zamów i odbierz przy barze bez kolejki</p>
                 </div>
             </div>
         </div>
@@ -762,7 +812,7 @@
   <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3>O MilkMi</h3>
-        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.4.0 (2026)</p>
+        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.5.0 (2026)</p>
         <p style="font-size:0.9rem; line-height:1.5;">Milkmi to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
     </div>
@@ -863,6 +913,28 @@
       <div id="product-detail-content"></div>
     </div>
   </div>
+  
+  <div class="modal-overlay" id="modal-location" onclick="closeModal('modal-location')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3>Wybierz lokalizację</h3>
+      <p style="color: var(--text-sub); margin-bottom: 15px;">Wybierz lokal, w którym chcesz złożyć zamówienie:</p>
+      
+      <div class="settings-list">
+          <div class="settings-item" onclick="changeLocation('Słupsk, Szczecińska 17')">
+              <i class="fas fa-map-marker-alt"></i>
+              <div class="label">Słupsk, Szczecińska 17</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+          <div class="settings-item" onclick="changeLocation('Rowy, Wydmowa 2')">
+              <i class="fas fa-umbrella-beach"></i>
+              <div class="label">Rowy, Wydmowa 2</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+      </div>
+      
+      <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-location')">Anuluj</button>
+    </div>
+  </div>
 
   <nav class="bottom-nav">
     <a href="#" class="nav-item active" onclick="switchTab('home', event)">
@@ -910,12 +982,23 @@
     { type: 'money', title: 'Doładowanie Online', date: '22 Sty, 09:15', val: '+ 100.00 zł', icon: 'fa-globe' },
     { type: 'order', title: 'Płatność MilkCard', date: '20 Sty, 12:45', val: '- 19.50 zł', icon: 'fa-ice-cream' }
   ];
+  
+  // Dane nagród
+  const rewards = [
+      { id: 1, name: "Darmowa Kawa", cost: 500, img: "https://i.imgur.com/w9k1n2m.png" }, // Placeholder coffee icon
+      { id: 2, name: "Croissant", cost: 750, img: "https://i.imgur.com/3q1w32d.png" }, // Placeholder pastry
+      { id: 3, name: "Shake -50%", cost: 1000, img: "https://i.imgur.com/kfE4j7j.jpeg" },
+      { id: 4, name: "Torba MilkMi", cost: 1500, img: "https://i.imgur.com/rcaqjLK.png" },
+      { id: 5, name: "Deser Szefa", cost: 2000, img: "https://i.imgur.com/XIdoN0y.png" }
+  ];
 
   let cart = [];
+  let userPoints = 1250;
   let selectedZone = 'Sala frontowa';
   let selectedGiftAmount = 100;
+  let currentLocation = "Słupsk, Szczecińska 17";
 
-  // --- INIT & LOADER LOGIC (ZMIENIONO NA 3 SEKUNDY) ---
+  // --- INIT & LOADER LOGIC ---
   document.addEventListener('DOMContentLoaded', () => {
     // 3-sekundowy loader (3000ms)
     setTimeout(() => {
@@ -935,6 +1018,7 @@
 
     renderActivities();
     renderMenu();
+    renderRewards();
   });
 
   // --- RENDERING ---
@@ -988,6 +1072,43 @@
     });
     container.innerHTML = html;
   }
+  
+  function renderRewards() {
+      const container = document.getElementById('rewards-container');
+      if(!container) return;
+      
+      let html = '';
+      rewards.forEach(r => {
+          const canAfford = userPoints >= r.cost;
+          html += `
+            <div class="reward-card">
+                <div class="reward-cost">${r.cost} pkt</div>
+                <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
+                <div class="reward-name">${r.name}</div>
+                <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.name}', ${r.cost})">
+                    ${canAfford ? 'Odbierz' : 'Za mało pkt'}
+                </button>
+            </div>
+          `;
+      });
+      container.innerHTML = html;
+  }
+  
+  function redeemReward(name, cost) {
+      if(userPoints >= cost) {
+          userPoints -= cost;
+          document.getElementById('user-points').innerText = userPoints;
+          showToast(`Odebrano: ${name}!`);
+          renderRewards(); // Odśwież widok przycisków
+      }
+  }
+  
+  function changeLocation(loc) {
+      currentLocation = loc;
+      document.getElementById('header-loc-text').innerText = currentLocation;
+      closeModal('modal-location');
+      showToast('Zmieniono lokalizację');
+  }
 
   // --- NAVIGATION ---
   function switchTab(tabId, event) {
@@ -1012,7 +1133,7 @@
   function selectOrderType(type) {
       document.getElementById('order-type-selection').style.display = 'none';
       document.getElementById('menu-view-actual').style.display = 'block';
-      showToast(type === 'pickup' ? 'Wybrano odbiór osobisty' : 'Wybrano dowóz');
+      // showToast(type === 'pickup' ? 'Wybrano odbiór osobisty' : 'Wybrano dowóz');
   }
 
   function backToOrderType() {
