@@ -475,12 +475,6 @@
                 <div class="_df_book" height="900" webgl="true" backgroundcolor="#ffffff" source="menu.pdf" id="df_manual_book"></div>
             </div>
 
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="menu.pdf" target="_blank" download class="btn btn-primary">
-                    <i class="fas fa-download"></i> Pobierz Menu (PDF)
-                </a>
-            </div>
-
         </div>
     </section>
 </main>
@@ -528,13 +522,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Obsługa zmiany wyglądu paska nawigacji przy scrollowaniu
   const header = document.getElementById('header');
   window.addEventListener('scroll', () => {
     header.classList.toggle('scrolled', window.scrollY > 50);
   });
 
-  // Obsługa menu mobilnego (hamburger)
   const hamburger = document.querySelector('.hamburger');
   const navMenu = document.querySelector('.nav-menu');
   const navLinks = document.querySelectorAll('.nav-link');
