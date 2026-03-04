@@ -1,543 +1,235 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu MilkShake Bar Słupsk | Shakes, desery, burgery</title>
-    <meta name="description" content="Pełne menu MilkShake Bar w Słupsku – milkshake’i, desery, pancakes, gofry, burgery, śniadania i napoje. Sprawdź wszystkie nasze kompozycje smakowe.">
-    <meta name="keywords" content="menu milkshake bar słupsk, milkshake menu słupsk, desery menu słupsk, burgery menu słupsk">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.milkshakebar.pl/menu.html">
-    <link rel="icon" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nasze Menu | MilkShake Bar Słupsk</title>
+
+  <meta name="description" content="Sprawdź nasze pełne menu. Kremowe milkshake’i, desery, burgery i śniadania w MilkShake Bar w Słupsku.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* BAZOWE ZMIENNE Z GŁÓWNEJ STRONY */
+    :root {
+      --primary-color: #FF6A00;
+      --secondary-color: #FF9100;
+      --background-light: #FFF6EC;
+      --background-dark: #22110A;
+      --text-color-dark: #2B1300;
+      --text-color-light: #FFFFFF;
+      --gradient-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      --shadow: 0px 10px 30px rgba(0, 0, 0, 0.12);
+      --border-radius: 20px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-color-dark);
+      background-color: var(--background-light);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
     
-    <meta property="og:title" content="Menu MilkShake Bar Słupsk | Shakes, desery, burgery">
-    <meta property="og:description" content="Poznaj pełne menu MilkShake Bar w Słupsku: milkshake’i, desery, burgery, śniadania i napoje.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.milkshakebar.pl/menu.html">
-    <meta property="og:image" content="https://i.imgur.com/kfE4j7j.jpeg">
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 25px; width: 100%; }
+    h1, h2, h3 { font-weight: 700; }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    /* NAWIGACJA */
+    .header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      padding: 15px 0; z-index: 1000; 
+      background: rgba(255, 246, 236, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .navbar { display: flex; justify-content: space-between; align-items: center; }
+    .logo {
+      display: flex; align-items: center; text-decoration: none;
+      font-weight: 700; font-size: 1.5rem; color: var(--primary-color);
+    }
+    .logo img {
+      width: 50px; height: 50px; border-radius: 50%;
+      margin-right: 15px; transition: transform 0.4s ease;
+    }
+    .logo:hover img { transform: rotate(360deg) scale(1.1); }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href="https://unpkg.com/@dearflip/pdf-flipbook@2.2.0/css/dflip.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/@dearflip/pdf-flipbook@2.2.0/css/themify-icons.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/@dearflip/pdf-flipbook@2.2.0/js/dflip.min.js"></script>
+    .nav-menu { list-style: none; display: flex; align-items: center; }
+    .nav-item { margin: 0 20px; }
+    .nav-link {
+      color: var(--text-color-dark); text-decoration: none; font-weight: 600;
+      position: relative; padding: 5px 0;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -5px; left: 0;
+      width: 100%; height: 3px; background: var(--gradient-bg);
+      border-radius: 2px; transform: scaleX(0); transform-origin: right;
+      transition: transform 0.4s ease;
+    }
+    .nav-link:hover::after, .nav-link.active::after {
+      transform: scaleX(1); transform-origin: left;
+    }
 
-    <style>
-        :root {
-            --primary-color: #FF6A00;
-            --secondary-color: #FF9100;
-            --accent-color: #FFE0B2;
-            --background-light: #FFF6EC;
-            --background-dark: #22100A;
-            --text-color-dark: #2B1300;
-            --text-color-light: #FFFFFF;
-            --gradient-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            --shadow: 0px 10px 30px rgba(0, 0, 0, 0.12);
-            --border-radius: 20px;
-        }
+    /* PRZYCISKI */
+    .btn {
+      padding: 14px 30px; border-radius: 50px; font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: all 0.3s ease;
+      border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-primary {
+      background: var(--gradient-bg); color: white;
+      box-shadow: 0 4px 20px rgba(255, 106, 0, 0.5);
+    }
+    .btn-primary:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 106, 0, 0.7);
+    }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    .hamburger { display: none; }
 
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
-        }
+    /* SEKCJA MENU PDF */
+    .menu-section {
+      padding-top: 130px; /* Miejsce na przyklejony header */
+      padding-bottom: 60px;
+      flex: 1; /* Pozwala sekcji zająć resztę miejsca i wypchnąć stopkę na dół */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color-dark);
-            background-color: var(--background-light);
-            overflow-x: hidden;
-        }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 30px;
+      text-align: center;
+      background: var(--gradient-bg);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 25px;
-        }
+    .pdf-wrapper {
+      width: 100%;
+      max-width: 1000px; /* Maksymalna szerokość dla dobrej proporcji A4 */
+      height: 80vh; /* Prawie pełny ekran */
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 30px;
+      position: relative;
+    }
 
-        h1, h2, h3 {
-            font-weight: 700;
-        }
+    .pdf-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-        .section {
-            padding: 60px 0 100px;
-            position: relative;
-        }
+    .download-action {
+      text-align: center;
+    }
+    .download-action p {
+      margin-bottom: 15px;
+      color: #555;
+      font-size: 0.95rem;
+    }
 
-        h2.section-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 900;
-            margin-bottom: 20px;
-            text-align: center;
-            background: var(--gradient-bg);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
+    /* STOPKA */
+    .footer { background-color: var(--background-dark); color: #ccc; padding: 40px 0 20px; margin-top: auto; }
+    .footer-bottom { text-align: center; font-size: 0.9rem; opacity: 0.8; }
 
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.1rem;
-            margin-bottom: 50px;
-            color: rgba(43, 19, 0, 0.8);
-        }
-
-        /* Header & Nav */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 0;
-            z-index: 1000;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .header.scrolled {
-            background: rgba(255, 246, 236, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .logo img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .logo:hover img {
-            transform: rotate(360deg) scale(1.1);
-        }
-
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-item { margin: 0 20px; }
-
-        .nav-link {
-            color: var(--text-color-dark);
-            text-decoration: none;
-            font-weight: 600;
-            position: relative;
-            padding: 5px 0;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-bg);
-            border-radius: 2px;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
-        .btn {
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: var(--gradient-bg);
-            color: white;
-            box-shadow: 0 4px 20px rgba(255, 106, 0, 0.5);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 106, 0, 0.7);
-        }
-
-        .hamburger { display: none; }
-
-        /* Hero Section */
-        .menu-hero {
-            min-height: 50vh;
-            display: flex;
-            align-items: center;
-            padding-top: 110px;
-            position: relative;
-        }
-
-        .menu-hero-inner {
-            display: grid;
-            grid-template-columns: 3fr 2fr;
-            gap: 50px;
-            align-items: center;
-        }
-
-        .menu-hero-text h1 {
-            font-size: clamp(2.8rem, 5vw, 4rem);
-            font-weight: 900;
-            margin-bottom: 20px;
-        }
-
-        .menu-hero-text p {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            max-width: 550px;
-            margin-bottom: 25px;
-        }
-
-        .menu-hero-text .highlight {
-            background: var(--gradient-bg);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .menu-hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 18px;
-            border-radius: 999px;
-            background-color: rgba(255, 106, 0, 0.08);
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .menu-hero-visual {
-            position: relative;
-            justify-self: center;
-        }
-
-        .menu-hero-visual img {
-            width: 100%;
-            max-width: 380px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .menu-hero-tag {
-            position: absolute;
-            bottom: 10%;
-            left: -10px;
-            background-color: #fff;
-            padding: 10px 18px;
-            border-radius: 999px;
-            box-shadow: var(--shadow);
-            font-size: 0.9rem;
-        }
-
-        /* PDF Flipbook Wrapper */
-        .pdf-wrapper {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            background: #fff;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: var(--background-dark);
-            color: #ccc;
-            padding: 60px 0 35px;
-            margin-top: 40px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-col h4 {
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .footer-col h4::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-bg);
-            border-radius: 2px;
-        }
-
-        .footer-col p, .footer-col li {
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 8px; }
-
-        .footer-col a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s ease, padding-left 0.3s ease;
-        }
-
-        .footer-col a:hover {
-            color: #fff;
-            padding-left: 4px;
-        }
-
-        .footer-socials {
-            display: flex;
-            gap: 15px;
-        }
-
-        .footer-socials a {
-            width: 38px;
-            height: 38px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(255,255,255,0.1);
-            color: #fff;
-            border-radius: 50%;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        .footer-socials a:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-4px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        /* RWD */
-        @media (max-width: 992px) {
-            .nav-menu {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 70%;
-                height: 100vh;
-                background: white;
-                box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-                flex-direction: column;
-                justify-content: center;
-                gap: 40px;
-                transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-            }
-
-            .nav-menu.active { right: 0; }
-            .nav-link { font-size: 1.4rem; }
-            .nav-btn { display: none; }
-
-            .hamburger {
-                display: block;
-                z-index: 1001;
-                cursor: pointer;
-            }
-
-            .menu-hero-inner {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .menu-hero-text p {
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .menu-hero-visual { order: -1; }
-            .menu-hero-tag {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .section { padding: 60px 0; }
-            .footer-grid { text-align: center; }
-            .footer-col h4::after {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            .footer-socials { justify-content: center; }
-            
-            /* Na telefonach zmniejszamy kontener, skrypt dFlip sam dopasuje A4 */
-            .pdf-wrapper { max-width: 100%; border-radius: 0; }
-        }
-    </style>
+    /* RESPONSATYWNOŚĆ */
+    @media(max-width: 992px) {
+      .nav-menu {
+        position: fixed; top: 0; right: -100%; width: 70%; height: 100vh;
+        background: white; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        flex-direction: column; justify-content: center; gap: 40px;
+        transition: right 0.5s ease;
+      }
+      .nav-menu.active { right: 0; }
+      .nav-link { font-size: 1.5rem; }
+      .hamburger { display: block; z-index: 1001; cursor: pointer; color: var(--primary-color); }
+      .btn-primary.nav-btn { display: none; }
+    }
+    
+    @media(max-width: 768px) {
+      .pdf-wrapper {
+        height: 65vh; /* Nieco niższy na telefonach */
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="header" id="header">
+  <header class="header">
     <div class="container">
-        <nav class="navbar">
-            <a href="index.html#home" class="logo">
-                <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar Słupsk">
-                <span>MilkShake Bar</span>
-            </a>
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="index.html#about" class="nav-link">O nas</a></li>
-                <li class="nav-item"><a href="menu.html" class="nav-link active">Menu</a></li>
-                <li class="nav-item"><a href="index.html#reservation" class="nav-link">Rezerwacja</a></li>
-                <li class="nav-item"><a href="index.html#location" class="nav-link">Lokal</a></li>
-            </ul>
-            <a href="index.html#reservation" class="btn btn-primary nav-btn">Rezerwuj stolik <i class="fas fa-arrow-right"></i></a>
-            <div class="hamburger">
-                <i class="fas fa-bars fa-2x"></i>
-            </div>
-        </nav>
+      <nav class="navbar">
+        <a href="index.html" class="logo">
+          <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar">
+          <span>MilkShake Bar</span>
+        </a>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="index.html#about" class="nav-link">O nas</a></li>
+          <li class="nav-item"><a href="menu.html" class="nav-link active">Menu</a></li>
+          <li class="nav-item"><a href="index.html#location" class="nav-link">Lokal</a></li>
+          <li class="nav-item"><a href="index.html#reservation" class="nav-link">Rezerwacje</a></li>
+        </ul>
+        <a href="index.html#reservation" class="btn btn-primary nav-btn">Rezerwacja <i class="fas fa-arrow-right"></i></a>
+        <div class="hamburger"><i class="fas fa-bars fa-2x"></i></div>
+      </nav>
     </div>
-</header>
+  </header>
 
-<main>
-    <section class="menu-hero">
-        <div class="container">
-            <div class="menu-hero-inner">
-                <div class="menu-hero-text">
-                    <div class="menu-hero-badge">
-                        <i class="fas fa-book-open"></i> Interaktywna karta
-                    </div>
-                    <h1>Menu <span class="highlight">MilkShake Bar w Słupsku</span></h1>
-                    <p>Od kremowych milkshake’ów, przez autorskie desery, aż po soczyste burgery. 
-                        Wybierz swój nastrój i znajdź idealną pozycję na dziś w MilkShake Bar w Słupsku.</p>
-                </div>
-                <div class="menu-hero-visual">
-                    <img src="https://i.imgur.com/kfE4j7j.jpeg" alt="Milkshake w MilkShake Bar Słupsk dekorowany słodkościami">
-                    <div class="menu-hero-tag">
-                        <strong>Przewiń niżej</strong><br>
-                        Otwórz nasze menu
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <main class="menu-section">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+      
+      <h1 class="section-title fade-in">Nasze Menu</h1>
+      
+      <div class="pdf-wrapper fade-in">
+        <iframe src="menu.pdf#toolbar=0&navpanes=0&scrollbar=0" title="Menu MilkShake Bar"></iframe>
+      </div>
 
-    <section class="section" id="full-menu">
-        <div class="container">
-            <h2 class="section-title">Nasze Menu</h2>
-            <p class="section-subtitle">Przeciągnij róg strony lub użyj strzałek, aby przewijać kartę jak prawdziwą książkę.</p>
-            
-            <div class="pdf-wrapper">
-                <div class="_df_book" height="900" webgl="true" backgroundcolor="#ffffff" source="menu.pdf" id="df_manual_book"></div>
-            </div>
+      <div class="download-action fade-in">
+        <p>Menu nie wyświetla się poprawnie na Twoim urządzeniu?</p>
+        <a href="menu.pdf" download="MilkShake_Bar_Menu.pdf" class="btn btn-primary">
+          <i class="fas fa-download"></i> Pobierz Menu (PDF)
+        </a>
+      </div>
 
-        </div>
-    </section>
-</main>
+    </div>
+  </main>
 
-<footer class="footer">
+  <footer class="footer">
     <div class="container">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="index.html#home" class="logo" style="color: #fff;">
-                    <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar Słupsk">
-                    <span>MilkShake Bar</span>
-                </a>
-                <p style="margin-top: 15px;">Każdy łyk i każdy kęs to małe dzieło sztuki – wybierz coś z menu i daj się zaskoczyć.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Nawigacja</h4>
-                <ul>
-                    <li><a href="index.html#about">O nas</a></li>
-                    <li><a href="menu.html">Pełne menu MilkShake Bar Słupsk</a></li>
-                    <li><a href="index.html#gallery">Galeria</a></li>
-                    <li><a href="index.html#reservation">Rezerwacja</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Kontakt</h4>
-                <ul>
-                    <li><i class="fas fa-map-marker-alt"></i> Szczecińska 17, 76-200 Słupsk<br> Wydmowa 2, 76-212 Rowy</li>
-                    <li><i class="fas fa-phone"></i> +48 733 033 100</li>
-                    <li><i class="fas fa-clock"></i> Pn-PT 8–22, Sb-Nd 10–22</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Znajdź nas</h4>
-                <div class="footer-socials">
-                    <a href="https://www.facebook.com/milkshakebar" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/milkshake_slupsk" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 MilkShake Bar. Wszystkie prawa zastrzeżone.</p>
-        </div>
+      <div class="footer-bottom">
+        <p>© 2025 MilkShake Bar. Wszystkie prawa zastrzeżone.</p>
+      </div>
     </div>
-</footer>
+  </footer>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 50);
-  });
-
-  const hamburger = document.querySelector('.hamburger');
-  const navMenu = document.querySelector('.nav-menu');
-  const navLinks = document.querySelectorAll('.nav-link');
-  
-  const toggleMenu = () => navMenu.classList.toggle('active');
-  const closeMenu = () => navMenu.classList.remove('active');
-  
-  if (hamburger) hamburger.addEventListener('click', toggleMenu);
-  navLinks.forEach(link => link.addEventListener('click', closeMenu));
-});
-</script>
+  <script>
+    // Prosta logika do obsługi menu mobilnego (hamburger)
+    document.addEventListener('DOMContentLoaded', () => {
+      const hamburger = document.querySelector('.hamburger');
+      const navMenu = document.querySelector('.nav-menu');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      const toggleMenu = () => navMenu.classList.toggle('active');
+      const closeMenu = () => navMenu.classList.remove('active');
+      
+      if (hamburger) hamburger.addEventListener('click', toggleMenu);
+      navLinks.forEach(link => link.addEventListener('click', closeMenu));
+    });
+  </script>
 
 </body>
 </html>
