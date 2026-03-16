@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baltic Estate Expo 2026 | Targi Nieruchomości</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        black: '#050505',
+                        white: '#ffffff',
+                        zinc: {
+                            900: '#18181b',
+                            800: '#27272a',
+                            100: '#f4f4f5',
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'marquee-fast': 'marquee 15s linear infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'scanline': 'scanline 4s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(500px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #ffffff;
+            color: #050505;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background-color: #050505;
+            color: #ffffff;
+        }
+
+        .font-grotesk { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Noise Texture */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Outline Text */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 2px #050505;
+        }
+        .text-outline-white {
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+        }
+
+        /* Scroll Reveal Animations - Zoptymalizowane */
+        .reveal { opacity: 0; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity; }
+        .reveal.active { opacity: 1; transform: translate(0, 0) scale(1); }
+        
+        .reveal-up { transform: translateY(60px); }
+        .reveal-left { transform: translateX(-60px); }
+        .reveal-right { transform: translateX(60px); }
+        .reveal-scale { transform: scale(0.95); }
+
+        /* Architect Grid */
+        .bg-architect-grid {
+            background-size: 60px 60px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
+        }
+
+        /* Floating Label Inputs (Premium UX) */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+        .input-premium {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #e4e4e7;
+            padding: 1.25rem 0 0.5rem 0;
+            font-size: 1.125rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+            border-radius: 0;
+        }
+        .input-premium:focus {
+            border-bottom-color: #050505;
+        }
+        .input-label {
+            position: absolute;
+            left: 0;
+            top: 1.25rem;
+            color: #a1a1aa;
+            font-weight: 400;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .input-premium:focus ~ .input-label,
+        .input-premium:not(:placeholder-shown) ~ .input-label {
+            transform: translateY(-1.25rem);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #050505;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Ukrycie domyślnego placeholdera, używamy labela */
+        .input-premium::placeholder { color: transparent; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="noise-overlay"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const AUDIENCE = [
+            { id: 1, title: "Deweloperzy", icon: "building-2", desc: "Prezentacja nowych inwestycji i osiedli." },
+            { id: 2, title: "Agencje Nieruchomości", icon: "home", desc: "Rynek wtórny i pierwotny w jednym miejscu." },
+            { id: 3, title: "Pośrednicy Kredytowi", icon: "calculator", desc: "Doradztwo finansowe i kredyty hipoteczne." },
+            { id: 4, title: "Banki", icon: "landmark", desc: "Bezpośrednie oferty finansowania." },
+            { id: 5, title: "Firmy Budowlane", icon: "hard-hat", desc: "Generalni wykonawcy i podwykonawcy." },
+            { id: 6, title: "Wykończenia", icon: "paint-roller", desc: "Remonty i wykończenia pod klucz." },
+            { id: 7, title: "Wnętrza & Design", icon: "sofa", desc: "Meble, oświetlenie i artykuły dekoracyjne." },
+            { id: 8, title: "Notariusze", icon: "pen-tool", desc: "Obsługa prawna transakcji." },
+            { id: 9, title: "Projektanci", icon: "ruler", desc: "Architekci i projektanci wnętrz." },
+            { id: 10, title: "Domy Modułowe", icon: "box", desc: "Nowoczesne technologie budownictwa." }
+        ];
+
+        const TICKER_WORDS = ["INWESTYCJE", "NETWORKING", "ROZWÓJ", "BIZNES", "NIERUCHOMOŚCI", "KREDYTY", "BUDOWNICTWO", "DESIGN"];
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const Ticker = ({ direction = 'left', className = "", dark = false }) => (
+            <div className={`flex overflow-hidden whitespace-nowrap py-5 border-y ${dark ? 'bg-black border-zinc-800 text-white' : 'bg-white border-zinc-200 text-black'} ${className}`}>
+                <div className={`flex ${direction === 'left' ? 'animate-marquee' : 'animate-marquee-fast'} items-center`}>
+                    {[...TICKER_WORDS, ...TICKER_WORDS, ...TICKER_WORDS, ...TICKER_WORDS].map((word, i) => (
+                        <div key={i} className="flex items-center">
+                            <span className="text-4xl md:text-6xl font-grotesk font-black uppercase mx-8">{word}</span>
+                            <span className="text-xl opacity-30">✦</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        function App() {
+            const [scrolled, setScrolled] = useState(false);
+            const [formData, setFormData] = useState({ nip: '', companyName: '', name: '', phone: '', email: '' });
+            const [formStatus, setFormStatus] = useState(null);
+            
+            // Ref do efektu paralaksy
+            const heroTextRef = useRef(null);
+
+            useEffect(() => {
+                // Nowoczesny Intersection Observer dla płynnych animacji wejścia
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.15
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target); // Animuj tylko raz
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+                // Scroll event dla paralaksy i nawigacji
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                    
+                    if (heroTextRef.current) {
+                        const scrollY = window.scrollY;
+                        // Delikatne przesunięcie w dół tworzy efekt głębi (parallax)
+                        heroTextRef.current.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.4}px))`;
+                    }
+                };
+                
+                window.addEventListener('scroll', handleScroll);
+                handleScroll(); // Init
+                
+                if (window.lucide) window.lucide.createIcons();
+                
+                return () => {
+                    window.removeEventListener('scroll', handleScroll);
+                    observer.disconnect();
+                };
+            }, []);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setFormStatus('Sukces! Komplet dokumentów wystawcy został wysłany na Twój adres e-mail.');
+            };
+
+            return (
+                <div className="min-h-screen relative">
+                    
+                    {/* NAWIGACJA */}
+                    <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'py-4 bg-white/90 backdrop-blur-xl border-b border-black/10 shadow-sm' : 'py-8 bg-transparent'}`}>
+                        <div className="w-full px-6 md:px-12 flex justify-between items-center max-w-[1800px] mx-auto">
+                            <a href="#" className={`transition-all duration-500 transform hover:scale-105 origin-left flex-shrink-0 ${scrolled ? 'h-12 md:h-16' : 'h-20 md:h-28 lg:h-[120px]'}`}>
+                                <img src="https://i.imgur.com/qQ1EVoE.png" alt="Baltic Estate Expo" className="h-full w-auto object-contain filter invert drop-shadow-xl" />
+                            </a>
+
+                            <div className="hidden lg:flex gap-12 text-xs font-black uppercase tracking-[0.2em] text-zinc-500 items-center">
+                                <a href="#dla-kogo" className="hover:text-black hover:-translate-y-1 transition-all">Dla Kogo</a>
+                                <a href="#informacje" className="hover:text-black hover:-translate-y-1 transition-all">Data & Miejsce</a>
+                                <a href="#plan-hali" className="hover:text-black hover:-translate-y-1 transition-all">Plan Hali</a>
+                            </div>
+                            
+                            <a href="#rejestracja" className="hidden md:flex bg-black text-white px-8 py-4 text-xs font-black uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all hover:shadow-xl items-center gap-3 group flex-shrink-0 relative overflow-hidden">
+                                <span className="relative z-10 flex items-center gap-3">Stoiska <Icon name="arrow-right" size={16} className="group-hover:translate-x-2 transition-transform duration-300" /></span>
+                                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out mix-blend-difference"></div>
+                            </a>
+                        </div>
+                    </nav>
+
+                    {/* HERO SECTION */}
+                    <section className="relative min-h-screen pt-[200px] lg:pt-[240px] pb-20 flex flex-col justify-center border-b border-black overflow-hidden bg-white">
+                        <div className="absolute inset-0 bg-architect-grid opacity-60"></div>
+                        
+                        {/* Ogromny napis w tle - Paralaxa */}
+                        <div ref={heroTextRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none select-none z-0 transition-transform duration-100 ease-out">
+                            <h1 className="text-[25vw] font-black font-grotesk text-zinc-100 leading-none mt-10">2026</h1>
+                        </div>
+
+                        <div className="relative z-10 w-full px-6 md:px-12 max-w-[1800px] mx-auto reveal reveal-up">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-[2px] bg-black"></div>
+                                <p className="text-sm font-black uppercase tracking-[0.4em]">Największe wydarzenie branżowe w regionie</p>
+                            </div>
+                            
+                            <h1 className="text-6xl md:text-8xl lg:text-[11rem] font-grotesk font-black tracking-tighter leading-[0.85] uppercase mb-12 mix-blend-difference text-black">
+                                Baltic <br />
+                                <span className="text-outline">Estate</span> <br />
+                                Expo
+                            </h1>
+
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-16 text-xl md:text-3xl font-medium border-l-4 border-black pl-6">
+                                <div className="group">
+                                    <p className="text-sm font-bold uppercase tracking-widest text-zinc-400 mb-2 group-hover:text-black transition-colors">Termin</p>
+                                    <p>24.05.2026</p>
+                                </div>
+                                <div className="group">
+                                    <p className="text-sm font-bold uppercase tracking-widest text-zinc-400 mb-2 group-hover:text-black transition-colors">Lokalizacja</p>
+                                    <p>Hala Gryfia, Słupsk</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Wirująca ikona */}
+                        <a href="#rejestracja" className="absolute bottom-12 right-12 z-20 hidden md:flex items-center justify-center w-32 h-32 cursor-pointer group hover:scale-110 transition-transform duration-500">
+                            <svg className="animate-spin-slow w-full h-full text-black" viewBox="0 0 100 100">
+                                <path id="curve" fill="transparent" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
+                                <text className="text-[12px] font-bold uppercase tracking-[0.25em]" fill="currentColor">
+                                    <textPath href="#curve">Zarezerwuj Stoisko • Przewiń w dół •</textPath>
+                                </text>
+                            </svg>
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:translate-y-1 transition-transform">
+                                <Icon name="arrow-down" size={24} />
+                            </div>
+                        </a>
+                    </section>
+
+                    <Ticker className="-mt-[1px]" />
+
+                    {/* DLA KOGO */}
+                    <section id="dla-kogo" className="py-40 px-6 md:px-12 max-w-[1800px] mx-auto">
+                        <div className="flex flex-col lg:flex-row justify-between items-end mb-24 reveal reveal-up">
+                            <div className="max-w-3xl">
+                                <h2 className="text-5xl md:text-7xl font-grotesk font-black tracking-tighter mb-8 leading-tight">Łączymy cały <br/>sektor w <span className="relative inline-block">jednym<div className="absolute bottom-1 left-0 w-full h-3 bg-black -z-10 transform -rotate-1"></div></span> miejscu.</h2>
+                            </div>
+                            <p className="text-xl text-zinc-500 max-w-md font-light leading-relaxed">
+                                Idealna przestrzeń do nawiązywania relacji B2B, pozyskiwania klientów detalicznych i prezentacji innowacji.
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0 border-t border-l border-black">
+                            {AUDIENCE.map((item, idx) => (
+                                <div key={item.id} className="group relative border-r border-b border-black aspect-square p-8 flex flex-col justify-between overflow-hidden cursor-pointer hover:bg-black hover:text-white transition-all duration-500 reveal reveal-scale" style={{transitionDelay: `${(idx % 5) * 100}ms`}}>
+                                    <div className="absolute top-4 right-4 text-zinc-200 font-bold text-xl font-grotesk group-hover:text-zinc-800 transition-colors">
+                                        {item.id < 10 ? `0${item.id}` : item.id}
+                                    </div>
+                                    <div className="w-16 h-16 rounded-full border border-black flex items-center justify-center group-hover:border-white group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                                        <Icon name={item.icon} size={28} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-2xl uppercase tracking-tight mb-2 font-grotesk group-hover:-translate-y-1 transition-transform duration-300">{item.title}</h3>
+                                        <p className="text-sm text-zinc-500 group-hover:text-zinc-400 font-medium translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* DATA I MIEJSCE */}
+                    <section id="informacje" className="bg-black text-white relative overflow-hidden py-40 border-y border-zinc-800">
+                        <div className="absolute inset-0 bg-architect-grid opacity-10 filter invert"></div>
+                        <div className="absolute -right-20 -top-20 text-[30rem] font-grotesk font-black text-outline-white opacity-5 select-none animate-pulse-slow">BEE</div>
+
+                        <div className="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10">
+                            <div className="grid lg:grid-cols-2 gap-20 items-center">
+                                <div className="reveal reveal-left">
+                                    <h2 className="text-6xl md:text-8xl font-grotesk font-black uppercase leading-[0.9] mb-12">
+                                        Centrum <br/>Wydarzeń.
+                                    </h2>
+                                    <div className="w-24 h-2 bg-white mb-12 transform origin-left transition-transform hover:scale-x-150 duration-500"></div>
+                                    <p className="text-2xl text-zinc-400 font-light max-w-xl">
+                                        Hala Gryfia w Słupsku to najnowocześniejszy obiekt wystawienniczy w regionie, gwarantujący doskonałą infrastrukturę dla wystawców i zwiedzających.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-12 reveal reveal-right">
+                                    <div className="border-l-2 border-white pl-8 py-4">
+                                        <p className="text-sm font-bold uppercase tracking-[0.3em] text-zinc-500 mb-4">Data Wydarzenia</p>
+                                        <p className="text-4xl md:text-6xl font-black font-grotesk">24.05.2026</p>
+                                        <p className="text-xl text-zinc-400 mt-2 font-light">Niedziela, 10:00 - 18:00</p>
+                                    </div>
+                                    <a href="#" className="block border-l-2 border-zinc-800 pl-8 py-4 group hover:border-white transition-colors duration-500 cursor-pointer">
+                                        <p className="text-sm font-bold uppercase tracking-[0.3em] text-zinc-500 mb-4">Lokalizacja</p>
+                                        <p className="text-4xl md:text-6xl font-black font-grotesk group-hover:translate-x-4 transition-transform duration-500">Hala Gryfia</p>
+                                        <p className="text-xl text-zinc-400 mt-2 font-light flex items-center gap-3">
+                                            ul. Szczecińska 99, Słupsk <Icon name="external-link" size={18} className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                                        </p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <Ticker direction="right" dark={true} className="border-zinc-800" />
+
+                    {/* FORMULARZ I MAPA */}
+                    <section id="rejestracja" className="py-40 px-6 md:px-12 max-w-[1800px] mx-auto">
+                        <div className="grid lg:grid-cols-2 gap-24 lg:gap-32">
+                            
+                            {/* FORMULARZ Z FLOATING LABELS */}
+                            <div className="reveal reveal-up">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="w-12 h-[2px] bg-black"></div>
+                                    <p className="text-sm font-black uppercase tracking-[0.4em]">Zostań Wystawcą</p>
+                                </div>
+                                <h2 className="text-5xl md:text-7xl font-grotesk font-black mb-12 tracking-tighter">Zarezerwuj <br/>Przestrzeń.</h2>
+                                
+                                {formStatus ? (
+                                    <div className="bg-black text-white p-12 border border-black font-medium text-xl leading-relaxed relative overflow-hidden reveal reveal-scale active">
+                                        <div className="absolute -right-10 -bottom-10 opacity-10"><Icon name="check-circle" size={200} /></div>
+                                        <Icon name="check-circle" className="text-white mb-6" size={48} />
+                                        <p className="relative z-10">{formStatus}</p>
+                                        <p className="text-sm text-zinc-400 mt-6 relative z-10 font-bold uppercase tracking-widest">Wiadomość z załącznikami w drodze.</p>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        
+                                        <div className="input-group">
+                                            <input 
+                                                type="text" 
+                                                id="nip"
+                                                value={formData.nip}
+                                                onChange={(e) => setFormData({...formData, nip: e.target.value})}
+                                                placeholder=" "
+                                                className="input-premium"
+                                            />
+                                            <label htmlFor="nip" className="input-label">NIP Firmy</label>
+                                        </div>
+
+                                        <div className="input-group">
+                                            <input 
+                                                type="text" 
+                                                id="company"
+                                                required
+                                                value={formData.companyName}
+                                                onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                                                placeholder=" "
+                                                className="input-premium"
+                                            />
+                                            <label htmlFor="company" className="input-label">Pełna nazwa firmy</label>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="input-group">
+                                                <input type="text" id="name" required placeholder=" " className="input-premium" />
+                                                <label htmlFor="name" className="input-label">Imię i Nazwisko</label>
+                                            </div>
+                                            <div className="input-group">
+                                                <input type="tel" id="phone" required placeholder=" " className="input-premium" />
+                                                <label htmlFor="phone" className="input-label">Numer telefonu</label>
+                                            </div>
+                                        </div>
+
+                                        <div className="input-group">
+                                            <input type="email" id="email" required placeholder=" " className="input-premium" />
+                                            <label htmlFor="email" className="input-label">Służbowy adres e-mail</label>
+                                        </div>
+
+                                        <button type="submit" className="w-full bg-black text-white py-6 text-sm font-black uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all mt-4 flex justify-center items-center gap-4 group overflow-hidden relative">
+                                            <span className="relative z-10 flex items-center gap-4">Odbierz Ofertę i Cennik <Icon name="download" size={18} className="group-hover:-translate-y-1 transition-transform" /></span>
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+
+                            {/* MAPA HALI (RADAR ANIMATION) */}
+                            <div id="plan-hali" className="reveal reveal-left flex flex-col h-full">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="w-12 h-[2px] bg-black"></div>
+                                    <p className="text-sm font-black uppercase tracking-[0.4em]">Architektura Wydarzenia</p>
+                                </div>
+                                <h2 className="text-5xl md:text-7xl font-grotesk font-black mb-12 tracking-tighter">Plan Hali.</h2>
+                                
+                                <div className="flex-1 min-h-[500px] bg-[#0a192f] text-white p-8 relative border-4 border-black font-mono overflow-hidden flex flex-col group">
+                                    <div className="absolute inset-0 bg-architect-grid opacity-20"></div>
+                                    
+                                    {/* Scanline Animation */}
+                                    <div className="absolute left-0 top-0 w-full h-[200px] bg-gradient-to-b from-transparent via-blue-400/10 to-blue-400/30 border-b border-blue-400/50 animate-scanline z-0 pointer-events-none"></div>
+
+                                    <div className="relative z-10 w-full text-center text-xs uppercase tracking-[0.5em] border-b border-white/20 pb-4 mb-8 text-blue-300">
+                                        Strefa Prelekcji / Scena Główna
+                                    </div>
+                                    
+                                    <div className="relative z-10 flex-1 grid grid-cols-4 gap-4">
+                                        {[...Array(16)].map((_, i) => (
+                                            <div key={i} className="border border-blue-400/30 bg-blue-500/5 hover:bg-blue-400/40 transition-colors duration-300 flex flex-col items-center justify-center cursor-crosshair group/item relative backdrop-blur-sm">
+                                                <span className="text-blue-300 font-bold text-lg mb-1 group-hover/item:text-white group-hover/item:scale-110 transition-all">A-{i+1}</span>
+                                                <span className="text-[10px] text-blue-400 opacity-0 group-hover/item:opacity-100 transition-opacity">12 m²</span>
+                                                
+                                                {/* Celownik rogi */}
+                                                <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-blue-400/50 group-hover/item:border-white transition-colors"></div>
+                                                <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-blue-400/50 group-hover/item:border-white transition-colors"></div>
+                                                <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-blue-400/50 group-hover/item:border-white transition-colors"></div>
+                                                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-blue-400/50 group-hover/item:border-white transition-colors"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="relative z-10 w-full text-center text-xs uppercase tracking-[0.5em] border-t border-white/20 pt-4 mt-8 text-blue-300 flex justify-between items-center px-4">
+                                        <span>Wejście A</span>
+                                        <span className="text-[10px] bg-blue-500/20 px-2 py-1 border border-blue-400/30">SKALA 1:100</span>
+                                        <span>Wejście B</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* FOOTER */}
+                    <footer className="bg-black text-white pt-32 pb-12 px-6 md:px-12 border-t border-zinc-900">
+                        <div className="max-w-[1800px] mx-auto">
+                            <div className="grid lg:grid-cols-2 gap-20 mb-32">
+                                <div>
+                                    <img src="https://i.imgur.com/qQ1EVoE.png" alt="Logo" className="h-24 md:h-32 filter invert mb-12 drop-shadow-2xl" />
+                                    <h3 className="text-4xl md:text-5xl font-grotesk font-black mb-6">Skontaktuj się z <br/>Biurem Targów.</h3>
+                                </div>
+                                
+                                <div className="flex flex-col justify-center space-y-8 text-2xl md:text-4xl font-light">
+                                    <a href="tel:+48000000000" className="flex items-center gap-6 hover:text-zinc-500 transition-colors border-b border-zinc-800 pb-8 group">
+                                        <div className="w-16 h-16 rounded-full border border-zinc-800 flex items-center justify-center group-hover:bg-white group-hover:border-white group-hover:text-black transition-all duration-300">
+                                            <Icon name="phone" size={28} />
+                                        </div>
+                                        +48 000 000 000
+                                    </a>
+                                    <a href="mailto:wystawcy@balticexpo.pl" className="flex items-center gap-6 hover:text-zinc-500 transition-colors border-b border-zinc-800 pb-8 group">
+                                        <div className="w-16 h-16 rounded-full border border-zinc-800 flex items-center justify-center group-hover:bg-white group-hover:border-white group-hover:text-black transition-all duration-300">
+                                            <Icon name="mail" size={28} />
+                                        </div>
+                                        wystawcy@balticexpo.pl
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col lg:flex-row justify-between items-center text-xs font-black uppercase tracking-[0.2em] text-zinc-500 pt-8 border-t border-zinc-900 gap-8">
+                                <div>&copy; 2026 Baltic Estate Expo. Wszystkie prawa zastrzeżone.</div>
+                                <div className="flex flex-wrap justify-center gap-8">
+                                    <a href="#" className="hover:text-white transition-colors">Regulamin Targów</a>
+                                    <a href="#" className="hover:text-white transition-colors">Polityka Prywatności</a>
+                                    <a href="#" className="hover:text-white transition-colors">Dla Mediów</a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>
