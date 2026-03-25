@@ -54,9 +54,9 @@
     .blob.b1{top:-70px;left:-70px}
     .blob.b2{bottom:-110px;right:-90px;transform:rotate(25deg)}
 
-    /* UPDATE BANNER STYLES - Hidden by default */
+    /* STYLE BANERA AKTUALIZACJI */
     #updateBanner {
-      display: none; 
+      display: none; /* Domyślnie ukryty, JS pokaże tylko w PWA */
       background: #0ea5e9; 
       color: #fff; 
       padding: calc(10px + var(--safe-top)) 14px 12px; 
@@ -67,7 +67,6 @@
       z-index: 50; 
       box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
     }
-    
     #updateInfoBtn {
       background: rgba(255,255,255,0.2); 
       border: 1px solid rgba(255,255,255,0.4); 
@@ -80,15 +79,6 @@
       transition: 0.2s; 
       -webkit-tap-highlight-color: transparent;
     }
-
-    /* Pokazuj baner TYLKO w trybie PWA (standalone) */
-    @media (display-mode: standalone) {
-      #updateBanner {
-        display: block;
-      }
-    }
-    /* Fallback na Safari na iOS */
-    @media (max-width: 0) { /* To reguła, która normalnie by tu była dla starego webkit, ale zostawmy to na logikę JS niżej w razie czego. Poniższa wystarczy dla 99% nowych*/ }
 
     .topbar{
       position:sticky;top:0;z-index:20;
@@ -136,7 +126,6 @@
       background:var(--grad);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
-      margin-bottom:6px;
     }
     .subtitle{font-weight:900;margin-bottom:8px;font-size:1.05rem;}
     .muted{opacity:.82;font-size:.95rem;line-height:1.55}
@@ -720,9 +709,7 @@
 <body>
   <div id="updateBanner">
     Od 28.03 do 05.04 aplikacja będzie wyłączona z użytku.<br>
-    <button id="updateInfoBtn">
-      Zapoznaj się z informacjami
-    </button>
+    <button id="updateInfoBtn">Zapoznaj się z informacjami</button>
   </div>
 
   <div class="blob b1"></div>
@@ -2241,22 +2228,28 @@ newsletterEmailEl?.addEventListener("keydown", (e) => {
 });
 
 // ---------- Update 2.0 Banner & Modal ----------
+const updateBanner = document.getElementById("updateBanner");
 const updateInfoBtn = document.getElementById("updateInfoBtn");
 const updateModal = document.getElementById("updateModal");
 
+// Używamy bezpiecznej logiki JS, bez dotykania CSS Media Queries
+if (updateBanner && typeof isStandalone === "function" && isStandalone()) {
+  updateBanner.style.display = "block";
+}
+
 if (updateInfoBtn && updateModal) {
-  // Animacja przycisku na banerze przy kliknięciu
+  // Animacja przycisku
   updateInfoBtn.addEventListener("mousedown", () => updateInfoBtn.style.transform = "scale(0.96)");
   updateInfoBtn.addEventListener("mouseup", () => updateInfoBtn.style.transform = "none");
   updateInfoBtn.addEventListener("mouseleave", () => updateInfoBtn.style.transform = "none");
 
-  // Otwieranie modala
+  // Pokazywanie okienka
   updateInfoBtn.addEventListener("click", () => {
     updateModal.classList.add("show");
-    document.body.style.overflow = "hidden"; // Blokuje scrollowanie w tle
+    document.body.style.overflow = "hidden";
   });
 
-  // Zamykanie modala
+  // Zamykanie okienka
   updateModal.querySelectorAll("[data-close-update]").forEach((btn) => {
     btn.addEventListener("click", () => {
       updateModal.classList.remove("show");
