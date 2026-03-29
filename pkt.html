@@ -1,234 +1,280 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Punktowy - Dodaj Punkty</title>
-    <style>
-        :root {
-            --bg-color: #1e1e24;
-            --card-bg: #2b2b36;
-            --primary: #5865F2; /* Discord Blurple */
-            --primary-hover: #4752C4;
-            --text-main: #ffffff;
-            --text-muted: #a0a0b0;
-            --input-bg: #383844;
-            --border: #444455;
-            --success: #3ba55c;
-            --error: #ed4245;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>MilkShake Bar — Dodaj Punkty</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  <style>
+    :root {
+      --primary: #FF6A00;
+      --secondary: #FF9100;
+      --accent: #FFE0B2;
+      --bg: #FFF6EC;
+      --text: #2B1300;
+      --muted: rgba(43,19,0,0.65);
+      --card: rgba(255,255,255,0.82);
+      --card2: rgba(255,255,255,0.92);
+      --border: rgba(43,19,0,0.12);
+      --shadow: 0px 10px 30px rgba(0,0,0,0.12);
+      --radius: 20px;
+      --good: #16A34A;
+      --bad: #DC2626;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
 
-        .card {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    
+    body {
+      font-family: Poppins, system-ui, Segoe UI, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.16), transparent 60%),
+        radial-gradient(800px 500px at 50% 90%, rgba(43,19,0,0.06), transparent 60%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
+    /* Karta główna */
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      text-align: center;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+    .card p.desc {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-main);
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
+    /* Pola formularza */
+    .field { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .field label { font-weight: 900; font-size: .9rem; }
+    
+    .input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 2px solid rgba(43,19,0,0.10);
+      background: rgba(255,255,255,0.90);
+      color: var(--text);
+      outline: none;
+      font-family: Poppins;
+      font-size: 1rem;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .input:focus {
+      border-color: rgba(255,106,0,0.55);
+      box-shadow: 0 10px 26px rgba(255,106,0,0.12);
+    }
 
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+    /* Podgląd punktów */
+    .points-preview {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,106,0,0.08);
+      border: 1px solid rgba(255,106,0,0.2);
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    .points-preview span {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
 
-        .points-preview {
-            background-color: rgba(88, 101, 242, 0.1);
-            border: 1px solid var(--primary);
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
+    /* Przyciski */
+    .btn {
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--gradient);
+      border: 1px solid rgba(255,145,0,0.45);
+      transition: .18s ease;
+      display: inline-flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 14px 35px rgba(255,106,0,0.22);
+      margin-top: 20px;
+      font-family: Poppins;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        .points-preview span {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 22px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:disabled {
-            background-color: var(--border);
-            cursor: not-allowed;
-        }
-
-        #statusMessage {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            display: none;
-        }
-    </style>
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 18px; right: 18px; z-index: 12000;
+      display: none; align-items: center; gap: 10px;
+      padding: 12px 14px; border-radius: 999px;
+      background: rgba(22,163,74,0.14);
+      border: 1px solid rgba(22,163,74,0.25);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+      font-weight: 900;
+    }
+    #toast i { color: var(--good); }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Dodaj punkty</h2>
-        <form id="pointsForm">
-            <div class="form-group">
-                <label for="userId">MilkID lub Adres E-mail</label>
-                <input type="text" id="userId" placeholder="np. jan@kowalski.pl lub #12345" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="amount">Wydana kwota (PLN)</label>
-                <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required>
-            </div>
+  <div class="card">
+    <h2>Dodaj punkty</h2>
+    <p class="desc">System automatycznie przelicza 10 zł = 1 pkt.</p>
 
-            <div class="points-preview">
-                Otrzyma punktów: <br>
-                <span id="calculatedPoints">0</span>
-            </div>
+    <form id="pointsForm">
+      <div class="field">
+        <label>Adres e-mail użytkownika</label>
+        <input type="email" class="input" id="userEmail" placeholder="np. jan@kowalski.pl" required>
+      </div>
+      
+      <div class="field">
+        <label>Wydana kwota (PLN)</label>
+        <input type="number" class="input" id="amount" step="0.01" min="0" placeholder="0.00" required>
+      </div>
 
-            <button type="submit" id="submitBtn">Wyślij punkty</button>
-            <div id="statusMessage"></div>
-        </form>
-    </div>
+      <div class="points-preview">
+        Do przyznania: <br>
+        <span id="calculatedPoints">0</span> pkt
+      </div>
 
-    <script>
-        const amountInput = document.getElementById('amount');
-        const calculatedPointsDisplay = document.getElementById('calculatedPoints');
-        const form = document.getElementById('pointsForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const statusMessage = document.getElementById('statusMessage');
+      <button type="submit" class="btn" id="submitBtn">
+        <i class="fa-brands fa-discord"></i> Wyślij powiadomienie
+      </button>
+    </form>
+  </div>
 
-        // Webhook URL podany przez Ciebie
-        const WEBHOOK_URL = "https://discord.com/api/webhooks/1487861720050438287/tq33dHJlBuCwj6xqfuam0GwrzgKSbSadKngirWody8Kf2c_YShpYYyXkrcuL_h_T4F3v";
+  <div id="toast">
+    <i class="fa-solid fa-circle-check" id="toastIcon"></i>
+    <span id="toastText"></span>
+  </div>
 
-        // Przeliczanie punktów na żywo
-        amountInput.addEventListener('input', () => {
-            const amount = parseFloat(amountInput.value) || 0;
-            const points = Math.floor(amount / 10);
-            calculatedPointsDisplay.textContent = points;
+  <script>
+    const amountInput = document.getElementById('amount');
+    const calculatedPointsDisplay = document.getElementById('calculatedPoints');
+    const form = document.getElementById('pointsForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Twój Webhook URL
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1487861720050438287/tq33dHJlBuCwj6xqfuam0GwrzgKSbSadKngirWody8Kf2c_YShpYYyXkrcuL_h_T4F3v";
+
+    // Funkcja powiadomień Toast
+    function showToast(msg, bad=false){
+      const t = document.getElementById("toast");
+      const tt = document.getElementById("toastText");
+      const icon = document.getElementById("toastIcon");
+      
+      tt.textContent = msg;
+      t.style.display = "flex";
+      t.style.background = bad ? "rgba(220,38,38,0.14)" : "rgba(22,163,74,0.14)";
+      t.style.borderColor = bad ? "rgba(220,38,38,0.25)" : "rgba(22,163,74,0.25)";
+      
+      icon.className = bad ? "fa-solid fa-circle-xmark" : "fa-solid fa-circle-check";
+      icon.style.color = bad ? "var(--bad)" : "var(--good)";
+      
+      setTimeout(()=> t.style.display="none", 3500);
+    }
+
+    // Przeliczanie punktów na żywo
+    amountInput.addEventListener('input', () => {
+      const amount = parseFloat(amountInput.value) || 0;
+      const points = Math.floor(amount / 10);
+      calculatedPointsDisplay.textContent = points;
+    });
+
+    // Wysyłanie formularza do Discorda
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('userEmail').value;
+      const amount = parseFloat(amountInput.value).toFixed(2);
+      const points = Math.floor(amount / 10);
+
+      if (points <= 0) {
+        showToast("Kwota jest zbyt mała (min. 10 zł)", true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Wysyłanie...';
+
+      // Payload dla Discorda dopasowany kolorystycznie (pomarańczowy jak motyw strony)
+      const payload = {
+        username: "MilkShake Bar - Punkty",
+        avatar_url: "https://i.imgur.com/Twr2Rms.jpeg", // Logo z Twojego kodu
+        embeds: [{
+          title: "🎉 Przyznano nowe punkty!",
+          color: 16738816, // Kolor pomarańczowy (#FF6A00 dziesiętnie)
+          fields: [
+            { name: "📧 E-mail", value: email, inline: true },
+            { name: "💰 Wydana kwota", value: `${amount} PLN`, inline: true },
+            { name: "⭐ Zdobyte punkty", value: `**+${points} pkt**`, inline: false }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
-        // Obsługa wysyłania formularza
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const userId = document.getElementById('userId').value;
-            const amount = parseFloat(amountInput.value).toFixed(2);
-            const points = Math.floor(amount / 10);
-
-            if (points <= 0) {
-                showStatus('Kwota jest zbyt mała, aby otrzymać punkty.', 'var(--error)');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Wysyłanie...";
-
-            // Formatowanie wiadomości (Embed) dla Discorda
-            const payload = {
-                username: "System Punktowy",
-                avatar_url: "https://cdn-icons-png.flaticon.com/512/5738/5738077.png",
-                embeds: [{
-                    title: "🎉 Dodano nowe punkty!",
-                    color: 5793266, // Discord zielony
-                    fields: [
-                        { name: "👤 Użytkownik", value: userId, inline: true },
-                        { name: "💰 Wydana kwota", value: `${amount} PLN`, inline: true },
-                        { name: "⭐ Zdobyte punkty", value: `${points} pkt`, inline: false }
-                    ],
-                    timestamp: new Date().toISOString()
-                }]
-            };
-
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    showStatus('Punkty zostały pomyślnie wysłane!', 'var(--success)');
-                    form.reset();
-                    calculatedPointsDisplay.textContent = '0';
-                } else {
-                    throw new Error('Błąd API Discord');
-                }
-            } catch (error) {
-                showStatus('Wystąpił błąd podczas wysyłania. Sprawdź konsolę.', 'var(--error)');
-                console.error(error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Wyślij punkty";
-            }
-        });
-
-        // Funkcja pomocnicza do pokazywania statusu
-        function showStatus(message, color) {
-            statusMessage.textContent = message;
-            statusMessage.style.color = color;
-            statusMessage.style.display = 'block';
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 5000);
+        if (response.ok) {
+          showToast("Punkty wysłane na Discord! ✅");
+          form.reset();
+          calculatedPointsDisplay.textContent = '0';
+        } else {
+          throw new Error('Błąd API Discord');
         }
-    </script>
+      } catch (error) {
+        showToast("Wystąpił błąd podczas wysyłania.", true);
+        console.error(error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-brands fa-discord"></i> Wyślij powiadomienie';
+      }
+    });
+  </script>
 </body>
 </html>
