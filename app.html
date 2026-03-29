@@ -1001,9 +1001,23 @@
   <i class="fas fa-check-circle"></i>
   <span id="toast-msg">Sukces</span>
 </div>
-
 <script>
-  // --- DATA ---
+// ==========================================
+  // 1. DANE ZAPISANE W PRZEGLĄDARCE (KONTO)
+  // ==========================================
+  // Zakładamy, że podczas logowania/rejestracji zapisałeś dane w localStorage.
+  // Jeśli ich nie ma, wrzucamy mocka, żeby aplikacja się nie zepsuła przy testach.
+  let currentUser = JSON.parse(localStorage.getItem('milkAppUser')) || {
+      email: "mikolaj@example.com",
+      milkId: "123456"
+  };
+
+  // Wyciągamy imię z adresu email (np. "mikolaj" z "mikolaj@example.com")
+  const userName = currentUser.email.split('@')[0].charAt(0).toUpperCase() + currentUser.email.split('@')[0].slice(1);
+
+  // ==========================================
+  // 2. DANE APLIKACJI
+  // ==========================================
   const products = [
     { id: 1, name: "Oreo Dream Shake", price: 19.00, img: "https://i.imgur.com/kfE4j7j.jpeg", cal: 450, desc: "Kultowy smak ciasteczek w formie szejka." },
     { id: 2, name: "Berry Blast", price: 18.50, img: "https://i.imgur.com/7Bx2X7g.png", cal: 320, desc: "Moc witamin z leśnych owoców." },
@@ -1012,81 +1026,86 @@
     { id: 5, name: "Pistacchio Ice", price: 24.00, img: "https://i.imgur.com/XIdoN0y.png", cal: 380, desc: "Prawdziwa sycylijska pistacja." },
     { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
   ];
-
-  const activities = [
-    { type: 'order', title: 'Płatność MilkCard', date: 'Dziś, 14:30', val: '- 45.00 zł', icon: 'fa-shopping-cart' },
-    { type: 'money', title: 'Doładowanie przy kasie', date: 'Wczoraj, 10:20', val: '+ 50.00 zł', icon: 'fa-cash-register' },
-    { type: 'money', title: 'Doładowanie Online', date: '22 Sty, 09:15', val: '+ 100.00 zł', icon: 'fa-globe' },
-    { type: 'order', title: 'Płatność MilkCard', date: '20 Sty, 12:45', val: '- 19.50 zł', icon: 'fa-ice-cream' }
-  ];
   
-  // Dane nagród
+  // Dopasowane do REWARDS_CATALOG z Twojego server.js
   const rewards = [
-      { id: 1, name: "Darmowa Kawa", cost: 500, img: "https://i.imgur.com/w9k1n2m.png" }, 
-      { id: 2, name: "Croissant", cost: 750, img: "https://i.imgur.com/3q1w32d.png" }, 
-      { id: 3, name: "Shake -50%", cost: 1000, img: "https://i.imgur.com/kfE4j7j.jpeg" },
-      { id: 4, name: "Torba MilkMi", cost: 1500, img: "https://i.imgur.com/rcaqjLK.png" },
-      { id: 5, name: "Deser Szefa", cost: 2000, img: "https://i.imgur.com/XIdoN0y.png" }
+      { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
+      { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
+      { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
   ];
 
   let cart = [];
-  let userPoints = 1250;
+  let userPoints = 0; // Pobierane z serwera
   let selectedZone = 'Sala frontowa';
   let selectedGiftAmount = 100;
   let currentLocation = "Słupsk, Szczecińska 17";
   let countdownInterval;
 
-  // --- INIT & MAINTENANCE LOGIC ---
+  // ==========================================
+  // 3. INIT & POŁĄCZENIE Z API
+  // ==========================================
   document.addEventListener('DOMContentLoaded', () => {
-    
-    // Rok 2026, Miesiąc 3 (Kwiecień, bo styczeń to 0), Dzień 6
+    // Odliczanie (zostawiamy bez zmian)
     const targetDate = new Date(2026, 3, 6, 0, 0, 0).getTime();
-
-    // Główna funkcja aktualizująca czas
     function updateTimer() {
       const now = new Date().getTime();
       const distance = targetDate - now;
-
-      // Gdy czas naturalnie minie
       if (distance < 0) {
         clearInterval(countdownInterval);
         unlockApp();
         return;
       }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      document.getElementById("cd-days").innerText = days.toString().padStart(2, '0');
-      document.getElementById("cd-hours").innerText = hours.toString().padStart(2, '0');
-      document.getElementById("cd-mins").innerText = minutes.toString().padStart(2, '0');
-      document.getElementById("cd-secs").innerText = seconds.toString().padStart(2, '0');
+      document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+      document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
     }
-
-    // Wywołaj funkcję NATYCHMIAST, by nie było zera na starcie
     updateTimer();
-    
-    // Następnie uruchom interwał co 1 sekundę
     countdownInterval = setInterval(updateTimer, 1000);
 
-    // Animacja paska po wejściu dewelopera
+    // Animacja paska
     setTimeout(() => {
         const fill = document.querySelector('.loyalty-progress-fill');
         if(fill) fill.style.width = '83%';
     }, 500);
 
-    // Renderujemy interfejs w tle, żeby był gotowy
-    renderActivities();
+    // Inicjalizacja danych użytkownika z serwera
+    initUserData();
     renderMenu();
-    renderRewards();
   });
+
+  async function initUserData() {
+      // Ustawiamy Imię na froncie
+      const greetingHeader = document.querySelector('#view-home h2');
+      if (greetingHeader) {
+          greetingHeader.innerHTML = `Cześć ${userName}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
+      }
+      document.getElementById('set-name-display').innerText = userName;
+      document.getElementById('set-email-display').innerText = currentUser.email;
+
+      // Pobieramy punkty i historię z serwera
+      try {
+          const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
+          const data = await res.json();
+          if (data.ok) {
+              userPoints = data.points;
+              updatePointsUI();
+              renderActivities(data.history);
+              renderRewards();
+          }
+      } catch (e) {
+          console.error("Błąd pobierania punktów:", e);
+      }
+  }
+
+  function updatePointsUI() {
+      const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
+      pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
+  }
 
   function unlockApp() {
     const splash = document.getElementById('splash-screen');
     const main = document.getElementById('main-app');
-    
     splash.style.opacity = '0';
     setTimeout(() => splash.style.visibility = 'hidden', 800);
     main.style.opacity = '1';
@@ -1104,33 +1123,35 @@
     }
   }
 
-  // --- RENDERING ---
-  function renderActivities() {
+  // ==========================================
+  // 4. RENDERING & FUNKCJE
+  // ==========================================
+  function renderActivities(historyArray = []) {
     const homeContainer = document.getElementById('activity-container-home');
     const walletContainer = document.getElementById('activity-container-wallet');
     let html = '';
 
-    activities.forEach(item => {
-      let typeClass = '';
-      let valClass = '';
-        
-      if(item.type === 'order') { typeClass = 'type-order'; }
-      if(item.type === 'res') { typeClass = 'type-res'; }
-      if(item.type === 'money') { typeClass = 'type-money'; valClass = 'positive'; }
+    if (historyArray.length === 0) {
+        html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
+    } else {
+        // Renderujemy maksymalnie 5 ostatnich aktywności na głównej
+        historyArray.slice(0, 5).forEach(item => {
+          const isAdd = item.text.includes('+');
+          const typeClass = isAdd ? 'type-money' : 'type-order';
+          const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
+          const valClass = isAdd ? 'positive' : '';
 
-      html += `
-        <div class="activity-item">
-          <div class="act-icon ${typeClass}">
-            <i class="fas ${item.icon}"></i>
-          </div>
-          <div class="act-content">
-            <div class="act-title">${item.title}</div>
-            <div class="act-date">${item.date}</div>
-          </div>
-          <div class="act-value ${valClass}">${item.val}</div>
-        </div>
-      `;
-    });
+          html += `
+            <div class="activity-item">
+              <div class="act-icon ${typeClass}"><i class="fas ${icon}"></i></div>
+              <div class="act-content">
+                <div class="act-title" style="font-size: 0.8rem;">${item.text.split('•')[0].trim()}</div>
+                <div class="act-date">${item.date}</div>
+              </div>
+            </div>
+          `;
+        });
+    }
       
     if(homeContainer) homeContainer.innerHTML = html;
     if(walletContainer) walletContainer.innerHTML = html;
@@ -1143,9 +1164,7 @@
     products.forEach(p => {
       html += `
         <div class="menu-card" onclick="openProduct(${p.id})">
-          <div class="menu-img-box">
-            <img src="${p.img}" alt="${p.name}">
-          </div>
+          <div class="menu-img-box"><img src="${p.img}" alt="${p.name}"></div>
           <div class="menu-content">
             <div class="menu-title">${p.name}</div>
             <div class="menu-price">${p.price.toFixed(2)} zł</div>
@@ -1168,8 +1187,8 @@
                 <div class="reward-cost">${r.cost} pkt</div>
                 <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
                 <div class="reward-name">${r.name}</div>
-                <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.name}', ${r.cost})">
-                    ${canAfford ? 'Odbierz' : 'Za mało pkt'}
+                <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.id}', '${r.name}', ${r.cost})">
+                    ${canAfford ? 'Wymień Punkty' : 'Za mało pkt'}
                 </button>
             </div>
           `;
@@ -1177,16 +1196,83 @@
       container.innerHTML = html;
   }
   
-  function redeemReward(name, cost) {
-      if(userPoints >= cost) {
-          userPoints -= cost;
-          document.getElementById('user-points').innerText = userPoints;
-          document.getElementById('rewards-points-display').innerText = userPoints; // Update in rewards view too
-          showToast(`Odebrano: ${name}!`);
-          renderRewards(); 
+  async function redeemReward(rewardId, name, cost) {
+      if(userPoints < cost) return showToast('Za mało punktów!', false);
+
+      showToast('Przetwarzanie...');
+      try {
+          const res = await fetch('/api/rewards/redeem', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  email: currentUser.email, 
+                  milkId: currentUser.milkId, 
+                  rewardId: rewardId 
+              })
+          });
+          const data = await res.json();
+          
+          if (data.ok) {
+              userPoints = data.points;
+              updatePointsUI();
+              renderActivities(data.history);
+              renderRewards(); 
+              
+              // Pokazujemy wygenerowany kod użytkownikowi
+              alert(`Sukces! Twój kod na ${name} to:\n\n${data.code}\n\nPokaż go przy kasie.`);
+              showToast(`Odebrano: ${name}!`);
+          } else {
+              showToast(data.message || 'Błąd wymiany nagrody', false);
+          }
+      } catch (e) {
+          console.error(e);
+          showToast('Błąd połączenia z serwerem', false);
       }
   }
-  
+
+  async function submitReservation() {
+    const inputs = document.querySelectorAll('#view-reservation .form-control');
+    const name = inputs[0].value;
+    const phone = inputs[1].value;
+    const datetime = inputs[2].value;
+    const guests = inputs[3].value;
+    const notes = inputs[4].value;
+
+    if(!name || !phone || !datetime || !guests) {
+        return showToast('Uzupełnij wymagane pola (Imię, Telefon, Data)!', false);
+    }
+
+    const [date, time] = datetime.split('T');
+
+    try {
+        const res = await fetch('/api/rezerwacje', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name, phone, date, time, guests, notes,
+                room: selectedZone,
+                email: currentUser.email,
+                milkId: currentUser.milkId,
+                source: 'app'
+            })
+        });
+        const data = await res.json();
+        
+        if(data.ok) {
+            showToast('Rezerwacja wysłana! 📅');
+            inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = ''; inputs[4].value = '';
+            setTimeout(() => switchTab('home'), 1500);
+        } else {
+            showToast(data.message || 'Błąd rezerwacji', false);
+        }
+    } catch(e) {
+        showToast('Błąd serwera', false);
+    }
+  }
+
+  // ==========================================
+  // 5. NAWIGACJA & UI
+  // ==========================================
   function changeLocation(loc) {
       currentLocation = loc;
       document.getElementById('header-loc-text').innerText = currentLocation;
@@ -1194,23 +1280,19 @@
       showToast('Zmieniono lokalizację');
   }
 
-  // --- NAVIGATION ---
   function switchTab(tabId, event) {
     if(event) event.preventDefault();
-      
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.getElementById('view-' + tabId).classList.add('active');
       
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      
     const navs = document.querySelectorAll('.nav-item');
     if(tabId === 'home') navs[0].classList.add('active');
     if(tabId === 'order') navs[1].classList.add('active');
-    if(tabId === 'rewards') navs[2].classList.add('active'); // New index
+    if(tabId === 'rewards') navs[2].classList.add('active');
     if(tabId === 'wallet') navs[3].classList.add('active');
 
     if(tabId === 'order') backToOrderType();
-      
     window.scrollTo(0,0);
   }
 
@@ -1224,16 +1306,13 @@
       document.getElementById('menu-view-actual').style.display = 'none';
   }
 
-  // --- MODALS & ACTIONS ---
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-  }
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-  }
-
+  // Dynamiczny kod QR bazujący na unikalnym milkId zalogowanego usera
   function openQR() {
+    const qrImg = document.querySelector('.qr-box img');
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.milkId}`;
     openModal('qr-modal');
   }
 
@@ -1255,19 +1334,16 @@
   function openProduct(id) {
     const p = products.find(x => x.id === id);
     const content = document.getElementById('product-detail-content');
-      
     content.innerHTML = `
       <div style="text-align:center; margin-bottom: 20px;">
         <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
       </div>
       <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
       <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
-        
       <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
         <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
         <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
       </div>
-
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
         <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
         <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
@@ -1275,7 +1351,6 @@
         </button>
       </div>
     `;
-      
     openModal('product-modal');
   }
 
@@ -1284,7 +1359,6 @@
     const badge = document.getElementById('cart-badge');
     badge.innerText = cart.length;
     badge.style.display = 'flex';
-      
     closeModal('product-modal');
     showToast('Dodano do koszyka!');
   }
@@ -1300,14 +1374,7 @@
     selectedZone = zoneName;
   }
 
-  function submitReservation() {
-    showToast('Rezerwacja wysłana! 📅');
-    setTimeout(() => switchTab('home'), 1500);
-  }
-
-  function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-  }
+  function toggleTheme() { document.body.classList.toggle('dark-mode'); }
 
   function showToast(msg, success = true) {
     const t = document.getElementById('toast');
@@ -1315,7 +1382,6 @@
     t.classList.add('visible');
     setTimeout(() => t.classList.remove('visible'), 2500);
   }
-
 </script>
 </body>
 </html>
