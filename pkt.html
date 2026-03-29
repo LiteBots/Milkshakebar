@@ -113,6 +113,13 @@
     }
 
     /* Przyciski */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
     .btn {
       width: 100%;
       border: none;
@@ -121,19 +128,28 @@
       font-size: 1rem;
       padding: 14px;
       border-radius: 999px;
-      color: #fff;
-      background: var(--gradient);
-      border: 1px solid rgba(255,145,0,0.45);
+      color: var(--text);
+      background: rgba(255,255,255,0.80);
+      border: 1px solid var(--border);
       transition: .18s ease;
       display: inline-flex;
       justify-content: center;
       gap: 10px;
       align-items: center;
-      box-shadow: 0 14px 35px rgba(255,106,0,0.22);
-      margin-top: 20px;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.08);
       font-family: Poppins;
+      text-decoration: none;
     }
-    .btn:hover { transform: translateY(-2px); }
+    .btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.95);
+    }
+    .btn.primary {
+      color: #fff;
+      background: var(--gradient);
+      border-color: rgba(255,145,0,0.45);
+      box-shadow: 0 14px 35px rgba(255,106,0,0.22);
+    }
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -177,9 +193,14 @@
         <span id="calculatedPoints">0</span> pkt
       </div>
 
-      <button type="submit" class="btn" id="submitBtn">
-        <i class="fa-brands fa-discord"></i> Dodaj Punkty ( Pojawią się na koncie po zakończeniu aktualizacji ) 
-      </button>
+      <div class="button-group">
+        <button type="submit" class="btn primary" id="submitBtn">
+          <i class="fa-brands fa-discord"></i> Wyślij powiadomienie
+        </button>
+        <a href="admin.html" class="btn">
+          <i class="fa-solid fa-arrow-left"></i> Powrót do panelu
+        </a>
+      </div>
     </form>
   </div>
 
@@ -237,7 +258,7 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Wysyłanie...';
 
-      // Payload dla Discorda dopasowany kolorystycznie (pomarańczowy jak motyw strony)
+      // Payload dla Discorda dopasowany kolorystycznie
       const payload = {
         username: "MilkShake Bar - Punkty",
         avatar_url: "https://i.imgur.com/Twr2Rms.jpeg", // Logo z Twojego kodu
@@ -261,7 +282,7 @@
         });
 
         if (response.ok) {
-          showToast("Punkty naliczone");
+          showToast("Punkty wysłane na Discord! ✅");
           form.reset();
           calculatedPointsDisplay.textContent = '0';
         } else {
