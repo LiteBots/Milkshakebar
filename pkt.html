@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Punktowy - Dodaj Punkty</title>
+    <style>
+        :root {
+            --bg-color: #1e1e24;
+            --card-bg: #2b2b36;
+            --primary: #5865F2; /* Discord Blurple */
+            --primary-hover: #4752C4;
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --input-bg: #383844;
+            --border: #444455;
+            --success: #3ba55c;
+            --error: #ed4245;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .points-preview {
+            background-color: rgba(88, 101, 242, 0.1);
+            border: 1px solid var(--primary);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .points-preview span {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Dodaj punkty</h2>
+        <form id="pointsForm">
+            <div class="form-group">
+                <label for="userId">MilkID lub Adres E-mail</label>
+                <input type="text" id="userId" placeholder="np. jan@kowalski.pl lub #12345" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Wydana kwota (PLN)</label>
+                <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required>
+            </div>
+
+            <div class="points-preview">
+                Otrzyma punktów: <br>
+                <span id="calculatedPoints">0</span>
+            </div>
+
+            <button type="submit" id="submitBtn">Wyślij punkty</button>
+            <div id="statusMessage"></div>
+        </form>
+    </div>
+
+    <script>
+        const amountInput = document.getElementById('amount');
+        const calculatedPointsDisplay = document.getElementById('calculatedPoints');
+        const form = document.getElementById('pointsForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Webhook URL podany przez Ciebie
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1487861720050438287/tq33dHJlBuCwj6xqfuam0GwrzgKSbSadKngirWody8Kf2c_YShpYYyXkrcuL_h_T4F3v";
+
+        // Przeliczanie punktów na żywo
+        amountInput.addEventListener('input', () => {
+            const amount = parseFloat(amountInput.value) || 0;
+            const points = Math.floor(amount / 10);
+            calculatedPointsDisplay.textContent = points;
+        });
+
+        // Obsługa wysyłania formularza
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const amount = parseFloat(amountInput.value).toFixed(2);
+            const points = Math.floor(amount / 10);
+
+            if (points <= 0) {
+                showStatus('Kwota jest zbyt mała, aby otrzymać punkty.', 'var(--error)');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Wysyłanie...";
+
+            // Formatowanie wiadomości (Embed) dla Discorda
+            const payload = {
+                username: "System Punktowy",
+                avatar_url: "https://cdn-icons-png.flaticon.com/512/5738/5738077.png",
+                embeds: [{
+                    title: "🎉 Dodano nowe punkty!",
+                    color: 5793266, // Discord zielony
+                    fields: [
+                        { name: "👤 Użytkownik", value: userId, inline: true },
+                        { name: "💰 Wydana kwota", value: `${amount} PLN`, inline: true },
+                        { name: "⭐ Zdobyte punkty", value: `${points} pkt`, inline: false }
+                    ],
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    showStatus('Punkty zostały pomyślnie wysłane!', 'var(--success)');
+                    form.reset();
+                    calculatedPointsDisplay.textContent = '0';
+                } else {
+                    throw new Error('Błąd API Discord');
+                }
+            } catch (error) {
+                showStatus('Wystąpił błąd podczas wysyłania. Sprawdź konsolę.', 'var(--error)');
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Wyślij punkty";
+            }
+        });
+
+        // Funkcja pomocnicza do pokazywania statusu
+        function showStatus(message, color) {
+            statusMessage.textContent = message;
+            statusMessage.style.color = color;
+            statusMessage.style.display = 'block';
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
