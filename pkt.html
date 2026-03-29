@@ -178,7 +178,7 @@
       </div>
 
       <button type="submit" class="btn" id="submitBtn">
-        <i class="fa-brands fa-discord"></i> Wyślij powiadomienie
+        <i class="fa-brands fa-discord"></i> Dodaj Punkty ( Pojawią się na koncie po zakończeniu aktualizacji ) 
       </button>
     </form>
   </div>
@@ -261,7 +261,7 @@
         });
 
         if (response.ok) {
-          showToast("Punkty wysłane na Discord! ✅");
+          showToast("Punkty naliczone");
           form.reset();
           calculatedPointsDisplay.textContent = '0';
         } else {
