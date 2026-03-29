@@ -2,11 +2,9 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <!-- ✅ Anti-zoom + fullscreen PWA safe-area -->
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <title>MilkShake Bar — Panel Administratora</title>
 
-  <!-- ✅ PWA -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#FF6A00">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -528,7 +526,6 @@
 
 <body>
 
-  <!-- LOCKSCREEN -->
   <div class="lock show" id="lock">
     <div class="lockbox">
       <div class="locktop">
@@ -565,7 +562,6 @@
     </div>
   </div>
 
-  <!-- FULLSCREEN ALARM -->
   <div class="alarm" id="alarm">
     <div class="alarmbox">
       <div class="pill" style="margin:0 auto 8px; width:max-content;" id="alarmPill">
@@ -583,10 +579,8 @@
   </div>
 
   <div class="app" id="app" style="display:none">
-    <!-- OVERLAY (mobile drawer) -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
         <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo">
@@ -606,7 +600,7 @@
         <button class="navbtn" data-tab="employees"><i class="fa-solid fa-user-tie"></i> Pracownicy</button>
 
         <div class="navsep">Milki Aplikacja</div>
-        <button class="navbtn" data-tab="points"><i class="fa-solid fa-star"></i> Punkty Milk</button>
+        <a href="pkt.html" class="navbtn" style="text-decoration: none;"><i class="fa-solid fa-star"></i> Punkty Milk</a>
         <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-ticket"></i> Kody nagród</button>
 
         <div class="sidefoot">
@@ -616,7 +610,6 @@
       </div>
     </aside>
 
-    <!-- MAIN -->
     <main class="main">
       <div class="topbar">
         <div>
@@ -631,7 +624,6 @@
         </div>
       </div>
 
-      <!-- KPIs -->
       <section class="card" id="kpiCard">
         <h2>Statystyki</h2>
         <div class="kpis">
@@ -649,7 +641,6 @@
         </div>
       </section>
 
-      <!-- TAB: RESERVATIONS -->
       <section class="card" id="tab-reservations">
         <h2>Rezerwacje</h2>
         <div style="overflow:auto">
@@ -670,7 +661,6 @@
         </div>
       </section>
 
-      <!-- TAB: HAPPY -->
       <section class="card" id="tab-happy" style="display:none">
         <h2>Pasek info</h2>
 
@@ -685,49 +675,19 @@
         </div>
       </section>
 
-      <!-- TAB: USERS -->
       <section class="card" id="tab-users" style="display:none">
         <h2>Użytkownicy</h2>
         <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <!-- TAB: EMPLOYEES -->
       <section class="card" id="tab-employees" style="display:none">
         <h2>Pracownicy</h2>
         <p style="color:var(--muted)">Widok do rozbudowy.</p>
       </section>
 
-      <!-- TAB: POINTS (✅ BACKEND) -->
-      <section class="card" id="tab-points" style="display:none">
-        <h2>Punkty Milk</h2>
-
-        <div class="modalgrid" style="margin-top:6px">
-          <div class="field">
-            <label>Milk ID (6 cyfr)</label>
-            <input class="input" id="pMilkId" placeholder="np. 123456">
-          </div>
-          <div class="field">
-            <label>Kwota wydana (zł)</label>
-            <input class="input" id="pAmount" type="number" min="0" step="0.01" placeholder="np. 49.99">
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-          <button class="btn primary" id="pAdd"><i class="fa-solid fa-plus"></i> Dodaj punkty</button>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h2 style="margin-bottom:6px">Wynik (z backendu)</h2>
-          <p class="hint" style="margin-top:0">Przelicznik: <b>10 zł = 1 pkt</b>. Punkty są zapisywane w MongoDB.</p>
-          <div id="pointsPreview" style="margin-top:10px;"></div>
-        </div>
-      </section>
-
-      <!-- TAB: REWARDS (ONLY USE CODE + HISTORY FROM DB) -->
       <section class="card" id="tab-rewards" style="display:none">
         <h2>Kody nagród</h2>
 
-        <!-- ✅ USE CODE (MongoDB rewards) -->
         <div class="card" style="margin-top:12px;">
           <h2 style="margin-bottom:6px">Wykorzystaj kod</h2>
           <p class="hint" style="margin-top:0">
@@ -752,7 +712,6 @@
           <div id="useCodePreview" style="margin-top:10px;"></div>
         </div>
 
-        <!-- ✅ HISTORY (FROM DB rewards collection) -->
         <div class="card" style="margin-top:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
             <h2 style="margin-bottom:6px">Historia wykorzystania kodów</h2>
@@ -781,7 +740,6 @@
     </main>
   </div>
 
-  <!-- ✅ NOTES MODAL (full note view) -->
   <div class="modal" id="notesModal" aria-hidden="true">
     <div class="modalbox">
       <div class="modalhead">
@@ -800,7 +758,6 @@
     </div>
   </div>
 
-  <!-- EDIT MODAL -->
   <div class="modal" id="editModal" aria-hidden="true">
     <div class="modalbox">
       <div class="modalhead">
@@ -827,7 +784,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast">
     <i class="fa-solid fa-circle-check"></i>
     <span id="toastText"></span>
@@ -850,10 +806,7 @@
 
       alarmActive: false,
       audioCtx: null,
-      beepInterval: null,
-
-      // ✅ backend points last result
-      pointsLast: null,
+      beepInterval: null
     };
 
     function showToast(msg, bad=false){
@@ -1020,7 +973,6 @@
       happy: { title:"Pasek info" },
       users: { title:"Użytkownicy" },
       employees: { title:"Pracownicy" },
-      points: { title:"Punkty Milk" },
       rewards: { title:"Kody nagród" },
     };
 
@@ -1034,7 +986,12 @@
       $("#subtitle").textContent = "";
     }
 
-    $$(".navbtn").forEach(b => b.addEventListener("click", ()=> showTab(b.dataset.tab)));
+    // ✅ Zabezpieczony skrypt przełączania zakładek
+    $$(".navbtn").forEach(b => {
+      if (b.dataset.tab) {
+        b.addEventListener("click", () => showTab(b.dataset.tab));
+      }
+    });
 
     // ==========================
     // ✅ Notes modal
@@ -1138,7 +1095,6 @@
           <td><span class="tag"><i class="fa-solid fa-user-group"></i> ${escapeHtml(r.guests || "—")} <small>os.</small></span></td>
           <td><span class="tag"><i class="fa-solid fa-door-open"></i> ${escapeHtml(r.room || "—")}</span></td>
 
-          <!-- ✅ Uwagi jako przycisk (bez wpływu na layout) -->
           <td>
             ${
               hasNotes
@@ -1396,74 +1352,6 @@
     }
 
     // ==========================
-    // ✅ POINTS (BACKEND)
-    // ==========================
-    function renderPointsPreview(){
-      const box = $("#pointsPreview");
-      if(!box) return;
-
-      if(!state.pointsLast){
-        box.innerHTML = `<span class="muted">Brak operacji.</span>`;
-        return;
-      }
-
-      const x = state.pointsLast;
-      box.innerHTML = `
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-id-badge"></i> Milk ID <small>•</small> ${escapeHtml(x.milkId)}</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-envelope"></i> ${escapeHtml(x.email)}</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-plus"></i> +${escapeHtml(x.addedPoints)} pkt</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-star"></i> Razem <small>•</small> ${escapeHtml(x.points)} pkt</div>
-      `;
-    }
-
-    $("#pAdd").addEventListener("click", async () => {
-      const milkId = ($("#pMilkId").value || "").trim();
-      const amount = Number($("#pAmount").value);
-
-      if (!milkId || milkId.length !== 6) {
-        showToast("Podaj poprawny Milk ID (6 cyfr)", true);
-        return;
-      }
-
-      if (!Number.isFinite(amount) || amount < 10) {
-        showToast("Minimalna kwota to 10 zł (1 pkt)", true);
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/admin/milkpoints/add-by-milkid", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ milkId, amountPln: amount })
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok || !data.ok) {
-          throw new Error(data.message || "Błąd naliczania punktów");
-        }
-
-        state.pointsLast = {
-          milkId: data.milkId,
-          email: data.email,
-          addedPoints: data.addedPoints,
-          points: data.points
-        };
-
-        $("#pMilkId").value = "";
-        $("#pAmount").value = "";
-
-        renderPointsPreview();
-        showToast(`Dodano +${data.addedPoints} pkt (razem: ${data.points}) ✅`);
-
-        await loadStats();
-      } catch (err) {
-        console.error(err);
-        showToast(err.message || "Błąd serwera", true);
-      }
-    });
-
-    // ==========================
     // ✅ USE CODE (BACKEND) - mark reward code as used (one-time)
     // POST /api/admin/rewards/use { code, note }
     // ==========================
@@ -1641,7 +1529,6 @@
       await loadReservations();
       await loadHappy();
 
-      renderPointsPreview();
       renderUseCodePreview(null);
       await loadRewardsHistory();
     }
