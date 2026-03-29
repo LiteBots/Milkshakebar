@@ -195,7 +195,7 @@
 
       <div class="button-group">
         <button type="submit" class="btn primary" id="submitBtn">
-          <i class="fa-brands fa-discord"></i> Wyślij powiadomienie
+          <i class="fa-brands fa-discord"></i> Dodaj
         </button>
         <a href="admin.html" class="btn">
           <i class="fa-solid fa-arrow-left"></i> Powrót do panelu
@@ -282,7 +282,7 @@
         });
 
         if (response.ok) {
-          showToast("Punkty wysłane na Discord! ✅");
+          showToast("Punkty dodane! ✅");
           form.reset();
           calculatedPointsDisplay.textContent = '0';
         } else {
