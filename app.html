@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gswtatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
@@ -59,7 +59,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       background-color: var(--bg-body);
-      overflow: hidden; /* Zablokowane przewijanie podczas loadera */
+      overflow: hidden;
       overscroll-behavior-y: none;
       transition: background 0.3s, color 0.3s;
       padding-bottom: calc(var(--nav-height) + 30px);
@@ -68,120 +68,78 @@
 
     /* --- LOADER / SPLASH SCREEN --- */
     #splash-screen {
-      position: fixed;
-      inset: 0;
-      background: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      position: fixed; inset: 0; background: #111;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       z-index: 9999;
       transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
     }
-      
-    .loader-content {
-      text-align: center;
-      animation: splashPop 0.6s ease-out;
-    }
-
-    .loader-logo {
-      font-size: 3rem;
-      font-weight: 800;
-      color: white;
-      margin-bottom: 20px;
-      letter-spacing: -1px;
-    }
+    .loader-content { text-align: center; animation: splashPop 0.6s ease-out; }
+    .loader-logo { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 20px; letter-spacing: -1px; }
     .loader-logo span { color: var(--primary); }
 
-    /* --- COUNTDOWN & DEV DOT --- */
-    .countdown-container {
-      display: flex; justify-content: center; gap: 10px; margin: 25px 0;
-    }
-    .cd-box {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-m);
-      padding: 12px 10px; min-width: 65px; text-align: center;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
-    .cd-box span {
-      display: block; font-size: 1.6rem; font-weight: 800; color: var(--primary);
-    }
-    .cd-box .cd-label {
-      font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase;
-      margin-top: 4px; letter-spacing: 1px; font-weight: 600;
-    }
+    .countdown-container { display: flex; justify-content: center; gap: 10px; margin: 25px 0; }
+    .cd-box { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-m); padding: 12px 10px; min-width: 65px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .cd-box span { display: block; font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+    .cd-box .cd-label { font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; font-weight: 600; }
     
-    .dev-dot {
-      position: absolute; bottom: 15px; left: 15px;
-      color: rgba(255, 255, 255, 0.15); /* Bardzo słabo widoczna kropka */
-      font-size: 24px; cursor: pointer; width: 40px; height: 40px;
-      display: flex; align-items: flex-end; justify-content: flex-start;
-      user-select: none; -webkit-tap-highlight-color: transparent;
-      z-index: 10000;
-    }
+    .dev-dot { position: absolute; bottom: 15px; left: 15px; color: rgba(255, 255, 255, 0.15); font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: flex-end; justify-content: flex-start; user-select: none; -webkit-tap-highlight-color: transparent; z-index: 10000; }
 
-    /* --- LAYOUT --- */
+    /* --- AUTH SCREEN (NEW) --- */
+    #auth-screen {
+      max-width: 480px; margin: 0 auto; min-height: 100vh;
+      display: none; /* Ukryte na start */
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background: var(--bg-body);
+      padding: 24px;
+      padding-top: calc(40px + var(--safe-top));
+    }
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+    .auth-header h1 span { color: var(--primary); }
+    .auth-header p { color: var(--text-sub); font-size: 0.95rem; }
+
+    .auth-tabs { display: flex; background: var(--border); border-radius: var(--radius-m); padding: 5px; margin-bottom: 25px; }
+    .auth-tab { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.9rem; color: var(--text-sub); border-radius: 12px; cursor: pointer; transition: 0.3s; }
+    .auth-tab.active { background: var(--bg-surface); color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 45px; }
+    .password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-sub); cursor: pointer; font-size: 1.1rem; }
+
+    .auth-notice { margin-top: 25px; background: rgba(255, 102, 0, 0.05); border: 1px dashed var(--primary); padding: 15px; border-radius: var(--radius-m); text-align: center; font-size: 0.85rem; }
+    .auth-notice-link { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; margin-top: 5px; display: inline-block; }
+    .auth-notice-content { display: none; margin-top: 10px; color: var(--text-main); font-size: 0.8rem; text-align: left; background: var(--bg-surface); padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+    .auth-notice-content.open { display: block; animation: fadeIn 0.3s ease; }
+
+    /* --- LAYOUT MAIN APP --- */
     .app-container {
       max-width: 480px; margin: 0 auto; min-height: 100vh;
       position: relative; background: var(--bg-body);
       box-shadow: 0 0 40px rgba(0,0,0,0.05);
-      opacity: 0; /* Ukryta na starcie */
+      display: none; /* Ukryta na starcie, zmieni się na block po zalogowaniu */
+      opacity: 0; 
       transition: opacity 0.5s ease;
     }
 
     /* --- HEADER --- */
-    .app-header {
-      padding: 15px 24px;
-      display: flex; justify-content: space-between; align-items: flex-start;
-      position: sticky; 
-      top: 0; 
-      z-index: 90;
-      background: var(--bg-body);
-      transition: background 0.3s;
-      margin-top: 10px;
-    }
-    .brand-container {
-      display: flex; flex-direction: column;
-    }
+    .app-header { padding: 15px 24px; display: flex; justify-content: space-between; align-items: flex-start; position: sticky; top: 0; z-index: 90; background: var(--bg-body); transition: background 0.3s; margin-top: 10px; }
+    .brand-container { display: flex; flex-direction: column; }
     .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
     .brand span { color: var(--primary); }
     
-    .location-selector {
-        display: flex; align-items: center; gap: 6px;
-        font-size: 0.8rem; color: var(--text-sub); margin-top: 5px;
-        background: var(--bg-surface); padding: 4px 10px; border-radius: 20px;
-        border: 1px solid var(--border); width: fit-content; cursor: pointer;
-        transition: 0.2s;
-    }
+    .location-selector { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-sub); margin-top: 5px; background: var(--bg-surface); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); width: fit-content; cursor: pointer; transition: 0.2s; }
     .location-selector:active { transform: scale(0.95); background: var(--border); }
     .location-selector i { color: var(--primary); }
 
     .header-actions { display: flex; gap: 10px; align-items: center; height: 40px;}
-    .icon-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--bg-surface); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-main); font-size: 1rem; cursor: pointer;
-      position: relative; transition: 0.2s;
-    }
+    .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 1rem; cursor: pointer; position: relative; transition: 0.2s; }
     .icon-btn:active { transform: scale(0.9); }
-    .badge {
-      position: absolute; top: -2px; right: -2px;
-      background: var(--primary); color: white;
-      font-size: 0.65rem; padding: 2px 5px; border-radius: 10px;
-      border: 2px solid var(--bg-surface);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    .badge { position: absolute; top: -2px; right: -2px; background: var(--primary); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; border: 2px solid var(--bg-surface); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
     /* --- SETTINGS STYLES --- */
     .settings-list { margin-top: 20px; }
-    .settings-item {
-      display: flex; align-items: center; gap: 15px; padding: 16px;
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-m); margin-bottom: 10px; cursor: pointer;
-      transition: 0.2s;
-    }
+    .settings-item { display: flex; align-items: center; gap: 15px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
     .settings-item:active { transform: scale(0.98); background: var(--bg-body); }
     .settings-item i:not(.chevron) { width: 24px; color: var(--primary); font-size: 1.1rem; }
     .settings-item .label { flex: 1; font-weight: 600; font-size: 0.95rem; }
@@ -190,14 +148,8 @@
     .user-avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: 0 auto 10px; }
 
     /* --- ORDER TYPE SELECTION --- */
-    .order-type-container {
-      display: flex; flex-direction: column; gap: 16px; padding: 24px;
-    }
-    .order-type-card {
-      background: var(--bg-surface); border: 2px solid var(--border);
-      border-radius: var(--radius-l); padding: 30px 24px; display: flex;
-      align-items: center; gap: 20px; cursor: pointer; transition: 0.3s;
-    }
+    .order-type-container { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
+    .order-type-card { background: var(--bg-surface); border: 2px solid var(--border); border-radius: var(--radius-l); padding: 30px 24px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.3s; }
     .order-type-card:active { transform: scale(0.97); }
     .order-type-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
     .order-type-icon { font-size: 2.5rem; color: var(--primary); background: rgba(255, 102, 0, 0.1); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
@@ -205,73 +157,30 @@
     .order-type-info p { font-size: 0.9rem; color: var(--text-sub); }
 
     /* --- COMPONENT: LOYALTY CARD --- */
-    .loyalty-card-premium {
-      background: #111;
-      color: white;
-      border-radius: var(--radius-l);
-      padding: 24px; margin: 0 24px 20px;
-      position: relative; overflow: hidden;
-      box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .loyalty-card-premium::before {
-      content: ''; position: absolute; top: -50px; right: -50px;
-      width: 200px; height: 200px; border-radius: 50%;
-      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-      opacity: 0.2;
-    }
+    .loyalty-card-premium { background: #111; color: white; border-radius: var(--radius-l); padding: 24px; margin: 0 24px 20px; position: relative; overflow: hidden; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+    .loyalty-card-premium::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); opacity: 0.2; }
     .loyalty-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 2; }
     .points-big { font-size: 2.5rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
     .points-label { font-size: 0.85rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-      
     .loyalty-progress-bg { background: rgba(255,255,255,0.15); height: 6px; border-radius: 10px; margin-bottom: 8px; position: relative; z-index: 2; }
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
 
-    /* --- REWARDS SECTION (NEW TAB) --- */
-    .rewards-hero {
-        text-align: center; margin-bottom: 24px; padding: 0 24px;
-    }
+    /* --- REWARDS SECTION --- */
+    .rewards-hero { text-align: center; margin-bottom: 24px; padding: 0 24px; }
     .rewards-hero h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 5px; }
     .rewards-hero p { color: var(--text-sub); font-size: 0.9rem; }
-    
-    .rewards-grid-layout {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 24px;
-    }
-    
-    .reward-card {
-        background: var(--bg-surface); border: 1px solid var(--border);
-        border-radius: var(--radius-m); padding: 15px;
-        display: flex; flex-direction: column; align-items: center;
-        text-align: center; position: relative;
-    }
+    .rewards-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 24px; }
+    .reward-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
     .reward-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px; }
-    .reward-cost { 
-        background: var(--bg-body); color: var(--primary); 
-        font-weight: 800; font-size: 0.8rem; padding: 4px 10px; 
-        border-radius: 20px; margin-bottom: 8px;
-    }
+    .reward-cost { background: var(--bg-body); color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
     .reward-name { font-weight: 700; font-size: 0.9rem; line-height: 1.3; margin-bottom: 12px; }
-    .btn-redeem {
-        width: 100%; border: none; background: #111; color: white;
-        font-size: 0.8rem; font-weight: 700; padding: 10px; border-radius: 10px; cursor: pointer;
-    }
+    .btn-redeem { width: 100%; border: none; background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 10px; border-radius: 10px; cursor: pointer; }
     .btn-redeem:disabled { background: #ccc; cursor: not-allowed; }
     body.dark-mode .btn-redeem { background: var(--primary); color: #fff; }
 
     /* --- AD BANNER --- */
-    .ad-banner {
-      margin: 0 24px 24px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-m);
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      text-decoration: none;
-      color: inherit;
-    }
+    .ad-banner { margin: 0 24px 24px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 16px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
     .ad-logo { width: 50px; height: 50px; object-fit: contain; border-radius: 10px; }
     .ad-content { flex: 1; }
     .ad-title { font-weight: 800; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px; }
@@ -280,50 +189,24 @@
     body.dark-mode .ad-btn { background: var(--primary); }
 
     /* --- WALLET VISUALS --- */
-    .milk-card {
-      background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
-      color: white; border-radius: 20px; padding: 24px;
-      position: relative; overflow: hidden; margin-bottom: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,255,255,0.1);
-      aspect-ratio: 1.58 / 1;
-      display: flex; flex-direction: column; justify-content: space-between;
-    }
-    .milk-card::after {
-        content: ''; position: absolute; top: -20%; right: -10%;
-        width: 150px; height: 150px; background: var(--primary);
-        filter: blur(80px); opacity: 0.3; border-radius: 50%;
-    }
+    .milk-card { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); color: white; border-radius: 20px; padding: 24px; position: relative; overflow: hidden; margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); aspect-ratio: 1.58 / 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .milk-card::after { content: ''; position: absolute; top: -20%; right: -10%; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.3; border-radius: 50%; }
     .milk-card-top { display: flex; justify-content: space-between; align-items: center; z-index: 2; }
     .milk-card-name { font-weight: 800; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; }
     .milk-card-chip { width: 45px; height: 35px; background: linear-gradient(135deg, #d4af37 0%, #f9e29c 100%); border-radius: 6px; }
     .milk-card-balance { z-index: 2; }
     .milk-card-num { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 15px; }
-      
-    .wallet-info-box {
-        background: rgba(255, 102, 0, 0.1);
-        border: 1px dashed var(--primary);
-        padding: 15px; border-radius: var(--radius-m);
-        margin-bottom: 24px; text-align: center;
-        font-size: 0.85rem; color: var(--text-main);
-    }
+    .wallet-info-box { background: rgba(255, 102, 0, 0.1); border: 1px dashed var(--primary); padding: 15px; border-radius: var(--radius-m); margin-bottom: 24px; text-align: center; font-size: 0.85rem; color: var(--text-main); }
 
     /* --- ACTIVITY LIST --- */
     .section-title { font-size: 1.1rem; font-weight: 700; margin: 24px 0 12px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
     .activity-list { padding: 0 24px; }
-    .activity-item {
-      display: flex; align-items: center; gap: 15px;
-      background: var(--bg-surface); border: 1px solid var(--border);
-      padding: 16px; border-radius: var(--radius-m);
-      margin-bottom: 12px; transition: transform 0.1s;
-    }
+    .activity-item { display: flex; align-items: center; gap: 15px; background: var(--bg-surface); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-m); margin-bottom: 12px; transition: transform 0.1s; }
     .activity-item:active { transform: scale(0.98); }
-
     .act-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
     .act-icon.type-order { background: rgba(255, 102, 0, 0.1); color: var(--color-order); }
     .act-icon.type-res { background: rgba(59, 130, 246, 0.1); color: var(--color-res); }
     .act-icon.type-money { background: rgba(16, 185, 129, 0.1); color: var(--color-money); }
-
     .act-content { flex: 1; }
     .act-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
     .act-date { font-size: 0.75rem; color: var(--text-sub); }
@@ -332,12 +215,7 @@
 
     /* --- MENU GRID --- */
     .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
-    .menu-card {
-      background: var(--bg-surface); border-radius: var(--radius-m);
-      border: 1px solid var(--border); overflow: hidden;
-      display: flex; flex-direction: column; cursor: pointer;
-      transition: transform 0.1s;
-    }
+    .menu-card { background: var(--bg-surface); border-radius: var(--radius-m); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; }
     .menu-card:active { transform: scale(0.96); }
     .menu-img-box { height: 120px; width: 100%; background: #eee; }
     .menu-img-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -347,104 +225,51 @@
 
     /* --- RESERVATION VISUALS --- */
     .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-    .table-select {
-      border: 2px solid var(--border); border-radius: var(--radius-m);
-      padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;
-      background: var(--bg-surface); font-size: 0.8rem; font-weight: 600;
-    }
+    .table-select { border: 2px solid var(--border); border-radius: var(--radius-m); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-surface); font-size: 0.8rem; font-weight: 600; }
     .table-select.selected { border-color: var(--primary); background: rgba(255,102,0,0.05); color: var(--primary); }
     .table-select i { font-size: 1.2rem; display: block; margin-bottom: 6px; opacity: 0.6; }
-
     .form-group { margin-bottom: 16px; }
     .form-group label { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); }
-    .form-control {
-      width: 100%; padding: 14px; background: var(--bg-body); 
-      border: 1px solid var(--border); border-radius: var(--radius-m); 
-      color: var(--text-main); font-family: inherit; font-size: 0.9rem;
-    }
+    .form-control { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 0.9rem; }
+    .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     /* --- GRID SELECTION FOR GIFT --- */
     .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .amount-chip {
-      padding: 12px 5px; border: 1px solid var(--border); border-radius: var(--radius-m);
-      text-align: center; font-size: 0.85rem; font-weight: 700; cursor: pointer;
-      background: var(--bg-surface); transition: 0.2s;
-    }
+    .amount-chip { padding: 12px 5px; border: 1px solid var(--border); border-radius: var(--radius-m); text-align: center; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: var(--bg-surface); transition: 0.2s; }
     .amount-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
 
     /* --- BOTTOM NAV & FAB --- */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--glass-border);
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000;
-      border-radius: 24px 24px 0 0;
-    }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s; }
     .nav-item.active { color: var(--primary); }
     .nav-item i { font-size: 1.4rem; transition: transform 0.2s; }
     .nav-item.active i { transform: translateY(-3px); }
-
     .fab-container { position: relative; top: -25px; width: var(--fab-size); height: var(--fab-size); flex-shrink: 0; margin: 0 10px; }
-    .fab-btn {
-      width: 100%; height: 100%; background: var(--primary); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;
-      box-shadow: 0 10px 25px var(--primary-glow); border: 5px solid var(--bg-body); cursor: pointer;
-      animation: pulse 3s infinite;
-    }
+    .fab-btn { width: 100%; height: 100%; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 10px 25px var(--primary-glow); border: 5px solid var(--bg-body); cursor: pointer; animation: pulse 3s infinite; }
 
     /* --- MODALS --- */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-      z-index: 2000; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; transition: opacity 0.3s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; transition: opacity 0.3s; }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
-    .modal-sheet {
-      width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface);
-      border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px));
-      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      max-height: 85vh; overflow-y: auto;
-    }
+    .modal-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface); border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
-      
-    .modal-sheet.full { 
-      height: 100vh; max-height: 100vh; border-radius: 0; 
-      padding-top: calc(20px + var(--safe-top));
-    }
-
+    .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(20px + var(--safe-top)); }
     .qr-box { width: 180px; height: 180px; margin: 20px auto; position: relative; overflow: hidden; border-radius: 15px; }
     .qr-box img { width: 100%; height: 100%; }
-    .scan-line {
-      position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-      background: var(--primary); box-shadow: 0 0 15px var(--primary);
-      animation: scan 2s infinite ease-in-out;
-    }
+    .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); box-shadow: 0 0 15px var(--primary); animation: scan 2s infinite ease-in-out; }
 
     /* Utils */
     .view-section { display: none; padding-bottom: 20px; animation: fadeIn 0.3s ease; }
     .view-section.active { display: block; }
-      
     .card { background: var(--bg-surface); border-radius: var(--radius-l); padding: 20px; margin: 0 24px 16px; border: 1px solid var(--border); }
     .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
     .btn-outline { width: 100%; padding: 14px; border-radius: var(--radius-m); background: transparent; color: var(--text-main); border: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-bottom: 30px;}
-      
+    
     /* Toggle Switch */
-    .toggle-switch {
-        position: relative; width: 50px; height: 26px;
-    }
+    .toggle-switch { position: relative; width: 50px; height: 26px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-        position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-        background-color: #ccc; transition: .4s; border-radius: 34px;
-    }
-    .slider:before {
-        position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
-        background-color: white; transition: .4s; border-radius: 50%;
-    }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
 
@@ -453,26 +278,11 @@
     @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
     @keyframes spin { from{transform: rotate(0deg);} to{transform: rotate(360deg);} }
-    @keyframes splashPop { 
-        0% { opacity: 0; transform: scale(0.8); }
-        100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 var(--primary-glow); }
-      70% { box-shadow: 0 0 0 15px rgba(255, 102, 0, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
-    }
+    @keyframes splashPop { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--primary-glow); } 70% { box-shadow: 0 0 0 15px rgba(255, 102, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); } }
 
     /* Toast */
-    .toast {
-      position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%) translateY(-150px);
-      background: var(--bg-surface); color: var(--text-main);
-      padding: 12px 20px; border-radius: 50px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      display: flex; align-items: center; gap: 10px;
-      z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border);
-    }
+    .toast { position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--bg-surface); color: var(--text-main); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border); }
     .toast.visible { transform: translateX(-50%) translateY(0); }
 
   </style>
@@ -503,6 +313,64 @@
   </div>
   
   <div class="dev-dot" onclick="devLogin()">.</div>
+</div>
+
+<div id="auth-screen">
+    <div class="auth-header">
+        <h1>MilkMi<span>.</span></h1>
+        <p>Zaloguj się, by odebrać swoje nagrody!</p>
+    </div>
+
+    <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Logowanie</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')">Rejestracja</div>
+    </div>
+
+    <form id="form-login" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+            <label>Nazwa użytkownika lub Email</label>
+            <input type="text" class="form-control" placeholder="Wpisz login lub email" required>
+        </div>
+        <div class="form-group">
+            <label>Hasło</label>
+            <div class="password-wrapper">
+                <input type="password" class="form-control" placeholder="Podaj hasło" required>
+                <i class="fas fa-eye password-toggle" onclick="togglePassword(this)"></i>
+            </div>
+        </div>
+        <button type="submit" class="btn-main" style="margin-top: 20px;">Zaloguj się</button>
+    </form>
+
+    <form id="form-register" style="display: none;" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+            <label>Nazwa użytkownika</label>
+            <input type="text" class="form-control" placeholder="Wpisz nazwę" required>
+        </div>
+        <div class="form-group">
+            <label>Adres E-mail</label>
+            <input type="email" class="form-control" placeholder="adres@email.pl" required>
+        </div>
+        <div class="form-group">
+            <label>Numer telefonu</label>
+            <input type="tel" class="form-control" placeholder="+48 000 000 000" required>
+        </div>
+        <div class="form-group">
+            <label>Hasło</label>
+            <div class="password-wrapper">
+                <input type="password" class="form-control" placeholder="Stwórz silne hasło" required>
+                <i class="fas fa-eye password-toggle" onclick="togglePassword(this)"></i>
+            </div>
+        </div>
+        <button type="submit" class="btn-main" style="margin-top: 20px;">Załóż konto</button>
+    </form>
+
+    <div class="auth-notice">
+        <p>Korzystałeś już z naszej aplikacji wcześniej?</p>
+        <span class="auth-notice-link" onclick="toggleNoticeDetails()">Zobacz więcej</span>
+        <div class="auth-notice-content" id="notice-details">
+            Zarejestruj się na nowo na adres mailowy, który używałeś wcześniej, a twoje punkty wrócą na twoje konto do 48h od momentu nowej rejestracji. Przepraszamy za utrudnienia i dziękujemy za wyrozumiałość.
+        </div>
+    </div>
 </div>
 
 <div class="app-container" id="main-app">
@@ -1001,18 +869,16 @@
   <i class="fas fa-check-circle"></i>
   <span id="toast-msg">Sukces</span>
 </div>
+
 <script>
 // ==========================================
   // 1. DANE ZAPISANE W PRZEGLĄDARCE (KONTO)
   // ==========================================
-  // Zakładamy, że podczas logowania/rejestracji zapisałeś dane w localStorage.
-  // Jeśli ich nie ma, wrzucamy mocka, żeby aplikacja się nie zepsuła przy testach.
   let currentUser = JSON.parse(localStorage.getItem('milkAppUser')) || {
       email: "mikolaj@example.com",
       milkId: "123456"
   };
 
-  // Wyciągamy imię z adresu email (np. "mikolaj" z "mikolaj@example.com")
   const userName = currentUser.email.split('@')[0].charAt(0).toUpperCase() + currentUser.email.split('@')[0].slice(1);
 
   // ==========================================
@@ -1027,7 +893,6 @@
     { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
   ];
   
-  // Dopasowane do REWARDS_CATALOG z Twojego server.js
   const rewards = [
       { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
       { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
@@ -1035,7 +900,7 @@
   ];
 
   let cart = [];
-  let userPoints = 0; // Pobierane z serwera
+  let userPoints = 0;
   let selectedZone = 'Sala frontowa';
   let selectedGiftAmount = 100;
   let currentLocation = "Słupsk, Szczecińska 17";
@@ -1045,8 +910,7 @@
   // 3. INIT & POŁĄCZENIE Z API
   // ==========================================
   document.addEventListener('DOMContentLoaded', () => {
-    // Odliczanie (zostawiamy bez zmian)
-   const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
+    const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
     function updateTimer() {
       const now = new Date().getTime();
       const distance = targetDate - now;
@@ -1063,19 +927,16 @@
     updateTimer();
     countdownInterval = setInterval(updateTimer, 1000);
 
-    // Animacja paska
     setTimeout(() => {
         const fill = document.querySelector('.loyalty-progress-fill');
         if(fill) fill.style.width = '83%';
     }, 500);
 
-    // Inicjalizacja danych użytkownika z serwera
     initUserData();
     renderMenu();
   });
 
   async function initUserData() {
-      // Ustawiamy Imię na froncie
       const greetingHeader = document.querySelector('#view-home h2');
       if (greetingHeader) {
           greetingHeader.innerHTML = `Cześć ${userName}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
@@ -1083,7 +944,6 @@
       document.getElementById('set-name-display').innerText = userName;
       document.getElementById('set-email-display').innerText = currentUser.email;
 
-      // Pobieramy punkty i historię z serwera
       try {
           const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
           const data = await res.json();
@@ -1094,7 +954,7 @@
               renderRewards();
           }
       } catch (e) {
-          console.error("Błąd pobierania punktów:", e);
+          console.error("Błąd pobierania punktów (środowisko testowe):", e);
       }
   }
 
@@ -1105,11 +965,18 @@
 
   function unlockApp() {
     const splash = document.getElementById('splash-screen');
-    const main = document.getElementById('main-app');
+    const auth = document.getElementById('auth-screen');
+    
     splash.style.opacity = '0';
-    setTimeout(() => splash.style.visibility = 'hidden', 800);
-    main.style.opacity = '1';
-    document.body.style.overflow = 'auto'; 
+    setTimeout(() => {
+        splash.style.visibility = 'hidden';
+        auth.style.display = 'block';
+        
+        // Wymuś reflow żeby animacja zadziałała
+        void auth.offsetWidth;
+        auth.style.opacity = '1';
+        document.body.style.overflow = 'auto'; 
+    }, 800);
   }
 
   function devLogin() {
@@ -1124,6 +991,62 @@
   }
 
   // ==========================================
+  // NOWE FUNKCJE AUTORYZACJI
+  // ==========================================
+  
+  function switchAuthTab(type) {
+      document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+      const forms = ['form-login', 'form-register'];
+      
+      forms.forEach(form => document.getElementById(form).style.display = 'none');
+      
+      if(type === 'login') {
+          document.querySelectorAll('.auth-tab')[0].classList.add('active');
+          document.getElementById('form-login').style.display = 'block';
+      } else {
+          document.querySelectorAll('.auth-tab')[1].classList.add('active');
+          document.getElementById('form-register').style.display = 'block';
+      }
+  }
+
+  function togglePassword(icon) {
+      const input = icon.previousElementSibling;
+      if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+      } else {
+          input.type = "password";
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+      }
+  }
+
+  function toggleNoticeDetails() {
+      const details = document.getElementById('notice-details');
+      details.classList.toggle('open');
+  }
+
+  function handleAuthSubmit(e) {
+      e.preventDefault();
+      
+      // Zwijamy formularz i pokazujemy główną aplikację
+      const auth = document.getElementById('auth-screen');
+      const main = document.getElementById('main-app');
+      
+      showToast("Pomyślnie zalogowano!");
+
+      auth.style.opacity = '0';
+      setTimeout(() => {
+          auth.style.display = 'none';
+          main.style.display = 'block';
+          
+          void main.offsetWidth; // Wymuś reflow
+          main.style.opacity = '1';
+      }, 500);
+  }
+
+  // ==========================================
   // 4. RENDERING & FUNKCJE
   // ==========================================
   function renderActivities(historyArray = []) {
@@ -1134,7 +1057,6 @@
     if (historyArray.length === 0) {
         html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
     } else {
-        // Renderujemy maksymalnie 5 ostatnich aktywności na głównej
         historyArray.slice(0, 5).forEach(item => {
           const isAdd = item.text.includes('+');
           const typeClass = isAdd ? 'type-money' : 'type-order';
@@ -1218,7 +1140,6 @@
               renderActivities(data.history);
               renderRewards(); 
               
-              // Pokazujemy wygenerowany kod użytkownikowi
               alert(`Sukces! Twój kod na ${name} to:\n\n${data.code}\n\nPokaż go przy kasie.`);
               showToast(`Odebrano: ${name}!`);
           } else {
@@ -1309,7 +1230,6 @@
   function openModal(id) { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-  // Dynamiczny kod QR bazujący na unikalnym milkId zalogowanego usera
   function openQR() {
     const qrImg = document.querySelector('.qr-box img');
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.milkId}`;
