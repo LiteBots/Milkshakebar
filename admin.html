@@ -1,1553 +1,863 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-  <title>MilkShake Bar — Panel Administratora</title>
-
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FF6A00">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MilkMi Admin Panel</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
-    :root{
-      --primary:#FF6A00;
-      --secondary:#FF9100;
-      --accent:#FFE0B2;
-
-      --bg:#FFF6EC;
-      --bg2:#ffffff;
-      --text:#2B1300;
-      --muted: rgba(43,19,0,0.65);
-
-      --card: rgba(255,255,255,0.82);
-      --card2: rgba(255,255,255,0.92);
-      --border: rgba(43,19,0,0.12);
-
-      --shadow: 0px 10px 30px rgba(0,0,0,0.12);
-      --shadow2: 0px 18px 50px rgba(0,0,0,0.14);
-      --radius: 20px;
-
-      --good:#16A34A;
-      --bad:#DC2626;
-
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-      --glass: rgba(255,255,255,0.70);
-      --glass2: rgba(255,255,255,0.86);
+    :root {
+      /* Palette - Premium Flat */
+      --primary: #FF6600;
+      --primary-glow: rgba(255, 102, 0, 0.3);
+      --bg-body: #F2F4F6;
+      --bg-surface: #FFFFFF;
+      --text-main: #111827;
+      --text-sub: #6B7280;
+      --border: #E5E7EB;
+      
+      --sidebar-width: 280px;
+      --radius-l: 24px;
+      --radius-m: 16px;
+      --radius-s: 8px;
+      
+      --status-ok: #10B981;
+      --status-warn: #F59E0B;
+      --status-err: #EF4444;
+      --status-info: #3B82F6;
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 15% 10%, rgba(255,106,0,0.20), transparent 60%),
-        radial-gradient(900px 500px at 90% 25%, rgba(255,145,0,0.16), transparent 60%),
-        radial-gradient(800px 500px at 50% 90%, rgba(43,19,0,0.06), transparent 60%),
-        var(--bg);
-      overflow:hidden;
-      overscroll-behavior: none;
+    body.dark-mode {
+      --bg-body: #0F0F0F;
+      --bg-surface: #1C1C1E;
+      --text-main: #FFFFFF;
+      --text-sub: #9CA3AF;
+      --border: #2D2D30;
+      --primary-glow: rgba(255, 102, 0, 0.5);
     }
 
-    /* ✅ Fullscreen responsive height */
-    .app{
-      height: 100dvh;
-      display:grid;
-      grid-template-columns: 290px 1fr;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+      display: flex;
     }
 
-    /* ✅ Lockscreen freeze (no pinch/zoom/scroll/select) */
-    body.locked{
-      touch-action: none;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-    /* allow “tap” behavior for buttons (no double-tap zoom intent) */
-    #lock, #lock *{ touch-action: manipulation; }
-
-    /* Sidebar */
-    .sidebar{
-      height:100%;
-      padding:22px;
-      border-right:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.66));
-      backdrop-filter: blur(12px);
-    }
-    .brand{
-      display:flex;align-items:center;gap:14px;
-      padding:14px 14px;border-radius:18px;
-      background: var(--glass2);
-      border:1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-    .brand img{
-      width:44px;height:44px;border-radius:999px;object-fit:cover;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-    }
-    .brand .t1{font-weight:900;letter-spacing:.2px}
-    .brand .t2{font-size:.86rem;color:var(--muted)}
-    .nav{margin-top:18px;display:flex;flex-direction:column;gap:10px;}
-    .navbtn{
-      width:100%;
-      display:flex;align-items:center;gap:12px;
-      padding:12px 14px;border-radius:16px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.70);
-      color:var(--text);cursor:pointer;transition:.18s ease;text-align:left;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-    }
-    .navbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.86)}
-    .navbtn.active{
-      background: linear-gradient(135deg, rgba(255,106,0,0.18), rgba(255,145,0,0.12));
-      border-color: rgba(255,145,0,0.35);
-      box-shadow: 0 18px 40px rgba(255,106,0,0.12);
-    }
-    .navbtn i{width:18px;opacity:.95}
-    .navsep{
-      margin:12px 0 6px;
-      font-size:.82rem;color: rgba(43,19,0,0.55);
-      padding:0 6px;letter-spacing:.4px;text-transform:uppercase;
-    }
-    .sidefoot{
-      margin-top:14px;
-      padding:12px 14px;border-radius:16px;
-      background: rgba(255,255,255,0.70);
-      border:1px solid var(--border);
-      color:var(--muted);
-      font-size:.9rem;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-    }
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      background: rgba(255,255,255,0.72);
-      border:1px solid var(--border);
-      font-size:.82rem;color:rgba(43,19,0,0.92);
-      white-space:nowrap;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:99px;background:var(--bad);
-      box-shadow: 0 0 0 3px rgba(220,38,38,0.18);
-    }
-    .dot.ok{background:var(--good); box-shadow: 0 0 0 3px rgba(22,163,74,0.18);}
-
-    /* Main */
-    .main{
-      height:100%;
-      overflow:auto;
-      padding: calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
-    }
-    .topbar{
-      display:flex;align-items:flex-start;justify-content:space-between;
-      gap:14px;margin-bottom:18px;
-    }
-    .topbar h1{
-      font-size:1.9rem;line-height:1.15;font-weight:900;
-      margin-bottom:6px;letter-spacing:.2px;
-      background: var(--gradient);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .topbar p{color:var(--muted);max-width:720px}
-    .actions{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      padding: 30px 20px;
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+      z-index: 100;
     }
 
-    .btn{
-      border:none;cursor:pointer;font-weight:800;
-      padding:12px 14px;border-radius:999px;
-      color:var(--text);
-      background: rgba(255,255,255,0.80);
-      border:1px solid var(--border);
-      transition:.18s ease;
-      display:inline-flex;gap:10px;align-items:center;white-space:nowrap;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+    .brand {
+      font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.92)}
-    .btn.primary{
-      color:#fff;
-      background: var(--gradient);
-      border-color: rgba(255,145,0,0.45);
-      box-shadow: 0 14px 35px rgba(255,106,0,0.22);
-    }
-    .btn.danger{
-      color:#fff;
-      background: rgba(220,38,38,0.90);
-      border-color: rgba(220,38,38,0.35);
-      box-shadow: 0 14px 35px rgba(220,38,38,0.16);
+    .brand span { color: var(--primary); }
+    .brand small { 
+      font-size: 0.7rem; color: var(--text-sub); 
+      font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+      display: block; margin-top: 5px; 
     }
 
-    /* ✅ Small action button for notes in table */
-    .btn.small{
-      padding:8px 10px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:.86rem;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
-      gap:8px;
+    .nav-category {
+      font-size: 0.75rem; text-transform: uppercase; color: var(--text-sub);
+      font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; margin-top: 20px; padding-left: 10px;
     }
 
-    /* Cards / grid */
-    .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:14px;}
-    .card{
-      grid-column: span 12;
-      background: linear-gradient(180deg, var(--card2), var(--card));
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow: var(--shadow);
-      padding:16px;
-      backdrop-filter: blur(12px);
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: var(--radius-m);
+      color: var(--text-sub); text-decoration: none;
+      font-weight: 600; font-size: 0.9rem; transition: 0.2s;
+      margin-bottom: 5px; cursor: pointer;
     }
-    .card h2{font-size:1.1rem;margin-bottom:10px;font-weight:900;letter-spacing:.2px;}
-    .kpis{display:grid;grid-template-columns: repeat(4, 1fr);gap:14px;margin-top:10px;}
-    .kpi{
-      background: rgba(255,255,255,0.78);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:14px;
-      display:flex;gap:12px;align-items:center;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.06);
-    }
-    .kpi i{font-size:1.05rem;opacity:.95;color: rgba(255,106,0,0.95)}
-    .kpi .num{font-weight:900;font-size:1.35rem}
-    .kpi .lbl{font-size:.86rem;color:var(--muted)}
+    .nav-item:hover { background: var(--bg-body); color: var(--text-main); }
+    .nav-item.active { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
+    .nav-item i { width: 20px; text-align: center; }
 
-    /* Table */
-    table{width:100%;border-collapse:separate;border-spacing:0 10px;}
-    th{
-      text-align:left;font-size:.82rem;color:rgba(43,19,0,0.55);
-      font-weight:900;padding:0 10px 6px;letter-spacing:.35px;text-transform:uppercase;
-    }
-    td{
-      padding:12px 10px;background: rgba(255,255,255,0.86);
-      border-top:1px solid var(--border);
-      border-bottom:1px solid var(--border);
-      color: var(--text);
-      vertical-align: top;
-    }
-    tr td:first-child{
-      border-left:1px solid var(--border);
-      border-top-left-radius:16px;border-bottom-left-radius:16px;
-    }
-    tr td:last-child{
-      border-right:1px solid var(--border);
-      border-top-right-radius:16px;border-bottom-right-radius:16px;
-    }
-    .tag{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      background: rgba(255,255,255,0.86);
-      border:1px solid var(--border);
-      font-weight:900;font-size:.84rem;white-space:nowrap;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.05);
-    }
-    .tag i{color: rgba(255,106,0,0.95)}
-    .tag small{font-weight:700;color:rgba(43,19,0,0.55)}
-    .row-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
-    .iconbtn{
-      width:40px;height:40px;border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.86);
-      color:var(--text);cursor:pointer;
-      display:grid;place-items:center;transition:.15s ease;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
-    }
-    .iconbtn:hover{transform: translateY(-1px); background: rgba(255,255,255,0.95)}
-    .iconbtn.danger{background: rgba(220,38,38,0.12);border-color: rgba(220,38,38,0.28);color:#8a0d0d}
-    .iconbtn.ok{background: rgba(22,163,74,0.12);border-color: rgba(22,163,74,0.28);color:#0f5f2a}
+    /* --- MAIN CONTENT --- */
+    .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 30px 40px; }
 
-    /* Inputs */
-    .field{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-    .field label{font-weight:900;font-size:.9rem}
-    .input, .textarea{
-      width:100%;
-      padding:12px 14px;border-radius:16px;
-      border:2px solid rgba(43,19,0,0.10);
-      background: rgba(255,255,255,0.90);
-      color:var(--text);outline:none;font-family:Poppins;
-      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
-    }
-    .input:focus, .textarea:focus{
-      border-color: rgba(255,106,0,0.55);
-      box-shadow: 0 10px 26px rgba(255,106,0,0.12);
-    }
-    .textarea{min-height:130px;resize:vertical}
-    .hint{margin-top:8px;color:var(--muted);font-size:.92rem}
-
-    /* Modals */
-    .modal, .lock{
-      position:fixed; inset:0;
-      display:none;align-items:center;justify-content:center;
-      z-index:9999;
-      background: rgba(0,0,0,0.42);
-      backdrop-filter: blur(10px);
-      padding:22px;
-    }
-    .modal.show, .lock.show{display:flex}
-    .modalbox{
-      width:min(920px, 100%);
-      border-radius:28px;
-      border:1px solid rgba(255,255,255,0.55);
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
-      box-shadow: var(--shadow2);
-      padding:18px;
-      color: var(--text);
-    }
-    .modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
-    .modalhead h3{font-size:1.2rem;font-weight:900}
-    .modalgrid{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
-    .modalgrid .field{margin-top:0}
-    .modalfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
-
-    /* LOCKSCREEN */
-    .lockbox{
-      width:min(520px, 100%);
-      border-radius:30px;
-      border:1px solid rgba(255,255,255,0.55);
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
-      box-shadow: var(--shadow2);
-      padding:18px;
-      color: var(--text);
-    }
-    .locktop{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;}
-    .locktop .title{display:flex;flex-direction:column;gap:2px}
-    .locktop .title b{font-weight:900;font-size:1.1rem}
-    .locktop .title span{color:var(--muted);font-size:.92rem}
-
-    .pin{display:flex;gap:10px;justify-content:center;margin:14px 0 10px;}
-    .pin .dotpin{
-      width:14px;height:14px;border-radius:99px;
-      background: rgba(43,19,0,0.10);
-      border:1px solid rgba(43,19,0,0.12);
-      box-shadow: inset 0 6px 12px rgba(0,0,0,0.10);
-    }
-    .pin .dotpin.filled{
-      background: var(--gradient);
-      border-color: rgba(255,145,0,0.55);
-      box-shadow: 0 10px 25px rgba(255,106,0,0.18);
-    }
-    .keypad{display:grid;grid-template-columns: repeat(3, 1fr);gap:12px;margin-top:12px;}
-    .key{
-      height:56px;border-radius:18px;
-      border:1px solid rgba(43,19,0,0.12);
-      background: rgba(255,255,255,0.86);
-      color:var(--text);font-weight:900;font-size:1.15rem;
-      cursor:pointer;transition:.15s ease;display:grid;place-items:center;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.06);
-    }
-    .key:hover{transform: translateY(-1px); background: rgba(255,255,255,0.95)}
-    .key.small{font-size:1rem}
-    .key.danger{
-      background: rgba(220,38,38,0.10);
-      border-color: rgba(220,38,38,0.22);
-      color:#8a0d0d;
-    }
-    .key.ok{
-      background: rgba(22,163,74,0.10);
-      border-color: rgba(22,163,74,0.22);
-      color:#0f5f2a;
-    }
-    .lockmsg{text-align:center;color:rgba(43,19,0,0.75);font-size:.92rem;min-height:22px;margin-top:10px;}
-
-    /* FULLSCREEN ALERT */
-    .alarm{
-      position:fixed; inset:0;
-      z-index:10000;
-      display:none;align-items:center;justify-content:center;
-      padding:0;
-      background: rgba(0,0,0,0.50);
-      backdrop-filter: blur(6px);
-    }
-    .alarm.show{display:flex}
-
-    /* ✅ Reservation: ultra-fast background swap white <-> orange */
-    @keyframes resvBgSwap {
-      0%   { background: rgba(255,255,255,0.96); }
-      50%  { background: rgba(255,106,0,0.85); }
-      100% { background: rgba(255,255,255,0.96); }
-    }
-    .alarm.resvflash .alarmbox{
-      animation: resvBgSwap 0.12s infinite linear;
+    /* Top Bar */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .welcome-text h1 { font-size: 1.8rem; font-weight: 800; }
+    .welcome-text p { color: var(--text-sub); }
+    .system-status {
+      display: flex; align-items: center; gap: 20px;
+      background: var(--bg-surface); padding: 10px 20px;
+      border-radius: 50px; border: 1px solid var(--border);
+      font-weight: 600; font-size: 0.9rem;
     }
 
-    /* ✅ ALARM CONTENT = FULLSCREEN */
-    .alarmbox{
-      position:relative;
-      width:100%;
-      height:100%;
-      border-radius:0;
-      border:0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.88));
-      box-shadow:none;
-      padding:22px;
-      text-align:center;
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:12px;
+    .api-indicator { display: flex; align-items: center; gap: 8px; }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--text-sub); transition: 0.3s;
     }
-    .alarmbox h3{font-size:1.6rem;font-weight:900;margin:8px 0 6px;}
-    .alarmbox p{color:var(--muted)}
-    .alarmbox .preview{
-      max-width: 900px;
-      margin: 12px auto 0;
-      width: 100%;
-      background: rgba(255,255,255,0.86);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:12px;
-      text-align:left;
-      font-size:.95rem;
-      line-height:1.6;
-    }
-    .alarmbox .preview .line{
-      display:flex;align-items:center;gap:10px;
-      padding:8px 10px;
-      border-radius:14px;
-      background: rgba(255,255,255,0.92);
-      border:1px solid var(--border);
-      margin-bottom:8px;
-    }
-    .alarmbox .preview .line i{width:18px;color:rgba(255,106,0,0.95)}
-    .alarmbox .preview .muted{color:rgba(43,19,0,0.62)}
-    .alarmbox .preview b{color:var(--text)}
-    .alarmbox .okwrap{margin-top:14px;display:flex;justify-content:center}
+    .status-dot.ok { background: var(--status-ok); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); animation: pulseGreen 2s infinite; }
+    .status-dot.error { background: var(--status-err); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); animation: pulseRed 2s infinite; }
 
-    /* Toast */
-    #toast{
-      position:fixed;bottom:18px;right:18px;z-index:12000;
-      display:none;align-items:center;gap:10px;
-      padding:12px 14px;border-radius:999px;
-      background: rgba(22,163,74,0.14);
-      border:1px solid rgba(22,163,74,0.25);
-      color: var(--text);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 18px 45px rgba(0,0,0,0.18);
-      font-weight:900;
+    /* --- COMMON COMPONENTS --- */
+    .section-header {
+      margin: 0 0 20px; font-size: 1.3rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
     }
-    #toast i{color: var(--good)}
-
-    /* Responsive base */
-    @media (max-width: 1180px){
-      .kpis{grid-template-columns: repeat(2, 1fr)}
-    }
-    @media (max-width: 920px){
-      body{overflow:auto}
-      .app{grid-template-columns: 1fr}
-      .sidebar{position:sticky;top:0;z-index:50}
-      .main{height:auto; overflow:visible}
-      .modalgrid{grid-template-columns: 1fr}
+    .section-header::before {
+      content: ''; display: block; width: 4px; height: 24px;
+      background: var(--primary); border-radius: 4px;
     }
 
-    /* ============ MOBILE/TABLET UX (drawer sidebar) ============ */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(6px);
-      z-index:80;
-      display:none;
+    /* Cards */
+    .card {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-l); padding: 24px; margin-bottom: 20px;
     }
-    .overlay.show{display:block}
 
-    @media (max-width: 920px){
-      body{overflow:auto}
-      .app{grid-template-columns:1fr}
+    /* Tables */
+    .table-container { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .data-table th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 36px; height: 36px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); }
+    
+    /* Badges */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge.green { background: rgba(16, 185, 129, 0.1); color: var(--status-ok); }
+    .badge.orange { background: rgba(245, 158, 11, 0.1); color: var(--status-warn); }
+    .badge.red { background: rgba(239, 68, 68, 0.1); color: var(--status-err); }
+    .badge.blue { background: rgba(59, 130, 246, 0.1); color: var(--status-info); }
 
-      /* Sidebar as drawer */
-      .sidebar{
-        position:fixed;
-        top:0; left:0; bottom:0;
-        width:min(86vw, 340px);
-        transform: translateX(-110%);
-        transition: transform .22s ease;
-        z-index:90;
-        border-right:1px solid var(--border);
-        box-shadow: 0 30px 90px rgba(0,0,0,0.35);
-      }
-      .sidebar.open{transform: translateX(0)}
-
-      /* Main full width */
-      .main{
-        padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
-        height:auto;
-        overflow:visible;
-      }
-
-      /* Topbar: sticky + stacked */
-      .topbar{
-        position:sticky;
-        top:0;
-        z-index:40;
-        padding:12px;
-        margin:-14px -14px 14px;
-        border-radius:18px;
-        background: rgba(255,255,255,0.86);
-        border:1px solid var(--border);
-        backdrop-filter: blur(12px);
-        flex-direction:column;
-        align-items:stretch;
-        box-shadow: var(--shadow);
-      }
-      .actions{
-        justify-content:space-between;
-        gap:10px;
-      }
-
-      /* Show menu button on mobile */
-      #menuBtn{display:inline-flex !important}
-
-      /* ✅ KPI: małe prostokąty (2 kolumny), nie długie paski */
-      .kpis{grid-template-columns: repeat(2, 1fr)}
-      .kpi{
-        padding:10px;
-        border-radius:16px;
-        min-height:78px;
-        align-items:center;
-      }
-      .kpi .num{font-size:1.1rem}
-      .kpi .lbl{font-size:.8rem}
-
-      /* Tables: safe horizontal scroll */
-      table{min-width: 920px}
-      .card{padding:14px}
+    /* Forms */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+    .form-control {
+      width: 100%; padding: 12px; border-radius: var(--radius-m);
+      border: 1px solid var(--border); background: var(--bg-body);
+      color: var(--text-main); font-family: inherit; font-size: 1rem;
     }
+    .btn {
+      padding: 12px 24px; border-radius: var(--radius-m); border: none;
+      font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-outline { border: 1px solid var(--border); background: transparent; color: var(--text-main); }
+    
+    /* Grid for Menu/Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+    .stat-card {
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l);
+      padding: 24px; position: relative; overflow: hidden; transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
+    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 15px; }
+    .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 5px; }
+    .stat-label { color: var(--text-sub); font-size: 0.85rem; font-weight: 600; }
+
+    /* Colors for icons */
+    .bg-orange { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
+    .bg-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+    .bg-green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+    .bg-purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+    .bg-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+    /* View Management */
+    .view-section { display: none; animation: fadeIn 0.3s ease; }
+    .view-section.active { display: block; }
+
+    /* Theme Toggle */
+    .theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 200; transition: 0.3s; }
+    .theme-toggle:hover { transform: scale(1.1); }
+
+    /* --- TOAST NOTIFICATIONS --- */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: 280px;
+      padding: 16px 20px;
+      border-radius: var(--radius-m);
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      animation: slideInRight 0.3s ease-out forwards;
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    .toast i { font-size: 1.2rem; }
+    .toast.success { background: var(--status-ok); }
+    .toast.error { background: var(--status-err); }
+    .toast.info { background: var(--status-info); }
+    .toast.fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
+
+    @keyframes slideInRight {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeOutRight {
+      to { opacity: 0; transform: translateX(100%); }
+    }
+
+    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
   </style>
 </head>
-
 <body>
 
-  <div class="lock show" id="lock">
-    <div class="lockbox">
-      <div class="locktop">
-        <div class="title">
-          <b>MilkShake Bar — Panel</b>
-          <span>Wpisz PIN na klawiaturze ekranowej</span>
-        </div>
-        <span class="pill"><i class="fa-solid fa-lock"></i> PIN</span>
-      </div>
-
-      <div class="pin" aria-label="PIN">
-        <div class="dotpin" id="p1"></div>
-        <div class="dotpin" id="p2"></div>
-        <div class="dotpin" id="p3"></div>
-        <div class="dotpin" id="p4"></div>
-      </div>
-
-      <div class="keypad" id="keypad">
-        <button class="key" data-k="1">1</button>
-        <button class="key" data-k="2">2</button>
-        <button class="key" data-k="3">3</button>
-        <button class="key" data-k="4">4</button>
-        <button class="key" data-k="5">5</button>
-        <button class="key" data-k="6">6</button>
-        <button class="key" data-k="7">7</button>
-        <button class="key" data-k="8">8</button>
-        <button class="key" data-k="9">9</button>
-        <button class="key danger small" data-act="back"><i class="fa-solid fa-delete-left"></i></button>
-        <button class="key" data-k="0">0</button>
-        <button class="key ok small" data-act="ok"><i class="fa-solid fa-check"></i></button>
-      </div>
-
-      <div class="lockmsg" id="lockMsg"></div>
+  <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <div style="background: var(--bg-surface); padding: 40px; border-radius: var(--radius-l); border: 1px solid var(--border); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 400px; width: 90%;">
+      <h2 style="margin-bottom: 10px; font-weight: 800;">Panel Autoryzacji</h2>
+      <p style="color: var(--text-sub); margin-bottom: 30px; font-size: 0.9rem;">Wprowadź 5-cyfrowy kod PIN, aby odblokować panel MilkMi.</p>
+      
+      <input type="password" id="admin-pin-input" maxlength="5" placeholder="•••••" style="width: 100%; padding: 15px; font-size: 2rem; text-align: center; letter-spacing: 15px; border-radius: var(--radius-m); border: 2px solid var(--border); margin-bottom: 20px; outline: none; transition: border-color 0.3s; background: var(--bg-body); color: var(--text-main);">
+      
+      <div id="admin-error" style="color: var(--status-err); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; display: none;">Błędny kod PIN!</div>
+      
+      <button onclick="verifyAdmin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: var(--radius-m); font-weight: 700; cursor: pointer; font-size: 1rem;">Odblokuj panel</button>
     </div>
   </div>
 
-  <div class="alarm" id="alarm">
-    <div class="alarmbox">
-      <div class="pill" style="margin:0 auto 8px; width:max-content;" id="alarmPill">
-        <i class="fa-solid fa-bell"></i> Nowa rezerwacja
-      </div>
-      <h3 id="alarmTitle">Przyszła nowa rezerwacja!</h3>
-      <p id="alarmDesc">Panel będzie migał i piszczał, dopóki nie klikniesz <b>OK</b>.</p>
+  <script>
+    // Skrypt do sprawdzania PINu
+    async function verifyAdmin() {
+      const pin = document.getElementById('admin-pin-input').value;
+      const errorMsg = document.getElementById('admin-error');
+      
+      if(pin.length !== 5) {
+          errorMsg.innerText = "Kod musi mieć 5 cyfr!";
+          errorMsg.style.display = 'block';
+          return;
+      }
 
-      <div class="preview" id="alarmPreview"></div>
+      try {
+        const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // PIN poprawny - usuwamy blokadę
+            const overlay = document.getElementById('admin-login-overlay');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => overlay.remove(), 500);
+            
+            // Opcjonalnie: powitanie zalogowanego użytkownika
+            if (data.name) {
+                setTimeout(() => showToast(`Witaj, ${data.name}!`, 'info'), 500);
+            } else {
+                setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
+            }
+        } else {
+            // PIN błędny
+            errorMsg.innerText = "Nieprawidłowy kod PIN!";
+            errorMsg.style.display = 'block';
+            document.getElementById('admin-pin-input').value = '';
+        }
+      } catch (err) {
+        console.error("Błąd połączenia z serwerem API", err);
+      }
+    }
 
-      <div class="okwrap">
-        <button class="btn primary" id="alarmOk"><i class="fa-solid fa-check"></i> OK</button>
-      </div>
+    // Umożliwia kliknięcie "Enter"
+    document.getElementById('admin-pin-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') verifyAdmin();
+    });
+  </script>
+
+  <aside class="sidebar">
+    <div class="brand">MilkMi<span>.</span> <small>Admin Panel</small></div>
+
+    <div class="nav-category">MilkMi App</div>
+    <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
+    <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Milkosy)</span></div>
+    <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
+    <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamów i Odbierz</span></div>
+    <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Pre-paid</span></div>
+    <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Użytkownicy</span></div>
+    <div class="nav-item" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
+    <div class="nav-item" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek Na Stronie</span></div>
+
+    <div class="nav-category">MilkShakeBar WEB</div>
+    <div class="nav-item" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
+    <div class="nav-item" onclick="switchView('menu', this)"><i class="fas fa-utensils"></i><span>Menu</span></div>
+    <div class="nav-item" onclick="switchView('newsletter', this)"><i class="fas fa-envelope-open-text"></i><span>Newsletter</span></div>
+
+    <div class="nav-category">WorkMi (System)</div>
+    <div class="nav-item" onclick="switchView('work-system', this)"><i class="fas fa-server"></i><span>System</span></div>
+    <div class="nav-item" onclick="switchView('work-products', this)"><i class="fas fa-boxes"></i><span>Produkty</span></div>
+    <div class="nav-item" onclick="switchView('work-time', this)"><i class="fas fa-clock"></i><span>Czas Pracy</span></div>
+    <div class="nav-item" onclick="switchView('work-costs', this)"><i class="fas fa-money-bill-wave"></i><span>Koszta Pracowników</span></div>
+    <div class="nav-item" onclick="switchView('team', this)"><i class="fas fa-user-friends"></i><span>Zespół</span></div>
+    
+    <div style="flex: 1"></div>
+    <div class="nav-item" onclick="switchView('dev', this)" style="color: var(--primary);"><i class="fas fa-code"></i><span>Napisz do Developera</span></div>
+    
+    <div class="nav-item" onclick="logoutAdmin()" style="color: var(--status-err); margin-top: 10px; border-top: 1px solid var(--border); padding-top: 20px;">
+      <i class="fas fa-sign-out-alt"></i><span>Wyloguj</span>
     </div>
-  </div>
+  </aside>
 
-  <div class="app" id="app" style="display:none">
-    <div class="overlay" id="overlay"></div>
-
-    <aside class="sidebar">
-      <div class="brand">
-        <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo">
-        <div>
-          <div class="t1">MilkShake Bar</div>
-          <div class="t2">Panel Administratora</div>
+  <main class="main-content">
+    
+    <header class="top-bar">
+      <div class="welcome-text">
+        <h1 id="page-title">Dashboard</h1>
+        <p>Panel zarządzania systemem MilkMi & WorkMi.</p>
+      </div>
+      <div class="system-status">
+        <div class="clock" id="live-clock">--:--:--</div>
+        <div style="width: 1px; height: 15px; background: var(--border);"></div>
+        <div class="api-indicator">
+          <span>API:</span> <div class="status-dot ok" id="api-dot"></div> <span id="api-text" style="color: var(--status-ok);">Online</span>
         </div>
       </div>
+    </header>
 
-      <div class="nav">
-        <div class="navsep">Główne</div>
-        <button class="navbtn active" data-tab="reservations"><i class="fa-solid fa-calendar-check"></i> Rezerwacje</button>
-        <button class="navbtn" data-tab="happy"><i class="fa-solid fa-bullhorn"></i> Pasek info</button>
-
-        <div class="navsep">Zarządzanie</div>
-        <button class="navbtn" data-tab="users"><i class="fa-solid fa-users"></i> Użytkownicy</button>
-        <button class="navbtn" data-tab="employees"><i class="fa-solid fa-user-tie"></i> Pracownicy</button>
-
-        <div class="navsep">Milki Aplikacja</div>
-        <a href="pkt.html" class="navbtn" style="text-decoration: none;"><i class="fa-solid fa-star"></i> Punkty Milk</a>
-        <button class="navbtn" data-tab="rewards"><i class="fa-solid fa-ticket"></i> Kody nagród</button>
-
-        <div class="sidefoot">
-          <span class="pill"><span class="dot" id="apiDot"></span> API</span>
-          <span class="pill" id="clock"><i class="fa-regular fa-clock"></i> —</span>
-        </div>
+    <section id="view-dashboard" class="view-section active">
+      <div class="section-header">Statystyki MilkMi (App)</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-users"></i></div><div class="stat-value">2,845</div><div class="stat-label">Wszystkich Użytkowników</div></div>
+        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value">124</div><div class="stat-label">Aktywne Rezerwacje</div></div>
+        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-star"></i></div><div class="stat-value">845k</div><div class="stat-label">Wydanych Milkosów</div></div>
+        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div><div class="stat-value">1,502</div><div class="stat-label">Użytkownicy z punktami</div></div>
+        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div><div class="stat-value">430</div><div class="stat-label">Aktywne karty Pre-paid</div></div>
+        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div><div class="stat-value">32,450 zł</div><div class="stat-label">Środki na kontach</div></div>
       </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h1 id="title">Rezerwacje</h1>
-          <p id="subtitle"></p>
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="menuBtn" style="display:none"><i class="fa-solid fa-bars"></i> Menu</button>
-          <button class="btn" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Odśwież</button>
-          <button class="btn danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
-        </div>
+      
+      <div class="section-header" style="margin-top:40px;">Statystyki MilkShakeBar (Web)</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-eye"></i></div><div class="stat-value">1,205</div><div class="stat-label">Wyświetleń Menu (Dziś)</div></div>
+        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-laptop-house"></i></div><div class="stat-value">18</div><div class="stat-label">Rezerwacji przez WWW</div></div>
       </div>
 
-      <section class="card" id="kpiCard">
-        <h2>Statystyki</h2>
-        <div class="kpis">
-          <div class="kpi"><i class="fa-solid fa-users"></i><div><div class="num" id="kUsers">—</div><div class="lbl">Użytkownicy</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-calendar-check"></i><div><div class="num" id="kReservations">—</div><div class="lbl">Rezerwacje</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-user-tie"></i><div><div class="num" id="kEmployees">—</div><div class="lbl">Pracownicy</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-coins"></i><div><div class="num" id="kMilkos">—</div><div class="lbl">Milkosy łącznie</div></div></div>
-        </div>
+      <div class="section-header" style="margin-top:40px;">Statystyki WorkMi (Internal)</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-cubes"></i></div><div class="stat-value">4,120</div><div class="stat-label">Liczba Artykułów (Magazyn)</div></div>
+        <div class="stat-card"><div class="stat-icon bg-red"><i class="fas fa-truck-loading"></i></div><div class="stat-value">5</div><div class="stat-label">Nadchodzące dostawy</div></div>
+      </div>
+    </section>
 
-        <div class="kpis" style="margin-top:14px">
-          <div class="kpi"><i class="fa-solid fa-user-check"></i><div><div class="num" id="kUsersWithPoints">—</div><div class="lbl">Użytkownicy z punktami</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-utensils"></i><div><div class="num" id="kProducts">—</div><div class="lbl">Produkty</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-bolt"></i><div><div class="num" id="kAppOps">Problem z Panelem?</div><div class="lbl">Zadzwoń 735 396 534</div></div></div>
-          <div class="kpi"><i class="fa-solid fa-shield-halved"></i><div><div class="num">OK</div><div class="lbl">Panel działa</div></div></div>
-        </div>
-      </section>
-
-      <section class="card" id="tab-reservations">
-        <h2>Rezerwacje</h2>
-        <div style="overflow:auto">
-          <table>
-            <thead>
+    <section id="view-points" class="view-section">
+      <div class="card">
+        <div class="section-header">Ostatnie transakcje punktowe</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Użytkownik</th><th>Rodzaj operacji</th><th>Ilość punktów</th><th>Data</th><th>Status</th></tr></thead>
+            <tbody>
               <tr>
-                <th>Data / Godzina</th>
-                <th>Klient</th>
-                <th>Ilość</th>
-                <th>Strefa</th>
-                <th>Uwagi</th>
-                <th>Źródło</th>
-                <th style="text-align:right">Akcje</th>
+                <td><div class="user-info"><div class="avatar">MK</div><div><strong>Mikołaj K.</strong><br><small>App User</small></div></div></td>
+                <td>Zamówienie (Shake Oreo)</td>
+                <td style="color: var(--status-ok); font-weight:700;">+ 120 pkt</td>
+                <td>13.02.2026, 14:30</td>
+                <td><span class="badge green">Naliczone</span></td>
               </tr>
-            </thead>
-            <tbody id="resTbody"></tbody>
+              <tr>
+                <td><div class="user-info"><div class="avatar">AD</div><div><strong>Anna D.</strong><br><small>App User</small></div></div></td>
+                <td>Odbiór nagrody (Kawa)</td>
+                <td style="color: var(--status-err); font-weight:700;">- 500 pkt</td>
+                <td>13.02.2026, 12:15</td>
+                <td><span class="badge blue">Wykorzystane</span></td>
+              </tr>
+            </tbody>
           </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="card" id="tab-happy" style="display:none">
-        <h2>Pasek info</h2>
-
-        <div class="field">
-          <label>Tekst paska</label>
-          <textarea class="textarea" id="happyText" placeholder="np. Happy Hour 12:00–16:00 • -20% na shake'i"></textarea>
+    <section id="view-reservations" class="view-section">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+          <div class="section-header" style="margin:0">Lista rezerwacji</div>
+          <button class="btn btn-primary"><i class="fas fa-plus"></i> Dodaj ręcznie</button>
         </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-          <button class="btn" id="happyLoad"><i class="fa-solid fa-download"></i> Wczytaj</button>
-          <button class="btn primary" id="happySave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Klient</th><th>Data i Godzina</th><th>Liczba osób</th><th>Strefa</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Jan Kowalski</strong><br>+48 500 600 700</td>
+                <td>Dziś, 18:00</td>
+                <td>4 osoby</td>
+                <td>Sala Główna</td>
+                <td><span class="badge orange">Oczekuje</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="card" id="tab-users" style="display:none">
-        <h2>Użytkownicy</h2>
-        <p style="color:var(--muted)">Widok do rozbudowy.</p>
-      </section>
-
-      <section class="card" id="tab-employees" style="display:none">
-        <h2>Pracownicy</h2>
-        <p style="color:var(--muted)">Widok do rozbudowy.</p>
-      </section>
-
-      <section class="card" id="tab-rewards" style="display:none">
-        <h2>Kody nagród</h2>
-
-        <div class="card" style="margin-top:12px;">
-          <h2 style="margin-bottom:6px">Wykorzystaj kod</h2>
-          <p class="hint" style="margin-top:0">
-            Wpisz kod nagrody (np. <b>MSB-123456</b>). Po wykorzystaniu kod jest jednorazowy i zostaje oznaczony jako użyty w MongoDB (kolekcja <b>rewards</b>).
-          </p>
-
-          <div class="modalgrid" style="margin-top:10px">
-            <div class="field">
-              <label>Kod nagrody</label>
-              <input class="input" id="useCodeValue" placeholder="np. MSB-123456" autocomplete="off">
-            </div>
-            <div class="field">
-              <label>Notatka (opcjonalnie)</label>
-              <input class="input" id="useCodeNote" placeholder="np. odebrane w lokalu / podpis pracownika">
-            </div>
-          </div>
-
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end">
-            <button class="btn primary" id="useCodeBtn"><i class="fa-solid fa-check"></i> Wykorzystaj kod</button>
-          </div>
-
-          <div id="useCodePreview" style="margin-top:10px;"></div>
+    <section id="view-orders" class="view-section">
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">5</div><div class="stat-label">Nowych</div></div>
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">12</div><div class="stat-label">W realizacji</div></div>
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">45</div><div class="stat-label">Zakończonych</div></div>
+      </div>
+      <div class="card">
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Klient</th><th>Zamówienie</th><th>Kwota</th><th>Typ</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>#8829</td>
+                <td>Mikołaj K.</td>
+                <td>2x Pancake Tower</td>
+                <td>65.00 PLN</td>
+                <td><i class="fas fa-store"></i> Odbiór</td>
+                <td><span class="badge orange">W kuchni</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
+    </section>
 
-        <div class="card" style="margin-top:14px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-            <h2 style="margin-bottom:6px">Historia wykorzystania kodów</h2>
-            <button class="btn" id="rewardsHistoryRefresh"><i class="fa-solid fa-rotate"></i> Odśwież historię</button>
-          </div>
-
-          <div style="overflow:auto;margin-top:10px">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data użycia</th>
-                  <th>Kod</th>
-                  <th>Nagroda</th>
-                  <th>Notatka</th>
-                  <th>Użytkownik</th>
-                </tr>
-              </thead>
-              <tbody id="rewardsHistoryTbody"></tbody>
-            </table>
-          </div>
-
-          <p class="hint">Lista histori aktywacji kodów</p>
+    <section id="view-prepaid" class="view-section">
+      <div class="card">
+        <div class="section-header">Wirtualne portfele</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Numer karty</th><th>Właściciel</th><th>Saldo</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace;">**** 8829</td>
+                <td>Mikołaj (App)</td>
+                <td style="font-weight:800; color:var(--primary);">45.50 PLN</td>
+                <td><span class="badge green">Aktywna</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-    </main>
-  </div>
+    <section id="view-users" class="view-section">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+          <input type="text" class="form-control" placeholder="Szukaj użytkownika..." style="max-width:300px;">
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Użytkownik</th><th>Email</th><th>Telefon</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="user-info"><div class="avatar">MK</div><strong>Mikołaj</strong></div></td>
+                <td>mikolaj@example.com</td>
+                <td>+48 123 456 789</td>
+                <td><span class="badge green">Aktywny</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-  <div class="modal" id="notesModal" aria-hidden="true">
-    <div class="modalbox">
-      <div class="modalhead">
-        <h3>Uwagi do rezerwacji</h3>
-        <button class="iconbtn" id="notesClose" title="Zamknij"><i class="fa-solid fa-xmark"></i></button>
+    <section id="view-push" class="view-section">
+      <div class="card" style="max-width:600px;">
+        <div class="section-header">Wyślij powiadomienie</div>
+        <div class="form-group">
+          <label>Tytuł</label>
+          <input type="text" class="form-control" placeholder="np. Promocja!">
+        </div>
+        <div class="form-group">
+          <label>Treść</label>
+          <textarea class="form-control" rows="4"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Powiadomienie PUSH zostało wysłane!', 'success')"><i class="fas fa-paper-plane"></i> Wyślij PUSH</button>
+      </div>
+    </section>
+
+    <section id="view-app-bar" class="view-section">
+      <div class="card">
+        <div class="section-header">Baner w Aplikacji</div>
+        <div class="form-group"><label>Tytuł</label><input type="text" class="form-control" value="Eatmi - Zamów z dowozem"></div>
+        <button class="btn btn-primary" onclick="showToast('Zmiany w banerze zostały zapisane', 'success')">Zapisz zmiany</button>
+      </div>
+    </section>
+
+    <section id="view-web-bar" class="view-section">
+      <div class="card">
+        <div class="section-header">Pasek na stronie WWW</div>
+        <div class="form-group"><label>Treść</label><input type="text" class="form-control" value="Dziś darmowa dostawa!"></div>
+        <button class="btn btn-primary" onclick="showToast('Pasek zaktualizowany', 'success')">Aktualizuj</button>
+      </div>
+    </section>
+
+    <section id="view-menu" class="view-section">
+      <div class="section-header">Zarządzanie Menu</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 style="margin-bottom:5px;">Oreo Dream</h3>
+          <p style="color:var(--text-sub);">19.00 PLN</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-newsletter" class="view-section">
+      <div class="card">
+        <div class="section-header">Baza subskrybentów</div>
+        <p style="color:var(--text-sub);">Liczba aktywnych: 540</p>
+      </div>
+    </section>
+
+    <section id="view-team" class="view-section">
+      <div class="card">
+        <div class="section-header">Dodaj nowego pracownika</div>
+        <form id="add-employee-form" onsubmit="addEmployee(event)">
+          <div class="form-group">
+            <label>Imię i Nazwisko</label>
+            <input type="text" id="emp-name" class="form-control" placeholder="np. Jan Kowalski" required>
+          </div>
+          <div class="form-group">
+            <label>Stanowisko</label>
+            <select id="emp-role" class="form-control" required>
+              <option value="Właściciel">Właściciel</option>
+              <option value="Manager">Manager</option>
+              <option value="Bar">Bar</option>
+              <option value="Kuchnia">Kuchnia</option>
+              <option value="Szef Kuchni">Szef Kuchni</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Kod PIN Logowania (5 cyfr)</label>
+            <input type="password" id="emp-pin" class="form-control" maxlength="5" pattern="\d{5}" placeholder="•••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Zapisz pracownika</button>
+        </form>
       </div>
 
-      <div class="field" style="margin-top:0">
-        <label>Treść</label>
-        <textarea class="textarea" id="notesText" readonly placeholder="Brak uwag..."></textarea>
+      <div class="card">
+        <div class="section-header">Aktualny Zespół</div>
+        <table class="data-table">
+          <thead><tr><th>Osoba</th><th>Rola</th><th>Status</th></tr></thead>
+          <tbody id="team-table-body">
+            </tbody>
+        </table>
       </div>
+    </section>
 
-      <div class="modalfoot">
-        <button class="btn primary" id="notesOk"><i class="fa-solid fa-check"></i> OK</button>
+    <section id="view-work-system" class="view-section">
+      <div class="section-header">Status Systemów WorkMi</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>Główny POS</h3>
+            <div class="status-dot ok" style="width:15px; height:15px;"></div>
+          </div>
+          <p style="color:var(--text-sub); font-size:0.9rem;">Wersja: 2.4.0<br>Uptime: 48h</p>
+        </div>
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>Drukarka Kuchnia</h3>
+            <div class="status-dot ok" style="width:15px; height:15px;"></div>
+          </div>
+          <p style="color:var(--text-sub); font-size:0.9rem;">Papier: 80%<br>Połączenie: LAN</p>
+        </div>
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>Tablet (Sala)</h3>
+            <div class="status-dot error" style="width:15px; height:15px;"></div>
+          </div>
+          <p style="color:var(--status-err); font-size:0.9rem;">Brak połączenia!<br>Bateria: 5%</p>
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="modal" id="editModal" aria-hidden="true">
-    <div class="modalbox">
-      <div class="modalhead">
-        <h3>Edycja rezerwacji</h3>
-        <button class="iconbtn" id="editClose" title="Zamknij"><i class="fa-solid fa-xmark"></i></button>
+    <section id="view-work-products" class="view-section">
+      <div class="card">
+        <div class="section-header">Stany Magazynowe (Artykuły)</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Artykuł</th><th>Kategoria</th><th>Ilość w mag.</th><th>Jednostka</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Mleko 3.2%</td>
+                <td>Nabiał</td>
+                <td>120</td>
+                <td>Szt. (1L)</td>
+                <td><span class="badge green">OK</span></td>
+              </tr>
+              <tr>
+                <td>Syrop Waniliowy</td>
+                <td>Dodatki</td>
+                <td>2</td>
+                <td>Butelka (700ml)</td>
+                <td><span class="badge red">Krytyczny</span></td>
+              </tr>
+              <tr>
+                <td>Kubki 300ml (Logo)</td>
+                <td>Opakowania</td>
+                <td>5000</td>
+                <td>Szt.</td>
+                <td><span class="badge green">OK</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </section>
 
-      <div class="modalgrid">
-        <div class="field"><label>Imię i nazwisko</label><input class="input" id="eName"></div>
-        <div class="field"><label>Telefon</label><input class="input" id="ePhone"></div>
-        <div class="field"><label>Data</label><input class="input" id="eDate" type="date"></div>
-        <div class="field"><label>Godzina</label><input class="input" id="eTime" type="time"></div>
-        <div class="field"><label>Ilość osób</label><input class="input" id="eGuests"></div>
-        <div class="field"><label>Strefa</label><input class="input" id="eRoom"></div>
-        <div class="field" style="grid-column:span 2"><label>Uwagi</label><input class="input" id="eNotes"></div>
-        <div class="field"><label>Źródło</label><input class="input" id="eSource" disabled></div>
-        <div class="field"><label>Utworzono</label><input class="input" id="eCreated" disabled></div>
+    <section id="view-work-time" class="view-section">
+      <div class="card">
+        <div class="section-header">Rejestr Czasu Pracy (Dziś)</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Pracownik</th><th>Start</th><th>Koniec</th><th>Suma godzin</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="user-info"><div class="avatar bg-blue">K</div><strong>Kasia B.</strong></div></td>
+                <td>08:00</td>
+                <td>16:00</td>
+                <td>8h 00m</td>
+                <td><span class="badge green">Zakończono</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-info"><div class="avatar">B</div><strong>Barista #2</strong></div></td>
+                <td>12:00</td>
+                <td>--:--</td>
+                <td>(W trakcie)</td>
+                <td><span class="badge orange">W pracy</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </section>
 
-      <div class="modalfoot">
-        <button class="btn" id="editCancel"><i class="fa-regular fa-circle-xmark"></i> Anuluj</button>
-        <button class="btn primary" id="editSave"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
+    <section id="view-work-costs" class="view-section">
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-icon bg-red"><i class="fas fa-coins"></i></div>
+          <div class="stat-value">12,400 zł</div>
+          <div class="stat-label">Koszt wynagrodzeń (Bieżący msc.)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-blue"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-value">18.5%</div>
+          <div class="stat-label">% Utargu na wypłaty</div>
+        </div>
       </div>
-    </div>
-  </div>
+      <div class="card">
+        <div class="section-header">Raport kosztowy (Luty 2026)</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Pracownik</th><th>Stawka/h</th><th>Godziny</th><th>Premie</th><th>Suma do wypłaty</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Kasia B. (Manager)</td>
+                <td>35.00 PLN</td>
+                <td>120h</td>
+                <td>+ 500 PLN</td>
+                <td style="font-weight:700;">4,700.00 PLN</td>
+              </tr>
+              <tr>
+                <td>Barista #1</td>
+                <td>28.00 PLN</td>
+                <td>140h</td>
+                <td>0 PLN</td>
+                <td style="font-weight:700;">3,920.00 PLN</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-  <div id="toast">
-    <i class="fa-solid fa-circle-check"></i>
-    <span id="toastText"></span>
-  </div>
+    <section id="view-dev" class="view-section">
+      <div class="card" style="max-width:600px; margin: 0 auto; text-align:center;">
+        <div class="stat-icon bg-purple" style="margin: 0 auto 20px;"><i class="fas fa-code"></i></div>
+        <h2 style="margin-bottom:10px;">Support Techniczny</h2>
+        <div class="form-group" style="text-align:left;">
+          <label>Wiadomość</label>
+          <textarea class="form-control" rows="5"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="showToast('Wiadomość została wysłana do developera', 'info')">Wyślij zgłoszenie</button>
+      </div>
+    </section>
 
-  <script src="/socket.io/socket.io.js"></script>
+  </main>
+
+  <button class="theme-toggle" onclick="toggleAdminTheme()">
+    <i class="fas fa-adjust"></i>
+  </button>
+
   <script>
-    // ==========================
-    // Helpers
-    // ==========================
-    const $ = (q, el=document) => el.querySelector(q);
-    const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
-
-    const state = {
-      pin: "",
-      unlocked: false,
-
-      reservations: [],
-      editingId: null,
-
-      alarmActive: false,
-      audioCtx: null,
-      beepInterval: null
-    };
-
-    function showToast(msg, bad=false){
-      const t = $("#toast");
-      const tt = $("#toastText");
-      tt.textContent = msg;
-      t.style.display = "flex";
-      t.style.background = bad ? "rgba(220,38,38,0.14)" : "rgba(22,163,74,0.14)";
-      t.style.borderColor = bad ? "rgba(220,38,38,0.25)" : "rgba(22,163,74,0.25)";
-      t.querySelector("i").style.color = bad ? "var(--bad)" : "var(--good)";
-      setTimeout(()=> t.style.display="none", 3200);
-    }
-
-    function fmtDateTime(r){
-      const d = (r?.date || "—");
-      const t = (r?.time || "—");
-      return `${d} • ${t}`;
-    }
-
-    function escapeHtml(s){
-      return String(s ?? "").replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
-
-    // ==========================
-    // ✅ Freeze + anti zoom gestures (lockscreen)
-    // ==========================
-    function setLockedFreeze(on){
-      document.body.classList.toggle("locked", !!on);
-    }
-    setLockedFreeze(true);
-
-    ["gesturestart","gesturechange","gestureend"].forEach(ev=>{
-      window.addEventListener(ev, (e)=> e.preventDefault(), {passive:false});
-    });
-
-    let lastTouchEnd = 0;
-    document.addEventListener("touchend", (e)=>{
-      const now = Date.now();
-      if(now - lastTouchEnd <= 300) e.preventDefault();
-      lastTouchEnd = now;
-    }, {passive:false});
-
-    // ==========================
-    // ✅ Backend login (PIN not in frontend)
-    // POST /api/login {pin:"1234"} => {ok:true}
-    // ==========================
-    async function verifyPin(pin){
-      const res = await fetch("/api/login", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ pin })
-      });
-      const data = await res.json().catch(()=>({}));
-      return !!(res.ok && data && data.ok);
-    }
-
-    // ==========================
-    // Lock screen PIN
-    // ==========================
-    function renderPin(){
-      const dots = [$("#p1"), $("#p2"), $("#p3"), $("#p4")];
-      dots.forEach((d,i)=> d.classList.toggle("filled", i < state.pin.length));
-    }
-
-    function setLockMsg(msg, bad=false){
-      const el = $("#lockMsg");
-      el.textContent = msg || "";
-      el.style.color = bad ? "rgba(220,38,38,0.95)" : "rgba(43,19,0,0.75)";
-    }
-
-    function unlock(){
-      state.unlocked = true;
-      setLockedFreeze(false);
-      $("#lock").classList.remove("show");
-      $("#app").style.display = "grid";
-      showToast("Zalogowano ✅");
-      initApp();
-    }
-
-    function lock(){
-      state.unlocked = false;
-      state.pin = "";
-      renderPin();
-      $("#app").style.display = "none";
-      $("#lock").classList.add("show");
-      setLockedFreeze(true);
-      setLockMsg("");
-      stopAlarm();
-    }
-
-    let loginBusy = false;
-
-    $("#keypad").addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn || loginBusy) return;
-
-      const k = btn.getAttribute("data-k");
-      const act = btn.getAttribute("data-act");
-
-      if(k){
-        if(state.pin.length >= 4) return;
-        state.pin += k;
-        renderPin();
-        setLockMsg("");
-
-        if(state.pin.length === 4){
-          const entered = state.pin;
-          state.pin = "";
-          renderPin();
-
-          loginBusy = true;
-          try{
-            const ok = await verifyPin(entered);
-            if(ok) unlock();
-            else setLockMsg("Błędny PIN", true);
-          }catch{
-            setLockMsg("Błąd logowania", true);
-          }finally{
-            loginBusy = false;
-          }
-        }
-        return;
+    // --- TOAST NOTIFICATIONS LOGIC ---
+    function showToast(message, type = 'success') {
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
       }
 
-      if(act === "back"){
-        state.pin = state.pin.slice(0, -1);
-        renderPin();
-        setLockMsg("");
-      }
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      let icon = 'fa-check-circle';
+      if (type === 'error') icon = 'fa-exclamation-circle';
+      if (type === 'info') icon = 'fa-info-circle';
 
-      if(act === "ok"){
-        const entered = state.pin;
-        state.pin = "";
-        renderPin();
+      toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
 
-        loginBusy = true;
-        try{
-          const ok = await verifyPin(entered);
-          if(ok) unlock();
-          else setLockMsg("Błędny PIN", true);
-        }catch{
-          setLockMsg("Błąd logowania", true);
-        }finally{
-          loginBusy = false;
-        }
-      }
-    });
-
-    // Blokuj klawiaturę systemową na lockscreen (totalny freeze)
-    window.addEventListener("keydown", (e)=>{
-      if(!$("#lock").classList.contains("show")) return;
-      e.preventDefault();
-    }, {passive:false});
-
-    $("#logoutBtn").addEventListener("click", lock);
-
-    // ==========================
-    // Tabs
-    // ==========================
-    const tabMeta = {
-      reservations: { title:"Rezerwacje" },
-      happy: { title:"Pasek info" },
-      users: { title:"Użytkownicy" },
-      employees: { title:"Pracownicy" },
-      rewards: { title:"Kody nagród" },
-    };
-
-    function showTab(key){
-      $$(".navbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === key));
-      Object.keys(tabMeta).forEach(k=>{
-        const sec = $("#tab-" + k);
-        if(sec) sec.style.display = (k === key) ? "block" : "none";
-      });
-      $("#title").textContent = tabMeta[key]?.title || "Panel";
-      $("#subtitle").textContent = "";
+      setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
-    // ✅ Zabezpieczony skrypt przełączania zakładek
-    $$(".navbtn").forEach(b => {
-      if (b.dataset.tab) {
-        b.addEventListener("click", () => showTab(b.dataset.tab));
-      }
-    });
-
-    // ==========================
-    // ✅ Notes modal
-    // ==========================
-    function openNotesModal(text){
-      $("#notesText").value = (text || "").trim() || "Brak uwag.";
-      $("#notesModal").classList.add("show");
-      $("#notesModal").setAttribute("aria-hidden","false");
-    }
-    function closeNotesModal(){
-      $("#notesModal").classList.remove("show");
-      $("#notesModal").setAttribute("aria-hidden","true");
-      $("#notesText").value = "";
-    }
-    $("#notesClose").addEventListener("click", closeNotesModal);
-    $("#notesOk").addEventListener("click", closeNotesModal);
-    $("#notesModal").addEventListener("click", (e)=>{ if(e.target.id === "notesModal") closeNotesModal(); });
-
-    // ==========================
-    // API (panel / backend)
-    // ==========================
-    async function apiHealth(){
-      try{
-        const res = await fetch("/api/health", {cache:"no-store"});
-        const ok = res.ok;
-        $("#apiDot").classList.toggle("ok", ok);
-        $("#apiDot").classList.toggle("dot", true);
-      }catch{
-        $("#apiDot").classList.remove("ok");
-      }
-    }
-
-    async function loadStats(){
-      try{
-        const res = await fetch("/api/admin/stats", {cache:"no-store"});
-        const data = await res.json();
-        if(!data?.ok) throw new Error("no ok");
-
-        $("#kUsers").textContent = data.users ?? 0;
-        $("#kProducts").textContent = data.products ?? 0;
-        $("#kReservations").textContent = data.reservations ?? 0;
-
-        $("#kMilkos").textContent = (data.milkosTotal ?? "—");
-        $("#kUsersWithPoints").textContent = (data.usersWithPoints ?? "—");
-        $("#kEmployees").textContent = (data.employees ?? "—");
-      }catch{
-        $("#kUsers").textContent = "—";
-        $("#kProducts").textContent = "—";
-        $("#kReservations").textContent = "—";
-        $("#kMilkos").textContent = "—";
-        $("#kUsersWithPoints").textContent = "—";
-        $("#kEmployees").textContent = "—";
-      }
-    }
-
-    async function loadReservations(){
-      try{
-        const res = await fetch("/api/rezerwacje", {cache:"no-store"});
-        const list = await res.json();
-        state.reservations = Array.isArray(list) ? list : [];
-        renderReservations();
-        $("#kReservations").textContent = state.reservations.length;
-      }catch(e){
-        console.error(e);
-        showToast("Nie udało się pobrać rezerwacji", true);
-      }
-    }
-
-    function renderReservations(){
-      const tb = $("#resTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      if(state.reservations.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak rezerwacji
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const r of state.reservations){
-        const tr = document.createElement("tr");
-        const src = (r.source || "index");
-        const created = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
-        const notes = (r.notes || "").trim();
-        const hasNotes = notes.length > 0;
-
-        tr.innerHTML = `
-          <td>
-            <div class="tag"><i class="fa-regular fa-calendar"></i> ${escapeHtml(fmtDateTime(r))}</div>
-            <div style="color:rgba(43,19,0,0.60);font-size:.82rem;margin-top:6px">Utworzono: ${escapeHtml(created)}</div>
-          </td>
-          <td>
-            <div style="font-weight:900">${escapeHtml(r.name || "—")}</div>
-            <div style="color:rgba(43,19,0,0.70);font-size:.9rem;margin-top:4px"><i class="fa-solid fa-phone" style="color:rgba(255,106,0,0.95)"></i> ${escapeHtml(r.phone || "—")}</div>
-          </td>
-          <td><span class="tag"><i class="fa-solid fa-user-group"></i> ${escapeHtml(r.guests || "—")} <small>os.</small></span></td>
-          <td><span class="tag"><i class="fa-solid fa-door-open"></i> ${escapeHtml(r.room || "—")}</span></td>
-
-          <td>
-            ${
-              hasNotes
-                ? `<button class="btn small" data-act="note" data-id="${r._id}">
-                     <i class="fa-solid fa-note-sticky"></i> Zobacz uwagę
-                   </button>`
-                : `<span class="muted">—</span>`
-            }
-          </td>
-
-          <td><span class="tag"><i class="fa-solid fa-globe"></i> ${escapeHtml(src)}</span></td>
-          <td>
-            <div class="row-actions">
-              <button class="iconbtn ok" title="Edytuj" data-act="edit" data-id="${r._id}"><i class="fa-solid fa-pen"></i></button>
-              <button class="iconbtn danger" title="Usuń" data-act="del" data-id="${r._id}"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    $("#resTbody").addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-
-      const id = btn.getAttribute("data-id");
-      const act = btn.getAttribute("data-act");
-      if(!id || !act) return;
-
-      const r = state.reservations.find(x => x._id === id);
-      if(!r) return;
-
-      if(act === "note"){
-        openNotesModal(r.notes || "");
-        return;
-      }
-
-      if(act === "edit"){
-        openEdit(r);
-        return;
-      }
-
-      if(act === "del"){
-        if(!confirm("Usunąć rezerwację?")) return;
-        try{
-          const res = await fetch(`/api/rezerwacje/${id}`, { method:"DELETE" });
-          const data = await res.json().catch(()=>({}));
-          if(!res.ok || data?.ok === false) throw new Error(data?.message || "delete");
-          showToast("Usunięto ✅");
-          await loadReservations();
-          await loadStats();
-        }catch(err){
-          console.error(err);
-          showToast("Błąd usuwania", true);
-        }
-      }
-    });
-
-    // ==========================
-    // Edit modal
-    // ==========================
-    function openEdit(r){
-      state.editingId = r._id;
-      $("#eName").value = r.name || "";
-      $("#ePhone").value = r.phone || "";
-      $("#eDate").value = r.date || "";
-      $("#eTime").value = r.time || "";
-      $("#eGuests").value = r.guests || "";
-      $("#eRoom").value = r.room || "";
-      $("#eNotes").value = r.notes || "";
-      $("#eSource").value = r.source || "index";
-      $("#eCreated").value = r.createdAt ? new Date(r.createdAt).toLocaleString("pl-PL") : "—";
-      $("#editModal").classList.add("show");
-      $("#editModal").setAttribute("aria-hidden","false");
-    }
-    function closeEdit(){
-      state.editingId = null;
-      $("#editModal").classList.remove("show");
-      $("#editModal").setAttribute("aria-hidden","true");
-    }
-    $("#editClose").addEventListener("click", closeEdit);
-    $("#editCancel").addEventListener("click", closeEdit);
-    $("#editModal").addEventListener("click", (e)=>{ if(e.target.id === "editModal") closeEdit(); });
-
-    $("#editSave").addEventListener("click", async ()=>{
-      const id = state.editingId;
-      if(!id) return;
-
-      const payload = {
-        name: $("#eName").value,
-        phone: $("#ePhone").value,
-        date: $("#eDate").value,
-        time: $("#eTime").value,
-        guests: $("#eGuests").value,
-        room: $("#eRoom").value,
-        notes: $("#eNotes").value
-      };
-
-      try{
-        const res = await fetch(`/api/rezerwacje/${id}`, {
-          method:"PUT",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false) throw new Error(data?.message || "edit");
-        showToast("Zapisano ✅");
-        closeEdit();
-        await loadReservations();
-      }catch(err){
-        console.error(err);
-        showToast("Błąd zapisu", true);
-      }
-    });
-
-    // ==========================
-    // Happy bar
-    // ==========================
-    async function loadHappy(){
-      try{
-        const res = await fetch("/api/happy", {cache:"no-store"});
-        const data = await res.json();
-        if(!data?.ok) throw new Error("happy");
-        $("#happyText").value = data.happy || "";
-        showToast("Wczytano ✅");
-      }catch(e){
-        console.error(e);
-        showToast("Błąd wczytywania paska", true);
-      }
-    }
-    async function saveHappy(){
-      try{
-        const text = $("#happyText").value || "";
-        const res = await fetch("/api/happy", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ happy: text })
-        });
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || data?.ok === false) throw new Error(data?.message || "save");
-        showToast("Zapisano ✅");
-      }catch(e){
-        console.error(e);
-        showToast("Błąd zapisu paska", true);
-      }
-    }
-    $("#happyLoad").addEventListener("click", loadHappy);
-    $("#happySave").addEventListener("click", saveHappy);
-
-    // ==========================
-    // ✅ Alarm: szybkie pikanie (oscillator)
-    // ==========================
-    function ensureAudio(){
-      if(state.audioCtx) return;
-      try{ state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-      catch(e){ state.audioCtx = null; }
-    }
-
-    function beepOnce(){
-      if(!state.audioCtx) return;
-      const ctx = state.audioCtx;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "square";
-      o.frequency.value = 1100;
-      g.gain.value = 0.14;
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.start();
-      setTimeout(()=>{ try{o.stop();}catch(e){} }, 140);
-    }
-
-    function startAlarmReservation(payload){
-      if(state.alarmActive) return;
-      state.alarmActive = true;
-
-      $("#alarmPreview").innerHTML = `
-        <div class="line">
-          <i class="fa-solid fa-user"></i>
-          <div><b>${escapeHtml(payload?.name || "—")}</b> <span class="muted">•</span> ${escapeHtml(payload?.phone || "—")}</div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-calendar-day"></i>
-          <div>${escapeHtml(payload?.date || "—")} <span class="muted">•</span> ${escapeHtml(payload?.time || "—")}</div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-user-group"></i>
-          <div>${escapeHtml(payload?.guests || "—")} <span class="muted">os.</span></div>
-        </div>
-        <div class="line">
-          <i class="fa-solid fa-door-open"></i>
-          <div>${escapeHtml(payload?.room || "—")}</div>
-        </div>
-        <div class="line" style="margin-bottom:0">
-          <i class="fa-solid fa-note-sticky"></i>
-          <div class="muted">${escapeHtml(payload?.notes || "—")}</div>
-        </div>
-      `;
-
-      const alarm = $("#alarm");
-      alarm.classList.add("show");
-      alarm.classList.add("resvflash");
-
-      ensureAudio();
-      if(state.audioCtx && state.audioCtx.state === "suspended"){
-        state.audioCtx.resume().catch(()=>{});
-      }
-      beepOnce();
-      state.beepInterval = setInterval(beepOnce, 280);
-    }
-
-    function stopAlarm(){
-      state.alarmActive = false;
-      const alarm = $("#alarm");
-      alarm.classList.remove("show");
-      alarm.classList.remove("resvflash");
-
-      if(state.beepInterval){
-        clearInterval(state.beepInterval);
-        state.beepInterval = null;
-      }
-    }
-
-    $("#alarmOk").addEventListener("click", ()=>{
-      stopAlarm();
-      showToast("Potwierdzono ✅");
-    });
-
-    // ==========================
-    // Realtime (Socket.IO)
-    // ==========================
-    let socket = null;
-
-    function initSocket(){
-      try{
-        socket = io();
-
-        socket.on("new-reservation", async (reservation)=>{
-          startAlarmReservation(reservation);
-          await loadReservations();
-          await loadStats();
-        });
-
-        socket.on("happy-updated", (text)=>{
-          if($("#tab-happy").style.display !== "none"){
-            $("#happyText").value = text || "";
-          }
-          showToast("Pasek zaktualizowany ✅");
-        });
-
-      }catch(e){
-        console.error("Socket init error", e);
-      }
-    }
-
-    // ==========================
-    // ✅ USE CODE (BACKEND) - mark reward code as used (one-time)
-    // POST /api/admin/rewards/use { code, note }
-    // ==========================
-    function renderUseCodePreview(x){
-      const box = $("#useCodePreview");
-      if(!box) return;
-
-      if(!x){
-        box.innerHTML = `<span class="muted">Brak operacji.</span>`;
-        return;
-      }
-
-      const usedAt = x.usedAt ? new Date(x.usedAt).toLocaleString("pl-PL") : "—";
-      box.innerHTML = `
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-ticket"></i> Kod <small>•</small> ${escapeHtml(x.code)}</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-gift"></i> ${escapeHtml(x.name || "Nagroda")}</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-circle-check"></i> Status <small>•</small> ${escapeHtml(x.status || "USED")}</div>
-        <div class="tag" style="margin:6px 8px 0 0"><i class="fa-regular fa-clock"></i> Użyto <small>•</small> ${escapeHtml(usedAt)}</div>
-        ${x.note ? `<div class="tag" style="margin:6px 8px 0 0"><i class="fa-solid fa-note-sticky"></i> ${escapeHtml(x.note)}</div>` : ""}
-      `;
-    }
-
-    $("#useCodeBtn")?.addEventListener("click", async ()=>{
-      const code = ($("#useCodeValue").value || "").trim();
-      const note = ($("#useCodeNote").value || "").trim();
-
-      if(!code || code.length < 6){
-        showToast("Podaj poprawny kod", true);
-        return;
-      }
-
-      try{
-        const res = await fetch("/api/admin/rewards/use", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ code, note })
-        });
-
-        const data = await res.json().catch(()=>({}));
-        if(!res.ok || !data?.ok) throw new Error(data?.message || "Nie udało się wykorzystać kodu");
-
-        $("#useCodeValue").value = "";
-        $("#useCodeNote").value = "";
-
-        renderUseCodePreview({
-          code: data.code,
-          name: data.name,
-          status: data.used ? "USED" : "OK",
-          usedAt: data.usedAt,
-          note: data.note
-        });
-
-        showToast("Kod wykorzystany ✅");
-        await loadStats();
-        await loadRewardsHistory();
-      }catch(err){
-        console.error(err);
-        showToast(err.message || "Błąd serwera", true);
-      }
-    });
-
-    // ==========================
-    // ✅ REWARDS HISTORY (FROM DB)
-    // GET /api/admin/rewards/history
-    // ==========================
-    async function loadRewardsHistory(){
-      try{
-        const res = await fetch("/api/admin/rewards/history", { cache:"no-store" });
-        const data = await res.json().catch(()=>null);
-
-        // backend może zwracać {ok:true, items:[...]} albo samą tablicę
-        const list = Array.isArray(data) ? data : (data?.items || data?.rewards || []);
-        renderRewardsHistory(list);
-      }catch(e){
-        console.error(e);
-        renderRewardsHistory([]);
-        showToast("Nie udało się pobrać historii kodów", true);
-      }
-    }
-
-    function renderRewardsHistory(list){
-      const tb = $("#rewardsHistoryTbody");
-      if(!tb) return;
-      tb.innerHTML = "";
-
-      const items = Array.isArray(list) ? list : [];
-
-      // pokaż tylko użyte (jeśli backend zwraca też nieużyte)
-      const used = items.filter(x => x?.used === true || x?.status === "USED" || !!x?.usedAt);
-
-      if(used.length === 0){
-        tb.innerHTML = `
-          <tr>
-            <td colspan="5" style="text-align:center;color:rgba(43,19,0,0.65);padding:18px;border-radius:16px;background:rgba(255,255,255,0.86);border:1px solid rgba(43,19,0,0.12)">
-              Brak historii wykorzystania
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      for(const r of used){
-        const usedAt = r.usedAt ? new Date(r.usedAt).toLocaleString("pl-PL") : "—";
-        const code = r.code || r.rewardCode || "—";
-        const name = r.name || r.rewardName || "—";
-        const note = r.note || r.usedNote || "";
-        const user = r.email || (r.milkId ? `Milk ID: ${r.milkId}` : "—");
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><span class="tag"><i class="fa-regular fa-clock"></i> ${escapeHtml(usedAt)}</span></td>
-          <td><span class="tag"><i class="fa-solid fa-ticket"></i> ${escapeHtml(code)}</span></td>
-          <td style="font-weight:900">${escapeHtml(name)}</td>
-          <td>${note ? escapeHtml(note) : '<span class="muted">—</span>'}</td>
-          <td><span class="tag"><i class="fa-solid fa-user"></i> ${escapeHtml(user)}</span></td>
-        `;
-        tb.appendChild(tr);
-      }
-    }
-
-    $("#rewardsHistoryRefresh")?.addEventListener("click", loadRewardsHistory);
-
-    // ==========================
-    // Mobile drawer sidebar
-    // ==========================
-    const sidebar = document.querySelector(".sidebar");
-    const overlay = document.getElementById("overlay");
-    const menuBtn = document.getElementById("menuBtn");
-
-    function openMenu(){
-      sidebar?.classList.add("open");
-      overlay?.classList.add("show");
-    }
-    function closeMenu(){
-      sidebar?.classList.remove("open");
-      overlay?.classList.remove("show");
-    }
-
-    menuBtn?.addEventListener("click", ()=>{
-      if(sidebar?.classList.contains("open")) closeMenu();
-      else openMenu();
-    });
-    overlay?.addEventListener("click", closeMenu);
-
-    document.querySelectorAll(".navbtn").forEach(b=>{
-      b.addEventListener("click", ()=>{
-        if(window.matchMedia("(max-width: 920px)").matches) closeMenu();
-      });
-    });
-
-    window.addEventListener("resize", ()=>{
-      if(!window.matchMedia("(max-width: 920px)").matches){
-        closeMenu();
-      }
-    });
-
-    // ==========================
-    // ✅ PWA service worker
-    // ==========================
-    if("serviceWorker" in navigator){
-      window.addEventListener("load", ()=>{
-        navigator.serviceWorker.register("/sw.js").catch(()=>{});
-      });
-    }
-
-    // ==========================
-    // Init
-    // ==========================
-    async function initApp(){
-      showTab("reservations");
-      initSocket();
-
-      await apiHealth();
-      await loadStats();
-      await loadReservations();
-      await loadHappy();
-
-      renderUseCodePreview(null);
-      await loadRewardsHistory();
-    }
-
-    $("#refreshBtn").addEventListener("click", async ()=>{
-      await apiHealth();
-      await loadStats();
-      await loadReservations();
-      showToast("Odświeżono ✅");
-    });
-
-    setInterval(()=>{
+    // --- LIVE CLOCK ---
+    function updateClock() {
       const now = new Date();
-      $("#clock").innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"})}`;
-    }, 1000);
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('live-clock').innerText = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    setInterval(apiHealth, 6000);
+    // --- NAVIGATION LOGIC ---
+    function switchView(viewId, navElement) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + viewId).classList.add('active');
+      
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      if(navElement) navElement.classList.add('active');
 
-    renderPin();
+      const titles = {
+        'dashboard': 'Dashboard',
+        'points': 'Punkty (Milkosy)',
+        'reservations': 'Rezerwacje',
+        'orders': 'Zamówienia',
+        'prepaid': 'Pre-paid',
+        'users': 'Użytkownicy',
+        'push': 'Powiadomienia Push',
+        'app-bar': 'Pasek w Aplikacji',
+        'web-bar': 'Pasek na WWW',
+        'menu': 'Edycja Menu',
+        'newsletter': 'Newsletter',
+        'team': 'Zespół',
+        'work-system': 'WorkMi: Status Systemu',
+        'work-products': 'WorkMi: Magazyn',
+        'work-time': 'WorkMi: Czas Pracy',
+        'work-costs': 'WorkMi: Koszta Pracowników',
+        'dev': 'Kontakt z Developerem'
+      };
+      document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
+    }
+
+    // --- THEME TOGGLE ---
+    function toggleAdminTheme() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // --- LOGOUT LOGIC ---
+    function logoutAdmin() {
+      if (confirm("Czy na pewno chcesz się wylogować z panelu?")) {
+        window.location.reload(); 
+      }
+    }
+
+    // --- WORKMI TEAM LOGIC ---
+    async function fetchTeam() {
+      try {
+        const response = await fetch('/api/team');
+        const result = await response.json();
+        
+        if (result.success) {
+          const tbody = document.getElementById('team-table-body');
+          tbody.innerHTML = ''; 
+          
+          result.data.forEach(emp => {
+            let badgeColor = 'blue';
+            if(emp.role === 'Właściciel' || emp.role === 'Manager') badgeColor = 'green';
+            if(emp.role === 'Szef Kuchni') badgeColor = 'orange';
+
+            tbody.innerHTML += `
+              <tr>
+                <td><strong>${emp.name}</strong></td>
+                <td>${emp.role}</td>
+                <td><span class="badge ${badgeColor}">Zapisany</span></td>
+              </tr>
+            `;
+          });
+        }
+      } catch (err) {
+        console.error('Błąd pobierania zespołu', err);
+        showToast('Nie udało się pobrać listy pracowników', 'error');
+      }
+    }
+
+    async function addEmployee(event) {
+      event.preventDefault(); 
+      
+      const name = document.getElementById('emp-name').value;
+      const role = document.getElementById('emp-role').value;
+      const pin = document.getElementById('emp-pin').value;
+
+      try {
+        const response = await fetch('/api/team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, role, pin })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Pracownik został dodany do bazy!', 'success');
+          document.getElementById('add-employee-form').reset(); 
+          fetchTeam(); 
+        } else {
+          showToast('Błąd: ' + result.error, 'error');
+        }
+      } catch (err) {
+        console.error('Błąd dodawania pracownika', err);
+        showToast('Nie udało się połączyć z serwerem.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchTeam);
   </script>
+
 </body>
 </html>
