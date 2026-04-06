@@ -35,26 +35,67 @@ console.log('🛠️ Aplikacja widzi ten adres bazy:', MONGO_URI);
 mongoose.connect(MONGO_URI, {
   serverSelectionTimeoutMS: 5000
 })
-  .then(() => console.log('✅ Pomyślnie połączono z bazą MongoDB'))
-  .catch((err) => console.error('❌ Błąd połączenia z bazą danych:', err.message));
+  .then(() => {
+    console.log('✅ Pomyślnie połączono z bazą MongoDB');
+  })
+  .catch((err) => {
+    console.error('❌ Błąd połączenia z bazą danych:', err.message);
+  });
 
-// --- SCHEMAT UŻYTKOWNIKA ---
+// --- SCHEMAT UŻYTKOWNIKA (Klienci aplikacji) ---
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true, trim: true },
-  email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-  phone: { type: String, required: true, trim: true },
-  password: { type: String, required: true },
-  points: { type: Number, default: 0 },
+  username: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    trim: true 
+  },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    trim: true, 
+    lowercase: true 
+  },
+  phone: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+  password: { 
+    type: String, 
+    required: true 
+  },
+  points: { 
+    type: Number, 
+    default: 0 
+  },
   history: [{
       text: String,
       date: { type: String, default: () => new Date().toLocaleString('pl-PL') }
   }],
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
 });
 
 const User = mongoose.model('User', userSchema);
 
-// Zmienne środowiskowe
+// --- SCHEMAT TRANSAKCJI (Globalna historia z kasy) ---
+const pointTransactionSchema = new mongoose.Schema({
+    userDisplay: String, 
+    amountSpent: Number,
+    pointsAwarded: Number,
+    date: { 
+      type: Date, 
+      default: Date.now 
+    }
+});
+
+const PointTransaction = mongoose.model('PointTransaction', pointTransactionSchema);
+
+// --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
 const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
 
@@ -86,30 +127,39 @@ app.get('/api/admin/users', async (req, res) => {
     }
 });
 
-// 3. Modyfikuj punkty użytkownika (dodaj/usuń)
+// 3. Modyfikuj punkty użytkownika ręcznie (Modal Użytkownika)
 app.post('/api/admin/users/:id/points', async (req, res) => {
     try {
         const { id } = req.params;
-        const { amount, action, reason } = req.body; // action: 'add' lub 'remove'
+        const { amount, action, reason } = req.body; 
         
         const user = await User.findById(id);
-        if (!user) return res.status(404).json({ success: false, message: 'Użytkownik nie istnieje.' });
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Użytkownik nie istnieje.' });
+        }
 
         const numAmount = Number(amount);
+        
         if (action === 'add') {
             user.points += numAmount;
             user.history.unshift({ text: `+ ${numAmount} pkt • ${reason || 'Przyznane przez admina'}` });
         } else if (action === 'remove') {
-            if (user.points < numAmount) return res.status(400).json({ success: false, message: 'Użytkownik ma za mało punktów.' });
+            if (user.points < numAmount) {
+                return res.status(400).json({ success: false, message: 'Użytkownik ma za mało punktów.' });
+            }
             user.points -= numAmount;
             user.history.unshift({ text: `- ${numAmount} pkt • ${reason || 'Odjęte przez admina'}` });
         }
 
-        // Ograniczamy historię do 20 ostatnich wpisów
-        if(user.history.length > 20) user.history.pop();
+        // Ograniczamy historię na koncie klienta do 20 wpisów, by nie zapychać bazy
+        if(user.history.length > 20) {
+            user.history.pop();
+        }
 
         await user.save();
         res.json({ success: true, points: user.points, history: user.history });
+        
     } catch (err) {
         res.status(500).json({ success: false, message: 'Błąd podczas edycji punktów.' });
     }
@@ -124,6 +174,66 @@ app.delete('/api/admin/users/:id', async (req, res) => {
         res.status(500).json({ success: false, message: 'Błąd podczas usuwania konta.' });
     }
 });
+
+// 5. Nabijanie punktów za zakupy (Z zakładki z kasy 10 zł = 1 pkt)
+app.post('/api/admin/award-points', async (req, res) => {
+    try {
+        const { identifier, amountSpent } = req.body;
+        
+        if (!identifier || !amountSpent || amountSpent <= 0) {
+            return res.status(400).json({ success: false, message: 'Wprowadź prawidłowe dane.' });
+        }
+
+        const cleanId = identifier.trim().toLowerCase();
+        
+        // Szukamy po mailu LUB telefonie
+        const user = await User.findOne({ $or: [{ email: cleanId }, { phone: cleanId }] });
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Nie znaleziono klienta w bazie.' });
+        }
+
+        // Algorytm 10 zł = 1 punkt (zaokrąglanie w dół za pomocą Math.floor)
+        const points = Math.floor(Number(amountSpent) / 10);
+        
+        if (points <= 0) {
+            return res.status(400).json({ success: false, message: 'Kwota jest za mała (min. 10 PLN).' });
+        }
+
+        // Aktualizacja użytkownika
+        user.points += points;
+        user.history.unshift({ text: `+ ${points} pkt • Zakupy w lokalu` });
+        
+        if(user.history.length > 20) {
+            user.history.pop();
+        }
+        await user.save();
+
+        // Zapis transakcji do globalnej historii panelu admina
+        const tx = new PointTransaction({
+            userDisplay: `${user.username} (${user.phone})`,
+            amountSpent: Number(amountSpent),
+            pointsAwarded: points
+        });
+        await tx.save();
+
+        res.json({ success: true, message: `Dodano ${points} pkt do konta klienta ${user.username}!`, points });
+        
+    } catch(err) {
+        res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
+
+// 6. Pobieranie historii globalnej punktów do panelu
+app.get('/api/admin/point-transactions', async (req, res) => {
+    try {
+        const txs = await PointTransaction.find().sort({ date: -1 }).limit(50);
+        res.json({ success: true, data: txs });
+    } catch(err) {
+        res.status(500).json({ success: false });
+    }
+});
+
 
 // ==========================================
 // --- API APLIKACJI (KLIENCI) ---
@@ -143,6 +253,7 @@ app.post('/api/register', async (req, res) => {
     const cleanPhone = phone.trim();
 
     const existingUser = await User.findOne({ $or: [{ email: cleanEmail }, { username: cleanUsername }] });
+    
     if (existingUser) {
       return res.status(409).json({ message: 'Użytkownik o takim emailu lub loginie już istnieje.' });
     }
@@ -220,20 +331,27 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- POBIERANIE DANYCH UŻYTKOWNIKA (odświeżanie w app.html) ---
+// --- POBIERANIE DANYCH UŻYTKOWNIKA (odświeżanie po stronie klienta) ---
 app.get('/api/milkpoints/my', async (req, res) => {
   try {
       const email = req.query.email;
-      if(!email) return res.status(400).json({ ok: false, message: 'Brak emaila' });
+      
+      if(!email) {
+          return res.status(400).json({ ok: false, message: 'Brak emaila' });
+      }
 
       const user = await User.findOne({ email: email.toLowerCase() });
-      if(!user) return res.status(404).json({ ok: false, message: 'Użytkownik nie istnieje' });
+      
+      if(!user) {
+          return res.status(404).json({ ok: false, message: 'Użytkownik nie istnieje' });
+      }
 
       res.json({
           ok: true,
           points: user.points,
           history: user.history
       });
+      
   } catch (err) {
       res.status(500).json({ ok: false, message: 'Błąd serwera' });
   }
@@ -250,6 +368,7 @@ app.get('/api/team', (req, res) => {
 app.post('/api/team', (req, res) => {
   res.json({ success: true });
 });
+
 
 // --- OBSŁUGA BŁĘDÓW 404 ---
 app.use((req, res) => {
