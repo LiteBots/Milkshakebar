@@ -15,9 +15,15 @@ app.use(cors());
 // Serwowanie plików statycznych z folderu głównego (CSS, obrazy, JS frontendu)
 app.use(express.static(__dirname));
 
-// Trasa główna - serwuje Twój plik app.html
+// --- TRASY FRONTENDU (WIDOKI) ---
+// Trasa główna - serwuje aplikację kliencką
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
+});
+
+// Trasa panelu admina - serwuje admin.html
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // --- BAZA DANYCH MONGO DB ---
@@ -32,44 +38,36 @@ mongoose.connect(MONGO_URI, {
   .then(() => console.log('✅ Pomyślnie połączono z bazą MongoDB'))
   .catch((err) => console.error('❌ Błąd połączenia z bazą danych:', err.message));
 
-// Schemat użytkownika - kolekcja 'users' utworzy się automatycznie przy pierwszym zapisie
+// Schemat użytkownika - kolekcja 'users'
 const userSchema = new mongoose.Schema({
-  username: { 
-    type: String, 
-    required: true, 
-    unique: true,
-    trim: true
-  },
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
-  phone: { 
-    type: String, 
-    required: true 
-  },
-  password: { 
-    type: String, 
-    required: true 
-  },
-  points: {
-    type: Number,
-    default: 0 
-  },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  username: { type: String, required: true, unique: true, trim: true },
+  email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+  phone: { type: String, required: true },
+  password: { type: String, required: true },
+  points: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', userSchema);
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
+// Zmienna dla Admina - domyślnie "12345", jeśli nie ustawiono innej w Railway
+const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
 
-// --- API: REJESTRACJA ---
+// --- API: LOGOWANIE ADMINA ---
+app.post('/api/admin/login', (req, res) => {
+  const { pin } = req.body;
+  
+  if (pin === ADMIN_PIN) {
+    console.log('🔓 Panel Administratora został odblokowany.');
+    return res.json({ success: true, name: 'Szefie' });
+  } else {
+    console.warn('🔒 Nieudana próba logowania do panelu admina. Błędny PIN:', pin);
+    return res.status(401).json({ success: false, message: 'Nieprawidłowy PIN' });
+  }
+});
+
+// --- API: REJESTRACJA (Aplikacja) ---
 app.post('/api/register', async (req, res) => {
   try {
     const { username, email, phone, password } = req.body;
@@ -78,7 +76,6 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'Wszystkie pola są wymagane.' });
     }
 
-    // Czyścimy login i email ze spacji, robimy małe litery z maila
     const cleanUsername = username.trim();
     const cleanEmail = email.trim().toLowerCase();
 
@@ -107,7 +104,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// --- API: LOGOWANIE ---
+// --- API: LOGOWANIE (Aplikacja) ---
 app.post('/api/login', async (req, res) => {
   try {
     const { loginOrEmail, password } = req.body;
@@ -116,7 +113,6 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ message: 'Podaj login/email oraz hasło.' });
     }
 
-    // NAPRAWA: Usuwamy spacje, które wpisują się przypadkowo (np. z klawiatury telefonu)
     const cleanLogin = loginOrEmail.trim();
 
     const user = await User.findOne({
@@ -159,6 +155,15 @@ app.post('/api/login', async (req, res) => {
     console.error('❌ Błąd podczas logowania:', error);
     res.status(500).json({ message: 'Wystąpił błąd serwera podczas logowania.' });
   }
+});
+
+// Zamiast reszty endpointów /api/team zrobimy tutaj po prostu atrapę (Mock), żeby frontend admina nie rzucał błędami
+app.get('/api/team', (req, res) => {
+  res.json({ success: true, data: [] });
+});
+
+app.post('/api/team', (req, res) => {
+  res.json({ success: true });
 });
 
 // --- OBSŁUGA BŁĘDÓW 404 ---
