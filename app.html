@@ -293,11 +293,11 @@
   <div class="loader-content" style="max-width: 85%; margin: 0 auto;">
     <div class="loader-logo">MilkMi<span>.</span></div>
     
-    <h2 style="color: white; margin-bottom: 15px; font-size: 1.4rem;">Witaj w MilkMi!</h2>
+    <h2 style="color: white; margin-bottom: 15px; font-size: 1.4rem;" data-i18n="splash_welcome">Witaj w MilkMi!</h2>
     
-    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">
-  MilkMi to nowa aplikacja lojalnościowa dla klientów Milkshakebar. Aktualnie trwa przerwa techniczna, która potrwa do <strong>7 kwietnia 2026</strong>.
-</p>
+    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;" data-i18n="splash_desc">
+      MilkMi to nowa aplikacja lojalnościowa dla klientów Milkshakebar. Aktualnie trwa przerwa techniczna, która potrwa do <strong>7 kwietnia 2026</strong>.
+    </p>
 
     <div class="countdown-container">
       <div class="cd-box"><span id="cd-days">00</span><div class="cd-label">Dni</div></div>
@@ -306,8 +306,7 @@
       <div class="cd-box"><span id="cd-secs">00</span><div class="cd-label">Sek</div></div>
     </div>
 
-    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 30px; line-height: 1.4; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.2);">
-      <i class="fas fa-info-circle" style="color: var(--primary); margin-bottom: 8px; font-size: 1.2rem;"></i><br>
+    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 30px; line-height: 1.4; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.2);" data-i18n="splash_info">
       Po zakończeniu przerwy technicznej Twoje punkty i inne informacje zostaną na Twoim koncie. Do zobaczenia wkrótce!
     </p>
   </div>
@@ -318,12 +317,12 @@
 <div id="auth-screen">
     <div class="auth-header">
         <h1>MilkMi<span>.</span></h1>
-        <p>Zaloguj się, by odebrać swoje nagrody!</p>
+        <p data-i18n="auth_sub">Zaloguj się, by odebrać swoje nagrody!</p>
     </div>
 
     <div class="auth-tabs">
-        <div class="auth-tab active" onclick="switchAuthTab('login')">Logowanie</div>
-        <div class="auth-tab" onclick="switchAuthTab('register')">Rejestracja</div>
+        <div class="auth-tab active" onclick="switchAuthTab('login')" data-i18n="auth_login_tab">Logowanie</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')" data-i18n="auth_reg_tab">Rejestracja</div>
     </div>
 
     <form id="form-login" onsubmit="handleAuthSubmit(event)">
@@ -338,7 +337,7 @@
                 <i class="fas fa-eye password-toggle" onclick="togglePassword(this)"></i>
             </div>
         </div>
-        <button type="submit" class="btn-main" style="margin-top: 20px;">Zaloguj się</button>
+        <button type="submit" class="btn-main" style="margin-top: 20px;" data-i18n="auth_login_tab">Zaloguj się</button>
     </form>
 
     <form id="form-register" style="display: none;" onsubmit="handleAuthSubmit(event)">
@@ -361,13 +360,13 @@
                 <i class="fas fa-eye password-toggle" onclick="togglePassword(this)"></i>
             </div>
         </div>
-        <button type="submit" class="btn-main" style="margin-top: 20px;">Załóż konto</button>
+        <button type="submit" class="btn-main" style="margin-top: 20px;" data-i18n="auth_reg_tab">Załóż konto</button>
     </form>
 
     <div class="auth-notice">
-        <p>Korzystałeś już z naszej aplikacji wcześniej?</p>
-        <span class="auth-notice-link" onclick="toggleNoticeDetails()">Zobacz więcej</span>
-        <div class="auth-notice-content" id="notice-details">
+        <p data-i18n="auth_notice_q">Korzystałeś już z naszej aplikacji wcześniej?</p>
+        <span class="auth-notice-link" onclick="toggleNoticeDetails()" data-i18n="auth_notice_btn">Zobacz więcej</span>
+        <div class="auth-notice-content" id="notice-details" data-i18n="auth_notice_content">
             Zarejestruj się na nowo na adres mailowy, który używałeś wcześniej, a twoje punkty wrócą na twoje konto do 48h od momentu nowej rejestracji. Przepraszamy za utrudnienia i dziękujemy za wyrozumiałość.
         </div>
     </div>
@@ -399,13 +398,16 @@
   <section id="view-home" class="view-section active">
       
     <div style="padding: 10px 24px 20px;">
-      <h2 style="font-size: 1.8rem; line-height: 1.2;">Cześć, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span></h2>
+      <h2 style="font-size: 1.8rem; line-height: 1.2;">
+        <span data-i18n="home_hello">Cześć</span> <span id="home-username-placeholder"></span>, <br>
+        <span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;" data-i18n="home_nice">Miło Cię widzieć!</span>
+      </h2>
     </div>
 
     <div class="loyalty-card-premium" onclick="openQR()">
       <div class="loyalty-top">
         <div>
-          <div class="points-label">Dostępne Milkosy</div>
+          <div class="points-label" data-i18n="points_avail">Dostępne Milkosy</div>
           <div class="points-big" id="user-points">0</div>
         </div>
         <i class="fas fa-crown" style="font-size: 1.5rem; color: #FFD700;"></i>
@@ -416,14 +418,14 @@
       </div>
         
       <div class="loyalty-footer">
-        <span>Status: Gold</span>
-        <span>250 do nagrody</span>
+        <span data-i18n="status_gold">Status: Gold</span>
+        <span data-i18n="status_until">250 do nagrody</span>
       </div>
     </div>
     
     <div style="padding: 0 24px 24px;">
         <button class="btn-outline" onclick="switchTab('reservation', event)" style="width:100%; border-color:var(--primary); color:var(--primary); margin-bottom: 0;">
-            <i class="fas fa-calendar-alt" style="margin-right:8px;"></i> Zarezerwuj Stolik
+            <i class="fas fa-calendar-alt" style="margin-right:8px;"></i> <span data-i18n="btn_reserve">Zarezerwuj Stolik</span>
         </button>
     </div>
 
@@ -431,14 +433,14 @@
       <img src="https://i.imgur.com/rcaqjLK.png" alt="Eatmi Logo" class="ad-logo">
       <div class="ad-content">
         <div class="ad-title">Eatmi - Catering pudełkowy </div>
-        <div class="ad-desc">Zdrowe posiłki każdego dnia.</div>
+        <div class="ad-desc" data-i18n="ad_desc">Zdrowe posiłki każdego dnia.</div>
       </div>
-      <div class="ad-btn">Przejdź</div>
+      <div class="ad-btn" data-i18n="ad_btn">Przejdź</div>
     </a>
 
     <div class="section-title">
-      Ostatnia aktywność
-      <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600; cursor: pointer;">Historia</span>
+      <span data-i18n="hist_title">Ostatnia aktywność</span>
+      <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600; cursor: pointer;" data-i18n="hist_sub">Historia</span>
     </div>
 
     <div class="activity-list" id="activity-container-home">
@@ -447,10 +449,10 @@
   </section>
   
   <section id="view-rewards" class="view-section">
-      <div class="section-title">Centrum Nagród</div>
+      <div class="section-title" data-i18n="reward_title">Centrum Nagród</div>
       <div class="rewards-hero">
           <h2 id="rewards-points-display">0</h2>
-          <p>Twoje Milkosy</p>
+          <p data-i18n="reward_sub">Twoje Milkosy</p>
       </div>
       <div class="rewards-grid-layout" id="rewards-container">
           </div>
@@ -458,13 +460,13 @@
 
   <section id="view-order" class="view-section">
     <div id="order-type-selection">
-        <div class="section-title">Jak chcesz zamówić?</div>
+        <div class="section-title" data-i18n="order_how">Jak chcesz zamówić?</div>
         <div class="order-type-container">
             <div class="order-type-card" onclick="selectOrderType('pickup')" style="width: 100%; justify-content: center; flex-direction: column; text-align: center;">
                 <div class="order-type-icon"><i class="fas fa-store"></i></div>
                 <div class="order-type-info">
-                    <h3>Odbiór osobisty / Na miejscu</h3>
-                    <p>Zamów i odbierz przy barze bez kolejki</p>
+                    <h3 data-i18n="order_pickup">Odbiór osobisty / Na miejscu</h3>
+                    <p data-i18n="order_pickup_desc">Zamów i odbierz przy barze bez kolejki</p>
                 </div>
             </div>
         </div>
@@ -473,46 +475,46 @@
     <div id="menu-view-actual" style="display: none;">
         <div class="section-title" style="display: flex; align-items: center; gap: 10px;">
             <i class="fas fa-arrow-left" onclick="backToOrderType()" style="cursor: pointer; color: var(--primary);"></i>
-            Nasze Menu
+            <span data-i18n="menu_title">Nasze Menu</span>
         </div>
         <div class="menu-grid" id="menu-container"></div>
     </div>
   </section>
 
   <section id="view-reservation" class="view-section">
-    <div class="section-title">Zarezerwuj Stolik</div>
+    <div class="section-title" data-i18n="res_title">Zarezerwuj Stolik</div>
       
     <div class="card">
-      <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block;">Wybierz strefę</label>
+      <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block;" data-i18n="res_zone_title">Wybierz strefę</label>
       <div class="table-grid">
         <div class="table-select selected" onclick="selectZone(this, 'Sala frontowa')">
-          <i class="fas fa-door-open"></i> Sala frontowa
+          <i class="fas fa-door-open"></i> <span data-i18n="zone_front">Sala frontowa</span>
         </div>
         <div class="table-select" onclick="selectZone(this, 'Sala główna')">
-          <i class="fas fa-chair"></i> Sala główna
+          <i class="fas fa-chair"></i> <span data-i18n="zone_main">Sala główna</span>
         </div>
         <div class="table-select" onclick="selectZone(this, 'Przy kąciku dla dzieci')">
-          <i class="fas fa-child"></i> Kącik dzieci 
+          <i class="fas fa-child"></i> <span data-i18n="zone_kids">Kącik dzieci</span>
         </div>
         </div>
 
       <div class="form-group">
-        <label>Imię i Nazwisko</label>
+        <label data-i18n="res_name">Imię i Nazwisko</label>
         <input type="text" class="form-control" placeholder="np. Jan Kowalski">
       </div>
 
       <div class="form-group">
-        <label>Numer telefonu</label>
+        <label data-i18n="res_phone">Numer telefonu</label>
         <input type="tel" class="form-control" placeholder="+48 000 000 000">
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label>Data i Godzina</label>
+          <label data-i18n="res_date">Data i Godzina</label>
           <input type="datetime-local" class="form-control">
         </div>
         <div class="form-group">
-          <label>Ilość osób</label>
+          <label data-i18n="res_guests">Ilość osób</label>
           <select class="form-control">
             <script>
               for(let i=1; i<=20; i++) {
@@ -524,16 +526,16 @@
       </div>
 
       <div class="form-group">
-        <label>Dodatkowe informacje (alergie itp.)</label>
-        <textarea class="form-control" rows="2" placeholder="Opcjonalnie..."></textarea>
+        <label data-i18n="res_notes">Dodatkowe informacje (alergie itp.)</label>
+        <textarea class="form-control" rows="2" placeholder="..."></textarea>
       </div>
 
-      <button class="btn-main" style="margin-top: 10px;" onclick="submitReservation()">Potwierdź rezerwację</button>
+      <button class="btn-main" style="margin-top: 10px;" onclick="submitReservation()" data-i18n="res_btn">Potwierdź rezerwację</button>
     </div>
   </section>
 
   <section id="view-wallet" class="view-section">
-    <div class="section-title">Mój Portfel</div>
+    <div class="section-title" data-i18n="wallet_title">Mój Portfel</div>
       
     <div style="padding: 0 24px;">
         <div class="milk-card">
@@ -542,26 +544,26 @@
                 <div class="milk-card-chip"></div>
             </div>
             <div class="milk-card-balance">
-                <div style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px;">Saldo karty</div>
+                <div style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px;" data-i18n="wallet_balance">Saldo karty</div>
                 <div style="font-size: 2rem; font-weight: 800;">0.00 PLN</div>
             </div>
             <div class="milk-card-num">**** **** **** 8829</div>
         </div>
 
         <div class="wallet-info-box">
-            <i class="fas fa-info-circle"></i> Kartę możesz doładować w aplikacji lub <strong>gotówką/kartą przy kasie w lokalu</strong>.
+            <i class="fas fa-info-circle"></i> <span data-i18n="wallet_info">Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.</span>
         </div>
 
         <button class="btn-main" style="margin-bottom: 12px;" onclick="openModal('topup-modal')">
-            <i class="fas fa-plus-circle"></i> Doładuj kartę online
+            <i class="fas fa-plus-circle"></i> <span data-i18n="wallet_topup">Doładuj kartę online</span>
         </button>
         
         <button class="btn-outline" onclick="openModal('gift-modal')">
-            <i class="fas fa-gift" style="margin-right: 8px;"></i> Kup kartę na prezent
+            <i class="fas fa-gift" style="margin-right: 8px;"></i> <span data-i18n="wallet_gift">Kup kartę na prezent</span>
         </button>
     </div>
 
-    <div class="section-title">Historia transakcji</div>
+    <div class="section-title" data-i18n="wallet_hist">Historia transakcji</div>
     <div class="activity-list" id="activity-container-wallet">
     </div>
   </section>
@@ -569,7 +571,7 @@
   <div class="modal-overlay" id="settings-modal" onclick="closeModal('settings-modal')">
     <div class="modal-sheet full" onclick="event.stopPropagation()">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h2>Ustawienia</h2>
+            <h2 data-i18n="set_title">Ustawienia</h2>
             <button class="icon-btn" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button>
         </div>
 
@@ -582,31 +584,31 @@
         <div class="settings-list">
             <div class="settings-item" onclick="openModal('modal-personal-data')">
                 <i class="fas fa-user-circle"></i>
-                <div class="label">Dane osobowe</div>
+                <div class="label" data-i18n="set_personal">Dane osobowe</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
              
             <div class="settings-item" onclick="openModal('modal-language')">
                 <i class="fas fa-language"></i>
-                <div class="label">Język (Polski)</div>
+                <div class="label" id="setting-lang-label" data-i18n="set_lang">Język (Polski)</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
             <div class="settings-item" onclick="openModal('modal-notifications')">
                 <i class="fas fa-bell"></i>
-                <div class="label">Powiadomienia PUSH</div>
+                <div class="label" data-i18n="set_notif">Powiadomienia PUSH</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
             <div class="settings-item" onclick="openModal('modal-security')">
                 <i class="fas fa-shield-alt"></i>
-                <div class="label">Bezpieczeństwo (FaceID/PIN)</div>
+                <div class="label" data-i18n="set_security">Bezpieczeństwo (FaceID/PIN)</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
             <div class="settings-item" onclick="openModal('modal-business')">
                 <i class="fas fa-briefcase"></i>
-                <div class="label">Milk for Business</div>
+                <div class="label" data-i18n="set_business">Milk for Business</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
@@ -614,19 +616,19 @@
 
             <div class="settings-item" onclick="openModal('modal-about')">
                 <i class="fas fa-info-circle"></i>
-                <div class="label">O nas</div>
+                <div class="label" data-i18n="set_about">O nas</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
             <div class="settings-item" onclick="openModal('modal-help')">
                 <i class="fas fa-question-circle"></i>
-                <div class="label">Pomoc</div>
+                <div class="label" data-i18n="set_help">Pomoc</div>
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
             <div class="settings-item" onclick="logout()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
                 <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
-                <div class="label">Wyloguj się</div>
+                <div class="label" data-i18n="set_logout">Wyloguj się</div>
             </div>
         </div>
     </div>
@@ -634,7 +636,7 @@
 
   <div class="modal-overlay" id="modal-personal-data" onclick="closeModal('modal-personal-data')">
       <div class="modal-sheet" onclick="event.stopPropagation()">
-          <h3>Dane osobowe</h3>
+          <h3 data-i18n="set_personal">Dane osobowe</h3>
           <div class="form-group" style="margin-top:20px;">
               <label>Imię</label>
               <input type="text" class="form-control" value="">
@@ -647,20 +649,22 @@
               <label>Telefon</label>
               <input type="tel" class="form-control" value="">
           </div>
-          <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')">Zapisz zmiany</button>
+          <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')" data-i18n="btn_save">Zapisz zmiany</button>
       </div>
   </div>
 
   <div class="modal-overlay" id="modal-language" onclick="closeModal('modal-language')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Wybierz język</h3>
+        <h3 data-i18n="lang_title">Wybierz język</h3>
         <div class="settings-list">
-            <div class="settings-item" onclick="showToast('Ustawiono Polski'); closeModal('modal-language')">
+            <div class="settings-item" onclick="changeLanguage('pl')">
                 <div class="label">Polski</div>
-                <i class="fas fa-check" style="color:var(--primary)"></i>
             </div>
-            <div class="settings-item" onclick="showToast('Language set to English'); closeModal('modal-language')">
+            <div class="settings-item" onclick="changeLanguage('en')">
                 <div class="label">English</div>
+            </div>
+            <div class="settings-item" onclick="changeLanguage('es')">
+                <div class="label">Español</div>
             </div>
         </div>
     </div>
@@ -668,7 +672,7 @@
 
   <div class="modal-overlay" id="modal-notifications" onclick="closeModal('modal-notifications')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Powiadomienia</h3>
+        <h3 data-i18n="set_notif">Powiadomienia</h3>
         <div class="settings-item" style="cursor:default">
             <div class="label">Powiadomienia o promocjach</div>
             <label class="toggle-switch">
@@ -689,7 +693,7 @@
 
   <div class="modal-overlay" id="modal-security" onclick="closeModal('modal-security')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Bezpieczeństwo</h3>
+        <h3 data-i18n="set_security">Bezpieczeństwo</h3>
         <div class="settings-item" style="cursor:default">
             <div class="label">Logowanie biometryczne</div>
             <label class="toggle-switch">
@@ -697,17 +701,13 @@
                 <span class="slider"></span>
             </label>
         </div>
-        <div class="settings-item" onclick="showToast('Zmień PIN...')">
-            <div class="label">Zmień kod PIN</div>
-            <i class="fas fa-chevron-right chevron"></i>
-        </div>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-security')">Zamknij</button>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-business" onclick="closeModal('modal-business')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Milk for Business</h3>
+        <h3 data-i18n="set_business">Milk for Business</h3>
         <p style="color:var(--text-sub); margin-bottom:20px;">Chcesz dołączyć do programu dla firm i zamawiać posiłki dla swoich pracowników?</p>
         <button class="btn-main" onclick="showToast('Wysłano zgłoszenie do doradcy')">Dowiedz się więcej</button>
         <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-business')">Powrót</button>
@@ -716,7 +716,7 @@
 
   <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>O MilkMi</h3>
+        <h3 data-i18n="set_about">O MilkMi</h3>
         <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.6.0 (2026)</p>
         <p style="font-size:0.9rem; line-height:1.5;">Milkmi to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
@@ -725,7 +725,7 @@
 
   <div class="modal-overlay" id="modal-help" onclick="closeModal('modal-help')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Centrum Pomocy</h3>
+        <h3 data-i18n="set_help">Centrum Pomocy</h3>
         <div class="settings-list">
             <div class="settings-item" onclick="showToast('Czat z konsultantem...')">
                 <i class="fas fa-comments"></i>
@@ -735,10 +735,6 @@
                 <i class="fas fa-phone"></i>
                 <div class="label">Zadzwoń do nas</div>
             </div>
-            <div class="settings-item" onclick="showToast('FAQ wczytane')">
-                <i class="fas fa-book"></i>
-                <div class="label">Najczęściej zadawane pytania</div>
-            </div>
         </div>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-help')">Zamknij</button>
     </div>
@@ -746,7 +742,7 @@
 
   <div class="modal-overlay" id="topup-modal" onclick="closeModal('topup-modal')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Doładuj MilkCard</h3>
+        <h3 data-i18n="wallet_topup">Doładuj MilkCard</h3>
         <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wpisz kwotę, o jaką chcesz zasilić swoją kartę.</p>
           
         <div class="form-group">
@@ -763,7 +759,7 @@
 
   <div class="modal-overlay" id="gift-modal" onclick="closeModal('gift-modal')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3>Karta Prepaid na Prezent</h3>
+        <h3 data-i18n="wallet_gift">Karta Prepaid na Prezent</h3>
         <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wybierz kwotę i podaj dane osoby obdarowywanej.</p>
           
         <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: block;">Wybierz wartość karty</label>
@@ -775,22 +771,7 @@
             <div class="amount-chip" onclick="selectAmount(this, 1000)">1000 PLN</div>
         </div>
 
-        <div class="form-group">
-            <label>Imię i Nazwisko obdarowanego</label>
-            <input type="text" class="form-control" placeholder="Kto otrzyma prezent?">
-        </div>
-
-        <div class="form-group">
-            <label>Numer telefonu</label>
-            <input type="tel" class="form-control" placeholder="+48 000 000 000">
-        </div>
-
-        <div class="form-group">
-            <label>Adres E-mail</label>
-            <input type="email" class="form-control" placeholder="email@przyklad.pl">
-        </div>
-
-        <button class="btn-main" onclick="processPayment('Karta podarunkowa została wysłana!')">
+        <button class="btn-main" style="margin-top:20px;" onclick="processPayment('Karta podarunkowa została wysłana!')">
             Kup i wyślij prezent
         </button>
         <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('gift-modal')">Anuluj</button>
@@ -843,10 +824,10 @@
 
   <nav class="bottom-nav">
     <a href="#" class="nav-item active" onclick="switchTab('home', event)">
-      <i class="fas fa-home"></i> <span>Start</span>
+      <i class="fas fa-home"></i> <span data-i18n="nav_start">Start</span>
     </a>
     <a href="#" class="nav-item" onclick="switchTab('order', event)">
-      <i class="fas fa-shopping-basket"></i> <span>Zamów</span>
+      <i class="fas fa-shopping-basket"></i> <span data-i18n="nav_order">Zamów</span>
     </a>
       
     <div class="fab-container" onclick="openQR()">
@@ -856,10 +837,10 @@
     </div>
 
     <a href="#" class="nav-item" onclick="switchTab('rewards', event)">
-      <i class="fas fa-gift"></i> <span>Nagrody</span>
+      <i class="fas fa-gift"></i> <span data-i18n="nav_rewards">Nagrody</span>
     </a>
     <a href="#" class="nav-item" onclick="switchTab('wallet', event)">
-      <i class="fas fa-wallet"></i> <span>Portfel</span>
+      <i class="fas fa-wallet"></i> <span data-i18n="nav_wallet">Portfel</span>
     </a>
   </nav>
 
@@ -872,13 +853,105 @@
 
 <script>
 // ==========================================
+// 0. SYSTEM TŁUMACZEŃ (i18n)
+// ==========================================
+const translations = {
+    pl: {
+        nav_start: "Start", nav_order: "Zamów", nav_rewards: "Nagrody", nav_wallet: "Portfel",
+        set_title: "Ustawienia", set_personal: "Dane osobowe", set_lang: "Język (Polski)", set_notif: "Powiadomienia PUSH",
+        set_security: "Bezpieczeństwo (FaceID/PIN)", set_business: "Milk for Business", set_about: "O nas",
+        set_help: "Pomoc", set_logout: "Wyloguj się", btn_save: "Zapisz zmiany",
+        splash_welcome: "Witaj w MilkMi!", 
+        splash_desc: "MilkMi to nowa aplikacja lojalnościowa dla klientów Milkshakebar. Aktualnie trwa przerwa techniczna, która potrwa do <strong>7 kwietnia 2026</strong>.",
+        splash_info: "Po zakończeniu przerwy technicznej Twoje punkty i inne informacje zostaną na Twoim koncie. Do zobaczenia wkrótce!",
+        auth_login_tab: "Logowanie", auth_reg_tab: "Rejestracja", auth_sub: "Zaloguj się, by odebrać swoje nagrody!",
+        auth_notice_q: "Korzystałeś już z naszej aplikacji wcześniej?", auth_notice_btn: "Zobacz więcej",
+        auth_notice_content: "Zarejestruj się na nowo na adres mailowy, który używałeś wcześniej, a twoje punkty wrócą na twoje konto do 48h od momentu nowej rejestracji. Przepraszamy za utrudnienia i dziękujemy za wyrozumiałość.",
+        points_avail: "Dostępne Milkosy", status_gold: "Status: Gold", status_until: "250 do nagrody", btn_reserve: "Zarezerwuj Stolik",
+        ad_desc: "Zdrowe posiłki każdego dnia.", ad_btn: "Przejdź",
+        lang_title: "Wybierz język", order_how: "Jak chcesz zamówić?", order_pickup: "Odbiór osobisty / Na miejscu", order_pickup_desc: "Zamów i odbierz przy barze bez kolejki", menu_title: "Nasze Menu",
+        res_title: "Zarezerwuj Stolik", res_zone_title: "Wybierz strefę", res_name: "Imię i Nazwisko", res_phone: "Numer telefonu", res_date: "Data i Godzina", res_guests: "Ilość osób", res_notes: "Dodatkowe informacje (alergie itp.)", res_btn: "Potwierdź rezerwację",
+        zone_front: "Sala frontowa", zone_main: "Sala główna", zone_kids: "Kącik dzieci",
+        wallet_title: "Mój Portfel", wallet_balance: "Saldo karty", wallet_info: "Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.", wallet_topup: "Doładuj kartę online", wallet_gift: "Kup kartę na prezent",
+        hist_title: "Ostatnia aktywność", hist_sub: "Historia", wallet_hist: "Historia transakcji",
+        reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Wymień Punkty", reward_btn_no: "Za mało pkt",
+        home_hello: "Cześć", home_nice: "Miło Cię widzieć!"
+    },
+    en: {
+        nav_start: "Home", nav_order: "Order", nav_rewards: "Rewards", nav_wallet: "Wallet",
+        set_title: "Settings", set_personal: "Personal Data", set_lang: "Language (English)", set_notif: "PUSH Notifications",
+        set_security: "Security (FaceID/PIN)", set_business: "Milk for Business", set_about: "About Us",
+        set_help: "Help", set_logout: "Log Out", btn_save: "Save Changes",
+        splash_welcome: "Welcome to MilkMi!", 
+        splash_desc: "MilkMi is the new loyalty app for Milkshakebar customers. We are currently undergoing maintenance until <strong>April 7, 2026</strong>.",
+        splash_info: "After maintenance, your points and info will remain on your account. See you soon!",
+        auth_login_tab: "Login", auth_reg_tab: "Register", auth_sub: "Log in to claim your rewards!",
+        auth_notice_q: "Have you used our app before?", auth_notice_btn: "See more",
+        auth_notice_content: "Register again with the email address you used previously, and your points will return to your account within 48h. We apologize for the inconvenience.",
+        points_avail: "Available Milkos", status_gold: "Status: Gold", status_until: "250 to reward", btn_reserve: "Book a Table",
+        ad_desc: "Healthy meals every day.", ad_btn: "Go",
+        lang_title: "Select Language", order_how: "How would you like to order?", order_pickup: "Pick up / Dine-in", order_pickup_desc: "Order and pick up at the bar without queuing", menu_title: "Our Menu",
+        res_title: "Book a Table", res_zone_title: "Select zone", res_name: "Full Name", res_phone: "Phone Number", res_date: "Date and Time", res_guests: "Number of guests", res_notes: "Additional info (allergies, etc.)", res_btn: "Confirm Reservation",
+        zone_front: "Front room", zone_main: "Main room", zone_kids: "Kids area",
+        wallet_title: "My Wallet", wallet_balance: "Card Balance", wallet_info: "You can top up your card in the app or with cash/card at the local register.", wallet_topup: "Top up card online", wallet_gift: "Buy a gift card",
+        hist_title: "Recent Activity", hist_sub: "History", wallet_hist: "Transaction History",
+        reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Redeem Points", reward_btn_no: "Not enough pts",
+        home_hello: "Hello", home_nice: "Nice to see you!"
+    },
+    es: {
+        nav_start: "Inicio", nav_order: "Pedir", nav_rewards: "Premios", nav_wallet: "Cartera",
+        set_title: "Ajustes", set_personal: "Datos personales", set_lang: "Idioma (Español)", set_notif: "Notificaciones PUSH",
+        set_security: "Seguridad (FaceID/PIN)", set_business: "Milk for Business", set_about: "Sobre nosotros",
+        set_help: "Ayuda", set_logout: "Cerrar sesión", btn_save: "Guardar",
+        splash_welcome: "¡Bienvenido a MilkMi!", 
+        splash_desc: "MilkMi es la nueva app de fidelidad para los clientes de Milkshakebar. Estamos en mantenimiento hasta el <strong>7 de abril de 2026</strong>.",
+        splash_info: "Después del mantenimiento, tus puntos y datos seguirán en tu cuenta. ¡Nos vemos pronto!",
+        auth_login_tab: "Entrar", auth_reg_tab: "Registro", auth_sub: "¡Inicia sesión para reclamar tus premios!",
+        auth_notice_q: "¿Has usado nuestra app antes?", auth_notice_btn: "Ver más",
+        auth_notice_content: "Vuelve a registrarte con tu correo anterior y tus puntos volverán en 48 horas. Lamentamos las molestias.",
+        points_avail: "Milkos Disponibles", status_gold: "Estado: Oro", status_until: "250 para premio", btn_reserve: "Reservar Mesa",
+        ad_desc: "Comidas sanas todos los días.", ad_btn: "Ir",
+        lang_title: "Seleccionar Idioma", order_how: "¿Cómo quieres pedir?", order_pickup: "Recoger / Comer aquí", order_pickup_desc: "Pide y recoge en la barra sin colas", menu_title: "Nuestro Menú",
+        res_title: "Reservar Mesa", res_zone_title: "Seleccionar zona", res_name: "Nombre y Apellidos", res_phone: "Número de teléfono", res_date: "Fecha y Hora", res_guests: "Número de personas", res_notes: "Info extra (alergias, etc.)", res_btn: "Confirmar reserva",
+        zone_front: "Sala principal", zone_main: "Comedor", zone_kids: "Zona infantil",
+        wallet_title: "Mi Cartera", wallet_balance: "Saldo de tarjeta", wallet_info: "Puedes recargar tu tarjeta en la app o en la caja del local.", wallet_topup: "Recargar tarjeta online", wallet_gift: "Comprar tarjeta regalo",
+        hist_title: "Actividad Reciente", hist_sub: "Historial", wallet_hist: "Historial de transacciones",
+        reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear Puntos", reward_btn_no: "Faltan pts",
+        home_hello: "Hola", home_nice: "¡Qué bueno verte!"
+    }
+};
+
+let currentLang = 'pl';
+
+function changeLanguage(lang, showMsg = true) {
+    if (!translations[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('milkmi_lang', lang);
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.innerHTML = translations[lang][key]; 
+        }
+    });
+
+    closeModal('modal-language');
+    renderRewards(); // Przeładuj nagrody dla nowych tekstów przycisków
+    
+    if (showMsg) {
+        const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
+        showToast(msgs[lang]);
+    }
+}
+
+
+// ==========================================
 // 1. ZMIENNE APLIKACJI
 // ==========================================
 let currentUser = null;
 let currentToken = null;
 let userPoints = 0;
 
-// ODCZYT Z LOCALSTORAGE
 const savedUser = localStorage.getItem('milkmi_user');
 const savedToken = localStorage.getItem('milkmi_token');
 
@@ -901,9 +974,9 @@ const products = [
 ];
   
 const rewards = [
-    { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
-    { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
-    { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
+    { id: "milkshake_30", name: "Milkshake", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
+    { id: "burger_set_60", name: "Zestaw burger", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
+    { id: "order_120", name: "Zamówienie max 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
 ];
 
 let cart = [];
@@ -913,9 +986,18 @@ let currentLocation = "Słupsk, Szczecińska 17";
 let countdownInterval;
 
 // ==========================================
-// 3. INIT BAZOWY (ZAWSZE EKRAN LOGOWANIA)
+// 3. INIT BAZOWY
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+  // Wczytywanie Motywu z localStorage
+  if (localStorage.getItem('milkmi_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+  }
+
+  // Wczytywanie Języka z localStorage
+  const savedLang = localStorage.getItem('milkmi_lang') || 'pl';
+  changeLanguage(savedLang, false);
+
   const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
   
   function updateTimer() {
@@ -923,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const distance = targetDate - now;
     if (distance < 0) {
       clearInterval(countdownInterval);
-      unlockApp(); // Po zakończeniu odliczania pokaż formularz logowania lub główną apkę
+      unlockApp(); 
       return;
     }
     document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
@@ -944,95 +1026,60 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// NOWE FUNKCJE AUTORYZACJI (Połączenie z API)
+// AUTORYZACJA
 // ==========================================
 async function handleAuthSubmit(e) {
     e.preventDefault();
-    
     const isLogin = e.target.id === 'form-login';
     const authScreen = document.getElementById('auth-screen');
     const mainApp = document.getElementById('main-app');
 
     if (isLogin) {
-        // --- LOGIKA LOGOWANIA ---
         const inputs = document.querySelectorAll('#form-login .form-control');
-        const loginOrEmail = inputs[0].value;
-        const password = inputs[1].value;
-
         try {
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ loginOrEmail, password })
+                body: JSON.stringify({ loginOrEmail: inputs[0].value, password: inputs[1].value })
             });
             const data = await res.json();
-
             if (res.ok) {
                 currentToken = data.token;
                 currentUser = data.user;
                 userPoints = data.user.points || 0;
-
-                // Zapis do localStorage
                 localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                 localStorage.setItem('milkmi_token', currentToken);
-
-                showToast("Pomyślnie zalogowano!");
+                showToast(translations[currentLang].nav_start + " - OK!");
                 initUserData(); 
                 transitionToApp(authScreen, mainApp);
-            } else {
-                showToast(data.message, false);
-            }
-        } catch (error) {
-            console.error(error);
-            showToast("Błąd połączenia z serwerem.", false);
-        }
-
+            } else { showToast(data.message, false); }
+        } catch (error) { showToast("Error", false); }
     } else {
-        // --- LOGIKA REJESTRACJI ---
         const inputs = document.querySelectorAll('#form-register .form-control');
-        const username = inputs[0].value;
-        const email = inputs[1].value;
-        const phone = inputs[2].value;
-        const password = inputs[3].value;
-
         try {
             const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, phone, password })
+                body: JSON.stringify({ username: inputs[0].value, email: inputs[1].value, phone: inputs[2].value, password: inputs[3].value })
             });
             const data = await res.json();
-
             if (res.ok) {
-                showToast("Konto utworzone! Trwa logowanie...");
-                
-                // Automatyczne logowanie po udanej rejestracji
+                showToast("Account created!");
                 const loginRes = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ loginOrEmail: email, password })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginOrEmail: inputs[1].value, password: inputs[3].value })
                 });
                 const loginData = await loginRes.json();
-                
                 if (loginRes.ok) {
                     currentToken = loginData.token;
                     currentUser = loginData.user;
                     userPoints = loginData.user.points || 0;
-
-                    // Zapis do localStorage
                     localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                     localStorage.setItem('milkmi_token', currentToken);
-
                     initUserData();
                     transitionToApp(authScreen, mainApp);
                 }
-            } else {
-                showToast(data.message, false);
-            }
-        } catch (error) {
-            console.error(error);
-            showToast("Błąd połączenia z serwerem.", false);
-        }
+            } else { showToast(data.message, false); }
+        } catch (error) { showToast("Error", false); }
     }
 }
 
@@ -1041,7 +1088,7 @@ function transitionToApp(auth, main) {
     setTimeout(() => {
         auth.style.display = 'none';
         main.style.display = 'block';
-        void main.offsetWidth; // Wymuś reflow
+        void main.offsetWidth; 
         main.style.opacity = '1';
     }, 500);
 }
@@ -1051,47 +1098,31 @@ function transitionToApp(auth, main) {
 // ==========================================
 async function initUserData() {
     if (!currentUser) return;
-
-    // Pobierz najświeższe dane z serwera (portfel, punkty, historia) dla aktualnej sesji
     try {
       const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
       const data = await res.json();
-      
       if(data.ok) {
           userPoints = data.points;
           currentUser.walletBalance = data.walletBalance;
           currentUser.history = data.history;
-      } else if (res.status === 404) {
-          logout();
-          return;
-      }
-    } catch (e) {
-      console.log('Brak połączenia z serwerem przy odświeżaniu danych.');
-    }
+      } else if (res.status === 404) { logout(); return; }
+    } catch (e) {}
 
-    // 1. Ekran główny - Powitanie
-    const greetingHeader = document.querySelector('#view-home h2');
-    if (greetingHeader) {
-        greetingHeader.innerHTML = `Cześć ${currentUser.username}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
-    }
+    const namePlaceholder = document.getElementById('home-username-placeholder');
+    if (namePlaceholder) namePlaceholder.innerText = currentUser.username;
 
-    // 2. Aktualizacja Punktów
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
-    // 3. Aktualizacja balansu w Portfelu
     const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
     if (walletBalance) {
-        const bal = currentUser.walletBalance || 0;
-        walletBalance.innerText = `${bal.toFixed(2)} PLN`;
+        walletBalance.innerText = `${(currentUser.walletBalance || 0).toFixed(2)} PLN`;
     }
 
-    // 4. Widok Ustawień - Nagłówek profilu
     document.getElementById('set-name-display').innerText = currentUser.username;
     document.getElementById('set-email-display').innerText = currentUser.email;
     document.querySelector('.user-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
 
-    // 5. Modal z Danymi Osobowymi
     const personalDataInputs = document.querySelectorAll('#modal-personal-data .form-control');
     if (personalDataInputs.length >= 3) {
         personalDataInputs[0].value = currentUser.username;
@@ -1103,9 +1134,6 @@ async function initUserData() {
     renderActivities(currentUser.history || []); 
 }
 
-// ==========================================
-// LOGIKA WYLOGOWANIA
-// ==========================================
 function logout() {
     localStorage.removeItem('milkmi_user');
     localStorage.removeItem('milkmi_token');
@@ -1122,8 +1150,6 @@ function unlockApp() {
   splash.style.opacity = '0';
   setTimeout(() => {
       splash.style.visibility = 'hidden';
-      
-      // Sprawdzanie czy użytkownik jest już zalogowany (z localStorage)
       if (currentUser && currentToken) {
           mainApp.style.display = 'block';
           void mainApp.offsetWidth;
@@ -1134,7 +1160,6 @@ function unlockApp() {
           void auth.offsetWidth;
           auth.style.opacity = '1';
       }
-      
       document.body.style.overflow = 'auto'; 
   }, 800);
 }
@@ -1142,19 +1167,14 @@ function unlockApp() {
 function devLogin() {
   const pin = prompt("Podaj kod dostępu do trybu dewelopera:");
   if(pin === "33201") {
-    clearInterval(countdownInterval);
-    unlockApp();
-    showToast("Tryb dewelopera aktywowany", true);
-  } else if (pin !== null) {
-    alert("Nieprawidłowy kod PIN.");
+    clearInterval(countdownInterval); unlockApp(); showToast("Dev Mode", true);
   }
 }
 
 function switchAuthTab(type) {
     document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-    const forms = ['form-login', 'form-register'];
-    
-    forms.forEach(form => document.getElementById(form).style.display = 'none');
+    document.getElementById('form-login').style.display = 'none';
+    document.getElementById('form-register').style.display = 'none';
     
     if(type === 'login') {
         document.querySelectorAll('.auth-tab')[0].classList.add('active');
@@ -1179,8 +1199,7 @@ function togglePassword(icon) {
 }
 
 function toggleNoticeDetails() {
-    const details = document.getElementById('notice-details');
-    details.classList.toggle('open');
+    document.getElementById('notice-details').classList.toggle('open');
 }
 
 // ==========================================
@@ -1192,14 +1211,12 @@ function renderActivities(historyArray = []) {
   let html = '';
 
   if (historyArray.length === 0) {
-      html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
+      html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak</div>';
   } else {
       historyArray.slice(0, 5).forEach(item => {
         const isAdd = item.text.includes('+');
         const typeClass = isAdd ? 'type-money' : 'type-order';
         const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
-        
-        // Czerwony minus przy platnościach z portfela lub odbieraniu punktów
         const isMinus = item.text.includes('-');
         const textStyle = isMinus ? 'color: var(--status-err);' : 'color: var(--status-ok);';
 
@@ -1215,7 +1232,6 @@ function renderActivities(historyArray = []) {
         `;
       });
   }
-    
   if(homeContainer) homeContainer.innerHTML = html;
   if(walletContainer) walletContainer.innerHTML = html;
 }
@@ -1242,6 +1258,9 @@ function renderRewards() {
     const container = document.getElementById('rewards-container');
     if(!container) return;
     
+    const btnStr = translations[currentLang].reward_btn || "Wymień Punkty";
+    const noBtnStr = translations[currentLang].reward_btn_no || "Za mało pkt";
+
     let html = '';
     rewards.forEach(r => {
         const canAfford = userPoints >= r.cost;
@@ -1251,7 +1270,7 @@ function renderRewards() {
               <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
               <div class="reward-name">${r.name}</div>
               <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.id}', '${r.name}', ${r.cost})">
-                  ${canAfford ? 'Wymień Punkty' : 'Za mało pkt'}
+                  ${canAfford ? btnStr : noBtnStr}
               </button>
           </div>
         `;
@@ -1261,13 +1280,21 @@ function renderRewards() {
   
 async function redeemReward(rewardId, name, cost) {
     if(userPoints < cost) return showToast('Za mało punktów!', false);
+    if(!confirm(`Wydać ${cost} pkt na: ${name}?`)) return;
 
-    showToast('W przygotowaniu...');
+    try {
+        const res = await fetch('/api/rewards/redeem', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id, cost: cost, rewardName: name })
+        });
+        const data = await res.json();
+        if(data.success) {
+            showToast(data.message, true);
+            initUserData(); 
+        } else { showToast(data.message, false); }
+    } catch(err) { showToast('Błąd serwera.', false); }
 }
 
-// ==========================================
-// NOWOŚĆ: REALNE WYSYŁANIE REZERWACJI
-// ==========================================
 async function submitReservation() {
   const inputs = document.querySelectorAll('#view-reservation .form-control');
   const name = inputs[0].value;
@@ -1277,39 +1304,23 @@ async function submitReservation() {
   const notes = inputs[4] ? inputs[4].value : '';
 
   if(!name || !phone || !datetime || !guests) {
-      return showToast('Uzupełnij wymagane pola (Imię, Telefon, Data)!', false);
+      return showToast('Uzupełnij wymagane pola!', false);
   }
 
-  showToast('Wysyłanie rezerwacji...');
+  showToast('Wysyłanie...');
 
   try {
     const response = await fetch('/api/reservations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        phone,
-        datetime,
-        guests,
-        zone: selectedZone,
-        notes
-      })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, datetime, guests, zone: selectedZone, notes })
     });
 
     const data = await response.json();
     if(data.success) {
-      showToast('Rezerwacja wysłana! Czekamy na potwierdzenie z lokalu.', true);
-      // Czyszczenie pól
-      inputs[0].value = '';
-      inputs[1].value = '';
-      inputs[2].value = '';
-      if(inputs[4]) inputs[4].value = '';
-    } else {
-      showToast('Wystąpił błąd, spróbuj ponownie.', false);
-    }
-  } catch (err) {
-    showToast('Brak połączenia z serwerem.', false);
-  }
+      showToast('Rezerwacja wysłana!', true);
+      inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = ''; if(inputs[4]) inputs[4].value = '';
+    } else { showToast('Błąd.', false); }
+  } catch (err) { showToast('Brak połączenia.', false); }
 }
 
 // ==========================================
@@ -1319,7 +1330,6 @@ function changeLocation(loc) {
     currentLocation = loc;
     document.getElementById('header-loc-text').innerText = currentLocation;
     closeModal('modal-location');
-    showToast('Zmieniono lokalizację');
 }
 
 function switchTab(tabId, event) {
@@ -1366,12 +1376,12 @@ function selectAmount(el, val) {
 }
 
 function processPayment(msg) {
-  showToast("Przekierowanie do płatności...");
+  showToast("...");
   setTimeout(() => {
       closeModal('topup-modal');
       closeModal('gift-modal');
       showToast(msg);
-  }, 2000);
+  }, 1000);
 }
 
 function openProduct(id) {
@@ -1383,15 +1393,9 @@ function openProduct(id) {
     </div>
     <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
     <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
-    <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
-      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
-      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
-    </div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
       <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
-      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
-        Dodaj do koszyka
-      </button>
+      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">OK</button>
     </div>
   `;
   openModal('product-modal');
@@ -1403,13 +1407,10 @@ function addToCart(id) {
   badge.innerText = cart.length;
   badge.style.display = 'flex';
   closeModal('product-modal');
-  showToast('Dodano do koszyka!');
+  showToast('OK');
 }
 
-function showCart() {
-  if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
-  else showToast(`Masz ${cart.length} produktów w koszyku`);
-}
+function showCart() { showToast(`W koszyku: ${cart.length}`); }
 
 function selectZone(el, zoneName) {
   document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
@@ -1417,7 +1418,11 @@ function selectZone(el, zoneName) {
   selectedZone = zoneName;
 }
 
-function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+function toggleTheme() { 
+    document.body.classList.toggle('dark-mode'); 
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('milkmi_theme', isDark ? 'dark' : 'light');
+}
 
 function showToast(msg, success = true) {
   const t = document.getElementById('toast');
