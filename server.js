@@ -102,6 +102,24 @@ const pointTransactionSchema = new mongoose.Schema({
 
 const PointTransaction = mongoose.model('PointTransaction', pointTransactionSchema);
 
+
+// ==========================================
+// --- NOWOŚĆ: SCHEMAT REZERWACJI ---
+// ==========================================
+const reservationSchema = new mongoose.Schema({
+  name: String,
+  phone: String,
+  datetime: String,
+  guests: Number,
+  zone: String,
+  notes: String,
+  status: { type: String, default: 'pending' }, // 'pending', 'accepted', 'rejected'
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Reservation = mongoose.model('Reservation', reservationSchema);
+
+
 // --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
 const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
@@ -309,6 +327,42 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
     } catch(err) {
         res.status(500).json({ success: false, message: 'Błąd serwera.' });
     }
+});
+
+// ==========================================
+// --- NOWOŚĆ: API REZERWACJI ---
+// ==========================================
+
+// 1. Z APLIKACJI - Utworzenie rezerwacji
+app.post('/api/reservations', async (req, res) => {
+  try {
+    const newRes = new Reservation(req.body);
+    await newRes.save();
+    res.json({ success: true, message: 'Rezerwacja wysłana do lokalu!' });
+  } catch (err) {
+    console.error('Błąd przy zapisie rezerwacji:', err);
+    res.status(500).json({ success: false, message: 'Błąd serwera' });
+  }
+});
+
+// 2. PANEL ADMINA - Pobieranie nowych (pending)
+app.get('/api/admin/reservations/pending', async (req, res) => {
+  try {
+    const pending = await Reservation.find({ status: 'pending' }).sort({ createdAt: 1 });
+    res.json({ success: true, data: pending });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// 3. PANEL ADMINA - Akceptacja
+app.post('/api/admin/reservations/:id/accept', async (req, res) => {
+  try {
+    await Reservation.findByIdAndUpdate(req.params.id, { status: 'accepted' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
 });
 
 
