@@ -878,6 +878,16 @@ let currentUser = null;
 let currentToken = null;
 let userPoints = 0;
 
+// ODCZYT Z LOCALSTORAGE
+const savedUser = localStorage.getItem('milkmi_user');
+const savedToken = localStorage.getItem('milkmi_token');
+
+if (savedUser && savedToken) {
+    currentUser = JSON.parse(savedUser);
+    currentToken = savedToken;
+    userPoints = currentUser.points || 0;
+}
+
 // ==========================================
 // 2. BAZA DANYCH OFFLINE
 // ==========================================
@@ -913,7 +923,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const distance = targetDate - now;
     if (distance < 0) {
       clearInterval(countdownInterval);
-      unlockApp(); // Po zakończeniu odliczania pokaż formularz logowania
+      unlockApp(); // Po zakończeniu odliczania pokaż formularz logowania lub główną apkę
       return;
     }
     document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
@@ -958,10 +968,13 @@ async function handleAuthSubmit(e) {
             const data = await res.json();
 
             if (res.ok) {
-                // Zapamiętujemy usera tylko na czas trwania tej jednej sesji przeglądarki
                 currentToken = data.token;
                 currentUser = data.user;
                 userPoints = data.user.points || 0;
+
+                // Zapis do localStorage
+                localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
+                localStorage.setItem('milkmi_token', currentToken);
 
                 showToast("Pomyślnie zalogowano!");
                 initUserData(); 
@@ -1005,6 +1018,10 @@ async function handleAuthSubmit(e) {
                     currentToken = loginData.token;
                     currentUser = loginData.user;
                     userPoints = loginData.user.points || 0;
+
+                    // Zapis do localStorage
+                    localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
+                    localStorage.setItem('milkmi_token', currentToken);
 
                     initUserData();
                     transitionToApp(authScreen, mainApp);
@@ -1090,6 +1107,8 @@ async function initUserData() {
 // LOGIKA WYLOGOWANIA
 // ==========================================
 function logout() {
+    localStorage.removeItem('milkmi_user');
+    localStorage.removeItem('milkmi_token');
     currentUser = null;
     currentToken = null;
     location.reload(); 
@@ -1098,13 +1117,24 @@ function logout() {
 function unlockApp() {
   const splash = document.getElementById('splash-screen');
   const auth = document.getElementById('auth-screen');
+  const mainApp = document.getElementById('main-app');
   
   splash.style.opacity = '0';
   setTimeout(() => {
       splash.style.visibility = 'hidden';
-      auth.style.display = 'block';
-      void auth.offsetWidth;
-      auth.style.opacity = '1';
+      
+      // Sprawdzanie czy użytkownik jest już zalogowany (z localStorage)
+      if (currentUser && currentToken) {
+          mainApp.style.display = 'block';
+          void mainApp.offsetWidth;
+          mainApp.style.opacity = '1';
+          initUserData();
+      } else {
+          auth.style.display = 'block';
+          void auth.offsetWidth;
+          auth.style.opacity = '1';
+      }
+      
       document.body.style.overflow = 'auto'; 
   }, 800);
 }
