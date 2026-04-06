@@ -934,7 +934,7 @@ async function handleAuthSubmit(e) {
                 userPoints = data.user.points || 0;
 
                 showToast("Pomyślnie zalogowano!");
-                initUserData(); // Załaduj dane do interfejsu
+                initUserData(); 
                 transitionToApp(authScreen, mainApp);
             } else {
                 showToast(data.message, false);
@@ -990,7 +990,6 @@ async function handleAuthSubmit(e) {
     }
 }
 
-// Funkcja pomocnicza do płynnego przejścia po zalogowaniu
 function transitionToApp(auth, main) {
     auth.style.opacity = '0';
     setTimeout(() => {
@@ -1004,8 +1003,22 @@ function transitionToApp(auth, main) {
 // ==========================================
 // INICJALIZACJA DANYCH UŻYTKOWNIKA W UI
 // ==========================================
-function initUserData() {
+async function initUserData() {
     if (!currentUser) return;
+
+    // Aktualizujemy dane z serwera przy starcie, aby portfel i punkty były zawsze aktualne
+    try {
+      const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
+      const data = await res.json();
+      if(data.ok) {
+          userPoints = data.points;
+          currentUser.walletBalance = data.walletBalance;
+          currentUser.history = data.history;
+          localStorage.setItem('milkAppUser', JSON.stringify(currentUser)); // Aktualizujemy cache
+      }
+    } catch (e) {
+      console.log('Brak połączenia, używam danych z cache.');
+    }
 
     // 1. Ekran główny - Powitanie
     const greetingHeader = document.querySelector('#view-home h2');
@@ -1013,13 +1026,16 @@ function initUserData() {
         greetingHeader.innerHTML = `Cześć ${currentUser.username}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
     }
 
-    // 2. Aktualizacja Punktów (Milkosy domyślnie z bazy)
+    // 2. Aktualizacja Punktów
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
-    // Aktualizacja balansu w Portfelu
+    // ZMIANA: Aktualizacja balansu w Portfelu na podstawie danych z bazy
     const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
-    if (walletBalance) walletBalance.innerText = '0.00 PLN';
+    if (walletBalance) {
+        const bal = currentUser.walletBalance || 0;
+        walletBalance.innerText = `${bal.toFixed(2)} PLN`;
+    }
 
     // 3. Widok Ustawień - Nagłówek profilu
     document.getElementById('set-name-display').innerText = currentUser.username;
@@ -1034,8 +1050,8 @@ function initUserData() {
         personalDataInputs[2].value = currentUser.phone || '';
     }
 
-    renderRewards(); // Odśwież dostępność nagród (zablokuje przyciski przy braku pkt)
-    renderActivities([]); // Wyczyść historię na start
+    renderRewards(); 
+    renderActivities(currentUser.history || []); // Pokazujemy prawdziwą historię konta
 }
 
 // ==========================================
@@ -1149,14 +1165,18 @@ function renderActivities(historyArray = []) {
         const isAdd = item.text.includes('+');
         const typeClass = isAdd ? 'type-money' : 'type-order';
         const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
-        const valClass = isAdd ? 'positive' : '';
+        
+        // Czerwony minus przy platnościach z portfela lub odbieraniu punktów
+        const isMinus = item.text.includes('-');
+        const textStyle = isMinus ? 'color: var(--status-err);' : 'color: var(--status-ok);';
 
         html += `
           <div class="activity-item">
             <div class="act-icon ${typeClass}"><i class="fas ${icon}"></i></div>
             <div class="act-content">
-              <div class="act-title" style="font-size: 0.8rem;">${item.text.split('•')[0].trim()}</div>
-              <div class="act-date">${item.date}</div>
+              <div class="act-title" style="font-size: 0.8rem; font-weight: 800; ${textStyle}">${item.text.split('•')[0].trim()}</div>
+              <div class="act-date" style="margin-top: 3px;">${item.text.split('•')[1]?.trim() || ''}</div>
+              <div class="act-date" style="font-size: 0.65rem;">${item.date}</div>
             </div>
           </div>
         `;
@@ -1210,7 +1230,6 @@ async function redeemReward(rewardId, name, cost) {
     if(userPoints < cost) return showToast('Za mało punktów!', false);
 
     showToast('W przygotowaniu...');
-    // Logikę endpointu /api/rewards/redeem możemy zbudować w przyszłości
 }
 
 async function submitReservation() {
@@ -1250,6 +1269,7 @@ function switchTab(tabId, event) {
   if(tabId === 'wallet') navs[3].classList.add('active');
 
   if(tabId === 'order') backToOrderType();
+  if(tabId === 'wallet' || tabId === 'home') initUserData(); // Odśwież portfel przy wejściu w zakładkę
   window.scrollTo(0,0);
 }
 
@@ -1269,7 +1289,6 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function openQR() {
   if(!currentUser) return;
   const qrImg = document.querySelector('.qr-box img');
-  // Kod QR oparty na ID uzytkownika z bazy danych
   qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.id}`;
   openModal('qr-modal');
 }
