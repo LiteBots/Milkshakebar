@@ -908,7 +908,7 @@ let countdownInterval;
 async function handleAuthSubmit(e) {
     e.preventDefault();
     
-    const isLogin = document.getElementById('form-login').style.display !== 'none';
+    const isLogin = e.target.id === 'form-login';
     const authScreen = document.getElementById('auth-screen');
     const mainApp = document.getElementById('main-app');
 
@@ -940,6 +940,7 @@ async function handleAuthSubmit(e) {
                 showToast(data.message, false);
             }
         } catch (error) {
+            console.error(error);
             showToast("Błąd połączenia z serwerem.", false);
         }
 
@@ -983,6 +984,7 @@ async function handleAuthSubmit(e) {
                 showToast(data.message, false);
             }
         } catch (error) {
+            console.error(error);
             showToast("Błąd połączenia z serwerem.", false);
         }
     }
