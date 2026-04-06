@@ -102,7 +102,6 @@ const pointTransactionSchema = new mongoose.Schema({
 
 const PointTransaction = mongoose.model('PointTransaction', pointTransactionSchema);
 
-
 // ==========================================
 // --- NOWOŚĆ: SCHEMAT REZERWACJI ---
 // ==========================================
@@ -118,7 +117,6 @@ const reservationSchema = new mongoose.Schema({
 });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
-
 
 // --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
@@ -261,7 +259,7 @@ app.get('/api/admin/point-transactions', async (req, res) => {
 });
 
 // ==========================================
-// --- NOWOŚĆ: API ADMINA (PORTFEL / PRE-PAID) ---
+// --- API ADMINA (PORTFEL / PRE-PAID) ---
 // ==========================================
 
 // 1. Wyszukiwanie klienta do modyfikacji portfela
@@ -330,7 +328,7 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
 });
 
 // ==========================================
-// --- NOWOŚĆ: API REZERWACJI ---
+// --- API REZERWACJI ---
 // ==========================================
 
 // 1. Z APLIKACJI - Utworzenie rezerwacji
@@ -345,7 +343,7 @@ app.post('/api/reservations', async (req, res) => {
   }
 });
 
-// 2. PANEL ADMINA - Pobieranie nowych (pending)
+// 2. PANEL ADMINA - Pobieranie nowych (pending) TYLKO dla mechanizmu alarmu
 app.get('/api/admin/reservations/pending', async (req, res) => {
   try {
     const pending = await Reservation.find({ status: 'pending' }).sort({ createdAt: 1 });
@@ -355,11 +353,32 @@ app.get('/api/admin/reservations/pending', async (req, res) => {
   }
 });
 
-// 3. PANEL ADMINA - Akceptacja
-app.post('/api/admin/reservations/:id/accept', async (req, res) => {
+// 3. PANEL ADMINA - Pobieranie WSZYSTKICH rezerwacji (do widoku w tabeli)
+app.get('/api/admin/reservations', async (req, res) => {
   try {
-    await Reservation.findByIdAndUpdate(req.params.id, { status: 'accepted' });
+    const allReservations = await Reservation.find({}).sort({ datetime: -1 });
+    res.json({ success: true, data: allReservations });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// 4. PANEL ADMINA - Zmiana statusu rezerwacji (np. akceptacja z alarmu lub z tabeli)
+app.post('/api/admin/reservations/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    await Reservation.findByIdAndUpdate(req.params.id, { status: status });
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// 5. PANEL ADMINA - Trwałe usuwanie rezerwacji (z tabeli)
+app.delete('/api/admin/reservations/:id', async (req, res) => {
+  try {
+    await Reservation.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Rezerwacja usunięta' });
   } catch (err) {
     res.status(500).json({ success: false });
   }
