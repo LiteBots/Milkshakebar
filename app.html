@@ -87,7 +87,7 @@
     /* --- AUTH SCREEN (NEW) --- */
     #auth-screen {
       max-width: 480px; margin: 0 auto; min-height: 100vh;
-      display: none; /* Ukryte na start */
+      display: none;
       opacity: 0;
       transition: opacity 0.5s ease;
       background: var(--bg-body);
@@ -117,7 +117,7 @@
       max-width: 480px; margin: 0 auto; min-height: 100vh;
       position: relative; background: var(--bg-body);
       box-shadow: 0 0 40px rgba(0,0,0,0.05);
-      display: none; /* Ukryta na starcie, zmieni się na block po zalogowaniu */
+      display: none;
       opacity: 0; 
       transition: opacity 0.5s ease;
     }
@@ -399,14 +399,14 @@
   <section id="view-home" class="view-section active">
       
     <div style="padding: 10px 24px 20px;">
-      <h2 style="font-size: 1.8rem; line-height: 1.2;">Cześć Mikołaj, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span></h2>
+      <h2 style="font-size: 1.8rem; line-height: 1.2;">Cześć, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span></h2>
     </div>
 
     <div class="loyalty-card-premium" onclick="openQR()">
       <div class="loyalty-top">
         <div>
           <div class="points-label">Dostępne Milkosy</div>
-          <div class="points-big" id="user-points">1250</div>
+          <div class="points-big" id="user-points">0</div>
         </div>
         <i class="fas fa-crown" style="font-size: 1.5rem; color: #FFD700;"></i>
       </div>
@@ -449,7 +449,7 @@
   <section id="view-rewards" class="view-section">
       <div class="section-title">Centrum Nagród</div>
       <div class="rewards-hero">
-          <h2 id="rewards-points-display">1250</h2>
+          <h2 id="rewards-points-display">0</h2>
           <p>Twoje Milkosy</p>
       </div>
       <div class="rewards-grid-layout" id="rewards-container">
@@ -543,7 +543,7 @@
             </div>
             <div class="milk-card-balance">
                 <div style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px;">Saldo karty</div>
-                <div style="font-size: 2rem; font-weight: 800;">45.50 PLN</div>
+                <div style="font-size: 2rem; font-weight: 800;">0.00 PLN</div>
             </div>
             <div class="milk-card-num">**** **** **** 8829</div>
         </div>
@@ -575,8 +575,8 @@
 
         <div class="user-profile-header">
             <div class="user-avatar">M</div>
-            <h3 id="set-name-display">Mikołaj</h3>
-            <p style="color: var(--text-sub); font-size: 0.9rem;" id="set-email-display">mikolaj@example.com</p>
+            <h3 id="set-name-display">Użytkownik</h3>
+            <p style="color: var(--text-sub); font-size: 0.9rem;" id="set-email-display">email@example.com</p>
         </div>
 
         <div class="settings-list">
@@ -624,7 +624,7 @@
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="location.reload()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
+            <div class="settings-item" onclick="logout()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
                 <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
                 <div class="label">Wyloguj się</div>
             </div>
@@ -637,15 +637,15 @@
           <h3>Dane osobowe</h3>
           <div class="form-group" style="margin-top:20px;">
               <label>Imię</label>
-              <input type="text" class="form-control" value="Mikołaj">
+              <input type="text" class="form-control" value="">
           </div>
           <div class="form-group">
               <label>Email</label>
-              <input type="email" class="form-control" value="mikolaj@example.com">
+              <input type="email" class="form-control" value="">
           </div>
           <div class="form-group">
               <label>Telefon</label>
-              <input type="tel" class="form-control" value="+48 123 456 789">
+              <input type="tel" class="form-control" value="">
           </div>
           <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')">Zapisz zmiany</button>
       </div>
@@ -804,7 +804,7 @@
         <p style="color: var(--text-sub); margin-bottom: 20px;">Pokaż ten kod bariście, aby nabić punkty.</p>
           
         <div class="qr-box">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MilkmiUser123">
+          <img src="" alt="User QR Code">
           <div class="scan-line"></div>
         </div>
 
@@ -872,436 +872,472 @@
 
 <script>
 // ==========================================
-  // 1. DANE ZAPISANE W PRZEGLĄDARCE (KONTO)
-  // ==========================================
-  let currentUser = JSON.parse(localStorage.getItem('milkAppUser')) || {
-      email: "mikolaj@example.com",
-      milkId: "123456"
-  };
+// 1. DANE ZAPISANE W PRZEGLĄDARCE (KONTO)
+// ==========================================
+let currentUser = JSON.parse(localStorage.getItem('milkAppUser')) || null;
+let currentToken = localStorage.getItem('milkAuthToken') || null;
+let userPoints = currentUser ? currentUser.points : 0;
 
-  const userName = currentUser.email.split('@')[0].charAt(0).toUpperCase() + currentUser.email.split('@')[0].slice(1);
-
-  // ==========================================
-  // 2. DANE APLIKACJI
-  // ==========================================
-  const products = [
-    { id: 1, name: "Oreo Dream Shake", price: 19.00, img: "https://i.imgur.com/kfE4j7j.jpeg", cal: 450, desc: "Kultowy smak ciasteczek w formie szejka." },
-    { id: 2, name: "Berry Blast", price: 18.50, img: "https://i.imgur.com/7Bx2X7g.png", cal: 320, desc: "Moc witamin z leśnych owoców." },
-    { id: 3, name: "Double Choco", price: 21.00, img: "https://i.imgur.com/dsMynF5.png", cal: 560, desc: "Dla prawdziwych fanów czekolady." },
-    { id: 4, name: "Pancake Tower", price: 24.00, img: "https://i.imgur.com/GRvCj6z.png", cal: 600, desc: "Wieża puszystych naleśników z syropem." },
-    { id: 5, name: "Pistacchio Ice", price: 24.00, img: "https://i.imgur.com/XIdoN0y.png", cal: 380, desc: "Prawdziwa sycylijska pistacja." },
-    { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
-  ];
+// ==========================================
+// 2. DANE APLIKACJI
+// ==========================================
+const products = [
+  { id: 1, name: "Oreo Dream Shake", price: 19.00, img: "https://i.imgur.com/kfE4j7j.jpeg", cal: 450, desc: "Kultowy smak ciasteczek w formie szejka." },
+  { id: 2, name: "Berry Blast", price: 18.50, img: "https://i.imgur.com/7Bx2X7g.png", cal: 320, desc: "Moc witamin z leśnych owoców." },
+  { id: 3, name: "Double Choco", price: 21.00, img: "https://i.imgur.com/dsMynF5.png", cal: 560, desc: "Dla prawdziwych fanów czekolady." },
+  { id: 4, name: "Pancake Tower", price: 24.00, img: "https://i.imgur.com/GRvCj6z.png", cal: 600, desc: "Wieża puszystych naleśników z syropem." },
+  { id: 5, name: "Pistacchio Ice", price: 24.00, img: "https://i.imgur.com/XIdoN0y.png", cal: 380, desc: "Prawdziwa sycylijska pistacja." },
+  { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
+];
   
-  const rewards = [
-      { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
-      { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
-      { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
-  ];
+const rewards = [
+    { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
+    { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
+    { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
+];
 
-  let cart = [];
-  let userPoints = 0;
-  let selectedZone = 'Sala frontowa';
-  let selectedGiftAmount = 100;
-  let currentLocation = "Słupsk, Szczecińska 17";
-  let countdownInterval;
+let cart = [];
+let selectedZone = 'Sala frontowa';
+let selectedGiftAmount = 100;
+let currentLocation = "Słupsk, Szczecińska 17";
+let countdownInterval;
 
-  // ==========================================
-  // 3. INIT & POŁĄCZENIE Z API
-  // ==========================================
-  document.addEventListener('DOMContentLoaded', () => {
-    const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
-    function updateTimer() {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-      if (distance < 0) {
-        clearInterval(countdownInterval);
-        unlockApp();
-        return;
-      }
-      document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-      document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-    }
-    updateTimer();
-    countdownInterval = setInterval(updateTimer, 1000);
-
-    setTimeout(() => {
-        const fill = document.querySelector('.loyalty-progress-fill');
-        if(fill) fill.style.width = '83%';
-    }, 500);
-
-    initUserData();
-    renderMenu();
-  });
-
-  async function initUserData() {
-      const greetingHeader = document.querySelector('#view-home h2');
-      if (greetingHeader) {
-          greetingHeader.innerHTML = `Cześć ${userName}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
-      }
-      document.getElementById('set-name-display').innerText = userName;
-      document.getElementById('set-email-display').innerText = currentUser.email;
-
-      try {
-          const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
-          const data = await res.json();
-          if (data.ok) {
-              userPoints = data.points;
-              updatePointsUI();
-              renderActivities(data.history);
-              renderRewards();
-          }
-      } catch (e) {
-          console.error("Błąd pobierania punktów (środowisko testowe):", e);
-      }
-  }
-
-  function updatePointsUI() {
-      const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
-      pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
-  }
-
-  function unlockApp() {
-    const splash = document.getElementById('splash-screen');
-    const auth = document.getElementById('auth-screen');
+// ==========================================
+// NOWE FUNKCJE AUTORYZACJI (Połączenie z API)
+// ==========================================
+async function handleAuthSubmit(e) {
+    e.preventDefault();
     
-    splash.style.opacity = '0';
-    setTimeout(() => {
-        splash.style.visibility = 'hidden';
-        auth.style.display = 'block';
-        
-        // Wymuś reflow żeby animacja zadziałała
-        void auth.offsetWidth;
-        auth.style.opacity = '1';
-        document.body.style.overflow = 'auto'; 
-    }, 800);
-  }
+    const isLogin = document.getElementById('form-login').style.display !== 'none';
+    const authScreen = document.getElementById('auth-screen');
+    const mainApp = document.getElementById('main-app');
 
-  function devLogin() {
-    const pin = prompt("Podaj kod dostępu do trybu dewelopera:");
-    if(pin === "33201") {
+    if (isLogin) {
+        // --- LOGIKA LOGOWANIA ---
+        const inputs = document.querySelectorAll('#form-login .form-control');
+        const loginOrEmail = inputs[0].value;
+        const password = inputs[1].value;
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ loginOrEmail, password })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                // Zapisz prawdziwe dane z MongoDB do pamięci przeglądarki
+                localStorage.setItem('milkAuthToken', data.token);
+                localStorage.setItem('milkAppUser', JSON.stringify(data.user));
+                currentUser = data.user;
+                userPoints = data.user.points || 0;
+
+                showToast("Pomyślnie zalogowano!");
+                initUserData(); // Załaduj dane do interfejsu
+                transitionToApp(authScreen, mainApp);
+            } else {
+                showToast(data.message, false);
+            }
+        } catch (error) {
+            showToast("Błąd połączenia z serwerem.", false);
+        }
+
+    } else {
+        // --- LOGIKA REJESTRACJI ---
+        const inputs = document.querySelectorAll('#form-register .form-control');
+        const username = inputs[0].value;
+        const email = inputs[1].value;
+        const phone = inputs[2].value;
+        const password = inputs[3].value;
+
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, phone, password })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                showToast("Konto utworzone! Trwa logowanie...");
+                
+                // Automatyczne logowanie po udanej rejestracji
+                const loginRes = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loginOrEmail: email, password })
+                });
+                const loginData = await loginRes.json();
+                
+                if (loginRes.ok) {
+                    localStorage.setItem('milkAuthToken', loginData.token);
+                    localStorage.setItem('milkAppUser', JSON.stringify(loginData.user));
+                    currentUser = loginData.user;
+                    userPoints = loginData.user.points || 0;
+
+                    initUserData();
+                    transitionToApp(authScreen, mainApp);
+                }
+            } else {
+                showToast(data.message, false);
+            }
+        } catch (error) {
+            showToast("Błąd połączenia z serwerem.", false);
+        }
+    }
+}
+
+// Funkcja pomocnicza do płynnego przejścia po zalogowaniu
+function transitionToApp(auth, main) {
+    auth.style.opacity = '0';
+    setTimeout(() => {
+        auth.style.display = 'none';
+        main.style.display = 'block';
+        void main.offsetWidth; // Wymuś reflow
+        main.style.opacity = '1';
+    }, 500);
+}
+
+// ==========================================
+// INICJALIZACJA DANYCH UŻYTKOWNIKA W UI
+// ==========================================
+function initUserData() {
+    if (!currentUser) return;
+
+    // 1. Ekran główny - Powitanie
+    const greetingHeader = document.querySelector('#view-home h2');
+    if (greetingHeader) {
+        greetingHeader.innerHTML = `Cześć ${currentUser.username}, <br><span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;">Miło Cię widzieć!</span>`;
+    }
+
+    // 2. Aktualizacja Punktów (Milkosy domyślnie z bazy)
+    const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
+    pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
+    
+    // Aktualizacja balansu w Portfelu
+    const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
+    if (walletBalance) walletBalance.innerText = '0.00 PLN';
+
+    // 3. Widok Ustawień - Nagłówek profilu
+    document.getElementById('set-name-display').innerText = currentUser.username;
+    document.getElementById('set-email-display').innerText = currentUser.email;
+    document.querySelector('.user-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
+
+    // 4. Modal z Danymi Osobowymi
+    const personalDataInputs = document.querySelectorAll('#modal-personal-data .form-control');
+    if (personalDataInputs.length >= 3) {
+        personalDataInputs[0].value = currentUser.username;
+        personalDataInputs[1].value = currentUser.email;
+        personalDataInputs[2].value = currentUser.phone || '';
+    }
+
+    renderRewards(); // Odśwież dostępność nagród (zablokuje przyciski przy braku pkt)
+    renderActivities([]); // Wyczyść historię na start
+}
+
+// ==========================================
+// LOGIKA WYLOGOWANIA
+// ==========================================
+function logout() {
+    localStorage.removeItem('milkAppUser');
+    localStorage.removeItem('milkAuthToken');
+    location.reload(); 
+}
+
+// ==========================================
+// 3. INIT BAZOWY
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
+  function updateTimer() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+    if (distance < 0) {
       clearInterval(countdownInterval);
       unlockApp();
-      showToast("Tryb dewelopera aktywowany", true);
-    } else if (pin !== null) {
-      alert("Nieprawidłowy kod PIN.");
+      return;
     }
+    document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+    document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+    document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+    document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
   }
+  updateTimer();
+  countdownInterval = setInterval(updateTimer, 1000);
 
-  // ==========================================
-  // NOWE FUNKCJE AUTORYZACJI
-  // ==========================================
+  setTimeout(() => {
+      const fill = document.querySelector('.loyalty-progress-fill');
+      if(fill) fill.style.width = '83%';
+  }, 500);
+
+  renderMenu();
+});
+
+function unlockApp() {
+  const splash = document.getElementById('splash-screen');
+  const auth = document.getElementById('auth-screen');
   
-  function switchAuthTab(type) {
-      document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-      const forms = ['form-login', 'form-register'];
-      
-      forms.forEach(form => document.getElementById(form).style.display = 'none');
-      
-      if(type === 'login') {
-          document.querySelectorAll('.auth-tab')[0].classList.add('active');
-          document.getElementById('form-login').style.display = 'block';
-      } else {
-          document.querySelectorAll('.auth-tab')[1].classList.add('active');
-          document.getElementById('form-register').style.display = 'block';
-      }
+  splash.style.opacity = '0';
+  setTimeout(() => {
+      splash.style.visibility = 'hidden';
+      auth.style.display = 'block';
+      void auth.offsetWidth;
+      auth.style.opacity = '1';
+      document.body.style.overflow = 'auto'; 
+  }, 800);
+}
+
+function devLogin() {
+  const pin = prompt("Podaj kod dostępu do trybu dewelopera:");
+  if(pin === "33201") {
+    clearInterval(countdownInterval);
+    unlockApp();
+    showToast("Tryb dewelopera aktywowany", true);
+  } else if (pin !== null) {
+    alert("Nieprawidłowy kod PIN.");
   }
+}
 
-  function togglePassword(icon) {
-      const input = icon.previousElementSibling;
-      if (input.type === "password") {
-          input.type = "text";
-          icon.classList.remove('fa-eye');
-          icon.classList.add('fa-eye-slash');
-      } else {
-          input.type = "password";
-          icon.classList.remove('fa-eye-slash');
-          icon.classList.add('fa-eye');
-      }
-  }
-
-  function toggleNoticeDetails() {
-      const details = document.getElementById('notice-details');
-      details.classList.toggle('open');
-  }
-
-  function handleAuthSubmit(e) {
-      e.preventDefault();
-      
-      // Zwijamy formularz i pokazujemy główną aplikację
-      const auth = document.getElementById('auth-screen');
-      const main = document.getElementById('main-app');
-      
-      showToast("Pomyślnie zalogowano!");
-
-      auth.style.opacity = '0';
-      setTimeout(() => {
-          auth.style.display = 'none';
-          main.style.display = 'block';
-          
-          void main.offsetWidth; // Wymuś reflow
-          main.style.opacity = '1';
-      }, 500);
-  }
-
-  // ==========================================
-  // 4. RENDERING & FUNKCJE
-  // ==========================================
-  function renderActivities(historyArray = []) {
-    const homeContainer = document.getElementById('activity-container-home');
-    const walletContainer = document.getElementById('activity-container-wallet');
-    let html = '';
-
-    if (historyArray.length === 0) {
-        html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
+function switchAuthTab(type) {
+    document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+    const forms = ['form-login', 'form-register'];
+    
+    forms.forEach(form => document.getElementById(form).style.display = 'none');
+    
+    if(type === 'login') {
+        document.querySelectorAll('.auth-tab')[0].classList.add('active');
+        document.getElementById('form-login').style.display = 'block';
     } else {
-        historyArray.slice(0, 5).forEach(item => {
-          const isAdd = item.text.includes('+');
-          const typeClass = isAdd ? 'type-money' : 'type-order';
-          const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
-          const valClass = isAdd ? 'positive' : '';
-
-          html += `
-            <div class="activity-item">
-              <div class="act-icon ${typeClass}"><i class="fas ${icon}"></i></div>
-              <div class="act-content">
-                <div class="act-title" style="font-size: 0.8rem;">${item.text.split('•')[0].trim()}</div>
-                <div class="act-date">${item.date}</div>
-              </div>
-            </div>
-          `;
-        });
+        document.querySelectorAll('.auth-tab')[1].classList.add('active');
+        document.getElementById('form-register').style.display = 'block';
     }
-      
-    if(homeContainer) homeContainer.innerHTML = html;
-    if(walletContainer) walletContainer.innerHTML = html;
-  }
+}
 
-  function renderMenu() {
-    const container = document.getElementById('menu-container');
-    if(!container) return;
-    let html = '';
-    products.forEach(p => {
-      html += `
-        <div class="menu-card" onclick="openProduct(${p.id})">
-          <div class="menu-img-box"><img src="${p.img}" alt="${p.name}"></div>
-          <div class="menu-content">
-            <div class="menu-title">${p.name}</div>
-            <div class="menu-price">${p.price.toFixed(2)} zł</div>
+function togglePassword(icon) {
+    const input = icon.previousElementSibling;
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+function toggleNoticeDetails() {
+    const details = document.getElementById('notice-details');
+    details.classList.toggle('open');
+}
+
+// ==========================================
+// 4. RENDERING & FUNKCJE
+// ==========================================
+function renderActivities(historyArray = []) {
+  const homeContainer = document.getElementById('activity-container-home');
+  const walletContainer = document.getElementById('activity-container-wallet');
+  let html = '';
+
+  if (historyArray.length === 0) {
+      html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
+  } else {
+      historyArray.slice(0, 5).forEach(item => {
+        const isAdd = item.text.includes('+');
+        const typeClass = isAdd ? 'type-money' : 'type-order';
+        const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
+        const valClass = isAdd ? 'positive' : '';
+
+        html += `
+          <div class="activity-item">
+            <div class="act-icon ${typeClass}"><i class="fas ${icon}"></i></div>
+            <div class="act-content">
+              <div class="act-title" style="font-size: 0.8rem;">${item.text.split('•')[0].trim()}</div>
+              <div class="act-date">${item.date}</div>
+            </div>
           </div>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
-  }
-  
-  function renderRewards() {
-      const container = document.getElementById('rewards-container');
-      if(!container) return;
-      
-      let html = '';
-      rewards.forEach(r => {
-          const canAfford = userPoints >= r.cost;
-          html += `
-            <div class="reward-card">
-                <div class="reward-cost">${r.cost} pkt</div>
-                <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
-                <div class="reward-name">${r.name}</div>
-                <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.id}', '${r.name}', ${r.cost})">
-                    ${canAfford ? 'Wymień Punkty' : 'Za mało pkt'}
-                </button>
-            </div>
-          `;
+        `;
       });
-      container.innerHTML = html;
   }
-  
-  async function redeemReward(rewardId, name, cost) {
-      if(userPoints < cost) return showToast('Za mało punktów!', false);
+    
+  if(homeContainer) homeContainer.innerHTML = html;
+  if(walletContainer) walletContainer.innerHTML = html;
+}
 
-      showToast('Przetwarzanie...');
-      try {
-          const res = await fetch('/api/rewards/redeem', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                  email: currentUser.email, 
-                  milkId: currentUser.milkId, 
-                  rewardId: rewardId 
-              })
-          });
-          const data = await res.json();
-          
-          if (data.ok) {
-              userPoints = data.points;
-              updatePointsUI();
-              renderActivities(data.history);
-              renderRewards(); 
-              
-              alert(`Sukces! Twój kod na ${name} to:\n\n${data.code}\n\nPokaż go przy kasie.`);
-              showToast(`Odebrano: ${name}!`);
-          } else {
-              showToast(data.message || 'Błąd wymiany nagrody', false);
-          }
-      } catch (e) {
-          console.error(e);
-          showToast('Błąd połączenia z serwerem', false);
-      }
-  }
-
-  async function submitReservation() {
-    const inputs = document.querySelectorAll('#view-reservation .form-control');
-    const name = inputs[0].value;
-    const phone = inputs[1].value;
-    const datetime = inputs[2].value;
-    const guests = inputs[3].value;
-    const notes = inputs[4].value;
-
-    if(!name || !phone || !datetime || !guests) {
-        return showToast('Uzupełnij wymagane pola (Imię, Telefon, Data)!', false);
-    }
-
-    const [date, time] = datetime.split('T');
-
-    try {
-        const res = await fetch('/api/rezerwacje', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name, phone, date, time, guests, notes,
-                room: selectedZone,
-                email: currentUser.email,
-                milkId: currentUser.milkId,
-                source: 'app'
-            })
-        });
-        const data = await res.json();
-        
-        if(data.ok) {
-            showToast('Rezerwacja wysłana! 📅');
-            inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = ''; inputs[4].value = '';
-            setTimeout(() => switchTab('home'), 1500);
-        } else {
-            showToast(data.message || 'Błąd rezerwacji', false);
-        }
-    } catch(e) {
-        showToast('Błąd serwera', false);
-    }
-  }
-
-  // ==========================================
-  // 5. NAWIGACJA & UI
-  // ==========================================
-  function changeLocation(loc) {
-      currentLocation = loc;
-      document.getElementById('header-loc-text').innerText = currentLocation;
-      closeModal('modal-location');
-      showToast('Zmieniono lokalizację');
-  }
-
-  function switchTab(tabId, event) {
-    if(event) event.preventDefault();
-    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-    document.getElementById('view-' + tabId).classList.add('active');
-      
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    const navs = document.querySelectorAll('.nav-item');
-    if(tabId === 'home') navs[0].classList.add('active');
-    if(tabId === 'order') navs[1].classList.add('active');
-    if(tabId === 'rewards') navs[2].classList.add('active');
-    if(tabId === 'wallet') navs[3].classList.add('active');
-
-    if(tabId === 'order') backToOrderType();
-    window.scrollTo(0,0);
-  }
-
-  function selectOrderType(type) {
-      document.getElementById('order-type-selection').style.display = 'none';
-      document.getElementById('menu-view-actual').style.display = 'block';
-  }
-
-  function backToOrderType() {
-      document.getElementById('order-type-selection').style.display = 'block';
-      document.getElementById('menu-view-actual').style.display = 'none';
-  }
-
-  function openModal(id) { document.getElementById(id).classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-  function openQR() {
-    const qrImg = document.querySelector('.qr-box img');
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.milkId}`;
-    openModal('qr-modal');
-  }
-
-  function selectAmount(el, val) {
-    document.querySelectorAll('.amount-chip').forEach(x => x.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedGiftAmount = val;
-  }
-
-  function processPayment(msg) {
-    showToast("Przekierowanie do płatności...");
-    setTimeout(() => {
-        closeModal('topup-modal');
-        closeModal('gift-modal');
-        showToast(msg);
-    }, 2000);
-  }
-
-  function openProduct(id) {
-    const p = products.find(x => x.id === id);
-    const content = document.getElementById('product-detail-content');
-    content.innerHTML = `
-      <div style="text-align:center; margin-bottom: 20px;">
-        <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-      </div>
-      <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
-      <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
-      <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
-        <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
-        <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-        <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
-        <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
-          Dodaj do koszyka
-        </button>
+function renderMenu() {
+  const container = document.getElementById('menu-container');
+  if(!container) return;
+  let html = '';
+  products.forEach(p => {
+    html += `
+      <div class="menu-card" onclick="openProduct(${p.id})">
+        <div class="menu-img-box"><img src="${p.img}" alt="${p.name}"></div>
+        <div class="menu-content">
+          <div class="menu-title">${p.name}</div>
+          <div class="menu-price">${p.price.toFixed(2)} zł</div>
+        </div>
       </div>
     `;
-    openModal('product-modal');
+  });
+  container.innerHTML = html;
+}
+  
+function renderRewards() {
+    const container = document.getElementById('rewards-container');
+    if(!container) return;
+    
+    let html = '';
+    rewards.forEach(r => {
+        const canAfford = userPoints >= r.cost;
+        html += `
+          <div class="reward-card">
+              <div class="reward-cost">${r.cost} pkt</div>
+              <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
+              <div class="reward-name">${r.name}</div>
+              <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.id}', '${r.name}', ${r.cost})">
+                  ${canAfford ? 'Wymień Punkty' : 'Za mało pkt'}
+              </button>
+          </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+  
+async function redeemReward(rewardId, name, cost) {
+    if(userPoints < cost) return showToast('Za mało punktów!', false);
+
+    showToast('W przygotowaniu...');
+    // Logikę endpointu /api/rewards/redeem możemy zbudować w przyszłości
+}
+
+async function submitReservation() {
+  const inputs = document.querySelectorAll('#view-reservation .form-control');
+  const name = inputs[0].value;
+  const phone = inputs[1].value;
+  const datetime = inputs[2].value;
+  const guests = inputs[3].value;
+
+  if(!name || !phone || !datetime || !guests) {
+      return showToast('Uzupełnij wymagane pola (Imię, Telefon, Data)!', false);
   }
 
-  function addToCart(id) {
-    cart.push(id);
-    const badge = document.getElementById('cart-badge');
-    badge.innerText = cart.length;
-    badge.style.display = 'flex';
-    closeModal('product-modal');
-    showToast('Dodano do koszyka!');
-  }
+  showToast('Funkcja testowa - rezerwacja zablokowana.');
+}
 
-  function showCart() {
-    if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
-    else showToast(`Masz ${cart.length} produktów w koszyku`);
-  }
+// ==========================================
+// 5. NAWIGACJA & UI
+// ==========================================
+function changeLocation(loc) {
+    currentLocation = loc;
+    document.getElementById('header-loc-text').innerText = currentLocation;
+    closeModal('modal-location');
+    showToast('Zmieniono lokalizację');
+}
 
-  function selectZone(el, zoneName) {
-    document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedZone = zoneName;
-  }
+function switchTab(tabId, event) {
+  if(event) event.preventDefault();
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + tabId).classList.add('active');
+    
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navs = document.querySelectorAll('.nav-item');
+  if(tabId === 'home') navs[0].classList.add('active');
+  if(tabId === 'order') navs[1].classList.add('active');
+  if(tabId === 'rewards') navs[2].classList.add('active');
+  if(tabId === 'wallet') navs[3].classList.add('active');
 
-  function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+  if(tabId === 'order') backToOrderType();
+  window.scrollTo(0,0);
+}
 
-  function showToast(msg, success = true) {
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').innerText = msg;
-    t.classList.add('visible');
-    setTimeout(() => t.classList.remove('visible'), 2500);
-  }
+function selectOrderType(type) {
+    document.getElementById('order-type-selection').style.display = 'none';
+    document.getElementById('menu-view-actual').style.display = 'block';
+}
+
+function backToOrderType() {
+    document.getElementById('order-type-selection').style.display = 'block';
+    document.getElementById('menu-view-actual').style.display = 'none';
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openQR() {
+  if(!currentUser) return;
+  const qrImg = document.querySelector('.qr-box img');
+  // Kod QR oparty na ID uzytkownika z bazy danych
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.id}`;
+  openModal('qr-modal');
+}
+
+function selectAmount(el, val) {
+  document.querySelectorAll('.amount-chip').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedGiftAmount = val;
+}
+
+function processPayment(msg) {
+  showToast("Przekierowanie do płatności...");
+  setTimeout(() => {
+      closeModal('topup-modal');
+      closeModal('gift-modal');
+      showToast(msg);
+  }, 2000);
+}
+
+function openProduct(id) {
+  const p = products.find(x => x.id === id);
+  const content = document.getElementById('product-detail-content');
+  content.innerHTML = `
+    <div style="text-align:center; margin-bottom: 20px;">
+      <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+    </div>
+    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
+    <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
+    <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
+      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
+      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+      <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
+      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
+        Dodaj do koszyka
+      </button>
+    </div>
+  `;
+  openModal('product-modal');
+}
+
+function addToCart(id) {
+  cart.push(id);
+  const badge = document.getElementById('cart-badge');
+  badge.innerText = cart.length;
+  badge.style.display = 'flex';
+  closeModal('product-modal');
+  showToast('Dodano do koszyka!');
+}
+
+function showCart() {
+  if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
+  else showToast(`Masz ${cart.length} produktów w koszyku`);
+}
+
+function selectZone(el, zoneName) {
+  document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedZone = zoneName;
+}
+
+function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+
+function showToast(msg, success = true) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').innerText = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2500);
+}
 </script>
 </body>
 </html>
