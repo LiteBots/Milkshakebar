@@ -243,9 +243,38 @@
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
     @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+    /* --- ALARM REZERWACJI (MIGAWKA) --- */
+    @keyframes flashAlert {
+      0% { background-color: #FFFFFF; color: #FF6600; }
+      50% { background-color: #FF6600; color: #FFFFFF; }
+      100% { background-color: #FFFFFF; color: #FF6600; }
+    }
+
+    #reservation-alarm {
+      position: fixed; inset: 0; z-index: 9999999;
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      animation: flashAlert 0.4s infinite;
+      text-align: center; padding: 20px;
+    }
+
+    #reservation-alarm h1 { font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+    #reservation-alarm p { font-size: 1.5rem; font-weight: 700; margin-bottom: 40px; }
+    #btn-accept-alarm {
+      padding: 20px 50px; font-size: 2rem; font-weight: 800;
+      border: 5px solid currentColor; background: transparent; color: inherit;
+      border-radius: 20px; cursor: pointer; transition: transform 0.2s;
+    }
+    #btn-accept-alarm:active { transform: scale(0.9); }
   </style>
 </head>
 <body>
+
+  <div id="reservation-alarm">
+    <h1>🚨 NOWA REZERWACJA! 🚨</h1>
+    <p id="alarm-details">Ładowanie danych...</p>
+    <button id="btn-accept-alarm" onclick="acceptReservationFromAlarm()">PRZYJMIJ REZERWACJĘ</button>
+  </div>
 
   <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
     <div style="background: var(--bg-surface); padding: 40px; border-radius: var(--radius-l); border: 1px solid var(--border); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 400px; width: 90%;">
@@ -469,20 +498,14 @@
     <section id="view-reservations" class="view-section">
       <div class="card">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-          <div class="section-header" style="margin:0">Lista rezerwacji</div>
-          <button class="btn btn-primary"><i class="fas fa-plus"></i> Dodaj ręcznie</button>
+          <div class="section-header" style="margin:0">Oczekujące rezerwacje na dziś</div>
+          <button class="btn btn-primary" onclick="checkNewReservations()"><i class="fas fa-sync"></i> Odśwież</button>
         </div>
         <div class="table-container">
           <table class="data-table">
-            <thead><tr><th>Klient</th><th>Data i Godzina</th><th>Liczba osób</th><th>Strefa</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><strong>Jan Kowalski</strong><br>+48 500 600 700</td>
-                <td>Dziś, 18:00</td>
-                <td>4 osoby</td>
-                <td>Sala Główna</td>
-                <td><span class="badge orange">Oczekuje</span></td>
-              </tr>
+            <thead><tr><th>Klient</th><th>Data i Godzina</th><th>Liczba osób</th><th>Strefa</th><th>Akcja</th></tr></thead>
+            <tbody id="reservations-table-body">
+              <tr><td colspan="5" style="text-align:center;">Sprawdzanie bazy...</td></tr>
             </tbody>
           </table>
         </div>
@@ -810,7 +833,6 @@
       
       document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
 
-      // Load specific data when switching to a view
       if (viewId === 'users') {
         loadUsers();
       } else if (viewId === 'points') {
@@ -860,6 +882,9 @@
             } else {
                 setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
             }
+
+            // Inicjalizuj system rezerwacji od razu po wejściu do panelu
+            checkNewReservations();
         } else {
             errorMsg.innerText = "Nieprawidłowy kod PIN!";
             errorMsg.style.display = 'block';
@@ -905,7 +930,6 @@
                 document.getElementById('award-amount').value = '';
                 document.getElementById('award-preview').innerText = '0';
                 
-                // Refresh the table
                 loadPointTransactions();
             } else {
                 showToast(data.message, 'error');
@@ -950,6 +974,126 @@
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
         }
     }
+
+    // =====================================
+    // SYSTEM REZERWACJI I ALARM
+    // =====================================
+    let alarmActive = false;
+    let currentPendingReservationId = null;
+    let beepInterval;
+    let audioCtx;
+
+    // Funkcja generująca elektroniczne pikanie
+    function startBeep() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume(); // Wybudza kontekst po interakcji usera (logowaniu)
+      
+      beepInterval = setInterval(() => {
+        const osc = audioCtx.createOscillator();
+        osc.connect(audioCtx.destination);
+        osc.type = 'square';
+        osc.frequency.value = 880; // Ton
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15); // Czas trwania pojedynczego dźwięku
+      }, 400); // Szybkość powtarzania pikania
+    }
+
+    function stopBeep() {
+      if (beepInterval) clearInterval(beepInterval);
+    }
+
+    async function checkNewReservations() {
+      if (alarmActive) return; // Jeśli alarm już wyje, pauzujemy zapytania
+      
+      try {
+        const res = await fetch('/api/admin/reservations/pending');
+        const data = await res.json();
+        
+        if (data.success) {
+          // Renderujemy bieżące rezerwacje do tabeli w zakładce "Rezerwacje"
+          renderReservationsTable(data.data);
+
+          // Sprawdzamy czy coś czeka na akceptację, żeby odpalić alarm
+          if (data.data.length > 0) {
+            const newestPending = data.data[0];
+            triggerAlarm(newestPending);
+          }
+        }
+      } catch (err) { 
+        console.log('Błąd sprawdzania rezerwacji'); 
+      }
+    }
+
+    function triggerAlarm(reservation) {
+      alarmActive = true;
+      currentPendingReservationId = reservation._id;
+      
+      let formattedDate = reservation.datetime;
+      try { formattedDate = new Date(reservation.datetime).toLocaleString('pl-PL'); } catch(e){}
+      
+      // Wypełniamy popup informacjami o kliencie
+      document.getElementById('alarm-details').innerText = 
+        `${reservation.name} • ${reservation.guests} osób • ${formattedDate} • ${reservation.zone}`;
+      
+      document.getElementById('reservation-alarm').style.display = 'flex';
+      startBeep();
+    }
+
+    async function acceptReservationFromAlarm() {
+      if (!currentPendingReservationId) return;
+
+      try {
+        const res = await fetch(`/api/admin/reservations/${currentPendingReservationId}/accept`, { method: 'POST' });
+        
+        if (res.ok) {
+          document.getElementById('reservation-alarm').style.display = 'none';
+          stopBeep();
+          alarmActive = false;
+          currentPendingReservationId = null;
+          showToast('Rezerwacja została pomyślnie przyjęta!', 'success');
+          
+          checkNewReservations(); // Od razu odświeżamy listę
+        }
+      } catch (err) {
+        showToast('Wystąpił błąd przy akceptacji rezerwacji.', 'error');
+      }
+    }
+
+    function renderReservationsTable(reservations) {
+      const tbody = document.getElementById('reservations-table-body');
+      if(!tbody) return;
+      
+      if(reservations.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px; color: var(--text-sub);">Brak nowych oczekujących rezerwacji</td></tr>';
+          return;
+      }
+
+      let html = '';
+      reservations.forEach(r => {
+          let resDate = r.datetime;
+          try { resDate = new Date(r.datetime).toLocaleString('pl-PL'); } catch(e){}
+
+          html += `
+            <tr>
+              <td><strong>${r.name}</strong><br><span style="color:var(--text-sub); font-size:0.8rem;">${r.phone}</span></td>
+              <td>${resDate}</td>
+              <td><strong>${r.guests}</strong></td>
+              <td>${r.zone}</td>
+              <td>
+                <button class="btn" style="background:var(--status-ok); color:white; padding:8px 16px; font-size:0.85rem;" 
+                  onclick="currentPendingReservationId='${r._id}'; acceptReservationFromAlarm();">
+                  <i class="fas fa-check"></i> Akceptuj
+                </button>
+              </td>
+            </tr>
+          `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // Interwał odpalający sprawdzanie co 3 sekundy
+    setInterval(checkNewReservations, 3000);
+
 
     // =====================================
     // PORTFEL PRE-PAID (WYSZUKIWANIE / ZARZĄDZANIE)
