@@ -167,6 +167,7 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
     .btn-outline { border: 1px solid var(--border); background: transparent; color: var(--text-main); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-s); }
     
     /* Grid for Menu/Stats */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
@@ -498,14 +499,14 @@
     <section id="view-reservations" class="view-section">
       <div class="card">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-          <div class="section-header" style="margin:0">Oczekujące rezerwacje na dziś</div>
-          <button class="btn btn-primary" onclick="checkNewReservations()"><i class="fas fa-sync"></i> Odśwież</button>
+          <div class="section-header" style="margin:0">Baza wszystkich rezerwacji</div>
+          <button class="btn btn-outline btn-sm" onclick="loadAllReservations()"><i class="fas fa-sync"></i> Odśwież</button>
         </div>
         <div class="table-container">
           <table class="data-table">
-            <thead><tr><th>Klient</th><th>Data i Godzina</th><th>Liczba osób</th><th>Strefa</th><th>Akcja</th></tr></thead>
+            <thead><tr><th>Zgłaszający</th><th>Data i Strefa</th><th>Goście</th><th>Notatki</th><th>Status/Akcja</th></tr></thead>
             <tbody id="reservations-table-body">
-              <tr><td colspan="5" style="text-align:center;">Sprawdzanie bazy...</td></tr>
+              <tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>
             </tbody>
           </table>
         </div>
@@ -837,6 +838,8 @@
         loadUsers();
       } else if (viewId === 'points') {
         loadPointTransactions();
+      } else if (viewId === 'reservations') {
+        loadAllReservations();
       }
     }
 
@@ -883,7 +886,7 @@
                 setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
             }
 
-            // Inicjalizuj system rezerwacji od razu po wejściu do panelu
+            // Inicjalizuj system rezerwacji (alarmy)
             checkNewReservations();
         } else {
             errorMsg.innerText = "Nieprawidłowy kod PIN!";
@@ -983,44 +986,20 @@
     let beepInterval;
     let audioCtx;
 
-    // Funkcja generująca elektroniczne pikanie
-    function startBeep() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume(); // Wybudza kontekst po interakcji usera (logowaniu)
-      
-      beepInterval = setInterval(() => {
-        const osc = audioCtx.createOscillator();
-        osc.connect(audioCtx.destination);
-        osc.type = 'square';
-        osc.frequency.value = 880; // Ton
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.15); // Czas trwania pojedynczego dźwięku
-      }, 400); // Szybkość powtarzania pikania
-    }
-
-    function stopBeep() {
-      if (beepInterval) clearInterval(beepInterval);
-    }
-
+    // Odpytywanie o nowe rezerwacje tylko w tle dla alarmu
     async function checkNewReservations() {
-      if (alarmActive) return; // Jeśli alarm już wyje, pauzujemy zapytania
+      if (alarmActive) return; 
       
       try {
         const res = await fetch('/api/admin/reservations/pending');
         const data = await res.json();
         
-        if (data.success) {
-          // Renderujemy bieżące rezerwacje do tabeli w zakładce "Rezerwacje"
-          renderReservationsTable(data.data);
-
-          // Sprawdzamy czy coś czeka na akceptację, żeby odpalić alarm
-          if (data.data.length > 0) {
+        if (data.success && data.data.length > 0) {
             const newestPending = data.data[0];
             triggerAlarm(newestPending);
-          }
         }
       } catch (err) { 
-        console.log('Błąd sprawdzania rezerwacji'); 
+        console.log('Błąd sprawdzania rezerwacji w tle'); 
       }
     }
 
@@ -1031,67 +1010,127 @@
       let formattedDate = reservation.datetime;
       try { formattedDate = new Date(reservation.datetime).toLocaleString('pl-PL'); } catch(e){}
       
-      // Wypełniamy popup informacjami o kliencie
       document.getElementById('alarm-details').innerText = 
         `${reservation.name} • ${reservation.guests} osób • ${formattedDate} • ${reservation.zone}`;
       
       document.getElementById('reservation-alarm').style.display = 'flex';
-      startBeep();
+      
+      // Start dźwięku
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      beepInterval = setInterval(() => {
+        const osc = audioCtx.createOscillator();
+        osc.connect(audioCtx.destination);
+        osc.type = 'square';
+        osc.frequency.value = 880; 
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15); 
+      }, 400); 
     }
 
     async function acceptReservationFromAlarm() {
       if (!currentPendingReservationId) return;
 
       try {
-        const res = await fetch(`/api/admin/reservations/${currentPendingReservationId}/accept`, { method: 'POST' });
+        const res = await fetch(`/api/admin/reservations/${currentPendingReservationId}/status`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'accepted' })
+        });
         
         if (res.ok) {
           document.getElementById('reservation-alarm').style.display = 'none';
-          stopBeep();
+          if (beepInterval) clearInterval(beepInterval);
           alarmActive = false;
           currentPendingReservationId = null;
           showToast('Rezerwacja została pomyślnie przyjęta!', 'success');
           
-          checkNewReservations(); // Od razu odświeżamy listę
+          // Jeśli jesteśmy na widoku rezerwacji, odświeżmy od razu tabelę
+          if (document.getElementById('view-reservations').classList.contains('active')) {
+              loadAllReservations();
+          }
         }
       } catch (err) {
         showToast('Wystąpił błąd przy akceptacji rezerwacji.', 'error');
       }
     }
 
-    function renderReservationsTable(reservations) {
+    // Odświeżanie tabeli wszystkich rezerwacji
+    async function loadAllReservations() {
       const tbody = document.getElementById('reservations-table-body');
-      if(!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
       
-      if(reservations.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px; color: var(--text-sub);">Brak nowych oczekujących rezerwacji</td></tr>';
-          return;
+      try {
+        const res = await fetch('/api/admin/reservations');
+        const result = await res.json();
+        
+        if (result.success) {
+          tbody.innerHTML = '';
+          if(result.data.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-sub);">Brak rezerwacji w systemie</td></tr>';
+              return;
+          }
+
+          result.data.forEach(r => {
+              let resDate = r.datetime;
+              try { resDate = new Date(r.datetime).toLocaleString('pl-PL'); } catch(e){}
+
+              let statusBadge = `<span class="badge orange">Oczekuje</span>`;
+              if (r.status === 'accepted') statusBadge = `<span class="badge green">Przyjęta</span>`;
+              if (r.status === 'rejected') statusBadge = `<span class="badge red">Odrzucona</span>`;
+
+              tbody.innerHTML += `
+                <tr>
+                  <td><strong>${r.name}</strong><br><span style="color:var(--text-sub); font-size:0.8rem;">${r.phone}</span></td>
+                  <td>${resDate}<br><span style="color:var(--text-sub); font-size:0.8rem;">${r.zone}</span></td>
+                  <td><strong>${r.guests}</strong></td>
+                  <td><span style="font-size:0.8rem; color:var(--text-sub);">${r.notes || '-'}</span></td>
+                  <td>
+                    <div style="margin-bottom: 5px;">${statusBadge}</div>
+                    <div style="display:flex; gap:5px;">
+                      ${r.status === 'pending' ? `<button class="btn btn-sm" style="background:var(--status-ok); color:white;" onclick="changeReservationStatus('${r._id}', 'accepted')"><i class="fas fa-check"></i></button>` : ''}
+                      <button class="btn btn-sm" style="background:var(--status-err); color:white;" onclick="deleteReservation('${r._id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+          });
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--status-err);">Błąd serwera.</td></tr>';
       }
-
-      let html = '';
-      reservations.forEach(r => {
-          let resDate = r.datetime;
-          try { resDate = new Date(r.datetime).toLocaleString('pl-PL'); } catch(e){}
-
-          html += `
-            <tr>
-              <td><strong>${r.name}</strong><br><span style="color:var(--text-sub); font-size:0.8rem;">${r.phone}</span></td>
-              <td>${resDate}</td>
-              <td><strong>${r.guests}</strong></td>
-              <td>${r.zone}</td>
-              <td>
-                <button class="btn" style="background:var(--status-ok); color:white; padding:8px 16px; font-size:0.85rem;" 
-                  onclick="currentPendingReservationId='${r._id}'; acceptReservationFromAlarm();">
-                  <i class="fas fa-check"></i> Akceptuj
-                </button>
-              </td>
-            </tr>
-          `;
-      });
-      tbody.innerHTML = html;
     }
 
-    // Interwał odpalający sprawdzanie co 3 sekundy
+    async function changeReservationStatus(id, newStatus) {
+        try {
+            const res = await fetch(`/api/admin/reservations/${id}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if(res.ok) {
+                showToast('Zmieniono status', 'success');
+                loadAllReservations();
+            }
+        } catch(e) {
+            showToast('Błąd połączenia', 'error');
+        }
+    }
+
+    async function deleteReservation(id) {
+        if(!confirm('Na pewno usunąć tę rezerwację trwale z bazy?')) return;
+        try {
+            const res = await fetch(`/api/admin/reservations/${id}`, { method: 'DELETE' });
+            if(res.ok) {
+                showToast('Rezerwacja usunięta', 'success');
+                loadAllReservations();
+            }
+        } catch(e) {
+            showToast('Błąd usuwania', 'error');
+        }
+    }
+
     setInterval(checkNewReservations, 3000);
 
 
