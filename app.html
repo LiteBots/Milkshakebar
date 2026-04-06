@@ -1265,18 +1265,51 @@ async function redeemReward(rewardId, name, cost) {
     showToast('W przygotowaniu...');
 }
 
+// ==========================================
+// NOWOŚĆ: REALNE WYSYŁANIE REZERWACJI
+// ==========================================
 async function submitReservation() {
   const inputs = document.querySelectorAll('#view-reservation .form-control');
   const name = inputs[0].value;
   const phone = inputs[1].value;
   const datetime = inputs[2].value;
   const guests = inputs[3].value;
+  const notes = inputs[4] ? inputs[4].value : '';
 
   if(!name || !phone || !datetime || !guests) {
       return showToast('Uzupełnij wymagane pola (Imię, Telefon, Data)!', false);
   }
 
-  showToast('Funkcja testowa - rezerwacja zablokowana.');
+  showToast('Wysyłanie rezerwacji...');
+
+  try {
+    const response = await fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        phone,
+        datetime,
+        guests,
+        zone: selectedZone,
+        notes
+      })
+    });
+
+    const data = await response.json();
+    if(data.success) {
+      showToast('Rezerwacja wysłana! Czekamy na potwierdzenie z lokalu.', true);
+      // Czyszczenie pól
+      inputs[0].value = '';
+      inputs[1].value = '';
+      inputs[2].value = '';
+      if(inputs[4]) inputs[4].value = '';
+    } else {
+      showToast('Wystąpił błąd, spróbuj ponownie.', false);
+    }
+  } catch (err) {
+    showToast('Brak połączenia z serwerem.', false);
+  }
 }
 
 // ==========================================
