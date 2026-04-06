@@ -156,8 +156,9 @@
     .form-control {
       width: 100%; padding: 12px; border-radius: var(--radius-m);
       border: 1px solid var(--border); background: var(--bg-body);
-      color: var(--text-main); font-family: inherit; font-size: 1rem;
+      color: var(--text-main); font-family: inherit; font-size: 1rem; outline: none;
     }
+    .form-control:focus { border-color: var(--primary); }
     
     .btn {
       padding: 12px 24px; border-radius: var(--radius-m); border: none;
@@ -265,10 +266,10 @@
     <div class="nav-category">MilkMi App</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
     <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Z kasy)</span></div>
+    <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Portfel Pre-paid</span></div>
     <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
     <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
     <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia</span></div>
-    <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Pre-paid</span></div>
     <div class="nav-item" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
     <div class="nav-item" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek Na Stronie</span></div>
 
@@ -340,7 +341,7 @@
         <form onsubmit="awardPoints(event)" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
             <div class="form-group" style="margin:0;">
                 <label>Telefon lub E-mail klienta</label>
-                <input type="text" id="award-identifier" class="form-control" placeholder="np. 555 555 555" required>
+                <input type="text" id="award-identifier" class="form-control" placeholder="np. +48 123 456 789" required>
             </div>
             <div class="form-group" style="margin:0;">
                 <label>Kwota zamówienia w kasie (PLN)</label>
@@ -369,6 +370,39 @@
               <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-prepaid" class="view-section">
+      <div class="card">
+        <div class="section-header">Zarządzanie Portfelem (Pre-paid)</div>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Wyszukaj klienta, aby sprawdzić jego saldo, doładować konto lub pobrać zapłatę za zamówienie.</p>
+        
+        <div class="form-group">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="wallet-search-input" class="form-control" placeholder="E-mail lub telefon klienta..." style="flex:1;">
+                <button class="btn btn-primary" onclick="searchWalletUser()"><i class="fas fa-search"></i> Szukaj</button>
+            </div>
+        </div>
+        
+        <div id="wallet-user-details" style="display:none; margin-top: 20px; padding: 25px; border: 2px solid var(--primary); border-radius: var(--radius-l); background: rgba(255,102,0,0.05);">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h3 id="wallet-user-name" style="margin-bottom: 5px; font-size: 1.5rem;">Imię Nazwisko</h3>
+                    <span id="wallet-user-contact" style="color:var(--text-sub); font-size: 0.9rem; font-weight: 600;">kontakt</span>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-sub); font-weight: 800;">Aktualne Saldo</span>
+                    <div id="wallet-user-balance" style="font-size: 2.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px;">0.00 PLN</div>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:15px; align-items: center; border-top: 1px solid rgba(255,102,0,0.2); padding-top: 20px;">
+                <input type="number" step="0.01" id="wallet-amount" class="form-control" placeholder="Kwota (PLN)" style="max-width: 180px; font-size: 1.1rem; font-weight: 700; text-align: center;">
+                <button class="btn" style="background: var(--status-ok); color:white; flex: 1; justify-content: center;" onclick="modifyWallet('add')"><i class="fas fa-plus"></i> Wpłać Środki</button>
+                <button class="btn" style="background: var(--status-err); color:white; flex: 1; justify-content: center;" onclick="modifyWallet('remove')"><i class="fas fa-minus"></i> Pobierz Zapłatę</button>
+            </div>
         </div>
       </div>
     </section>
@@ -473,25 +507,6 @@
                 <td>65.00 PLN</td>
                 <td><i class="fas fa-store"></i> Odbiór</td>
                 <td><span class="badge orange">W kuchni</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-prepaid" class="view-section">
-      <div class="card">
-        <div class="section-header">Wirtualne portfele</div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead><tr><th>Numer karty</th><th>Właściciel</th><th>Saldo</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr>
-                <td style="font-family:monospace;">**** 8829</td>
-                <td>Mikołaj (App)</td>
-                <td style="font-weight:800; color:var(--primary);">45.50 PLN</td>
-                <td><span class="badge green">Aktywna</span></td>
               </tr>
             </tbody>
           </table>
@@ -776,10 +791,10 @@
       const titles = {
         'dashboard': 'Dashboard',
         'points': 'Nabijanie Punktów (Kasa)',
+        'prepaid': 'Portfel Pre-paid',
         'users': 'Baza Klientów',
         'reservations': 'Rezerwacje',
         'orders': 'Zamówienia',
-        'prepaid': 'Pre-paid',
         'push': 'Powiadomienia Push',
         'app-bar': 'Pasek w Aplikacji',
         'web-bar': 'Pasek na WWW',
@@ -936,6 +951,64 @@
         }
     }
 
+    // =====================================
+    // PORTFEL PRE-PAID (WYSZUKIWANIE / ZARZĄDZANIE)
+    // =====================================
+    let currentWalletUserId = null;
+
+    async function searchWalletUser() {
+        const identifier = document.getElementById('wallet-search-input').value;
+        if(!identifier) return showToast('Wpisz dane klienta', 'error');
+
+        try {
+            const res = await fetch('/api/admin/wallet/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier })
+            });
+            const data = await res.json();
+            
+            if(data.success) {
+                currentWalletUserId = data.user.id;
+                document.getElementById('wallet-user-name').innerText = data.user.username;
+                document.getElementById('wallet-user-contact').innerText = `${data.user.phone} | ${data.user.email}`;
+                document.getElementById('wallet-user-balance').innerText = `${data.user.walletBalance.toFixed(2)} PLN`;
+                
+                document.getElementById('wallet-user-details').style.display = 'block';
+                document.getElementById('wallet-amount').value = '';
+            } else {
+                document.getElementById('wallet-user-details').style.display = 'none';
+                showToast(data.message, 'error');
+            }
+        } catch(err) {
+            showToast('Błąd wyszukiwania klienta.', 'error');
+        }
+    }
+
+    async function modifyWallet(action) {
+        if(!currentWalletUserId) return;
+        const amount = document.getElementById('wallet-amount').value;
+        if(!amount || amount <= 0) return showToast('Wpisz prawidłową kwotę.', 'error');
+
+        try {
+            const res = await fetch('/api/admin/wallet/modify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentWalletUserId, amount, action })
+            });
+            const data = await res.json();
+            
+            if(data.success) {
+                document.getElementById('wallet-user-balance').innerText = `${data.walletBalance.toFixed(2)} PLN`;
+                document.getElementById('wallet-amount').value = '';
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch(err) {
+            showToast('Błąd operacji na portfelu.', 'error');
+        }
+    }
 
     // =====================================
     // ZARZĄDZANIE BAZĄ KLIENTÓW (USERS)
@@ -1093,6 +1166,67 @@
       }
     }
 
+    // --- WORKMI TEAM LOGIC ---
+    async function fetchTeam() {
+      try {
+        const response = await fetch('/api/team');
+        const result = await response.json();
+        
+        if (result.success) {
+          const tbody = document.getElementById('team-table-body');
+          tbody.innerHTML = ''; 
+          
+          result.data.forEach(emp => {
+            let badgeColor = 'blue';
+            if(emp.role === 'Właściciel' || emp.role === 'Manager') badgeColor = 'green';
+            if(emp.role === 'Szef Kuchni') badgeColor = 'orange';
+
+            tbody.innerHTML += `
+              <tr>
+                <td><strong>${emp.name}</strong></td>
+                <td>${emp.role}</td>
+                <td><span class="badge ${badgeColor}">Zapisany</span></td>
+              </tr>
+            `;
+          });
+        }
+      } catch (err) {
+        console.error('Błąd pobierania zespołu', err);
+        showToast('Nie udało się pobrać listy pracowników', 'error');
+      }
+    }
+
+    async function addEmployee(event) {
+      event.preventDefault(); 
+      
+      const name = document.getElementById('emp-name').value;
+      const role = document.getElementById('emp-role').value;
+      const pin = document.getElementById('emp-pin').value;
+
+      try {
+        const response = await fetch('/api/team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, role, pin })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Pracownik został dodany do bazy!', 'success');
+          document.getElementById('add-employee-form').reset(); 
+          fetchTeam(); 
+        } else {
+          showToast('Błąd: ' + result.error, 'error');
+        }
+      } catch (err) {
+        console.error('Błąd dodawania pracownika', err);
+        showToast('Nie udało się połączyć z serwerem.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchTeam);
   </script>
+
 </body>
 </html>
