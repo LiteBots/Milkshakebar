@@ -18,7 +18,7 @@ app.use(express.static(__dirname));
 // --- TRASY FRONTENDU (WIDOKI) ---
 
 // Trasa główna - serwuje aplikację kliencką
-app.get('/', (req, res) => {
+app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
 
