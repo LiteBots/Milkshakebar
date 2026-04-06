@@ -340,14 +340,14 @@
     </header>
 
     <section id="view-dashboard" class="view-section active">
-      <div class="section-header">Statystyki MilkMi (App)</div>
+      <div class="section-header">Statystyki MilkMi (App) <button class="btn btn-outline btn-sm" onclick="loadDashboardStats()" style="margin-left: 15px;"><i class="fas fa-sync"></i></button></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-users"></i></div><div class="stat-value">2,845</div><div class="stat-label">Wszystkich Użytkowników</div></div>
-        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value">124</div><div class="stat-label">Aktywne Rezerwacje</div></div>
-        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-star"></i></div><div class="stat-value">845k</div><div class="stat-label">Wydanych Milkosów</div></div>
-        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div><div class="stat-value">1,502</div><div class="stat-label">Użytkownicy z punktami</div></div>
-        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div><div class="stat-value">430</div><div class="stat-label">Aktywne karty Pre-paid</div></div>
-        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div><div class="stat-value">32,450 zł</div><div class="stat-label">Środki na kontach</div></div>
+        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-users">0</div><div class="stat-label">Wszystkich Użytkowników</div></div>
+        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value" id="stat-reservations">0</div><div class="stat-label">Łączna liczba rezerwacji</div></div>
+        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-star"></i></div><div class="stat-value" id="stat-spent-points">0</div><div class="stat-label">Wydanych Milkosów</div></div>
+        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div><div class="stat-value" id="stat-users-with-points">0</div><div class="stat-label">Użytkownicy z punktami</div></div>
+        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div><div class="stat-value" id="stat-active-prepaid">0</div><div class="stat-label">Aktywne karty Pre-paid</div></div>
+        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div><div class="stat-value" id="stat-prepaid-balance">0.00 zł</div><div class="stat-label">Środki na kontach</div></div>
       </div>
       
       <div class="section-header" style="margin-top:40px;">Statystyki MilkShakeBar (Web)</div>
@@ -840,6 +840,8 @@
         loadPointTransactions();
       } else if (viewId === 'reservations') {
         loadAllReservations();
+      } else if (viewId === 'dashboard') {
+        loadDashboardStats();
       }
     }
 
@@ -851,6 +853,25 @@
     function logoutAdmin() {
       if (confirm("Czy na pewno chcesz się wylogować z panelu?")) {
         window.location.reload(); 
+      }
+    }
+
+    // --- NOWOŚĆ: ŁADOWANIE STATYSTYK DO DASHBOARDU ---
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const json = await res.json();
+        
+        if (json.success) {
+            document.getElementById('stat-users').innerText = json.data.totalUsers;
+            document.getElementById('stat-reservations').innerText = json.data.totalReservations;
+            document.getElementById('stat-spent-points').innerText = json.data.spentMilkosy;
+            document.getElementById('stat-users-with-points').innerText = json.data.usersWithPoints;
+            document.getElementById('stat-active-prepaid').innerText = json.data.activePrepaidCards;
+            document.getElementById('stat-prepaid-balance').innerText = `${json.data.totalPrepaidBalance.toFixed(2)} zł`;
+        }
+      } catch(err) {
+        console.error('Błąd ładowania statystyk', err);
       }
     }
 
@@ -886,8 +907,9 @@
                 setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
             }
 
-            // Inicjalizuj system rezerwacji (alarmy)
+            // Inicjalizuj systemy po logowaniu
             checkNewReservations();
+            loadDashboardStats();
         } else {
             errorMsg.innerText = "Nieprawidłowy kod PIN!";
             errorMsg.style.display = 'block';
