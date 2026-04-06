@@ -69,7 +69,9 @@
     .brand {
       font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px;
     }
+    
     .brand span { color: var(--primary); }
+    
     .brand small { 
       font-size: 0.7rem; color: var(--text-sub); 
       font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
@@ -88,6 +90,7 @@
       font-weight: 600; font-size: 0.9rem; transition: 0.2s;
       margin-bottom: 5px; cursor: pointer;
     }
+    
     .nav-item:hover { background: var(--bg-body); color: var(--text-main); }
     .nav-item.active { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
     .nav-item i { width: 20px; text-align: center; }
@@ -155,6 +158,7 @@
       border: 1px solid var(--border); background: var(--bg-body);
       color: var(--text-main); font-family: inherit; font-size: 1rem;
     }
+    
     .btn {
       padding: 12px 24px; border-radius: var(--radius-m); border: none;
       font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;
@@ -186,7 +190,12 @@
     .view-section.active { display: block; }
 
     /* Theme Toggle */
-    .theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 200; transition: 0.3s; }
+    .theme-toggle { 
+      position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; 
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center; cursor: pointer; 
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 200; transition: 0.3s; 
+    }
     .theme-toggle:hover { transform: scale(1.1); }
 
     /* --- TOAST NOTIFICATIONS --- */
@@ -250,63 +259,16 @@
     </div>
   </div>
 
-  <script>
-    // Skrypt do sprawdzania PINu
-    async function verifyAdmin() {
-      const pin = document.getElementById('admin-pin-input').value;
-      const errorMsg = document.getElementById('admin-error');
-      
-      if(pin.length !== 5) {
-          errorMsg.innerText = "Kod musi mieć 5 cyfr!";
-          errorMsg.style.display = 'block';
-          return;
-      }
-
-      try {
-        const response = await fetch('/api/admin/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pin })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const overlay = document.getElementById('admin-login-overlay');
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => overlay.remove(), 500);
-            
-            if (data.name) {
-                setTimeout(() => showToast(`Witaj, ${data.name}!`, 'info'), 500);
-            } else {
-                setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
-            }
-        } else {
-            errorMsg.innerText = "Nieprawidłowy kod PIN!";
-            errorMsg.style.display = 'block';
-            document.getElementById('admin-pin-input').value = '';
-        }
-      } catch (err) {
-        console.error("Błąd połączenia z serwerem API", err);
-      }
-    }
-
-    document.getElementById('admin-pin-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') verifyAdmin();
-    });
-  </script>
-
   <aside class="sidebar">
     <div class="brand">MilkMi<span>.</span> <small>Admin Panel</small></div>
 
     <div class="nav-category">MilkMi App</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
-    <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Milkosy)</span></div>
+    <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Z kasy)</span></div>
+    <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
     <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
-    <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamów i Odbierz</span></div>
+    <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia</span></div>
     <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Pre-paid</span></div>
-    <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Użytkownicy</span></div>
     <div class="nav-item" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
     <div class="nav-item" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek Na Stronie</span></div>
 
@@ -372,30 +334,103 @@
 
     <section id="view-points" class="view-section">
       <div class="card">
-        <div class="section-header">Ostatnie transakcje punktowe</div>
+        <div class="section-header">Dodaj punkty do konta (Z kasy)</div>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Zasada: <strong>10 PLN wydane = 1 Punkt na koncie.</strong> Algorytm ignoruje końcówki (np. 75 zł = 7 pkt).</p>
+        
+        <form onsubmit="awardPoints(event)" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+            <div class="form-group" style="margin:0;">
+                <label>Telefon lub E-mail klienta</label>
+                <input type="text" id="award-identifier" class="form-control" placeholder="np. +48 123 456 789" required>
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>Kwota zamówienia w kasie (PLN)</label>
+                <input type="number" step="0.01" id="award-amount" class="form-control" placeholder="np. 75.00" oninput="calculatePointsPreview()" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="height: 46px; margin-bottom: 2px;">
+                Dodaj <span id="award-preview" style="margin-left: 5px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 5px;">0</span> pkt
+            </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-header">Globalna historia nadawania punktów z kasy</div>
         <div class="table-container">
           <table class="data-table">
-            <thead><tr><th>Użytkownik</th><th>Rodzaj operacji</th><th>Ilość punktów</th><th>Data</th><th>Status</th></tr></thead>
-            <tbody>
+            <thead>
               <tr>
-                <td><div class="user-info"><div class="avatar">MK</div><div><strong>Mikołaj K.</strong><br><small>App User</small></div></div></td>
-                <td>Zamówienie (Shake Oreo)</td>
-                <td style="color: var(--status-ok); font-weight:700;">+ 120 pkt</td>
-                <td>13.02.2026, 14:30</td>
-                <td><span class="badge green">Naliczone</span></td>
+                <th>Klient</th>
+                <th>Wydana kwota</th>
+                <th>Przyznane punkty</th>
+                <th>Data</th>
+                <th>Status</th>
               </tr>
-              <tr>
-                <td><div class="user-info"><div class="avatar">AD</div><div><strong>Anna D.</strong><br><small>App User</small></div></div></td>
-                <td>Odbiór nagrody (Kawa)</td>
-                <td style="color: var(--status-err); font-weight:700;">- 500 pkt</td>
-                <td>13.02.2026, 12:15</td>
-                <td><span class="badge blue">Wykorzystane</span></td>
-              </tr>
+            </thead>
+            <tbody id="point-transactions-body">
+              <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
+
+    <section id="view-users" class="view-section">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+          <input type="text" id="user-search" class="form-control" placeholder="Szukaj (email/telefon/imię)..." style="max-width:300px;" oninput="filterUsers()">
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Użytkownik</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Punkty</th>
+                <th>Akcja</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div id="user-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center;">
+      <div class="card" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; margin: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 id="modal-user-name">Imię Użytkownika</h2>
+          <button class="btn btn-outline" style="padding: 5px 10px; margin-bottom:0;" onclick="closeUserModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div style="background: var(--bg-body); padding: 15px; border-radius: var(--radius-m); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="color:var(--text-sub); font-size:0.8rem; text-transform:uppercase;">Milkosy na koncie</span><br>
+            <strong id="modal-user-points" style="font-size: 1.5rem; color: var(--primary);">0</strong>
+          </div>
+          <button class="btn" style="background: var(--status-err); color:white; padding: 8px 15px;" onclick="deleteCurrentUser()">
+            <i class="fas fa-trash"></i> Usuń Konto
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+          <input type="number" id="point-amount" class="form-control" placeholder="Ilość pkt" style="width: 100px;">
+          <input type="text" id="point-reason" class="form-control" placeholder="Powód ręczny (np. Rekompensata)">
+          <button class="btn" style="background: var(--status-ok); color:white;" onclick="modifyPoints('add')">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button class="btn" style="background: var(--status-err); color:white;" onclick="modifyPoints('remove')">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+
+        <div class="section-header" style="font-size: 1.1rem; margin-top:30px;">Historia Transakcji (Konto Klienta)</div>
+        <div id="modal-user-history" style="max-height: 200px; overflow-y: auto;">
+          </div>
+      </div>
+    </div>
 
     <section id="view-reservations" class="view-section">
       <div class="card">
@@ -463,46 +498,6 @@
         </div>
       </div>
     </section>
-
-    <section id="view-users" class="view-section">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-          <input type="text" id="user-search" class="form-control" placeholder="Szukaj (email/telefon/imię)..." style="max-width:300px;" oninput="filterUsers()">
-        </div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead><tr><th>Użytkownik</th><th>Email</th><th>Telefon</th><th>Punkty</th><th>Akcja</th></tr></thead>
-            <tbody id="users-table-body">
-              </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <div id="user-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center;">
-      <div class="card" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; margin: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h2 id="modal-user-name">Imię Użytkownika</h2>
-          <button class="btn btn-outline" style="padding: 5px 10px; margin-bottom:0;" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
-        </div>
-        
-        <div style="background: var(--bg-body); padding: 15px; border-radius: var(--radius-m); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-          <div><span style="color:var(--text-sub); font-size:0.8rem; text-transform:uppercase;">Milkosy na koncie</span><br><strong id="modal-user-points" style="font-size: 1.5rem; color: var(--primary);">0</strong></div>
-          <button class="btn" style="background: var(--status-err); color:white; padding: 8px 15px;" onclick="deleteCurrentUser()"><i class="fas fa-trash"></i> Usuń Konto</button>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-          <input type="number" id="point-amount" class="form-control" placeholder="Ilość pkt" style="width: 100px;">
-          <input type="text" id="point-reason" class="form-control" placeholder="Powód (np. Rekompensata)">
-          <button class="btn" style="background: var(--status-ok); color:white;" onclick="modifyPoints('add')"><i class="fas fa-plus"></i></button>
-          <button class="btn" style="background: var(--status-err); color:white;" onclick="modifyPoints('remove')"><i class="fas fa-minus"></i></button>
-        </div>
-
-        <div class="section-header" style="font-size: 1.1rem; margin-top:30px;">Historia Transakcji</div>
-        <div id="modal-user-history" style="max-height: 200px; overflow-y: auto;">
-          </div>
-      </div>
-    </div>
 
     <section id="view-push" class="view-section">
       <div class="card" style="max-width:600px;">
@@ -734,7 +729,7 @@
   </button>
 
   <script>
-    // --- TOAST NOTIFICATIONS LOGIC ---
+    // --- TOAST NOTIFICATIONS ---
     function showToast(message, type = 'success') {
       let container = document.getElementById('toast-container');
       if (!container) {
@@ -742,7 +737,7 @@
         container.id = 'toast-container';
         document.body.appendChild(container);
       }
-
+      
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       
@@ -770,7 +765,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // --- NAVIGATION LOGIC ---
+    // --- VIEW MANAGEMENT ---
     function switchView(viewId, navElement) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-' + viewId).classList.add('active');
@@ -780,11 +775,11 @@
 
       const titles = {
         'dashboard': 'Dashboard',
-        'points': 'Punkty (Milkosy)',
+        'points': 'Nabijanie Punktów (Kasa)',
+        'users': 'Baza Klientów',
         'reservations': 'Rezerwacje',
         'orders': 'Zamówienia',
         'prepaid': 'Pre-paid',
-        'users': 'Użytkownicy',
         'push': 'Powiadomienia Push',
         'app-bar': 'Pasek w Aplikacji',
         'web-bar': 'Pasek na WWW',
@@ -797,27 +792,154 @@
         'work-costs': 'WorkMi: Koszta Pracowników',
         'dev': 'Kontakt z Developerem'
       };
+      
       document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
 
-      // Uruchamianie ładowania użytkowników po wejściu w odpowiednią zakładkę
-      if(viewId === 'users') {
+      // Load specific data when switching to a view
+      if (viewId === 'users') {
         loadUsers();
+      } else if (viewId === 'points') {
+        loadPointTransactions();
       }
     }
 
-    // --- THEME TOGGLE ---
+    // --- THEME & LOGOUT ---
     function toggleAdminTheme() {
       document.body.classList.toggle('dark-mode');
     }
 
-    // --- LOGOUT LOGIC ---
     function logoutAdmin() {
       if (confirm("Czy na pewno chcesz się wylogować z panelu?")) {
         window.location.reload(); 
       }
     }
 
-    // --- USER MANAGEMENT LOGIC ---
+    // --- LOGIN LOGIC ---
+    async function verifyAdmin() {
+      const pin = document.getElementById('admin-pin-input').value;
+      const errorMsg = document.getElementById('admin-error');
+      
+      if(pin.length !== 5) {
+          errorMsg.innerText = "Kod musi mieć 5 cyfr!";
+          errorMsg.style.display = 'block';
+          return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const overlay = document.getElementById('admin-login-overlay');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => overlay.remove(), 500);
+            
+            if (data.name) {
+                setTimeout(() => showToast(`Witaj, ${data.name}!`, 'info'), 500);
+            } else {
+                setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
+            }
+        } else {
+            errorMsg.innerText = "Nieprawidłowy kod PIN!";
+            errorMsg.style.display = 'block';
+            document.getElementById('admin-pin-input').value = '';
+        }
+      } catch (err) {
+        console.error("Błąd połączenia z serwerem API", err);
+      }
+    }
+
+    document.getElementById('admin-pin-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') verifyAdmin();
+    });
+
+
+    // =====================================
+    // NADAWANIE PUNKTÓW Z KASY 
+    // =====================================
+    function calculatePointsPreview() {
+        const amount = document.getElementById('award-amount').value;
+        const points = Math.floor(Number(amount || 0) / 10);
+        document.getElementById('award-preview').innerText = points;
+    }
+
+    async function awardPoints(e) {
+        e.preventDefault();
+        
+        const identifier = document.getElementById('award-identifier').value;
+        const amountSpent = document.getElementById('award-amount').value;
+
+        try {
+            const res = await fetch('/api/admin/award-points', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier, amountSpent })
+            });
+            
+            const data = await res.json();
+            
+            if(data.success) {
+                showToast(data.message, 'success');
+                document.getElementById('award-identifier').value = '';
+                document.getElementById('award-amount').value = '';
+                document.getElementById('award-preview').innerText = '0';
+                
+                // Refresh the table
+                loadPointTransactions();
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (err) {
+            showToast('Błąd połączenia z serwerem.', 'error');
+        }
+    }
+
+    async function loadPointTransactions() {
+        const tbody = document.getElementById('point-transactions-body');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
+        
+        try {
+            const res = await fetch('/api/admin/point-transactions');
+            const data = await res.json();
+            
+            if(data.success) {
+                tbody.innerHTML = '';
+                
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak historii transakcji.</td></tr>';
+                    return;
+                }
+                
+                data.data.forEach(tx => {
+                    const dateObj = new Date(tx.date);
+                    const formattedDate = dateObj.toLocaleDateString('pl-PL') + ', ' + dateObj.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${tx.userDisplay}</strong></td>
+                            <td>${tx.amountSpent.toFixed(2)} PLN</td>
+                            <td style="color:var(--status-ok); font-weight:800;">+ ${tx.pointsAwarded} pkt</td>
+                            <td>${formattedDate}</td>
+                            <td><span class="badge green">Naliczone</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
+        }
+    }
+
+
+    // =====================================
+    // ZARZĄDZANIE BAZĄ KLIENTÓW (USERS)
+    // =====================================
     let allUsersData = [];
     let currentSelectedUserId = null;
 
@@ -971,67 +1093,6 @@
       }
     }
 
-    // --- WORKMI TEAM LOGIC ---
-    async function fetchTeam() {
-      try {
-        const response = await fetch('/api/team');
-        const result = await response.json();
-        
-        if (result.success) {
-          const tbody = document.getElementById('team-table-body');
-          tbody.innerHTML = ''; 
-          
-          result.data.forEach(emp => {
-            let badgeColor = 'blue';
-            if(emp.role === 'Właściciel' || emp.role === 'Manager') badgeColor = 'green';
-            if(emp.role === 'Szef Kuchni') badgeColor = 'orange';
-
-            tbody.innerHTML += `
-              <tr>
-                <td><strong>${emp.name}</strong></td>
-                <td>${emp.role}</td>
-                <td><span class="badge ${badgeColor}">Zapisany</span></td>
-              </tr>
-            `;
-          });
-        }
-      } catch (err) {
-        console.error('Błąd pobierania zespołu', err);
-        showToast('Nie udało się pobrać listy pracowników', 'error');
-      }
-    }
-
-    async function addEmployee(event) {
-      event.preventDefault(); 
-      
-      const name = document.getElementById('emp-name').value;
-      const role = document.getElementById('emp-role').value;
-      const pin = document.getElementById('emp-pin').value;
-
-      try {
-        const response = await fetch('/api/team', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, role, pin })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          showToast('Pracownik został dodany do bazy!', 'success');
-          document.getElementById('add-employee-form').reset(); 
-          fetchTeam(); 
-        } else {
-          showToast('Błąd: ' + result.error, 'error');
-        }
-      } catch (err) {
-        console.error('Błąd dodawania pracownika', err);
-        showToast('Nie udało się połączyć z serwerem.', 'error');
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', fetchTeam);
   </script>
-
 </body>
 </html>
