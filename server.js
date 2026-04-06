@@ -72,8 +72,13 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  // Pole na środki wirtualnego portfela klienta
+  // Środki wirtualnego portfela klienta
   walletBalance: { 
+    type: Number, 
+    default: 0 
+  },
+  // Śledzenie wydanych punktów na nagrody
+  redeemedPoints: { 
     type: Number, 
     default: 0 
   },
@@ -102,9 +107,7 @@ const pointTransactionSchema = new mongoose.Schema({
 
 const PointTransaction = mongoose.model('PointTransaction', pointTransactionSchema);
 
-// ==========================================
-// --- NOWOŚĆ: SCHEMAT REZERWACJI ---
-// ==========================================
+// --- SCHEMAT REZERWACJI ---
 const reservationSchema = new mongoose.Schema({
   name: String,
   phone: String,
@@ -139,7 +142,40 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// 2. Pobierz wszystkich użytkowników (Baza Klientów)
+// 2. Pobieranie statystyk do Dashboardu
+app.get('/api/admin/stats', async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalReservations = await Reservation.countDocuments();
+        const usersWithPoints = await User.countDocuments({ points: { $gte: 1 } });
+        const activePrepaidCards = await User.countDocuments({ walletBalance: { $gte: 1 } });
+
+        // Sumowanie wszystkich środków w portfelach pre-paid
+        const balanceAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$walletBalance" } } }]);
+        const totalPrepaidBalance = balanceAgg.length > 0 ? balanceAgg[0].total : 0;
+
+        // Sumowanie wszystkich wydanych punktów na nagrody
+        const redeemedAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$redeemedPoints" } } }]);
+        const spentMilkosy = redeemedAgg.length > 0 ? redeemedAgg[0].total : 0;
+
+        res.json({
+            success: true,
+            data: {
+                totalUsers,
+                totalReservations,
+                usersWithPoints,
+                activePrepaidCards,
+                totalPrepaidBalance,
+                spentMilkosy
+            }
+        });
+    } catch (err) {
+        console.error('Błąd statystyk:', err);
+        res.status(500).json({ success: false, message: 'Błąd generowania statystyk' });
+    }
+});
+
+// 3. Pobierz wszystkich użytkowników (Baza Klientów)
 app.get('/api/admin/users', async (req, res) => {
     try {
         // Zwracamy wszystkie dane z wyjątkiem hasła
@@ -150,7 +186,7 @@ app.get('/api/admin/users', async (req, res) => {
     }
 });
 
-// 3. Modyfikuj punkty użytkownika ręcznie (Modal Użytkownika)
+// 4. Modyfikuj punkty użytkownika ręcznie (Modal Użytkownika)
 app.post('/api/admin/users/:id/points', async (req, res) => {
     try {
         const { id } = req.params;
@@ -188,7 +224,7 @@ app.post('/api/admin/users/:id/points', async (req, res) => {
     }
 });
 
-// 4. Usuń użytkownika
+// 5. Usuń użytkownika
 app.delete('/api/admin/users/:id', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -198,7 +234,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
     }
 });
 
-// 5. Nabijanie punktów za zakupy (Z zakładki z kasy 10 zł = 1 pkt)
+// 6. Nabijanie punktów za zakupy z kasy
 app.post('/api/admin/award-points', async (req, res) => {
     try {
         const { identifier, amountSpent } = req.body;
@@ -248,7 +284,7 @@ app.post('/api/admin/award-points', async (req, res) => {
     }
 });
 
-// 6. Pobieranie historii globalnej punktów do panelu
+// 7. Pobieranie historii globalnej punktów do panelu
 app.get('/api/admin/point-transactions', async (req, res) => {
     try {
         const txs = await PointTransaction.find().sort({ date: -1 }).limit(50);
@@ -328,22 +364,10 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
 });
 
 // ==========================================
-// --- API REZERWACJI ---
+// --- API ADMINA (REZERWACJE) ---
 // ==========================================
 
-// 1. Z APLIKACJI - Utworzenie rezerwacji
-app.post('/api/reservations', async (req, res) => {
-  try {
-    const newRes = new Reservation(req.body);
-    await newRes.save();
-    res.json({ success: true, message: 'Rezerwacja wysłana do lokalu!' });
-  } catch (err) {
-    console.error('Błąd przy zapisie rezerwacji:', err);
-    res.status(500).json({ success: false, message: 'Błąd serwera' });
-  }
-});
-
-// 2. PANEL ADMINA - Pobieranie nowych (pending) TYLKO dla mechanizmu alarmu
+// 1. PANEL ADMINA - Pobieranie nowych (pending) TYLKO dla mechanizmu alarmu
 app.get('/api/admin/reservations/pending', async (req, res) => {
   try {
     const pending = await Reservation.find({ status: 'pending' }).sort({ createdAt: 1 });
@@ -353,7 +377,7 @@ app.get('/api/admin/reservations/pending', async (req, res) => {
   }
 });
 
-// 3. PANEL ADMINA - Pobieranie WSZYSTKICH rezerwacji (do widoku w tabeli)
+// 2. PANEL ADMINA - Pobieranie WSZYSTKICH rezerwacji (do widoku w tabeli)
 app.get('/api/admin/reservations', async (req, res) => {
   try {
     const allReservations = await Reservation.find({}).sort({ datetime: -1 });
@@ -363,7 +387,7 @@ app.get('/api/admin/reservations', async (req, res) => {
   }
 });
 
-// 4. PANEL ADMINA - Zmiana statusu rezerwacji (np. akceptacja z alarmu lub z tabeli)
+// 3. PANEL ADMINA - Zmiana statusu rezerwacji (np. akceptacja z alarmu lub z tabeli)
 app.post('/api/admin/reservations/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -374,7 +398,7 @@ app.post('/api/admin/reservations/:id/status', async (req, res) => {
   }
 });
 
-// 5. PANEL ADMINA - Trwałe usuwanie rezerwacji (z tabeli)
+// 4. PANEL ADMINA - Trwałe usuwanie rezerwacji (z tabeli)
 app.delete('/api/admin/reservations/:id', async (req, res) => {
   try {
     await Reservation.findByIdAndDelete(req.params.id);
@@ -388,6 +412,43 @@ app.delete('/api/admin/reservations/:id', async (req, res) => {
 // ==========================================
 // --- API APLIKACJI (KLIENCI) ---
 // ==========================================
+
+// --- API: UTWORZENIE REZERWACJI PRZEZ KLIENTA ---
+app.post('/api/reservations', async (req, res) => {
+  try {
+    const newRes = new Reservation(req.body);
+    await newRes.save();
+    res.json({ success: true, message: 'Rezerwacja wysłana do lokalu!' });
+  } catch (err) {
+    console.error('Błąd przy zapisie rezerwacji:', err);
+    res.status(500).json({ success: false, message: 'Błąd serwera' });
+  }
+});
+
+// --- API: WYMIANA PUNKTÓW NA NAGRODĘ ---
+app.post('/api/rewards/redeem', async (req, res) => {
+    try {
+        const { userId, cost, rewardName } = req.body;
+        const user = await User.findById(userId);
+        
+        if (!user || user.points < cost) {
+            return res.status(400).json({ success: false, message: 'Niewystarczająca liczba punktów.' });
+        }
+
+        user.points -= cost;
+        user.redeemedPoints = (user.redeemedPoints || 0) + cost; // Dodajemy do statystyk wydane punkty
+        user.history.unshift({ text: `- ${cost} pkt • Odbiór nagrody: ${rewardName}` });
+        
+        if(user.history.length > 20) {
+            user.history.pop();
+        }
+        await user.save();
+
+        res.json({ success: true, points: user.points, message: 'Nagroda została pomyślnie odebrana!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
 
 // --- API: REJESTRACJA ---
 app.post('/api/register', async (req, res) => {
@@ -466,7 +527,7 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({
       message: 'Zalogowano pomyślnie.',
       token,
-      // Zwracamy też walletBalance do aplikacji frontowej
+      // Zwracamy dane, w tym walletBalance, do aplikacji frontowej
       user: {
         id: user._id,
         username: user.username,
@@ -501,7 +562,7 @@ app.get('/api/milkpoints/my', async (req, res) => {
       res.json({
           ok: true,
           points: user.points,
-          walletBalance: user.walletBalance || 0, // Zwrotka do frontendu
+          walletBalance: user.walletBalance || 0,
           history: user.history
       });
       
@@ -512,7 +573,6 @@ app.get('/api/milkpoints/my', async (req, res) => {
 
 // ==========================================
 // --- ATTRAPY DLA WORKMI (ZESPÓŁ) ---
-// (Żeby skrypty w admin.html nie wyrzucały błędów w konsoli)
 // ==========================================
 app.get('/api/team', (req, res) => {
   res.json({ success: true, data: [] });
