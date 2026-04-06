@@ -19,14 +19,17 @@ app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
-
 // --- BAZA DANYCH MONGO DB ---
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/milkmi_db';
+// Szukamy zmiennej pod różnymi nazwami, których używa Railway
+const MONGO_URI = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/milkmi_db';
 
-mongoose.connect(MONGO_URI)
+console.log('🛠️ Aplikacja widzi ten adres bazy:', MONGO_URI);
+
+mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 5000 // Skraca czas czekania na błąd do 5 sekund
+})
   .then(() => console.log('✅ Pomyślnie połączono z bazą MongoDB'))
-  .catch((err) => console.error('❌ Błąd połączenia z bazą danych:', err));
-
+  .catch((err) => console.error('❌ Błąd połączenia z bazą danych:', err.message));
 // Schemat użytkownika - kolekcja 'users' utworzy się automatycznie przy pierwszym zapisie
 const userSchema = new mongoose.Schema({
   username: { 
