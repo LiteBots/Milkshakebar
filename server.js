@@ -19,6 +19,7 @@ app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
+
 // --- BAZA DANYCH MONGO DB ---
 // Szukamy zmiennej pod różnymi nazwami, których używa Railway
 const MONGO_URI = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/milkmi_db';
@@ -26,10 +27,11 @@ const MONGO_URI = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://1
 console.log('🛠️ Aplikacja widzi ten adres bazy:', MONGO_URI);
 
 mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000 // Skraca czas czekania na błąd do 5 sekund
+  serverSelectionTimeoutMS: 5000
 })
   .then(() => console.log('✅ Pomyślnie połączono z bazą MongoDB'))
   .catch((err) => console.error('❌ Błąd połączenia z bazą danych:', err.message));
+
 // Schemat użytkownika - kolekcja 'users' utworzy się automatycznie przy pierwszym zapisie
 const userSchema = new mongoose.Schema({
   username: { 
@@ -76,7 +78,11 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'Wszystkie pola są wymagane.' });
     }
 
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    // Czyścimy login i email ze spacji, robimy małe litery z maila
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({ $or: [{ email: cleanEmail }, { username: cleanUsername }] });
     if (existingUser) {
       return res.status(409).json({ message: 'Użytkownik o takim emailu lub loginie już istnieje.' });
     }
@@ -85,17 +91,18 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      username,
-      email,
-      phone,
+      username: cleanUsername,
+      email: cleanEmail,
+      phone: phone.trim(),
       password: hashedPassword
     });
 
     await newUser.save();
+    console.log(`🆕 Zarejestrowano nowego użytkownika: ${cleanUsername}`);
     res.status(201).json({ message: 'Konto zostało pomyślnie utworzone.' });
 
   } catch (error) {
-    console.error('Błąd podczas rejestracji:', error);
+    console.error('❌ Błąd podczas rejestracji:', error);
     res.status(500).json({ message: 'Wystąpił błąd serwera podczas rejestracji.' });
   }
 });
@@ -109,17 +116,22 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ message: 'Podaj login/email oraz hasło.' });
     }
 
+    // NAPRAWA: Usuwamy spacje, które wpisują się przypadkowo (np. z klawiatury telefonu)
+    const cleanLogin = loginOrEmail.trim();
+
     const user = await User.findOne({
-      $or: [{ email: loginOrEmail.toLowerCase() }, { username: loginOrEmail }]
+      $or: [{ email: cleanLogin.toLowerCase() }, { username: cleanLogin }]
     });
 
     if (!user) {
+      console.log(`🚫 Logowanie nieudane: Nie znaleziono użytkownika dla -> "${cleanLogin}"`);
       return res.status(401).json({ message: 'Nieprawidłowy login lub hasło.' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
+      console.log(`🚫 Logowanie nieudane: Złe hasło dla -> "${cleanLogin}"`);
       return res.status(401).json({ message: 'Nieprawidłowy login lub hasło.' });
     }
 
@@ -129,6 +141,8 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
+    console.log(`✅ Zalogowano użytkownika: ${user.username}`);
+
     res.status(200).json({
       message: 'Zalogowano pomyślnie.',
       token,
@@ -136,19 +150,18 @@ app.post('/api/login', async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        phone: user.phone, // Dodane przekazywanie numeru telefonu
+        phone: user.phone,
         points: user.points
       }
     });
 
   } catch (error) {
-    console.error('Błąd podczas logowania:', error);
+    console.error('❌ Błąd podczas logowania:', error);
     res.status(500).json({ message: 'Wystąpił błąd serwera podczas logowania.' });
   }
 });
 
 // --- OBSŁUGA BŁĘDÓW 404 ---
-// Jeśli ktoś wpisze adres, który nie istnieje (np. /app), przekieruj go do strony głównej
 app.use((req, res) => {
   res.status(404).redirect('/');
 });
@@ -156,5 +169,5 @@ app.use((req, res) => {
 // START SERWERA
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Serwer MilkMi śmiga na http://localhost:${PORT}`);
+  console.log(`🚀 Serwer MilkMi śmiga na porcie ${PORT}`);
 });
