@@ -1067,22 +1067,45 @@ function logout() {
 // 3. INIT BAZOWY
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
-  function updateTimer() {
-    const now = new Date().getTime();
-    const distance = targetDate - now;
-    if (distance < 0) {
-      clearInterval(countdownInterval);
-      unlockApp();
-      return;
-    }
-    document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-    document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-    document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-    document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+  // Sprawdzamy czy użytkownik jest już zalogowany (ZMIANA)
+  const splash = document.getElementById('splash-screen');
+  const auth = document.getElementById('auth-screen');
+  const main = document.getElementById('main-app');
+
+  if (currentToken && currentUser) {
+      // Użytkownik jest zalogowany - pomijamy ekran autoryzacji
+      initUserData();
+      
+      // Ukrywamy splash od razu lub po krótkim opóźnieniu i pokazujemy główną aplikację
+      setTimeout(() => {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+              splash.style.visibility = 'hidden';
+              main.style.display = 'block';
+              void main.offsetWidth; 
+              main.style.opacity = '1';
+              document.body.style.overflow = 'auto'; 
+          }, 800);
+      }, 500); // Szybkie ładowanie, jeśli już ma token
+  } else {
+      // Użytkownik NIE jest zalogowany - uruchamiamy standardowe odliczanie i ekran logowania
+      const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
+      function updateTimer() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          unlockApp();
+          return;
+        }
+        document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+        document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+        document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+        document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+      }
+      updateTimer();
+      countdownInterval = setInterval(updateTimer, 1000);
   }
-  updateTimer();
-  countdownInterval = setInterval(updateTimer, 1000);
 
   setTimeout(() => {
       const fill = document.querySelector('.loyalty-progress-fill');
