@@ -874,9 +874,15 @@
 // ==========================================
 // 1. DANE ZAPISANE W PRZEGLĄDARCE (KONTO)
 // ==========================================
-let currentUser = JSON.parse(localStorage.getItem('milkAppUser')) || null;
+let currentUser = null;
 let currentToken = localStorage.getItem('milkAuthToken') || null;
-let userPoints = currentUser ? currentUser.points : 0;
+try {
+    const storedUser = localStorage.getItem('milkAppUser');
+    if (storedUser) currentUser = JSON.parse(storedUser);
+} catch(e) {
+    console.error("Błąd wczytywania profilu z pamięci telefonu", e);
+}
+let userPoints = currentUser ? (currentUser.points || 0) : 0;
 
 // ==========================================
 // 2. DANE APLIKACJI
@@ -901,6 +907,53 @@ let selectedZone = 'Sala frontowa';
 let selectedGiftAmount = 100;
 let currentLocation = "Słupsk, Szczecińska 17";
 let countdownInterval;
+
+// ==========================================
+// 3. INIT BAZOWY (Z OMIJANIEM LOGOWANIA)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const splash = document.getElementById('splash-screen');
+  const auth = document.getElementById('auth-screen');
+  const main = document.getElementById('main-app');
+
+  // SPRAWDZENIE SESJI: Jeśli mamy token i dane użytkownika, wchodzimy prosto do aplikacji
+  if (currentToken && currentUser) {
+      splash.style.display = 'none'; // Całkowicie ukrywamy Splash Screen
+      auth.style.display = 'none';   // Ukrywamy ekran logowania
+      main.style.display = 'block';  // Pokazujemy od razu główną aplikację
+      main.style.opacity = '1';
+      document.body.style.overflow = 'auto'; 
+      
+      initUserData();
+      renderMenu();
+      return; // Przerywamy dalsze wykonywanie tego bloku (nie odpalamy odliczania)
+  }
+
+  // JEŚLI NIE ZALOGOWANY: Odpalamy standardowy Splash Screen z odliczaniem
+  const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
+  function updateTimer() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+    if (distance < 0) {
+      clearInterval(countdownInterval);
+      unlockApp(); // Po zakończeniu odliczania pokaż formularz logowania
+      return;
+    }
+    document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+    document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+    document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+    document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+  }
+  updateTimer();
+  countdownInterval = setInterval(updateTimer, 1000);
+
+  setTimeout(() => {
+      const fill = document.querySelector('.loyalty-progress-fill');
+      if(fill) fill.style.width = '83%';
+  }, 500);
+
+  renderMenu();
+});
 
 // ==========================================
 // NOWE FUNKCJE AUTORYZACJI (Połączenie z API)
@@ -930,6 +983,7 @@ async function handleAuthSubmit(e) {
                 // Zapisz prawdziwe dane z MongoDB do pamięci przeglądarki
                 localStorage.setItem('milkAuthToken', data.token);
                 localStorage.setItem('milkAppUser', JSON.stringify(data.user));
+                currentToken = data.token;
                 currentUser = data.user;
                 userPoints = data.user.points || 0;
 
@@ -974,6 +1028,7 @@ async function handleAuthSubmit(e) {
                 if (loginRes.ok) {
                     localStorage.setItem('milkAuthToken', loginData.token);
                     localStorage.setItem('milkAppUser', JSON.stringify(loginData.user));
+                    currentToken = loginData.token;
                     currentUser = loginData.user;
                     userPoints = loginData.user.points || 0;
 
@@ -1006,18 +1061,23 @@ function transitionToApp(auth, main) {
 async function initUserData() {
     if (!currentUser) return;
 
-    // Aktualizujemy dane z serwera przy starcie, aby portfel i punkty były zawsze aktualne
+    // Pobierz najświeższe dane z serwera (portfel, punkty, historia)
     try {
       const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
       const data = await res.json();
+      
       if(data.ok) {
           userPoints = data.points;
           currentUser.walletBalance = data.walletBalance;
           currentUser.history = data.history;
-          localStorage.setItem('milkAppUser', JSON.stringify(currentUser)); // Aktualizujemy cache
+          localStorage.setItem('milkAppUser', JSON.stringify(currentUser)); // Aktualizuj cache lokalnie
+      } else if (res.status === 404) {
+          // Jeśli konto klienta zostało usunięte w panelu admina, wymuś wylogowanie z aplikacji!
+          logout();
+          return;
       }
     } catch (e) {
-      console.log('Brak połączenia, używam danych z cache.');
+      console.log('Brak połączenia, wczytano profil z cache telefonu.');
     }
 
     // 1. Ekran główny - Powitanie
@@ -1030,19 +1090,19 @@ async function initUserData() {
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
-    // ZMIANA: Aktualizacja balansu w Portfelu na podstawie danych z bazy
+    // 3. Aktualizacja balansu w Portfelu
     const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
     if (walletBalance) {
         const bal = currentUser.walletBalance || 0;
         walletBalance.innerText = `${bal.toFixed(2)} PLN`;
     }
 
-    // 3. Widok Ustawień - Nagłówek profilu
+    // 4. Widok Ustawień - Nagłówek profilu
     document.getElementById('set-name-display').innerText = currentUser.username;
     document.getElementById('set-email-display').innerText = currentUser.email;
     document.querySelector('.user-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
 
-    // 4. Modal z Danymi Osobowymi
+    // 5. Modal z Danymi Osobowymi
     const personalDataInputs = document.querySelectorAll('#modal-personal-data .form-control');
     if (personalDataInputs.length >= 3) {
         personalDataInputs[0].value = currentUser.username;
@@ -1051,7 +1111,7 @@ async function initUserData() {
     }
 
     renderRewards(); 
-    renderActivities(currentUser.history || []); // Pokazujemy prawdziwą historię konta
+    renderActivities(currentUser.history || []); 
 }
 
 // ==========================================
@@ -1062,58 +1122,6 @@ function logout() {
     localStorage.removeItem('milkAuthToken');
     location.reload(); 
 }
-
-// ==========================================
-// 3. INIT BAZOWY
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-  // Sprawdzamy czy użytkownik jest już zalogowany (ZMIANA)
-  const splash = document.getElementById('splash-screen');
-  const auth = document.getElementById('auth-screen');
-  const main = document.getElementById('main-app');
-
-  if (currentToken && currentUser) {
-      // Użytkownik jest zalogowany - pomijamy ekran autoryzacji
-      initUserData();
-      
-      // Ukrywamy splash od razu lub po krótkim opóźnieniu i pokazujemy główną aplikację
-      setTimeout(() => {
-          splash.style.opacity = '0';
-          setTimeout(() => {
-              splash.style.visibility = 'hidden';
-              main.style.display = 'block';
-              void main.offsetWidth; 
-              main.style.opacity = '1';
-              document.body.style.overflow = 'auto'; 
-          }, 800);
-      }, 500); // Szybkie ładowanie, jeśli już ma token
-  } else {
-      // Użytkownik NIE jest zalogowany - uruchamiamy standardowe odliczanie i ekran logowania
-      const targetDate = new Date(2026, 3, 7, 0, 0, 0).getTime();
-      function updateTimer() {
-        const now = new Date().getTime();
-        const distance = targetDate - now;
-        if (distance < 0) {
-          clearInterval(countdownInterval);
-          unlockApp();
-          return;
-        }
-        document.getElementById("cd-days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-        document.getElementById("cd-hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-        document.getElementById("cd-mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-        document.getElementById("cd-secs").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-      }
-      updateTimer();
-      countdownInterval = setInterval(updateTimer, 1000);
-  }
-
-  setTimeout(() => {
-      const fill = document.querySelector('.loyalty-progress-fill');
-      if(fill) fill.style.width = '83%';
-  }, 500);
-
-  renderMenu();
-});
 
 function unlockApp() {
   const splash = document.getElementById('splash-screen');
