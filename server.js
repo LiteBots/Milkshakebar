@@ -70,6 +70,11 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
+  // NOWOŚĆ: Pole na środki wirtualnego portfela klienta
+  walletBalance: { 
+    type: Number, 
+    default: 0 
+  },
   history: [{
       text: String,
       date: { type: String, default: () => new Date().toLocaleString('pl-PL') }
@@ -234,6 +239,74 @@ app.get('/api/admin/point-transactions', async (req, res) => {
     }
 });
 
+// ==========================================
+// --- NOWOŚĆ: API ADMINA (PORTFEL / PRE-PAID) ---
+// ==========================================
+
+// Wyszukiwanie klienta do modyfikacji portfela
+app.post('/api/admin/wallet/search', async (req, res) => {
+    try {
+        const { identifier } = req.body;
+        const cleanId = identifier.trim().toLowerCase();
+        
+        const user = await User.findOne({ $or: [{ email: cleanId }, { phone: cleanId }] });
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Nie znaleziono klienta.' });
+        }
+        
+        res.json({ 
+            success: true, 
+            user: { 
+                id: user._id, 
+                username: user.username, 
+                email: user.email, 
+                phone: user.phone, 
+                walletBalance: user.walletBalance || 0 
+            } 
+        });
+    } catch(err) {
+        res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
+
+// Modyfikacja środków w portfelu (Wpłata/Pobranie zapłaty)
+app.post('/api/admin/wallet/modify', async (req, res) => {
+    try {
+        const { userId, amount, action } = req.body;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Użytkownik nie istnieje.' });
+        }
+
+        const numAmount = Number(amount);
+        
+        if (isNaN(numAmount) || numAmount <= 0) {
+            return res.status(400).json({ success: false, message: 'Nieprawidłowa kwota.' });
+        }
+
+        if (action === 'add') {
+            user.walletBalance = (user.walletBalance || 0) + numAmount;
+            user.history.unshift({ text: `+ ${numAmount.toFixed(2)} PLN • Wpłata środków na konto` });
+        } else if (action === 'remove') {
+            if ((user.walletBalance || 0) < numAmount) {
+                return res.status(400).json({ success: false, message: 'Brak wystarczających środków na koncie klienta.' });
+            }
+            user.walletBalance -= numAmount;
+            user.history.unshift({ text: `- ${numAmount.toFixed(2)} PLN • Zapłata z portfela w lokalu` });
+        }
+        
+        if(user.history.length > 20) {
+            user.history.pop();
+        }
+        await user.save();
+
+        res.json({ success: true, walletBalance: user.walletBalance, message: 'Saldo zostało pomyślnie zaktualizowane.' });
+    } catch(err) {
+        res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
 
 // ==========================================
 // --- API APLIKACJI (KLIENCI) ---
@@ -316,12 +389,14 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({
       message: 'Zalogowano pomyślnie.',
       token,
+      // Zwracamy też walletBalance do aplikacji frontowej
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
         phone: user.phone,
-        points: user.points
+        points: user.points,
+        walletBalance: user.walletBalance || 0
       }
     });
 
@@ -349,6 +424,7 @@ app.get('/api/milkpoints/my', async (req, res) => {
       res.json({
           ok: true,
           points: user.points,
+          walletBalance: user.walletBalance || 0, // Nowość w zwrotce
           history: user.history
       });
       
@@ -368,7 +444,6 @@ app.get('/api/team', (req, res) => {
 app.post('/api/team', (req, res) => {
   res.json({ success: true });
 });
-
 
 // --- OBSŁUGA BŁĘDÓW 404 ---
 app.use((req, res) => {
