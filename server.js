@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.static(__dirname));
 
 // --- TRASY FRONTENDU (WIDOKI) ---
+
 // Trasa główna - serwuje aplikację kliencką
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
@@ -27,6 +28,7 @@ app.get('/admin', (req, res) => {
 });
 
 // --- BAZA DANYCH MONGO DB ---
+
 // Szukamy zmiennej pod różnymi nazwami, których używa Railway
 const MONGO_URI = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/milkmi_db';
 
@@ -70,7 +72,7 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  // NOWOŚĆ: Pole na środki wirtualnego portfela klienta
+  // Pole na środki wirtualnego portfela klienta
   walletBalance: { 
     type: Number, 
     default: 0 
@@ -87,7 +89,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// --- SCHEMAT TRANSAKCJI (Globalna historia z kasy) ---
+// --- SCHEMAT TRANSAKCJI (Globalna historia z kasy dla admina) ---
 const pointTransactionSchema = new mongoose.Schema({
     userDisplay: String, 
     amountSpent: Number,
@@ -121,7 +123,7 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// 2. Pobierz wszystkich użytkowników
+// 2. Pobierz wszystkich użytkowników (Baza Klientów)
 app.get('/api/admin/users', async (req, res) => {
     try {
         // Zwracamy wszystkie dane z wyjątkiem hasła
@@ -157,7 +159,7 @@ app.post('/api/admin/users/:id/points', async (req, res) => {
             user.history.unshift({ text: `- ${numAmount} pkt • ${reason || 'Odjęte przez admina'}` });
         }
 
-        // Ograniczamy historię na koncie klienta do 20 wpisów, by nie zapychać bazy
+        // Ograniczamy historię na koncie klienta do 20 wpisów
         if(user.history.length > 20) {
             user.history.pop();
         }
@@ -198,7 +200,7 @@ app.post('/api/admin/award-points', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Nie znaleziono klienta w bazie.' });
         }
 
-        // Algorytm 10 zł = 1 punkt (zaokrąglanie w dół za pomocą Math.floor)
+        // Algorytm 10 zł = 1 punkt (zaokrąglanie w dół)
         const points = Math.floor(Number(amountSpent) / 10);
         
         if (points <= 0) {
@@ -212,6 +214,7 @@ app.post('/api/admin/award-points', async (req, res) => {
         if(user.history.length > 20) {
             user.history.pop();
         }
+        
         await user.save();
 
         // Zapis transakcji do globalnej historii panelu admina
@@ -243,7 +246,7 @@ app.get('/api/admin/point-transactions', async (req, res) => {
 // --- NOWOŚĆ: API ADMINA (PORTFEL / PRE-PAID) ---
 // ==========================================
 
-// Wyszukiwanie klienta do modyfikacji portfela
+// 1. Wyszukiwanie klienta do modyfikacji portfela
 app.post('/api/admin/wallet/search', async (req, res) => {
     try {
         const { identifier } = req.body;
@@ -270,7 +273,7 @@ app.post('/api/admin/wallet/search', async (req, res) => {
     }
 });
 
-// Modyfikacja środków w portfelu (Wpłata/Pobranie zapłaty)
+// 2. Modyfikacja środków w portfelu (Wpłata/Pobranie zapłaty)
 app.post('/api/admin/wallet/modify', async (req, res) => {
     try {
         const { userId, amount, action } = req.body;
@@ -307,6 +310,7 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
         res.status(500).json({ success: false, message: 'Błąd serwera.' });
     }
 });
+
 
 // ==========================================
 // --- API APLIKACJI (KLIENCI) ---
@@ -424,7 +428,7 @@ app.get('/api/milkpoints/my', async (req, res) => {
       res.json({
           ok: true,
           points: user.points,
-          walletBalance: user.walletBalance || 0, // Nowość w zwrotce
+          walletBalance: user.walletBalance || 0, // Zwrotka do frontendu
           history: user.history
       });
       
@@ -452,6 +456,6 @@ app.use((req, res) => {
 
 // START SERWERA
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Serwer MilkMi śmiga na porcie ${PORT}`);
 });
