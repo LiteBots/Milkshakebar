@@ -50,6 +50,7 @@
       transition: background 0.3s, color 0.3s;
       min-height: 100vh;
       display: flex;
+      overflow-x: hidden;
     }
 
     /* --- SIDEBAR --- */
@@ -96,14 +97,14 @@
     .nav-item i { width: 20px; text-align: center; }
 
     /* --- MAIN CONTENT --- */
-    .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 30px 40px; }
+    .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 30px 40px; width: 100%; }
 
     /* Top Bar */
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
     .welcome-text h1 { font-size: 1.8rem; font-weight: 800; }
     .welcome-text p { color: var(--text-sub); }
     .system-status {
-      display: flex; align-items: center; gap: 20px;
+      display: flex; align-items: center; justify-content: center; gap: 20px;
       background: var(--bg-surface); padding: 10px 20px;
       border-radius: 50px; border: 1px solid var(--border);
       font-weight: 600; font-size: 0.9rem;
@@ -130,28 +131,28 @@
     /* Cards */
     .card {
       background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-l); padding: 24px; margin-bottom: 20px;
+      border-radius: var(--radius-l); padding: 24px; margin-bottom: 20px; width: 100%;
     }
 
     /* Tables */
-    .table-container { overflow-x: auto; }
+    .table-container { overflow-x: auto; width: 100%; }
     .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
     .data-table th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
     .data-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: middle; }
     .data-table tr:last-child td { border-bottom: none; }
     
     .user-info { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 36px; height: 36px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); }
+    .avatar { width: 36px; height: 36px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); flex-shrink: 0;}
     
     /* Badges */
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap;}
     .badge.green { background: rgba(16, 185, 129, 0.1); color: var(--status-ok); }
     .badge.orange { background: rgba(245, 158, 11, 0.1); color: var(--status-warn); }
     .badge.red { background: rgba(239, 68, 68, 0.1); color: var(--status-err); }
     .badge.blue { background: rgba(59, 130, 246, 0.1); color: var(--status-info); }
 
     /* Forms */
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 20px; width: 100%; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
     .form-control {
       width: 100%; padding: 12px; border-radius: var(--radius-m);
@@ -162,7 +163,7 @@
     
     .btn {
       padding: 12px 24px; border-radius: var(--radius-m); border: none;
-      font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;
+      font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
     }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -188,7 +189,7 @@
     .bg-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
 
     /* View Management */
-    .view-section { display: none; animation: fadeIn 0.3s ease; }
+    .view-section { display: none; animation: fadeIn 0.3s ease; width: 100%; }
     .view-section.active { display: block; }
 
     /* Theme Toggle */
@@ -202,71 +203,92 @@
 
     /* --- TOAST NOTIFICATIONS --- */
     #toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 999999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
+      position: fixed; top: 20px; right: 20px; z-index: 999999;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
     }
-
     .toast {
-      min-width: 280px;
-      padding: 16px 20px;
-      border-radius: var(--radius-m);
-      color: white;
-      font-weight: 600;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      animation: slideInRight 0.3s ease-out forwards;
-      opacity: 0;
-      transform: translateX(100%);
+      min-width: 280px; padding: 16px 20px; border-radius: var(--radius-m); color: white;
+      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out forwards;
+      opacity: 0; transform: translateX(100%);
     }
-
     .toast i { font-size: 1.2rem; }
     .toast.success { background: var(--status-ok); }
     .toast.error { background: var(--status-err); }
     .toast.info { background: var(--status-info); }
     .toast.fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
 
-    @keyframes slideInRight {
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes fadeOutRight {
-      to { opacity: 0; transform: translateX(100%); }
-    }
-
+    @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeOutRight { to { opacity: 0; transform: translateX(100%); } }
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
     @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
     /* --- ALARM REZERWACJI (MIGAWKA) --- */
-    @keyframes flashAlert {
-      0% { background-color: #FFFFFF; color: #FF6600; }
-      50% { background-color: #FF6600; color: #FFFFFF; }
-      100% { background-color: #FFFFFF; color: #FF6600; }
-    }
-
+    @keyframes flashAlert { 0% { background-color: #FFFFFF; color: #FF6600; } 50% { background-color: #FF6600; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #FF6600; } }
     #reservation-alarm {
-      position: fixed; inset: 0; z-index: 9999999;
-      display: none; flex-direction: column; justify-content: center; align-items: center;
-      animation: flashAlert 0.4s infinite;
-      text-align: center; padding: 20px;
+      position: fixed; inset: 0; z-index: 9999999; display: none; flex-direction: column; justify-content: center; align-items: center;
+      animation: flashAlert 0.4s infinite; text-align: center; padding: 20px;
     }
-
     #reservation-alarm h1 { font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
     #reservation-alarm p { font-size: 1.5rem; font-weight: 700; margin-bottom: 40px; }
     #btn-accept-alarm {
-      padding: 20px 50px; font-size: 2rem; font-weight: 800;
-      border: 5px solid currentColor; background: transparent; color: inherit;
+      padding: 20px 50px; font-size: 2rem; font-weight: 800; border: 5px solid currentColor; background: transparent; color: inherit;
       border-radius: 20px; cursor: pointer; transition: transform 0.2s;
     }
     #btn-accept-alarm:active { transform: scale(0.9); }
+
+    /* =========================================
+       RESPONSYWNOŚĆ (TABLETY I TELEFONY)
+       ========================================= */
+    #sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
+      display: none; opacity: 0; transition: opacity 0.3s;
+    }
+    #sidebar-overlay.active { display: block; opacity: 1; }
+
+    @media (max-width: 992px) {
+      .sidebar { 
+        transform: translateX(-100%); 
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        box-shadow: 5px 0 25px rgba(0,0,0,0.3); 
+      }
+      .sidebar.active { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 20px; }
+      #mobile-menu-toggle { display: inline-flex !important; }
+      .top-bar { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .system-status { width: 100%; justify-content: space-between; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      
+      /* Formularze z gridem na kolumny */
+      form[onsubmit="awardPoints(event)"] { grid-template-columns: 1fr; gap: 15px; }
+      .btn { width: 100%; justify-content: center; margin-top: 5px;}
+      
+      /* Portfel Pre-paid */
+      #wallet-user-details > div:first-child { flex-direction: column; align-items: flex-start; gap: 15px; }
+      #wallet-user-details > div:first-child > div:last-child { text-align: left; }
+      #wallet-user-details > div:last-child { flex-direction: column; }
+      #wallet-amount { max-width: 100% !important; width: 100%; }
+      .form-group > div[style*="display:flex"] { flex-direction: column; }
+      
+      /* User Modal */
+      #user-modal-overlay .card { width: 95%; padding: 20px; }
+      #user-modal-overlay > div > div:nth-child(3) { flex-direction: column; }
+      
+      /* Widok nagłówka modalów / kart */
+      .section-header { font-size: 1.1rem; }
+      
+      /* Alarm Rezerwacji */
+      #reservation-alarm h1 { font-size: 2.2rem; }
+      #reservation-alarm p { font-size: 1.1rem; }
+      #btn-accept-alarm { padding: 15px 30px; font-size: 1.2rem; border-width: 3px; }
+
+      /* Szukajki na pełną szerokość */
+      #user-search { max-width: 100% !important; }
+    }
   </style>
 </head>
 <body>
@@ -286,12 +308,17 @@
       
       <div id="admin-error" style="color: var(--status-err); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; display: none;">Błędny kod PIN!</div>
       
-      <button onclick="verifyAdmin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: var(--radius-m); font-weight: 700; cursor: pointer; font-size: 1rem;">Odblokuj panel</button>
+      <button onclick="verifyAdmin()" class="btn btn-primary" style="font-size: 1rem;">Odblokuj panel</button>
     </div>
   </div>
 
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <aside class="sidebar">
-    <div class="brand">MilkMi<span>.</span> <small>Admin Panel</small></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 40px;">
+      <div class="brand" style="margin-bottom:0;">MilkMi<span>.</span> <small>Admin Panel</small></div>
+      <button id="close-menu-btn" class="btn btn-outline" style="display:none; padding:5px 10px;" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+    </div>
 
     <div class="nav-category">MilkMi App</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
@@ -326,9 +353,12 @@
   <main class="main-content">
     
     <header class="top-bar">
-      <div class="welcome-text">
-        <h1 id="page-title">Dashboard</h1>
-        <p>Panel zarządzania systemem MilkMi & WorkMi.</p>
+      <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
+        <button id="mobile-menu-toggle" class="btn btn-outline" onclick="toggleSidebar()" style="display: none; padding: 10px 15px; margin: 0;"><i class="fas fa-bars"></i></button>
+        <div class="welcome-text">
+          <h1 id="page-title">Dashboard</h1>
+          <p style="font-size: 0.85rem;">Panel zarządzania systemem MilkMi & WorkMi.</p>
+        </div>
       </div>
       <div class="system-status">
         <div class="clock" id="live-clock">--:--:--</div>
@@ -340,7 +370,7 @@
     </header>
 
     <section id="view-dashboard" class="view-section active">
-      <div class="section-header">Statystyki MilkMi (App) <button class="btn btn-outline btn-sm" onclick="loadDashboardStats()" style="margin-left: 15px;"><i class="fas fa-sync"></i></button></div>
+      <div class="section-header">Statystyki MilkMi (App) <button class="btn btn-outline btn-sm" onclick="loadDashboardStats()" style="margin-left: 15px; width:auto;"><i class="fas fa-sync"></i></button></div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-users">0</div><div class="stat-label">Wszystkich Użytkowników</div></div>
         <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value" id="stat-reservations">0</div><div class="stat-label">Łączna liczba rezerwacji</div></div>
@@ -377,7 +407,7 @@
                 <label>Kwota zamówienia w kasie (PLN)</label>
                 <input type="number" step="0.01" id="award-amount" class="form-control" placeholder="np. 75.00" oninput="calculatePointsPreview()" required>
             </div>
-            <button type="submit" class="btn btn-primary" style="height: 46px; margin-bottom: 2px;">
+            <button type="submit" class="btn btn-primary" style="height: 46px; margin-bottom: 0px;">
                 Dodaj <span id="award-preview" style="margin-left: 5px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 5px;">0</span> pkt
             </button>
         </form>
@@ -412,7 +442,7 @@
         <div class="form-group">
             <div style="display:flex; gap:10px;">
                 <input type="text" id="wallet-search-input" class="form-control" placeholder="E-mail lub telefon klienta..." style="flex:1;">
-                <button class="btn btn-primary" onclick="searchWalletUser()"><i class="fas fa-search"></i> Szukaj</button>
+                <button class="btn btn-primary" onclick="searchWalletUser()" style="width: auto;"><i class="fas fa-search"></i> Szukaj</button>
             </div>
         </div>
         
@@ -464,7 +494,7 @@
       <div class="card" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; margin: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 id="modal-user-name">Imię Użytkownika</h2>
-          <button class="btn btn-outline" style="padding: 5px 10px; margin-bottom:0;" onclick="closeUserModal()">
+          <button class="btn btn-outline" style="padding: 5px 10px; margin-bottom:0; width:auto;" onclick="closeUserModal()">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -474,20 +504,16 @@
             <span style="color:var(--text-sub); font-size:0.8rem; text-transform:uppercase;">Milkosy na koncie</span><br>
             <strong id="modal-user-points" style="font-size: 1.5rem; color: var(--primary);">0</strong>
           </div>
-          <button class="btn" style="background: var(--status-err); color:white; padding: 8px 15px;" onclick="deleteCurrentUser()">
+          <button class="btn" style="background: var(--status-err); color:white; padding: 8px 15px; width:auto;" onclick="deleteCurrentUser()">
             <i class="fas fa-trash"></i> Usuń Konto
           </button>
         </div>
 
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
           <input type="number" id="point-amount" class="form-control" placeholder="Ilość pkt" style="width: 100px;">
-          <input type="text" id="point-reason" class="form-control" placeholder="Powód ręczny (np. Rekompensata)">
-          <button class="btn" style="background: var(--status-ok); color:white;" onclick="modifyPoints('add')">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button class="btn" style="background: var(--status-err); color:white;" onclick="modifyPoints('remove')">
-            <i class="fas fa-minus"></i>
-          </button>
+          <input type="text" id="point-reason" class="form-control" placeholder="Powód np. Rekompensata">
+          <button class="btn" style="background: var(--status-ok); color:white; width:auto;" onclick="modifyPoints('add')"><i class="fas fa-plus"></i></button>
+          <button class="btn" style="background: var(--status-err); color:white; width:auto;" onclick="modifyPoints('remove')"><i class="fas fa-minus"></i></button>
         </div>
 
         <div class="section-header" style="font-size: 1.1rem; margin-top:30px;">Historia Transakcji (Konto Klienta)</div>
@@ -498,9 +524,9 @@
 
     <section id="view-reservations" class="view-section">
       <div class="card">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:20px; flex-wrap: wrap; gap:10px;">
           <div class="section-header" style="margin:0">Baza wszystkich rezerwacji</div>
-          <button class="btn btn-outline btn-sm" onclick="loadAllReservations()"><i class="fas fa-sync"></i> Odśwież</button>
+          <button class="btn btn-outline btn-sm" onclick="loadAllReservations()" style="width:auto;"><i class="fas fa-sync"></i> Odśwież</button>
         </div>
         <div class="table-container">
           <table class="data-table">
@@ -614,11 +640,13 @@
 
       <div class="card">
         <div class="section-header">Aktualny Zespół</div>
-        <table class="data-table">
-          <thead><tr><th>Osoba</th><th>Rola</th><th>Status</th></tr></thead>
-          <tbody id="team-table-body">
-            </tbody>
-        </table>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr><th>Osoba</th><th>Rola</th><th>Status</th></tr></thead>
+            <tbody id="team-table-body">
+              </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -768,6 +796,22 @@
   </button>
 
   <script>
+    // --- RESPONSIVE SIDEBAR TOGGLE ---
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      
+      sidebar.classList.toggle('active');
+      
+      if (sidebar.classList.contains('active')) {
+        overlay.style.display = 'block';
+        setTimeout(() => overlay.classList.add('active'), 10);
+      } else {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.style.display = 'none', 300);
+      }
+    }
+
     // --- TOAST NOTIFICATIONS ---
     function showToast(message, type = 'success') {
       let container = document.getElementById('toast-container');
@@ -834,6 +878,11 @@
       
       document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
 
+      // Ukryj menu po kliknięciu jeśli jesteśmy na urządzeniu mobilnym
+      if (window.innerWidth <= 992) {
+        toggleSidebar();
+      }
+
       if (viewId === 'users') {
         loadUsers();
       } else if (viewId === 'points') {
@@ -856,7 +905,7 @@
       }
     }
 
-    // --- NOWOŚĆ: ŁADOWANIE STATYSTYK DO DASHBOARDU ---
+    // --- ŁADOWANIE STATYSTYK DO DASHBOARDU ---
     async function loadDashboardStats() {
       try {
         const res = await fetch('/api/admin/stats');
@@ -907,7 +956,6 @@
                 setTimeout(() => showToast('Zalogowano pomyślnie!', 'success'), 500);
             }
 
-            // Inicjalizuj systemy po logowaniu
             checkNewReservations();
             loadDashboardStats();
         } else {
@@ -1008,7 +1056,6 @@
     let beepInterval;
     let audioCtx;
 
-    // Odpytywanie o nowe rezerwacje tylko w tle dla alarmu
     async function checkNewReservations() {
       if (alarmActive) return; 
       
@@ -1037,7 +1084,6 @@
       
       document.getElementById('reservation-alarm').style.display = 'flex';
       
-      // Start dźwięku
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
       
@@ -1068,7 +1114,6 @@
           currentPendingReservationId = null;
           showToast('Rezerwacja została pomyślnie przyjęta!', 'success');
           
-          // Jeśli jesteśmy na widoku rezerwacji, odświeżmy od razu tabelę
           if (document.getElementById('view-reservations').classList.contains('active')) {
               loadAllReservations();
           }
@@ -1078,7 +1123,6 @@
       }
     }
 
-    // Odświeżanie tabeli wszystkich rezerwacji
     async function loadAllReservations() {
       const tbody = document.getElementById('reservations-table-body');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
@@ -1111,8 +1155,8 @@
                   <td>
                     <div style="margin-bottom: 5px;">${statusBadge}</div>
                     <div style="display:flex; gap:5px;">
-                      ${r.status === 'pending' ? `<button class="btn btn-sm" style="background:var(--status-ok); color:white;" onclick="changeReservationStatus('${r._id}', 'accepted')"><i class="fas fa-check"></i></button>` : ''}
-                      <button class="btn btn-sm" style="background:var(--status-err); color:white;" onclick="deleteReservation('${r._id}')"><i class="fas fa-trash"></i></button>
+                      ${r.status === 'pending' ? `<button class="btn btn-sm" style="background:var(--status-ok); color:white; width:auto;" onclick="changeReservationStatus('${r._id}', 'accepted')"><i class="fas fa-check"></i></button>` : ''}
+                      <button class="btn btn-sm" style="background:var(--status-err); color:white; width:auto;" onclick="deleteReservation('${r._id}')"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -1154,7 +1198,6 @@
     }
 
     setInterval(checkNewReservations, 3000);
-
 
     // =====================================
     // PORTFEL PRE-PAID (WYSZUKIWANIE / ZARZĄDZANIE)
@@ -1257,7 +1300,7 @@
             <td>${user.email}</td>
             <td>${user.phone}</td>
             <td><strong style="color:var(--primary);">${user.points}</strong></td>
-            <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openUserModal('${user._id}')">Zarządzaj</button></td>
+            <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem; width:auto;" onclick="openUserModal('${user._id}')">Zarządzaj</button></td>
           </tr>
         `;
       });
@@ -1397,7 +1440,6 @@
         }
       } catch (err) {
         console.error('Błąd pobierania zespołu', err);
-        showToast('Nie udało się pobrać listy pracowników', 'error');
       }
     }
 
