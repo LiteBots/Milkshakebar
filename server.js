@@ -127,6 +127,19 @@ const walletTransactionSchema = new mongoose.Schema({
 
 const WalletTransaction = mongoose.model('WalletTransaction', walletTransactionSchema);
 
+// --- SCHEMAT TRANSAKCJI NAGRÓD (Zrealizowane nagrody przy kasie) ---
+const rewardTransactionSchema = new mongoose.Schema({
+    userDisplay: String,
+    rewardName: String,
+    cost: Number,
+    date: { 
+        type: Date, 
+        default: Date.now 
+    }
+});
+
+const RewardTransaction = mongoose.model('RewardTransaction', rewardTransactionSchema);
+
 // --- SCHEMAT REZERWACJI ---
 const reservationSchema = new mongoose.Schema({
   name: String,
@@ -434,6 +447,7 @@ app.post('/api/admin/rewards/search', async (req, res) => {
             user: { 
                 id: user._id, 
                 username: user.username, 
+                phone: user.phone,
                 activeRewards: user.activeRewards || []
             } 
         });
@@ -457,19 +471,38 @@ app.post('/api/admin/rewards/use', async (req, res) => {
         }
 
         const rewardName = user.activeRewards[rewardIndex].name;
+        const rewardCost = user.activeRewards[rewardIndex].cost;
         
         // Usuwamy nagrodę z aktywnych
         user.activeRewards.splice(rewardIndex, 1);
         
-        // Dodajemy informację o realizacji do historii
+        // Dodajemy informację o realizacji do historii klienta
         user.history.unshift({ text: `✓ Zrealizowano w lokalu: ${rewardName}` });
         if(user.history.length > 20) user.history.pop();
 
         await user.save();
 
+        // Zapis do GLOBALNEJ HISTORII nagród dla Admin Panelu
+        const tx = new RewardTransaction({
+            userDisplay: `${user.username} (${user.phone})`,
+            rewardName: rewardName,
+            cost: rewardCost
+        });
+        await tx.save();
+
         res.json({ success: true, message: 'Nagroda została pomyślnie zrealizowana!', activeRewards: user.activeRewards });
     } catch(err) {
         res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
+
+// 3. Pobieranie historii globalnej zrealizowanych nagród
+app.get('/api/admin/reward-transactions', async (req, res) => {
+    try {
+        const txs = await RewardTransaction.find().sort({ date: -1 }).limit(50);
+        res.json({ success: true, data: txs });
+    } catch(err) {
+        res.status(500).json({ success: false });
     }
 });
 
