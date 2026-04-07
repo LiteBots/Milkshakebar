@@ -478,6 +478,26 @@
             </div>
         </div>
       </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <div class="section-header">Globalna historia operacji (Portfel)</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Klient</th>
+                <th>Kwota operacji</th>
+                <th>Typ</th>
+                <th>Data</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="wallet-transactions-body">
+              <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section id="view-users" class="view-section">
@@ -562,7 +582,7 @@
         <div class="table-container">
           <table class="data-table">
             <thead><tr><th>ID</th><th>Klient</th><th>Zamówienie</th><th>Kwota</th><th>Typ</th><th>Status</th></tr></thead>
-            <tbody>
+            <tbody id="orders-table-body">
               <tr>
                 <td>#8829</td>
                 <td>Mikołaj K.</td>
@@ -696,7 +716,7 @@
         <div class="table-container">
           <table class="data-table">
             <thead><tr><th>Artykuł</th><th>Kategoria</th><th>Ilość w mag.</th><th>Jednostka</th><th>Status</th></tr></thead>
-            <tbody>
+            <tbody id="products-table-body">
               <tr>
                 <td>Mleko 3.2%</td>
                 <td>Nabiał</td>
@@ -730,7 +750,7 @@
         <div class="table-container">
           <table class="data-table">
             <thead><tr><th>Pracownik</th><th>Start</th><th>Koniec</th><th>Suma godzin</th><th>Status</th></tr></thead>
-            <tbody>
+            <tbody id="work-time-table-body">
               <tr>
                 <td><div class="user-info"><div class="avatar bg-blue">K</div><strong>Kasia B.</strong></div></td>
                 <td>08:00</td>
@@ -769,7 +789,7 @@
         <div class="table-container">
           <table class="data-table">
             <thead><tr><th>Pracownik</th><th>Stawka/h</th><th>Godziny</th><th>Premie</th><th>Suma do wypłaty</th></tr></thead>
-            <tbody>
+            <tbody id="costs-table-body">
               <tr>
                 <td>Kasia B. (Manager)</td>
                 <td>35.00 PLN</td>
@@ -900,6 +920,8 @@
         loadUsers();
       } else if (viewId === 'points') {
         loadPointTransactions();
+      } else if (viewId === 'prepaid') {
+        loadWalletTransactions(); // Ładowanie historii pre-paid po wejściu w zakładkę
       } else if (viewId === 'reservations') {
         loadAllReservations();
       } else if (viewId === 'dashboard') {
@@ -1263,11 +1285,56 @@
                 document.getElementById('wallet-user-balance').innerText = `${data.walletBalance.toFixed(2)} PLN`;
                 document.getElementById('wallet-amount').value = '';
                 showToast(data.message, 'success');
+                
+                // ODŚWIEŻENIE HISTORII PRE-PAID PO UDANEJ TRANSAKCJI
+                loadWalletTransactions(); 
             } else {
                 showToast(data.message, 'error');
             }
         } catch(err) {
             showToast('Błąd operacji na portfelu.', 'error');
+        }
+    }
+
+    // --- ŁADOWANIE HISTORII PRE-PAID ---
+    async function loadWalletTransactions() {
+        const tbody = document.getElementById('wallet-transactions-body');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
+        
+        try {
+            const res = await fetch('/api/admin/wallet-transactions');
+            const data = await res.json();
+            
+            if(data.success) {
+                tbody.innerHTML = '';
+                
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak historii operacji w portfelu.</td></tr>';
+                    return;
+                }
+                
+                data.data.forEach(tx => {
+                    const dateObj = new Date(tx.date);
+                    const formattedDate = dateObj.toLocaleDateString('pl-PL') + ', ' + dateObj.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
+                    
+                    const isAdd = tx.action === 'add';
+                    const amountColor = isAdd ? 'var(--status-ok)' : 'var(--status-err)';
+                    const sign = isAdd ? '+' : '-';
+                    const typeBadge = isAdd ? '<span class="badge green">Wpłata</span>' : '<span class="badge red">Pobranie</span>';
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${tx.userDisplay}</strong></td>
+                            <td style="color:${amountColor}; font-weight:800;">${sign} ${tx.amount.toFixed(2)} PLN</td>
+                            <td>${typeBadge}</td>
+                            <td>${formattedDate}</td>
+                            <td><span class="badge green">Zakończono</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
         }
     }
 
