@@ -107,6 +107,19 @@ const pointTransactionSchema = new mongoose.Schema({
 
 const PointTransaction = mongoose.model('PointTransaction', pointTransactionSchema);
 
+// --- SCHEMAT TRANSAKCJI PORTFELA (PRE-PAID) ---
+const walletTransactionSchema = new mongoose.Schema({
+    userDisplay: String,
+    amount: Number,
+    action: String, // 'add' (wpłata) lub 'remove' (pobranie)
+    date: { 
+        type: Date, 
+        default: Date.now 
+    }
+});
+
+const WalletTransaction = mongoose.model('WalletTransaction', walletTransactionSchema);
+
 // --- SCHEMAT REZERWACJI ---
 const reservationSchema = new mongoose.Schema({
   name: String,
@@ -357,9 +370,27 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
         }
         await user.save();
 
+        // Zapis transakcji do globalnej historii panelu admina
+        const tx = new WalletTransaction({
+            userDisplay: `${user.username} (${user.phone})`,
+            amount: numAmount,
+            action: action
+        });
+        await tx.save();
+
         res.json({ success: true, walletBalance: user.walletBalance, message: 'Saldo zostało pomyślnie zaktualizowane.' });
     } catch(err) {
         res.status(500).json({ success: false, message: 'Błąd serwera.' });
+    }
+});
+
+// 3. Pobieranie historii globalnej operacji na portfelu (Pre-paid)
+app.get('/api/admin/wallet-transactions', async (req, res) => {
+    try {
+        const txs = await WalletTransaction.find().sort({ date: -1 }).limit(50);
+        res.json({ success: true, data: txs });
+    } catch(err) {
+        res.status(500).json({ success: false });
     }
 });
 
