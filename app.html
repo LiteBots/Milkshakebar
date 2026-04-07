@@ -7,7 +7,10 @@
     
   <meta name="theme-color" content="#FF6600">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -606,12 +609,6 @@
                 <i class="fas fa-chevron-right chevron"></i>
             </div>
 
-            <div class="settings-item" onclick="openModal('modal-help')">
-                <i class="fas fa-question-circle"></i>
-                <div class="label" data-i18n="set_help">Pomoc</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
             <div class="settings-item" onclick="logout()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
                 <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
                 <div class="label" data-i18n="set_logout">Wyloguj się</div>
@@ -694,8 +691,7 @@
   <div class="modal-overlay" id="modal-business" onclick="closeModal('modal-business')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3 data-i18n="set_business">Milk for Business</h3>
-        <p style="color:var(--text-sub); margin-bottom:20px;">Chcesz dołączyć do programu dla firm i zamawiać posiłki dla swoich pracowników?</p>
-        <button class="btn-main" onclick="showToast('Wysłano zgłoszenie do doradcy')">Dowiedz się więcej</button>
+        <p style="color:var(--text-sub); margin-bottom:20px; font-size: 0.95rem; line-height: 1.5;">Jesteś zainteresowany/a współpracą? Napisz do nas na: <br><strong style="color: var(--text-main);">marcin@milkshakebar.pl</strong></p>
         <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-business')">Powrót</button>
     </div>
   </div>
@@ -703,26 +699,9 @@
   <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3 data-i18n="set_about">O MilkMi</h3>
-        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.6.0 (2026)</p>
-        <p style="font-size:0.9rem; line-height:1.5;">Milkmi to Twoja ulubiona kawiarnia i restauracja w jednej aplikacji. Naszą misją jest dostarczanie najwyższej jakości produktów prosto do Ciebie.</p>
+        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.0</p>
+        <p style="font-size:0.9rem; line-height:1.5;">Aplikacja stworzona pod Milkshake Bar w Słupsku i Rowach.</p>
         <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-help" onclick="closeModal('modal-help')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="set_help">Centrum Pomocy</h3>
-        <div class="settings-list">
-            <div class="settings-item" onclick="showToast('Czat z konsultantem...')">
-                <i class="fas fa-comments"></i>
-                <div class="label">Czat na żywo</div>
-            </div>
-            <div class="settings-item" onclick="showToast('Łączenie z infolinią...')">
-                <i class="fas fa-phone"></i>
-                <div class="label">Zadzwoń do nas</div>
-            </div>
-        </div>
-        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-help')">Zamknij</button>
     </div>
   </div>
 
