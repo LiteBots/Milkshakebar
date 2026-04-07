@@ -462,7 +462,7 @@
                   <a href="/aplikacja" class="btn btn-primary">
                     Zacznij zbierać punkty <i class="fas fa-arrow-down"></i>
                   </a>
-                
+                 
                   <a href="#reservation" class="btn btn-outline">
                     Zarezerwuj stolik <i class="fas fa-calendar-check"></i>
                   </a>
@@ -883,14 +883,26 @@
           submitButton.disabled = true;
           submitButton.innerHTML = 'Wysyłanie...';
 
+          // Pobranie danych z formularza
           const formData = new FormData(bookingForm);
-          const data = Object.fromEntries(formData.entries());
+          const rawData = Object.fromEntries(formData.entries());
+
+          // Przetworzenie danych, aby pasowały do schematu w backendzie (Reservation)
+          const payload = {
+            name: rawData.name,
+            phone: rawData.phone,
+            datetime: `${rawData.date} ${rawData.time}`, // Łączymy datę i godzinę
+            guests: Number(rawData.guests),              // Rzutujemy na liczbę
+            zone: rawData.room,                          // Zmieniamy klucz 'room' na 'zone'
+            notes: rawData.notes
+          };
 
           try {
-            const response = await fetch('/api/rezerwacje', {
+            // Zmiana endpointu na ten używany w backendzie app.js
+            const response = await fetch('/api/reservations', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(data)
+              body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
