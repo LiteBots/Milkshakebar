@@ -31,12 +31,14 @@
       --radius-m: 16px;
         
       --nav-height: 85px;
-      --fab-size: 64px;
         
       /* Activity Colors */
       --color-order: #FF6600;
       --color-res: #3B82F6;
       --color-money: #10B981;
+      
+      --status-ok: #10B981;
+      --status-err: #EF4444;
 
       /* Dynamic Notch / Status Bar Spacing - Increased for better visibility */
       --safe-top: env(safe-area-inset-top, 44px);
@@ -166,19 +168,6 @@
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
 
-    /* --- REWARDS SECTION --- */
-    .rewards-hero { text-align: center; margin-bottom: 24px; padding: 0 24px; }
-    .rewards-hero h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 5px; }
-    .rewards-hero p { color: var(--text-sub); font-size: 0.9rem; }
-    .rewards-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 24px; }
-    .reward-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
-    .reward-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px; }
-    .reward-cost { background: var(--bg-body); color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
-    .reward-name { font-weight: 700; font-size: 0.9rem; line-height: 1.3; margin-bottom: 12px; }
-    .btn-redeem { width: 100%; border: none; background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 10px; border-radius: 10px; cursor: pointer; }
-    .btn-redeem:disabled { background: #ccc; cursor: not-allowed; }
-    body.dark-mode .btn-redeem { background: var(--primary); color: #fff; }
-
     /* --- AD BANNER --- */
     .ad-banner { margin: 0 24px 24px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 16px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
     .ad-logo { width: 50px; height: 50px; object-fit: contain; border-radius: 10px; }
@@ -239,24 +228,21 @@
     .amount-chip { padding: 12px 5px; border: 1px solid var(--border); border-radius: var(--radius-m); text-align: center; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: var(--bg-surface); transition: 0.2s; }
     .amount-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* --- BOTTOM NAV & FAB --- */
+    /* --- BOTTOM NAV --- */
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s; }
     .nav-item.active { color: var(--primary); }
     .nav-item i { font-size: 1.4rem; transition: transform 0.2s; }
     .nav-item.active i { transform: translateY(-3px); }
-    .fab-container { position: relative; top: -25px; width: var(--fab-size); height: var(--fab-size); flex-shrink: 0; margin: 0 10px; }
-    .fab-btn { width: 100%; height: 100%; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 10px 25px var(--primary-glow); border: 5px solid var(--bg-body); cursor: pointer; animation: pulse 3s infinite; }
 
     /* --- MODALS --- */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; transition: opacity 0.3s; }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
     .modal-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface); border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    
+    /* MODAL FULL SCREEN (USTAWIENIA) - Zwiększony padding-top by X był klikalny na notchach */
     .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(45px + var(--safe-top)); }
-    .qr-box { width: 180px; height: 180px; margin: 20px auto; position: relative; overflow: hidden; border-radius: 15px; }
-    .qr-box img { width: 100%; height: 100%; }
-    .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); box-shadow: 0 0 15px var(--primary); animation: scan 2s infinite ease-in-out; }
 
     /* Utils */
     .view-section { display: none; padding-bottom: 20px; animation: fadeIn 0.3s ease; }
@@ -274,12 +260,9 @@
     input:checked + .slider:before { transform: translateX(24px); }
 
     /* Animations & Keyframes */
-    @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
     @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
-    @keyframes spin { from{transform: rotate(0deg);} to{transform: rotate(360deg);} }
     @keyframes splashPop { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--primary-glow); } 70% { box-shadow: 0 0 0 15px rgba(255, 102, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); } }
 
     /* Toast */
     .toast { position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--bg-surface); color: var(--text-main); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border); }
@@ -404,7 +387,7 @@
       </h2>
     </div>
 
-    <div class="loyalty-card-premium" onclick="openQR()">
+    <div class="loyalty-card-premium">
       <div class="loyalty-top">
         <div>
           <div class="points-label" data-i18n="points_avail">Dostępne Milkosy</div>
@@ -450,34 +433,23 @@
   
   <section id="view-rewards" class="view-section">
       <div class="section-title" data-i18n="reward_title">Centrum Nagród</div>
-      <div class="rewards-hero">
-          <h2 id="rewards-points-display">0</h2>
-          <p data-i18n="reward_sub">Twoje Milkosy</p>
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px; padding: 0 24px; text-align: center;">
+        <div style="width: 80px; height: 80px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-sub); margin-bottom: 20px;">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h3 style="margin-bottom: 10px;" data-i18n="temp_unavailable">Chwilowo niedostępna</h3>
+        <p style="color: var(--text-sub); font-size: 0.9rem;" data-i18n="feature_locked_desc">Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!</p>
       </div>
-      <div class="rewards-grid-layout" id="rewards-container">
-          </div>
   </section>
 
   <section id="view-order" class="view-section">
-    <div id="order-type-selection">
-        <div class="section-title" data-i18n="order_how">Jak chcesz zamówić?</div>
-        <div class="order-type-container">
-            <div class="order-type-card" onclick="selectOrderType('pickup')" style="width: 100%; justify-content: center; flex-direction: column; text-align: center;">
-                <div class="order-type-icon"><i class="fas fa-store"></i></div>
-                <div class="order-type-info">
-                    <h3 data-i18n="order_pickup">Odbiór osobisty / Na miejscu</h3>
-                    <p data-i18n="order_pickup_desc">Zamów i odbierz przy barze bez kolejki</p>
-                </div>
-            </div>
+    <div class="section-title" data-i18n="nav_order">Zamów</div>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px; padding: 0 24px; text-align: center;">
+        <div style="width: 80px; height: 80px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-sub); margin-bottom: 20px;">
+          <i class="fas fa-lock"></i>
         </div>
-    </div>
-
-    <div id="menu-view-actual" style="display: none;">
-        <div class="section-title" style="display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-arrow-left" onclick="backToOrderType()" style="cursor: pointer; color: var(--primary);"></i>
-            <span data-i18n="menu_title">Nasze Menu</span>
-        </div>
-        <div class="menu-grid" id="menu-container"></div>
+        <h3 style="margin-bottom: 10px;" data-i18n="temp_unavailable">Chwilowo niedostępna</h3>
+        <p style="color: var(--text-sub); font-size: 0.9rem;" data-i18n="feature_locked_desc">Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!</p>
     </div>
   </section>
 
@@ -554,9 +526,9 @@
             <i class="fas fa-info-circle"></i> <span data-i18n="wallet_info">Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.</span>
         </div>
 
-        <button class="btn-main" style="margin-bottom: 12px;" onclick="openModal('topup-modal')">
-            <i class="fas fa-plus-circle"></i> <span data-i18n="wallet_topup">Doładuj kartę online</span>
-        </button>
+        <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
+            <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="topup_local_only">Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.</span>
+        </div>
         
         <button class="btn-outline" onclick="openModal('gift-modal')">
             <i class="fas fa-gift" style="margin-right: 8px;"></i> <span data-i18n="wallet_gift">Kup kartę na prezent</span>
@@ -740,23 +712,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="topup-modal" onclick="closeModal('topup-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="wallet_topup">Doładuj MilkCard</h3>
-        <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wpisz kwotę, o jaką chcesz zasilić swoją kartę.</p>
-          
-        <div class="form-group">
-            <label>Kwota doładowania (PLN)</label>
-            <input type="number" class="form-control" placeholder="0.00" style="font-size: 1.5rem; font-weight: 700; text-align: center;">
-        </div>
-
-        <button class="btn-main" onclick="processPayment('Twoja karta została doładowana!')">
-            Przejdź do płatności
-        </button>
-        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('topup-modal')">Anuluj</button>
-    </div>
-  </div>
-
   <div class="modal-overlay" id="gift-modal" onclick="closeModal('gift-modal')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
         <h3 data-i18n="wallet_gift">Karta Prepaid na Prezent</h3>
@@ -793,28 +748,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="qr-modal" onclick="closeModal('qr-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div style="text-align: center;">
-        <h3>Twój kod członkowski</h3>
-        <p style="color: var(--text-sub); margin-bottom: 20px;">Pokaż ten kod bariście, aby nabić punkty.</p>
-          
-        <div class="qr-box">
-          <img src="" alt="User QR Code">
-          <div class="scan-line"></div>
-        </div>
-
-        <button class="btn-main" style="background: var(--bg-body); color: var(--text-main); margin-top: 10px;" onclick="closeModal('qr-modal')">Zamknij</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="product-modal" onclick="closeModal('product-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div id="product-detail-content"></div>
-    </div>
-  </div>
-  
   <div class="modal-overlay" id="modal-location" onclick="closeModal('modal-location')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
       <h3>Wybierz lokalizację</h3>
@@ -844,13 +777,6 @@
     <a href="#" class="nav-item" onclick="switchTab('order', event)">
       <i class="fas fa-shopping-basket"></i> <span data-i18n="nav_order">Zamów</span>
     </a>
-      
-    <div class="fab-container" onclick="openQR()">
-      <div class="fab-btn">
-        <i class="fas fa-qrcode"></i>
-      </div>
-    </div>
-
     <a href="#" class="nav-item" onclick="switchTab('rewards', event)">
       <i class="fas fa-gift"></i> <span data-i18n="nav_rewards">Nagrody</span>
     </a>
@@ -890,7 +816,8 @@ const translations = {
         wallet_title: "Mój Portfel", wallet_balance: "Saldo karty", wallet_info: "Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.", wallet_topup: "Doładuj kartę online", wallet_gift: "Kup kartę na prezent",
         hist_title: "Ostatnia aktywność", hist_sub: "Historia", wallet_hist: "Historia transakcji",
         reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Wymień Punkty", reward_btn_no: "Za mało pkt",
-        home_hello: "Cześć", home_nice: "Miło Cię widzieć!"
+        home_hello: "Cześć", home_nice: "Miło Cię widzieć!",
+        temp_unavailable: "Chwilowo niedostępna", topup_local_only: "Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.", feature_locked_desc: "Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!"
     },
     en: {
         nav_start: "Home", nav_order: "Order", nav_rewards: "Rewards", nav_wallet: "Wallet",
@@ -911,7 +838,8 @@ const translations = {
         wallet_title: "My Wallet", wallet_balance: "Card Balance", wallet_info: "You can top up your card in the app or with cash/card at the local register.", wallet_topup: "Top up card online", wallet_gift: "Buy a gift card",
         hist_title: "Recent Activity", hist_sub: "History", wallet_hist: "Transaction History",
         reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Redeem Points", reward_btn_no: "Not enough pts",
-        home_hello: "Hello", home_nice: "Nice to see you!"
+        home_hello: "Hello", home_nice: "Nice to see you!",
+        temp_unavailable: "Temporarily unavailable", topup_local_only: "Top-up is temporarily only possible at the register.", feature_locked_desc: "We are working on a new version of this feature. Check back soon!"
     },
     es: {
         nav_start: "Inicio", nav_order: "Pedir", nav_rewards: "Premios", nav_wallet: "Cartera",
@@ -932,7 +860,8 @@ const translations = {
         wallet_title: "Mi Cartera", wallet_balance: "Saldo de tarjeta", wallet_info: "Puedes recargar tu tarjeta en la app o en la caja del local.", wallet_topup: "Recargar tarjeta online", wallet_gift: "Comprar tarjeta regalo",
         hist_title: "Actividad Reciente", hist_sub: "Historial", wallet_hist: "Historial de transacciones",
         reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear Puntos", reward_btn_no: "Faltan pts",
-        home_hello: "Hola", home_nice: "¡Qué bueno verte!"
+        home_hello: "Hola", home_nice: "¡Qué bueno verte!",
+        temp_unavailable: "Temporalmente no disponible", topup_local_only: "La recarga temporalmente solo es posible en la caja.", feature_locked_desc: "Estamos trabajando en una nueva versión de esta función. ¡Vuelve pronto!"
     }
 };
 
@@ -951,7 +880,6 @@ function changeLanguage(lang, showMsg = true) {
     });
 
     closeModal('modal-language');
-    renderRewards(); // Przeładuj nagrody dla nowych tekstów przycisków
     
     if (showMsg) {
         const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
@@ -976,25 +904,6 @@ if (savedUser && savedToken) {
     userPoints = currentUser.points || 0;
 }
 
-// ==========================================
-// 2. BAZA DANYCH OFFLINE
-// ==========================================
-const products = [
-  { id: 1, name: "Oreo Dream Shake", price: 19.00, img: "https://i.imgur.com/kfE4j7j.jpeg", cal: 450, desc: "Kultowy smak ciasteczek w formie szejka." },
-  { id: 2, name: "Berry Blast", price: 18.50, img: "https://i.imgur.com/7Bx2X7g.png", cal: 320, desc: "Moc witamin z leśnych owoców." },
-  { id: 3, name: "Double Choco", price: 21.00, img: "https://i.imgur.com/dsMynF5.png", cal: 560, desc: "Dla prawdziwych fanów czekolady." },
-  { id: 4, name: "Pancake Tower", price: 24.00, img: "https://i.imgur.com/GRvCj6z.png", cal: 600, desc: "Wieża puszystych naleśników z syropem." },
-  { id: 5, name: "Pistacchio Ice", price: 24.00, img: "https://i.imgur.com/XIdoN0y.png", cal: 380, desc: "Prawdziwa sycylijska pistacja." },
-  { id: 6, name: "Burger Vege", price: 29.00, img: "https://i.imgur.com/frz51UG.png", cal: 420, desc: "Halloumi, awokado, mango." }
-];
-  
-const rewards = [
-    { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
-    { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
-    { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
-];
-
-let cart = [];
 let selectedZone = 'Sala frontowa';
 let selectedGiftAmount = 100;
 let currentLocation = "Słupsk, Szczecińska 17";
@@ -1037,7 +946,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if(fill) fill.style.width = '83%';
   }, 500);
 
-  renderMenu();
 });
 
 // ==========================================
@@ -1051,7 +959,6 @@ async function handleAuthSubmit(e) {
     const mainApp = document.getElementById('main-app');
 
     if (isLogin) {
-        // --- LOGIKA LOGOWANIA ---
         const inputs = document.querySelectorAll('#form-login .form-control');
         const loginOrEmail = inputs[0].value;
         const password = inputs[1].value;
@@ -1069,7 +976,6 @@ async function handleAuthSubmit(e) {
                 currentUser = data.user;
                 userPoints = data.user.points || 0;
 
-                // Zapis do localStorage
                 localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                 localStorage.setItem('milkmi_token', currentToken);
 
@@ -1085,7 +991,6 @@ async function handleAuthSubmit(e) {
         }
 
     } else {
-        // --- LOGIKA REJESTRACJI ---
         const inputs = document.querySelectorAll('#form-register .form-control');
         const username = inputs[0].value;
         const email = inputs[1].value;
@@ -1103,7 +1008,6 @@ async function handleAuthSubmit(e) {
             if (res.ok) {
                 showToast("Konto utworzone! Trwa logowanie...");
                 
-                // Automatyczne logowanie po udanej rejestracji
                 const loginRes = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1116,7 +1020,6 @@ async function handleAuthSubmit(e) {
                     currentUser = loginData.user;
                     userPoints = loginData.user.points || 0;
 
-                    // Zapis do localStorage
                     localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                     localStorage.setItem('milkmi_token', currentToken);
 
@@ -1138,7 +1041,7 @@ function transitionToApp(auth, main) {
     setTimeout(() => {
         auth.style.display = 'none';
         main.style.display = 'block';
-        void main.offsetWidth; // Wymuś reflow
+        void main.offsetWidth; 
         main.style.opacity = '1';
     }, 500);
 }
@@ -1149,7 +1052,6 @@ function transitionToApp(auth, main) {
 async function initUserData() {
     if (!currentUser) return;
 
-    // Pobierz najświeższe dane z serwera (portfel, punkty, historia) dla aktualnej sesji
     try {
       const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
       const data = await res.json();
@@ -1166,29 +1068,24 @@ async function initUserData() {
       console.log('Brak połączenia z serwerem przy odświeżaniu danych.');
     }
 
-    // 1. Ekran główny - Powitanie
     const namePlaceholder = document.getElementById('home-username-placeholder');
     if (namePlaceholder) {
         namePlaceholder.innerText = currentUser.username;
     }
 
-    // 2. Aktualizacja Punktów
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
-    // 3. Aktualizacja balansu w Portfelu
     const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
     if (walletBalance) {
         const bal = currentUser.walletBalance || 0;
         walletBalance.innerText = `${bal.toFixed(2)} PLN`;
     }
 
-    // 4. Widok Ustawień - Nagłówek profilu
     document.getElementById('set-name-display').innerText = currentUser.username;
     document.getElementById('set-email-display').innerText = currentUser.email;
     document.querySelector('.user-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
 
-    // 5. Modal z Danymi Osobowymi
     const personalDataInputs = document.querySelectorAll('#modal-personal-data .form-control');
     if (personalDataInputs.length >= 3) {
         personalDataInputs[0].value = currentUser.username;
@@ -1196,7 +1093,6 @@ async function initUserData() {
         personalDataInputs[2].value = currentUser.phone || '';
     }
 
-    renderRewards(); 
     renderActivities(currentUser.history || []); 
 }
 
@@ -1220,7 +1116,6 @@ function unlockApp() {
   setTimeout(() => {
       splash.style.visibility = 'hidden';
       
-      // Sprawdzanie czy użytkownik jest już zalogowany (z localStorage)
       if (currentUser && currentToken) {
           mainApp.style.display = 'block';
           void mainApp.offsetWidth;
@@ -1296,7 +1191,6 @@ function renderActivities(historyArray = []) {
         const typeClass = isAdd ? 'type-money' : 'type-order';
         const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
         
-        // Czerwony minus przy platnościach z portfela lub odbieraniu punktów
         const isMinus = item.text.includes('-');
         const textStyle = isMinus ? 'color: var(--status-err);' : 'color: var(--status-ok);';
 
@@ -1317,75 +1211,8 @@ function renderActivities(historyArray = []) {
   if(walletContainer) walletContainer.innerHTML = html;
 }
 
-function renderMenu() {
-  const container = document.getElementById('menu-container');
-  if(!container) return;
-  let html = '';
-  products.forEach(p => {
-    html += `
-      <div class="menu-card" onclick="openProduct(${p.id})">
-        <div class="menu-img-box"><img src="${p.img}" alt="${p.name}"></div>
-        <div class="menu-content">
-          <div class="menu-title">${p.name}</div>
-          <div class="menu-price">${p.price.toFixed(2)} zł</div>
-        </div>
-      </div>
-    `;
-  });
-  container.innerHTML = html;
-}
-  
-function renderRewards() {
-    const container = document.getElementById('rewards-container');
-    if(!container) return;
-    
-    // Dynamicznie pobierz teksty przycisków w zależności od języka
-    const btnStr = translations[currentLang].reward_btn || "Wymień Punkty";
-    const noBtnStr = translations[currentLang].reward_btn_no || "Za mało pkt";
-
-    let html = '';
-    rewards.forEach(r => {
-        const canAfford = userPoints >= r.cost;
-        html += `
-          <div class="reward-card">
-              <div class="reward-cost">${r.cost} pkt</div>
-              <img src="${r.img}" alt="${r.name}" class="reward-img" style="border-radius:10px;">
-              <div class="reward-name">${r.name}</div>
-              <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="redeemReward('${r.id}', '${r.name}', ${r.cost})">
-                  ${canAfford ? btnStr : noBtnStr}
-              </button>
-          </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-  
-async function redeemReward(rewardId, name, cost) {
-    if(userPoints < cost) return showToast('Za mało punktów!', false);
-    
-    if(!confirm(`Czy na pewno chcesz wydać ${cost} punktów na: ${name}?`)) return;
-
-    try {
-        const res = await fetch('/api/rewards/redeem', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser.id, cost: cost, rewardName: name })
-        });
-        
-        const data = await res.json();
-        if(data.success) {
-            showToast(data.message, true);
-            initUserData(); // Odświeżenie danych u klienta (nowe punkty, historia)
-        } else {
-            showToast(data.message, false);
-        }
-    } catch(err) {
-        showToast('Błąd serwera. Spróbuj później.', false);
-    }
-}
-
 // ==========================================
-// NOWOŚĆ: REALNE WYSYŁANIE REZERWACJI
+// REALNE WYSYŁANIE REZERWACJI
 // ==========================================
 async function submitReservation() {
   const inputs = document.querySelectorAll('#view-reservation .form-control');
@@ -1453,30 +1280,12 @@ function switchTab(tabId, event) {
   if(tabId === 'rewards') navs[2].classList.add('active');
   if(tabId === 'wallet') navs[3].classList.add('active');
 
-  if(tabId === 'order') backToOrderType();
   if(tabId === 'wallet' || tabId === 'home') initUserData(); 
   window.scrollTo(0,0);
 }
 
-function selectOrderType(type) {
-    document.getElementById('order-type-selection').style.display = 'none';
-    document.getElementById('menu-view-actual').style.display = 'block';
-}
-
-function backToOrderType() {
-    document.getElementById('order-type-selection').style.display = 'block';
-    document.getElementById('menu-view-actual').style.display = 'none';
-}
-
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function openQR() {
-  if(!currentUser) return;
-  const qrImg = document.querySelector('.qr-box img');
-  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentUser.id}`;
-  openModal('qr-modal');
-}
 
 function selectAmount(el, val) {
   document.querySelectorAll('.amount-chip').forEach(x => x.classList.remove('selected'));
@@ -1485,49 +1294,11 @@ function selectAmount(el, val) {
 }
 
 function processPayment(msg) {
-  showToast("Przekierowanie...");
+  showToast("Przekierowanie do płatności...");
   setTimeout(() => {
-      closeModal('topup-modal');
       closeModal('gift-modal');
       showToast(msg);
   }, 2000);
-}
-
-function openProduct(id) {
-  const p = products.find(x => x.id === id);
-  const content = document.getElementById('product-detail-content');
-  content.innerHTML = `
-    <div style="text-align:center; margin-bottom: 20px;">
-      <img src="${p.img}" style="width:140px; height:140px; object-fit:cover; border-radius:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-    </div>
-    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
-    <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
-    <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
-      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
-      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-      <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
-      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
-        Dodaj do koszyka
-      </button>
-    </div>
-  `;
-  openModal('product-modal');
-}
-
-function addToCart(id) {
-  cart.push(id);
-  const badge = document.getElementById('cart-badge');
-  badge.innerText = cart.length;
-  badge.style.display = 'flex';
-  closeModal('product-modal');
-  showToast('Dodano do koszyka!');
-}
-
-function showCart() {
-  if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
-  else showToast(`Masz ${cart.length} produktów w koszyku`);
 }
 
 function selectZone(el, zoneName) {
