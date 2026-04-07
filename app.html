@@ -143,6 +143,26 @@
     .icon-btn:active { transform: scale(0.9); }
     .badge { position: absolute; top: -2px; right: -2px; background: var(--primary); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; border: 2px solid var(--bg-surface); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
+    /* --- DYNAMIC APP BAR (ANNOUNCEMENT) --- */
+    #dynamic-app-bar {
+      display: none; /* Hidden by default */
+      background-color: var(--primary);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      width: 100%;
+      z-index: 89;
+      position: relative;
+      animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* --- SETTINGS STYLES --- */
     .settings-list { margin-top: 20px; }
     .settings-item { display: flex; align-items: center; gap: 15px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
@@ -394,6 +414,8 @@
       </button>
     </div>
   </header>
+
+  <div id="dynamic-app-bar">Ładowanie informacji...</div>
 
   <section id="view-home" class="view-section active">
       
@@ -915,7 +937,7 @@ let currentLocation = "Słupsk, Szczecińska 17";
 let countdownInterval;
 
 // ==========================================
-// 3. INIT BAZOWY
+// 3. INIT BAZOWY I POBIERANIE BANERÓW
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   // Wczytywanie Motywu z localStorage
@@ -946,6 +968,30 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTimer();
   countdownInterval = setInterval(updateTimer, 1000);
 });
+
+// POBIERANIE USTAWIEN BANERA APLIKACJI
+async function fetchAppBar() {
+  try {
+    const res = await fetch('/api/banners');
+    const data = await res.json();
+    
+    if (data.success && data.data && data.data.length > 0) {
+      // Szukamy banera ustawionego dla aplikacji ('app')
+      const appBanner = data.data.find(b => b.target === 'app');
+      const bannerDiv = document.getElementById('dynamic-app-bar');
+      
+      if (appBanner && appBanner.isActive) {
+        bannerDiv.innerText = appBanner.text;
+        bannerDiv.style.backgroundColor = appBanner.backgroundColor;
+        bannerDiv.style.display = 'block'; // Pokazuje pasek informacyjny
+      } else {
+        bannerDiv.style.display = 'none';
+      }
+    }
+  } catch (err) {
+    console.error('Nie udało się pobrać danych banerów', err);
+  }
+}
 
 // ==========================================
 // AUTORYZACJA
@@ -1044,6 +1090,8 @@ function transitionToApp(auth, main) {
         main.style.display = 'block';
         void main.offsetWidth; 
         main.style.opacity = '1';
+        
+        fetchAppBar(); // Pobieramy banery przy wejściu do aplikacji!
     }, 500);
 }
 
@@ -1123,6 +1171,7 @@ function unlockApp() {
           void mainApp.offsetWidth;
           mainApp.style.opacity = '1';
           initUserData();
+          fetchAppBar(); // Pobieramy banery po ominięciu splash screenu!
       } else {
           auth.style.display = 'block';
           void auth.offsetWidth;
