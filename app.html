@@ -145,7 +145,7 @@
 
     /* --- DYNAMIC APP BAR (ANNOUNCEMENT) --- */
     #dynamic-app-bar {
-      display: none; /* Hidden by default */
+      display: none; 
       background-color: var(--primary);
       color: #FFFFFF;
       text-align: center;
@@ -173,15 +173,6 @@
     .user-profile-header { text-align: center; padding: 20px 0; }
     .user-avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: 0 auto 10px; }
 
-    /* --- ORDER TYPE SELECTION --- */
-    .order-type-container { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
-    .order-type-card { background: var(--bg-surface); border: 2px solid var(--border); border-radius: var(--radius-l); padding: 30px 24px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.3s; }
-    .order-type-card:active { transform: scale(0.97); }
-    .order-type-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
-    .order-type-icon { font-size: 2.5rem; color: var(--primary); background: rgba(255, 102, 0, 0.1); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-    .order-type-info h3 { margin-bottom: 4px; font-size: 1.2rem; }
-    .order-type-info p { font-size: 0.9rem; color: var(--text-sub); }
-
     /* --- COMPONENT: LOYALTY CARD --- */
     .loyalty-card-premium { background: #111; color: white; border-radius: var(--radius-l); padding: 24px; margin: 0 24px 20px; position: relative; overflow: hidden; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
     .loyalty-card-premium::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); opacity: 0.2; }
@@ -197,13 +188,13 @@
     .rewards-hero h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 5px; }
     .rewards-hero p { color: var(--text-sub); font-size: 0.9rem; }
     .rewards-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 24px; }
-    .reward-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
-    .reward-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px; }
-    .reward-cost { background: var(--bg-body); color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
-    .reward-name { font-weight: 700; font-size: 0.9rem; line-height: 1.3; margin-bottom: 12px; }
-    .btn-redeem { width: 100%; border: none; background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 10px; border-radius: 10px; cursor: pointer; }
-    .btn-redeem:disabled { background: #ccc; cursor: not-allowed; }
-    body.dark-mode .btn-redeem { background: var(--primary); color: #fff; }
+    .reward-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; transition: transform 0.2s; }
+    .reward-card:active { transform: scale(0.96); }
+    .reward-cost { background: var(--bg-body); color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 20px; margin-bottom: 12px; border: 1px solid rgba(255,102,0,0.1); }
+    .reward-name { font-weight: 700; font-size: 0.9rem; line-height: 1.3; margin-bottom: 15px; flex: 1; }
+    .btn-redeem { width: 100%; border: none; background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+    .btn-redeem:disabled { background: var(--bg-body); color: var(--text-sub); border: 1px solid var(--border); cursor: not-allowed; }
+    body.dark-mode .btn-redeem:not(:disabled) { background: var(--primary); color: #fff; }
 
     /* --- AD BANNER --- */
     .ad-banner { margin: 0 24px 24px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 16px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
@@ -236,18 +227,6 @@
     .act-content { flex: 1; }
     .act-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
     .act-date { font-size: 0.75rem; color: var(--text-sub); }
-    .act-value { font-weight: 700; font-size: 0.9rem; }
-    .act-value.positive { color: var(--color-money); }
-
-    /* --- MENU GRID --- */
-    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
-    .menu-card { background: var(--bg-surface); border-radius: var(--radius-m); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; }
-    .menu-card:active { transform: scale(0.96); }
-    .menu-img-box { height: 120px; width: 100%; background: #eee; }
-    .menu-img-box img { width: 100%; height: 100%; object-fit: cover; }
-    .menu-content { padding: 12px; }
-    .menu-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; line-height: 1.3; }
-    .menu-price { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
 
     /* --- RESERVATION VISUALS --- */
     .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
@@ -259,11 +238,6 @@
     .form-control { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 0.9rem; }
     .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    /* --- GRID SELECTION FOR GIFT --- */
-    .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .amount-chip { padding: 12px 5px; border: 1px solid var(--border); border-radius: var(--radius-m); text-align: center; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: var(--bg-surface); transition: 0.2s; }
-    .amount-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
@@ -278,7 +252,6 @@
     .modal-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface); border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
     
-    /* MODAL FULL SCREEN (USTAWIENIA) - Zwiększony padding-top by X był klikalny na notchach */
     .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(45px + var(--safe-top)); }
 
     /* Utils */
@@ -288,7 +261,6 @@
     .btn-main { width: 100%; padding: 16px; border-radius: var(--radius-m); background: var(--primary); color: white; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
     .btn-outline { width: 100%; padding: 14px; border-radius: var(--radius-m); background: transparent; color: var(--text-main); border: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-bottom: 30px;}
     
-    /* Toggle Switch */
     .toggle-switch { position: relative; width: 50px; height: 26px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -471,14 +443,21 @@
   </section>
   
   <section id="view-rewards" class="view-section">
-      <div class="section-title" data-i18n="reward_title">Centrum Nagród</div>
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px; padding: 0 24px; text-align: center;">
-        <div style="width: 80px; height: 80px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-sub); margin-bottom: 20px;">
-          <i class="fas fa-lock"></i>
-        </div>
-        <h3 style="margin-bottom: 10px;" data-i18n="temp_unavailable">Chwilowo niedostępna</h3>
-        <p style="color: var(--text-sub); font-size: 0.9rem;" data-i18n="feature_locked_desc">Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!</p>
+      <div class="section-title">
+          <span data-i18n="reward_title">Centrum Nagród</span>
+          <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">
+              <span id="rewards-points-display">0</span> <i class="fas fa-star" style="margin-left: 2px;"></i>
+          </span>
       </div>
+
+      <div id="my-active-rewards-container" style="display: none; padding: 0 24px 20px;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--status-ok);" data-i18n="reward_active_title">Twoje aktywne nagrody do odbioru w lokalu:</h3>
+        <div id="my-active-rewards-list" style="display: flex; flex-direction: column; gap: 10px;">
+          </div>
+      </div>
+
+      <div class="rewards-grid-layout" id="rewards-grid">
+        </div>
   </section>
 
   <section id="view-order" class="view-section">
@@ -794,7 +773,8 @@ const translations = {
         zone_front: "Sala frontowa", zone_main: "Sala główna", zone_kids: "Kącik dzieci",
         wallet_title: "Mój Portfel", wallet_balance: "Saldo karty", wallet_info: "Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.", wallet_topup: "Doładuj kartę online", wallet_gift: "Kup kartę na prezent",
         hist_title: "Ostatnia aktywność", hist_sub: "Historia", wallet_hist: "Historia transakcji",
-        reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Wymień Punkty", reward_btn_no: "Za mało pkt",
+        reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Odbierz", reward_btn_no: "Za mało pkt",
+        reward_active_title: "Twoje aktywne nagrody do odbioru w lokalu:", reward_active_sub: "Gotowa do użycia przy kasie", reward_confirm: "Czy na pewno chcesz wymienić punkty na tę nagrodę?",
         home_hello: "Cześć", home_nice: "Miło Cię widzieć!",
         temp_unavailable: "Chwilowo niedostępna", topup_local_only: "Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.", gift_local_only: "Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.", feature_locked_desc: "Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!",
         lvl_next: "do rangi"
@@ -817,7 +797,8 @@ const translations = {
         zone_front: "Front room", zone_main: "Main room", zone_kids: "Kids area",
         wallet_title: "My Wallet", wallet_balance: "Card Balance", wallet_info: "You can top up your card in the app or with cash/card at the local register.", wallet_topup: "Top up card online", wallet_gift: "Buy a gift card",
         hist_title: "Recent Activity", hist_sub: "History", wallet_hist: "Transaction History",
-        reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Redeem Points", reward_btn_no: "Not enough pts",
+        reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Claim", reward_btn_no: "Not enough pts",
+        reward_active_title: "Your active rewards available at the counter:", reward_active_sub: "Ready to use at the register", reward_confirm: "Are you sure you want to redeem your points for this reward?",
         home_hello: "Hello", home_nice: "Nice to see you!",
         temp_unavailable: "Temporarily unavailable", topup_local_only: "Top-up is temporarily only possible at the register.", gift_local_only: "Gift cards are temporarily available only at the register.", feature_locked_desc: "We are working on a new version of this feature. Check back soon!",
         lvl_next: "to level"
@@ -840,7 +821,8 @@ const translations = {
         zone_front: "Sala principal", zone_main: "Comedor", zone_kids: "Zona infantil",
         wallet_title: "Mi Cartera", wallet_balance: "Saldo de tarjeta", wallet_info: "Puedes recargar tu tarjeta en la app o en la caja del local.", wallet_topup: "Recargar tarjeta online", wallet_gift: "Comprar tarjeta regalo",
         hist_title: "Actividad Reciente", hist_sub: "Historial", wallet_hist: "Historial de transacciones",
-        reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear Puntos", reward_btn_no: "Faltan pts",
+        reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear", reward_btn_no: "Faltan pts",
+        reward_active_title: "Tus premios activos disponibles en el local:", reward_active_sub: "Listo para usar en la caja", reward_confirm: "¿Estás seguro de que quieres canjear tus puntos por este premio?",
         home_hello: "Hola", home_nice: "¡Qué bueno verte!",
         temp_unavailable: "Temporalmente no disponible", topup_local_only: "La recarga temporalmente solo es posible en la caja.", gift_local_only: "Las tarjetas de regalo temporalmente solo están disponibles en la caja.", feature_locked_desc: "Estamos trabajando en una nueva versión de esta función. ¡Vuelve pronto!",
         lvl_next: "para nivel"
@@ -863,6 +845,8 @@ function changeLanguage(lang, showMsg = true) {
 
     closeModal('modal-language');
     if (currentUser) updateLevel(currentUser.points || 0);
+    renderRewards(); // Odświeża język w nagrodach
+    if (currentUser) renderActiveRewards(currentUser.activeRewards || []);
     
     if (showMsg) {
         const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
@@ -976,14 +960,13 @@ async function fetchAppBar() {
     const data = await res.json();
     
     if (data.success && data.data && data.data.length > 0) {
-      // Szukamy banera ustawionego dla aplikacji ('app')
       const appBanner = data.data.find(b => b.target === 'app');
       const bannerDiv = document.getElementById('dynamic-app-bar');
       
       if (appBanner && appBanner.isActive) {
         bannerDiv.innerText = appBanner.text;
         bannerDiv.style.backgroundColor = appBanner.backgroundColor;
-        bannerDiv.style.display = 'block'; // Pokazuje pasek informacyjny
+        bannerDiv.style.display = 'block';
       } else {
         bannerDiv.style.display = 'none';
       }
@@ -1091,7 +1074,7 @@ function transitionToApp(auth, main) {
         void main.offsetWidth; 
         main.style.opacity = '1';
         
-        fetchAppBar(); // Pobieramy banery przy wejściu do aplikacji!
+        fetchAppBar(); 
     }, 500);
 }
 
@@ -1109,6 +1092,7 @@ async function initUserData() {
           userPoints = data.points;
           currentUser.walletBalance = data.walletBalance;
           currentUser.history = data.history;
+          currentUser.activeRewards = data.activeRewards || [];
       } else if (res.status === 404) {
           logout();
           return;
@@ -1144,6 +1128,8 @@ async function initUserData() {
 
     updateLevel(userPoints);
     renderActivities(currentUser.history || []); 
+    renderRewards();
+    renderActiveRewards(currentUser.activeRewards || []);
 }
 
 // ==========================================
@@ -1171,7 +1157,7 @@ function unlockApp() {
           void mainApp.offsetWidth;
           mainApp.style.opacity = '1';
           initUserData();
-          fetchAppBar(); // Pobieramy banery po ominięciu splash screenu!
+          fetchAppBar(); 
       } else {
           auth.style.display = 'block';
           void auth.offsetWidth;
@@ -1227,7 +1213,7 @@ function toggleNoticeDetails() {
 }
 
 // ==========================================
-// 4. RENDERING & FUNKCJE
+// 4. RENDERING & FUNKCJE (NAGRODY I HISTORIA)
 // ==========================================
 function renderActivities(historyArray = []) {
   const homeContainer = document.getElementById('activity-container-home');
@@ -1260,6 +1246,85 @@ function renderActivities(historyArray = []) {
     
   if(homeContainer) homeContainer.innerHTML = html;
   if(walletContainer) walletContainer.innerHTML = html;
+}
+
+// Baza dostępnych nagród
+const availableRewards = [
+  { id: 'r1', cost: 25, namePl: 'Milkshake do 30 PLN', nameEn: 'Milkshake up to 30 PLN', nameEs: 'Batido hasta 30 PLN', icon: 'fa-glass-water' },
+  { id: 'r2', cost: 50, namePl: 'Zestaw Burger do 60 PLN', nameEn: 'Burger set up to 60 PLN', nameEs: 'Menú Hamburguesa hasta 60 PLN', icon: 'fa-hamburger' },
+  { id: 'r3', cost: 100, namePl: 'Zamówienie do 120 PLN', nameEn: 'Order up to 120 PLN', nameEs: 'Pedido hasta 120 PLN', icon: 'fa-shopping-bag' }
+];
+
+function renderRewards() {
+  const grid = document.getElementById('rewards-grid');
+  grid.innerHTML = '';
+
+  availableRewards.forEach(r => {
+    const canAfford = userPoints >= r.cost;
+    const name = currentLang === 'pl' ? r.namePl : (currentLang === 'en' ? r.nameEn : r.nameEs);
+    const btnText = canAfford ? translations[currentLang].reward_btn : translations[currentLang].reward_btn_no;
+    
+    grid.innerHTML += `
+      <div class="reward-card">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,102,0,0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 12px;">
+            <i class="fas ${r.icon}"></i>
+        </div>
+        <div class="reward-cost">${r.cost} Milkosów</div>
+        <div class="reward-name">${name}</div>
+        <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="claimReward('${r.id}', ${r.cost}, '${name}')">${btnText}</button>
+      </div>
+    `;
+  });
+}
+
+async function claimReward(rewardId, cost, rewardName) {
+  const confirmMsg = translations[currentLang].reward_confirm;
+  if (!confirm(`${confirmMsg}\n\n${rewardName} (-${cost} pkt)`)) return;
+
+  try {
+    const res = await fetch('/api/rewards/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id || currentUser._id, rewardId, cost, rewardName })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      showToast('Nagroda pomyślnie przypisana do konta!');
+      userPoints = data.points;
+      currentUser.points = data.points;
+      currentUser.activeRewards = data.activeRewards;
+      initUserData(); // Odświeża wszystko (punkty, nagrody, historię)
+    } else {
+      showToast(data.message, false);
+    }
+  } catch (err) {
+    showToast('Błąd połączenia z serwerem.', false);
+  }
+}
+
+function renderActiveRewards(activeRewards) {
+  const container = document.getElementById('my-active-rewards-container');
+  const list = document.getElementById('my-active-rewards-list');
+  
+  if (!activeRewards || activeRewards.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  list.innerHTML = '';
+  
+  activeRewards.forEach(r => {
+    list.innerHTML += `
+      <div style="background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--status-ok); padding: 12px 16px; border-radius: var(--radius-m); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-weight: 800; font-size: 0.95rem; color: var(--status-ok);"><i class="fas fa-gift" style="margin-right: 5px;"></i> ${r.name}</div>
+          <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 3px;" data-i18n="reward_active_sub">${translations[currentLang].reward_active_sub}</div>
+        </div>
+      </div>
+    `;
+  });
 }
 
 // ==========================================
@@ -1331,7 +1396,7 @@ function switchTab(tabId, event) {
   if(tabId === 'rewards') navs[2].classList.add('active');
   if(tabId === 'wallet') navs[3].classList.add('active');
 
-  if(tabId === 'wallet' || tabId === 'home') initUserData(); 
+  if(tabId === 'wallet' || tabId === 'home' || tabId === 'rewards') initUserData(); 
   window.scrollTo(0,0);
 }
 
