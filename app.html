@@ -38,8 +38,8 @@
       --color-res: #3B82F6;
       --color-money: #10B981;
 
-      /* Dynamic Notch / Status Bar Spacing */
-      --safe-top: env(safe-area-inset-top, 20px);
+      /* Dynamic Notch / Status Bar Spacing - Increased for better visibility */
+      --safe-top: env(safe-area-inset-top, 44px);
     }
 
     body.dark-mode {
@@ -253,7 +253,7 @@
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
     .modal-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface); border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
-    .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(20px + var(--safe-top)); }
+    .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(45px + var(--safe-top)); }
     .qr-box { width: 180px; height: 180px; margin: 20px auto; position: relative; overflow: hidden; border-radius: 15px; }
     .qr-box img { width: 100%; height: 100%; }
     .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); box-shadow: 0 0 15px var(--primary); animation: scan 2s infinite ease-in-out; }
@@ -570,7 +570,7 @@
 
   <div class="modal-overlay" id="settings-modal" onclick="closeModal('settings-modal')">
     <div class="modal-sheet full" onclick="event.stopPropagation()">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px;">
             <h2 data-i18n="set_title">Ustawienia</h2>
             <button class="icon-btn" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button>
         </div>
@@ -771,7 +771,22 @@
             <div class="amount-chip" onclick="selectAmount(this, 1000)">1000 PLN</div>
         </div>
 
-        <button class="btn-main" style="margin-top:20px;" onclick="processPayment('Karta podarunkowa została wysłana!')">
+        <div class="form-group">
+            <label>Imię i Nazwisko obdarowanego</label>
+            <input type="text" class="form-control" placeholder="Kto otrzyma prezent?">
+        </div>
+
+        <div class="form-group">
+            <label>Numer telefonu</label>
+            <input type="tel" class="form-control" placeholder="+48 000 000 000">
+        </div>
+
+        <div class="form-group">
+            <label>Adres E-mail</label>
+            <input type="email" class="form-control" placeholder="email@przyklad.pl">
+        </div>
+
+        <button class="btn-main" onclick="processPayment('Karta podarunkowa została wysłana!')">
             Kup i wyślij prezent
         </button>
         <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('gift-modal')">Anuluj</button>
@@ -974,9 +989,9 @@ const products = [
 ];
   
 const rewards = [
-    { id: "milkshake_30", name: "Milkshake", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
-    { id: "burger_set_60", name: "Zestaw burger", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
-    { id: "order_120", name: "Zamówienie max 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
+    { id: "milkshake_30", name: "Milkshake do 30 PLN", cost: 25, img: "https://i.imgur.com/kfE4j7j.jpeg" }, 
+    { id: "burger_set_60", name: "Zestaw burger do 60 PLN", cost: 50, img: "https://i.imgur.com/frz51UG.png" }, 
+    { id: "order_120", name: "Zamówienie do 120 PLN", cost: 100, img: "https://i.imgur.com/rcaqjLK.png" }
 ];
 
 let cart = [];
@@ -1030,56 +1045,91 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 async function handleAuthSubmit(e) {
     e.preventDefault();
+    
     const isLogin = e.target.id === 'form-login';
     const authScreen = document.getElementById('auth-screen');
     const mainApp = document.getElementById('main-app');
 
     if (isLogin) {
+        // --- LOGIKA LOGOWANIA ---
         const inputs = document.querySelectorAll('#form-login .form-control');
+        const loginOrEmail = inputs[0].value;
+        const password = inputs[1].value;
+
         try {
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ loginOrEmail: inputs[0].value, password: inputs[1].value })
+                body: JSON.stringify({ loginOrEmail, password })
             });
             const data = await res.json();
+
             if (res.ok) {
                 currentToken = data.token;
                 currentUser = data.user;
                 userPoints = data.user.points || 0;
+
+                // Zapis do localStorage
                 localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                 localStorage.setItem('milkmi_token', currentToken);
+
                 showToast(translations[currentLang].nav_start + " - OK!");
                 initUserData(); 
                 transitionToApp(authScreen, mainApp);
-            } else { showToast(data.message, false); }
-        } catch (error) { showToast("Error", false); }
+            } else {
+                showToast(data.message, false);
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Błąd połączenia z serwerem.", false);
+        }
+
     } else {
+        // --- LOGIKA REJESTRACJI ---
         const inputs = document.querySelectorAll('#form-register .form-control');
+        const username = inputs[0].value;
+        const email = inputs[1].value;
+        const phone = inputs[2].value;
+        const password = inputs[3].value;
+
         try {
             const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: inputs[0].value, email: inputs[1].value, phone: inputs[2].value, password: inputs[3].value })
+                body: JSON.stringify({ username, email, phone, password })
             });
             const data = await res.json();
+
             if (res.ok) {
-                showToast("Account created!");
+                showToast("Konto utworzone! Trwa logowanie...");
+                
+                // Automatyczne logowanie po udanej rejestracji
                 const loginRes = await fetch('/api/login', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginOrEmail: inputs[1].value, password: inputs[3].value })
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loginOrEmail: email, password })
                 });
                 const loginData = await loginRes.json();
+                
                 if (loginRes.ok) {
                     currentToken = loginData.token;
                     currentUser = loginData.user;
                     userPoints = loginData.user.points || 0;
+
+                    // Zapis do localStorage
                     localStorage.setItem('milkmi_user', JSON.stringify(currentUser));
                     localStorage.setItem('milkmi_token', currentToken);
+
                     initUserData();
                     transitionToApp(authScreen, mainApp);
                 }
-            } else { showToast(data.message, false); }
-        } catch (error) { showToast("Error", false); }
+            } else {
+                showToast(data.message, false);
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Błąd połączenia z serwerem.", false);
+        }
     }
 }
 
@@ -1088,7 +1138,7 @@ function transitionToApp(auth, main) {
     setTimeout(() => {
         auth.style.display = 'none';
         main.style.display = 'block';
-        void main.offsetWidth; 
+        void main.offsetWidth; // Wymuś reflow
         main.style.opacity = '1';
     }, 500);
 }
@@ -1098,31 +1148,47 @@ function transitionToApp(auth, main) {
 // ==========================================
 async function initUserData() {
     if (!currentUser) return;
+
+    // Pobierz najświeższe dane z serwera (portfel, punkty, historia) dla aktualnej sesji
     try {
       const res = await fetch(`/api/milkpoints/my?email=${encodeURIComponent(currentUser.email)}`);
       const data = await res.json();
+      
       if(data.ok) {
           userPoints = data.points;
           currentUser.walletBalance = data.walletBalance;
           currentUser.history = data.history;
-      } else if (res.status === 404) { logout(); return; }
-    } catch (e) {}
+      } else if (res.status === 404) {
+          logout();
+          return;
+      }
+    } catch (e) {
+      console.log('Brak połączenia z serwerem przy odświeżaniu danych.');
+    }
 
+    // 1. Ekran główny - Powitanie
     const namePlaceholder = document.getElementById('home-username-placeholder');
-    if (namePlaceholder) namePlaceholder.innerText = currentUser.username;
+    if (namePlaceholder) {
+        namePlaceholder.innerText = currentUser.username;
+    }
 
+    // 2. Aktualizacja Punktów
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
+    // 3. Aktualizacja balansu w Portfelu
     const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
     if (walletBalance) {
-        walletBalance.innerText = `${(currentUser.walletBalance || 0).toFixed(2)} PLN`;
+        const bal = currentUser.walletBalance || 0;
+        walletBalance.innerText = `${bal.toFixed(2)} PLN`;
     }
 
+    // 4. Widok Ustawień - Nagłówek profilu
     document.getElementById('set-name-display').innerText = currentUser.username;
     document.getElementById('set-email-display').innerText = currentUser.email;
     document.querySelector('.user-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
 
+    // 5. Modal z Danymi Osobowymi
     const personalDataInputs = document.querySelectorAll('#modal-personal-data .form-control');
     if (personalDataInputs.length >= 3) {
         personalDataInputs[0].value = currentUser.username;
@@ -1134,6 +1200,9 @@ async function initUserData() {
     renderActivities(currentUser.history || []); 
 }
 
+// ==========================================
+// LOGIKA WYLOGOWANIA
+// ==========================================
 function logout() {
     localStorage.removeItem('milkmi_user');
     localStorage.removeItem('milkmi_token');
@@ -1150,6 +1219,8 @@ function unlockApp() {
   splash.style.opacity = '0';
   setTimeout(() => {
       splash.style.visibility = 'hidden';
+      
+      // Sprawdzanie czy użytkownik jest już zalogowany (z localStorage)
       if (currentUser && currentToken) {
           mainApp.style.display = 'block';
           void mainApp.offsetWidth;
@@ -1160,6 +1231,7 @@ function unlockApp() {
           void auth.offsetWidth;
           auth.style.opacity = '1';
       }
+      
       document.body.style.overflow = 'auto'; 
   }, 800);
 }
@@ -1167,14 +1239,19 @@ function unlockApp() {
 function devLogin() {
   const pin = prompt("Podaj kod dostępu do trybu dewelopera:");
   if(pin === "33201") {
-    clearInterval(countdownInterval); unlockApp(); showToast("Dev Mode", true);
+    clearInterval(countdownInterval);
+    unlockApp();
+    showToast("Tryb dewelopera aktywowany", true);
+  } else if (pin !== null) {
+    alert("Nieprawidłowy kod PIN.");
   }
 }
 
 function switchAuthTab(type) {
     document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-    document.getElementById('form-login').style.display = 'none';
-    document.getElementById('form-register').style.display = 'none';
+    const forms = ['form-login', 'form-register'];
+    
+    forms.forEach(form => document.getElementById(form).style.display = 'none');
     
     if(type === 'login') {
         document.querySelectorAll('.auth-tab')[0].classList.add('active');
@@ -1199,7 +1276,8 @@ function togglePassword(icon) {
 }
 
 function toggleNoticeDetails() {
-    document.getElementById('notice-details').classList.toggle('open');
+    const details = document.getElementById('notice-details');
+    details.classList.toggle('open');
 }
 
 // ==========================================
@@ -1211,12 +1289,14 @@ function renderActivities(historyArray = []) {
   let html = '';
 
   if (historyArray.length === 0) {
-      html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak</div>';
+      html = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">Brak aktywności</div>';
   } else {
       historyArray.slice(0, 5).forEach(item => {
         const isAdd = item.text.includes('+');
         const typeClass = isAdd ? 'type-money' : 'type-order';
         const icon = isAdd ? 'fa-plus-circle' : 'fa-gift';
+        
+        // Czerwony minus przy platnościach z portfela lub odbieraniu punktów
         const isMinus = item.text.includes('-');
         const textStyle = isMinus ? 'color: var(--status-err);' : 'color: var(--status-ok);';
 
@@ -1232,6 +1312,7 @@ function renderActivities(historyArray = []) {
         `;
       });
   }
+    
   if(homeContainer) homeContainer.innerHTML = html;
   if(walletContainer) walletContainer.innerHTML = html;
 }
@@ -1258,6 +1339,7 @@ function renderRewards() {
     const container = document.getElementById('rewards-container');
     if(!container) return;
     
+    // Dynamicznie pobierz teksty przycisków w zależności od języka
     const btnStr = translations[currentLang].reward_btn || "Wymień Punkty";
     const noBtnStr = translations[currentLang].reward_btn_no || "Za mało pkt";
 
@@ -1280,21 +1362,31 @@ function renderRewards() {
   
 async function redeemReward(rewardId, name, cost) {
     if(userPoints < cost) return showToast('Za mało punktów!', false);
-    if(!confirm(`Wydać ${cost} pkt na: ${name}?`)) return;
+    
+    if(!confirm(`Czy na pewno chcesz wydać ${cost} punktów na: ${name}?`)) return;
 
     try {
         const res = await fetch('/api/rewards/redeem', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser.id, cost: cost, rewardName: name })
         });
+        
         const data = await res.json();
         if(data.success) {
             showToast(data.message, true);
-            initUserData(); 
-        } else { showToast(data.message, false); }
-    } catch(err) { showToast('Błąd serwera.', false); }
+            initUserData(); // Odświeżenie danych u klienta (nowe punkty, historia)
+        } else {
+            showToast(data.message, false);
+        }
+    } catch(err) {
+        showToast('Błąd serwera. Spróbuj później.', false);
+    }
 }
 
+// ==========================================
+// NOWOŚĆ: REALNE WYSYŁANIE REZERWACJI
+// ==========================================
 async function submitReservation() {
   const inputs = document.querySelectorAll('#view-reservation .form-control');
   const name = inputs[0].value;
@@ -1311,16 +1403,32 @@ async function submitReservation() {
 
   try {
     const response = await fetch('/api/reservations', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, datetime, guests, zone: selectedZone, notes })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        phone,
+        datetime,
+        guests,
+        zone: selectedZone,
+        notes
+      })
     });
 
     const data = await response.json();
     if(data.success) {
-      showToast('Rezerwacja wysłana!', true);
-      inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = ''; if(inputs[4]) inputs[4].value = '';
-    } else { showToast('Błąd.', false); }
-  } catch (err) { showToast('Brak połączenia.', false); }
+      showToast('Rezerwacja wysłana! Czekamy na potwierdzenie z lokalu.', true);
+      // Czyszczenie pól
+      inputs[0].value = '';
+      inputs[1].value = '';
+      inputs[2].value = '';
+      if(inputs[4]) inputs[4].value = '';
+    } else {
+      showToast('Wystąpił błąd, spróbuj ponownie.', false);
+    }
+  } catch (err) {
+    showToast('Brak połączenia z serwerem.', false);
+  }
 }
 
 // ==========================================
@@ -1330,6 +1438,7 @@ function changeLocation(loc) {
     currentLocation = loc;
     document.getElementById('header-loc-text').innerText = currentLocation;
     closeModal('modal-location');
+    showToast('Zmieniono lokalizację');
 }
 
 function switchTab(tabId, event) {
@@ -1376,12 +1485,12 @@ function selectAmount(el, val) {
 }
 
 function processPayment(msg) {
-  showToast("...");
+  showToast("Przekierowanie...");
   setTimeout(() => {
       closeModal('topup-modal');
       closeModal('gift-modal');
       showToast(msg);
-  }, 1000);
+  }, 2000);
 }
 
 function openProduct(id) {
@@ -1393,9 +1502,15 @@ function openProduct(id) {
     </div>
     <h2 style="font-size: 1.5rem; margin-bottom: 5px;">${p.name}</h2>
     <p style="color: var(--text-sub); margin-bottom: 15px;">${p.desc}</p>
+    <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;">
+      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🔥 ${p.cal} kcal</span>
+      <span style="background:var(--bg-body); padding:5px 10px; border-radius:8px; font-size:0.8rem;">🌱 Wegetariańskie</span>
+    </div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
       <div style="font-size: 1.4rem; font-weight:700;">${p.price.toFixed(2)} zł</div>
-      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">OK</button>
+      <button class="btn-main" style="width: auto; padding: 12px 30px;" onclick="addToCart(${p.id})">
+        Dodaj do koszyka
+      </button>
     </div>
   `;
   openModal('product-modal');
@@ -1407,10 +1522,13 @@ function addToCart(id) {
   badge.innerText = cart.length;
   badge.style.display = 'flex';
   closeModal('product-modal');
-  showToast('OK');
+  showToast('Dodano do koszyka!');
 }
 
-function showCart() { showToast(`W koszyku: ${cart.length}`); }
+function showCart() {
+  if(cart.length === 0) showToast('Twój koszyk jest pusty', false);
+  else showToast(`Masz ${cart.length} produktów w koszyku`);
+}
 
 function selectZone(el, zoneName) {
   document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
@@ -1420,6 +1538,8 @@ function selectZone(el, zoneName) {
 
 function toggleTheme() { 
     document.body.classList.toggle('dark-mode'); 
+    
+    // ZAPAMIĘTYWANIE WYBORU W LOCAL STORAGE
     const isDark = document.body.classList.contains('dark-mode');
     localStorage.setItem('milkmi_theme', isDark ? 'dark' : 'light');
 }
