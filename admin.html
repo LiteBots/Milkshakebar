@@ -169,6 +169,14 @@
     .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
     .btn-outline { border: 1px solid var(--border); background: transparent; color: var(--text-main); }
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-s); }
+
+    /* Toggle Switch */
+    .toggle-switch { position: relative; width: 50px; height: 26px; display: inline-block; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(24px); }
     
     /* Grid for Menu/Stats */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
@@ -613,18 +621,72 @@
     </section>
 
     <section id="view-app-bar" class="view-section">
-      <div class="card">
+      <div class="card" style="max-width: 600px;">
         <div class="section-header">Baner w Aplikacji</div>
-        <div class="form-group"><label>Tytuł</label><input type="text" class="form-control" value="Eatmi - Zamów z dowozem"></div>
-        <button class="btn btn-primary" onclick="showToast('Zmiany w banerze zostały zapisane', 'success')">Zapisz zmiany</button>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Zarządzaj paskiem informacyjnym wyświetlanym na samej górze aplikacji mobilnej.</p>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+          <label class="toggle-switch" style="margin: 0;">
+            <input type="checkbox" id="app-bar-active" checked onchange="updateBannerPreview('app')">
+            <span class="slider"></span>
+          </label>
+          <strong>Włącz baner w aplikacji</strong>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px;">
+          <div class="form-group">
+            <label>Tekst baneru</label>
+            <input type="text" id="app-bar-text" class="form-control" value="Dziś -15% z kodem WIOSNA!" oninput="updateBannerPreview('app')">
+          </div>
+          <div class="form-group">
+            <label>Kolor tła</label>
+            <input type="color" id="app-bar-color" class="form-control" value="#FF6600" style="padding: 2px; height: 46px; width: 60px; cursor: pointer;" oninput="updateBannerPreview('app')">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Podgląd na żywo:</label>
+          <div id="app-bar-preview" style="background-color: #FF6600; color: #FFFFFF; padding: 12px; text-align: center; border-radius: var(--radius-s); font-weight: 700; font-size: 0.9rem; transition: background-color 0.3s;">
+            Dziś -15% z kodem WIOSNA!
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveBannerSettings('app')"><i class="fas fa-save"></i> Zapisz ustawienia</button>
       </div>
     </section>
 
     <section id="view-web-bar" class="view-section">
-      <div class="card">
+      <div class="card" style="max-width: 600px;">
         <div class="section-header">Pasek na stronie WWW</div>
-        <div class="form-group"><label>Treść</label><input type="text" class="form-control" value="Dziś darmowa dostawa!"></div>
-        <button class="btn btn-primary" onclick="showToast('Pasek zaktualizowany', 'success')">Aktualizuj</button>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Zarządzaj paskiem promocyjnym na górze strony internetowej Eatmi/Milkshakebar.</p>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+          <label class="toggle-switch" style="margin: 0;">
+            <input type="checkbox" id="web-bar-active" onchange="updateBannerPreview('web')">
+            <span class="slider"></span>
+          </label>
+          <strong>Włącz baner na WWW</strong>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px;">
+          <div class="form-group">
+            <label>Tekst baneru</label>
+            <input type="text" id="web-bar-text" class="form-control" value="Darmowa dostawa od 100 zł!" oninput="updateBannerPreview('web')">
+          </div>
+          <div class="form-group">
+            <label>Kolor tła</label>
+            <input type="color" id="web-bar-color" class="form-control" value="#10B981" style="padding: 2px; height: 46px; width: 60px; cursor: pointer;" oninput="updateBannerPreview('web')">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Podgląd na żywo:</label>
+          <div id="web-bar-preview" style="background-color: #cccccc; color: #FFFFFF; padding: 12px; text-align: center; border-radius: var(--radius-s); font-weight: 700; font-size: 0.9rem; transition: background-color 0.3s; opacity: 0.5;">
+            Darmowa dostawa od 100 zł!
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveBannerSettings('web')"><i class="fas fa-save"></i> Zapisz ustawienia</button>
       </div>
     </section>
 
@@ -881,6 +943,75 @@
     setInterval(updateClock, 1000);
     updateClock();
 
+    // --- ZARZĄDZANIE BANERAMI (APP & WEB) ---
+    function updateBannerPreview(target) {
+      const isActive = document.getElementById(`${target}-bar-active`).checked;
+      const text = document.getElementById(`${target}-bar-text`).value;
+      const color = document.getElementById(`${target}-bar-color`).value;
+      const preview = document.getElementById(`${target}-bar-preview`);
+
+      preview.innerText = text || "Podaj tekst...";
+
+      if (isActive) {
+        preview.style.backgroundColor = color;
+        preview.style.opacity = '1';
+      } else {
+        preview.style.backgroundColor = '#cccccc'; 
+        preview.style.opacity = '0.5';
+      }
+    }
+
+    async function loadBannerSettings() {
+      try {
+        const res = await fetch('/api/banners');
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          data.data.forEach(banner => {
+            const target = banner.target; // 'app' lub 'web'
+            const activeCheckbox = document.getElementById(`${target}-bar-active`);
+            const textInput = document.getElementById(`${target}-bar-text`);
+            const colorInput = document.getElementById(`${target}-bar-color`);
+            
+            if (activeCheckbox && textInput && colorInput) {
+              activeCheckbox.checked = banner.isActive;
+              textInput.value = banner.text;
+              colorInput.value = banner.backgroundColor;
+              updateBannerPreview(target);
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Błąd pobierania ustawień banerów', err);
+      }
+    }
+
+    async function saveBannerSettings(target) {
+      const isActive = document.getElementById(`${target}-bar-active`).checked;
+      const text = document.getElementById(`${target}-bar-text`).value;
+      const color = document.getElementById(`${target}-bar-color`).value;
+
+      const payload = {
+        target: target,
+        isActive: isActive,
+        text: text,
+        backgroundColor: color
+      };
+
+      try {
+        const res = await fetch('/api/admin/banners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if(res.ok) {
+          showToast(`Ustawienia paska (${target === 'app' ? 'Aplikacja' : 'WWW'}) zapisane!`, 'success');
+        }
+      } catch (err) {
+        showToast('Błąd połączenia z serwerem.', 'error');
+      }
+    }
+
     // --- VIEW MANAGEMENT ---
     function switchView(viewId, navElement) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -921,7 +1052,7 @@
       } else if (viewId === 'points') {
         loadPointTransactions();
       } else if (viewId === 'prepaid') {
-        loadWalletTransactions(); // Ładowanie historii pre-paid po wejściu w zakładkę
+        loadWalletTransactions(); 
       } else if (viewId === 'reservations') {
         loadAllReservations();
       } else if (viewId === 'dashboard') {
@@ -993,6 +1124,7 @@
 
             checkNewReservations();
             loadDashboardStats();
+            loadBannerSettings(); // Ładujemy ustawienia pasków przy logowaniu do panelu
         } else {
             errorMsg.innerText = "Nieprawidłowy kod PIN!";
             errorMsg.style.display = 'block';
