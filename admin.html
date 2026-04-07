@@ -479,6 +479,26 @@
                 </div>
         </div>
       </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <div class="section-header">Globalna historia wydanych nagród</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Klient</th>
+                <th>Wydana Nagroda</th>
+                <th>Koszt (Milkosy)</th>
+                <th>Data</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="reward-transactions-body">
+              <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section id="view-prepaid" class="view-section">
@@ -1080,6 +1100,8 @@
         loadPointTransactions();
       } else if (viewId === 'prepaid') {
         loadWalletTransactions(); 
+      } else if (viewId === 'rewards-admin') {
+        loadRewardTransactions(); // Ładowanie historii wydanych nagród
       } else if (viewId === 'reservations') {
         loadAllReservations();
       } else if (viewId === 'dashboard') {
@@ -1317,12 +1339,50 @@
             
             if(data.success) {
                 showToast(data.message, 'success');
-                searchUserRewards(); // Odśwież listę po udanej realizacji
+                searchUserRewards(); // Odśwież listę u klienta po zrealizowaniu nagrody
+                loadRewardTransactions(); // Odśwież globalną tabelę historii
             } else {
                 showToast(data.message, 'error');
             }
         } catch(err) {
             showToast('Błąd podczas realizacji nagrody.', 'error');
+        }
+    }
+
+    // --- ŁADOWANIE HISTORII WYDANYCH NAGRÓD ---
+    async function loadRewardTransactions() {
+        const tbody = document.getElementById('reward-transactions-body');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
+        
+        try {
+            const res = await fetch('/api/admin/reward-transactions');
+            const data = await res.json();
+            
+            if(data.success) {
+                tbody.innerHTML = '';
+                
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak historii wydanych nagród.</td></tr>';
+                    return;
+                }
+                
+                data.data.forEach(tx => {
+                    const dateObj = new Date(tx.date);
+                    const formattedDate = dateObj.toLocaleDateString('pl-PL') + ', ' + dateObj.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${tx.userDisplay}</strong></td>
+                            <td><strong>${tx.rewardName}</strong></td>
+                            <td style="color:var(--status-err); font-weight:800;">- ${tx.cost} pkt</td>
+                            <td>${formattedDate}</td>
+                            <td><span class="badge green">Wydano</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
         }
     }
 
