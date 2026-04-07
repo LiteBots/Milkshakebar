@@ -423,7 +423,6 @@
 
   <div id="happyBar" style="
     position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
-    background: linear-gradient(90deg, #FF6A00, #FF9100);
     color: white; font-weight: 700; font-size: 0.95rem;
     padding: 8px 14px; text-align: center; display: none;
     box-shadow: 0 6px 16px rgba(0,0,0,0.12);
@@ -925,30 +924,39 @@
         });
       })();
 
-      // HAPPY BAR - load initial
-      (async function loadHappyBar(){
+      // DYNAMIC WEB BAR (zastępuje stare API happy bar)
+      async function loadWebBanner(){
         const bar = document.getElementById("happyBar");
         const textEl = document.getElementById("happyBarText");
         if(!bar || !textEl) return;
 
-        try{
-          const res = await fetch("/api/data", { cache: "no-store" });
-          if(!res.ok) throw new Error(res.status);
-          const db = await res.json();
-          const happy = (db.happy || "").trim();
-
-          if(happy){
-            textEl.textContent = happy;
-            bar.style.display = "block";
-            document.body.classList.add("has-happybar");
+        try {
+          const res = await fetch('/api/banners');
+          const data = await res.json();
+          
+          if (data.success && data.data && data.data.length > 0) {
+            const webBanner = data.data.find(b => b.target === 'web');
+            
+            if (webBanner && webBanner.isActive && webBanner.text.trim() !== "") {
+              textEl.textContent = webBanner.text;
+              bar.style.backgroundColor = webBanner.backgroundColor;
+              bar.style.display = "block";
+              document.body.classList.add("has-happybar");
+            } else {
+              bar.style.display = "none";
+              document.body.classList.remove("has-happybar");
+            }
           } else {
             bar.style.display = "none";
             document.body.classList.remove("has-happybar");
           }
-        }catch(e){
-          console.error("Happy bar load failed", e);
+        } catch(e) {
+          console.error("Banner load failed", e);
         }
-      })();
+      }
+      
+      // Inicjalizacja banera przy załadowaniu strony
+      loadWebBanner();
 
       // MAP SWITCH
       (function initMapSwitch(){
@@ -992,21 +1000,15 @@
           transports: ["websocket", "polling"],
         });
 
-        socket.on("happy-updated", (text) => {
-          const bar = document.getElementById("happyBar");
-          const textEl = document.getElementById("happyBarText");
-          if(!bar || !textEl) return;
-
-          const happy = (text || "").trim();
-          if(happy){
-            textEl.textContent = happy;
-            bar.style.display = "block";
-            document.body.classList.add("has-happybar");
-          }else{
-            bar.style.display = "none";
-            document.body.classList.remove("has-happybar");
-          }
+        // Nasłuchiwanie zaktualizowanych banerów z użyciem nowej logiki
+        socket.on("happy-updated", () => {
+          loadWebBanner();
         });
+        
+        socket.on("banners-updated", () => {
+          loadWebBanner();
+        });
+        
       } catch(e) {
         console.warn("Socket init failed", e);
       }
