@@ -31,6 +31,7 @@
       --radius-m: 16px;
         
       --nav-height: 85px;
+      --fab-size: 64px;
         
       /* Activity Colors */
       --color-order: #FF6600;
@@ -168,6 +169,19 @@
     .loyalty-progress-fill { background: var(--primary); height: 100%; border-radius: 10px; width: 0%; transition: width 1s ease; }
     .loyalty-footer { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; position: relative; z-index: 2; }
 
+    /* --- REWARDS SECTION --- */
+    .rewards-hero { text-align: center; margin-bottom: 24px; padding: 0 24px; }
+    .rewards-hero h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 5px; }
+    .rewards-hero p { color: var(--text-sub); font-size: 0.9rem; }
+    .rewards-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 24px; }
+    .reward-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+    .reward-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px; }
+    .reward-cost { background: var(--bg-body); color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
+    .reward-name { font-weight: 700; font-size: 0.9rem; line-height: 1.3; margin-bottom: 12px; }
+    .btn-redeem { width: 100%; border: none; background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 10px; border-radius: 10px; cursor: pointer; }
+    .btn-redeem:disabled { background: #ccc; cursor: not-allowed; }
+    body.dark-mode .btn-redeem { background: var(--primary); color: #fff; }
+
     /* --- AD BANNER --- */
     .ad-banner { margin: 0 24px 24px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 16px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; }
     .ad-logo { width: 50px; height: 50px; object-fit: contain; border-radius: 10px; }
@@ -229,7 +243,7 @@
     .amount-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
 
     /* --- BOTTOM NAV --- */
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s; }
     .nav-item.active { color: var(--primary); }
     .nav-item i { font-size: 1.4rem; transition: transform 0.2s; }
@@ -397,12 +411,12 @@
       </div>
         
       <div class="loyalty-progress-bg">
-        <div class="loyalty-progress-fill" style="width: 75%;"></div>
+        <div class="loyalty-progress-fill" id="level-progress-bar" style="width: 0%;"></div>
       </div>
         
       <div class="loyalty-footer">
-        <span data-i18n="status_gold">Status: Gold</span>
-        <span data-i18n="status_until">250 do nagrody</span>
+        <span id="user-level-name">Bronze</span>
+        <span id="next-level-info">20 do nagrody</span>
       </div>
     </div>
     
@@ -530,9 +544,9 @@
             <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="topup_local_only">Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.</span>
         </div>
         
-        <button class="btn-outline" onclick="openModal('gift-modal')">
-            <i class="fas fa-gift" style="margin-right: 8px;"></i> <span data-i18n="wallet_gift">Kup kartę na prezent</span>
-        </button>
+        <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
+            <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="gift_local_only">Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.</span>
+        </div>
     </div>
 
     <div class="section-title" data-i18n="wallet_hist">Historia transakcji</div>
@@ -712,42 +726,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="gift-modal" onclick="closeModal('gift-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="wallet_gift">Karta Prepaid na Prezent</h3>
-        <p style="color: var(--text-sub); margin-bottom: 20px; font-size: 0.9rem;">Wybierz kwotę i podaj dane osoby obdarowywanej.</p>
-          
-        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: block;">Wybierz wartość karty</label>
-        <div class="amount-grid">
-            <div class="amount-chip" onclick="selectAmount(this, 50)">50 PLN</div>
-            <div class="amount-chip selected" onclick="selectAmount(this, 100)">100 PLN</div>
-            <div class="amount-chip" onclick="selectAmount(this, 200)">200 PLN</div>
-            <div class="amount-chip" onclick="selectAmount(this, 500)">500 PLN</div>
-            <div class="amount-chip" onclick="selectAmount(this, 1000)">1000 PLN</div>
-        </div>
-
-        <div class="form-group">
-            <label>Imię i Nazwisko obdarowanego</label>
-            <input type="text" class="form-control" placeholder="Kto otrzyma prezent?">
-        </div>
-
-        <div class="form-group">
-            <label>Numer telefonu</label>
-            <input type="tel" class="form-control" placeholder="+48 000 000 000">
-        </div>
-
-        <div class="form-group">
-            <label>Adres E-mail</label>
-            <input type="email" class="form-control" placeholder="email@przyklad.pl">
-        </div>
-
-        <button class="btn-main" onclick="processPayment('Karta podarunkowa została wysłana!')">
-            Kup i wyślij prezent
-        </button>
-        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('gift-modal')">Anuluj</button>
-    </div>
-  </div>
-
   <div class="modal-overlay" id="modal-location" onclick="closeModal('modal-location')">
     <div class="modal-sheet" onclick="event.stopPropagation()">
       <h3>Wybierz lokalizację</h3>
@@ -817,7 +795,8 @@ const translations = {
         hist_title: "Ostatnia aktywność", hist_sub: "Historia", wallet_hist: "Historia transakcji",
         reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Wymień Punkty", reward_btn_no: "Za mało pkt",
         home_hello: "Cześć", home_nice: "Miło Cię widzieć!",
-        temp_unavailable: "Chwilowo niedostępna", topup_local_only: "Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.", feature_locked_desc: "Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!"
+        temp_unavailable: "Chwilowo niedostępna", topup_local_only: "Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.", gift_local_only: "Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.", feature_locked_desc: "Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!",
+        lvl_next: "do rangi"
     },
     en: {
         nav_start: "Home", nav_order: "Order", nav_rewards: "Rewards", nav_wallet: "Wallet",
@@ -839,7 +818,8 @@ const translations = {
         hist_title: "Recent Activity", hist_sub: "History", wallet_hist: "Transaction History",
         reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Redeem Points", reward_btn_no: "Not enough pts",
         home_hello: "Hello", home_nice: "Nice to see you!",
-        temp_unavailable: "Temporarily unavailable", topup_local_only: "Top-up is temporarily only possible at the register.", feature_locked_desc: "We are working on a new version of this feature. Check back soon!"
+        temp_unavailable: "Temporarily unavailable", topup_local_only: "Top-up is temporarily only possible at the register.", gift_local_only: "Gift cards are temporarily available only at the register.", feature_locked_desc: "We are working on a new version of this feature. Check back soon!",
+        lvl_next: "to level"
     },
     es: {
         nav_start: "Inicio", nav_order: "Pedir", nav_rewards: "Premios", nav_wallet: "Cartera",
@@ -861,7 +841,8 @@ const translations = {
         hist_title: "Actividad Reciente", hist_sub: "Historial", wallet_hist: "Historial de transacciones",
         reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear Puntos", reward_btn_no: "Faltan pts",
         home_hello: "Hola", home_nice: "¡Qué bueno verte!",
-        temp_unavailable: "Temporalmente no disponible", topup_local_only: "La recarga temporalmente solo es posible en la caja.", feature_locked_desc: "Estamos trabajando en una nueva versión de esta función. ¡Vuelve pronto!"
+        temp_unavailable: "Temporalmente no disponible", topup_local_only: "La recarga temporalmente solo es posible en la caja.", gift_local_only: "Las tarjetas de regalo temporalmente solo están disponibles en la caja.", feature_locked_desc: "Estamos trabajando en una nueva versión de esta función. ¡Vuelve pronto!",
+        lvl_next: "para nivel"
     }
 };
 
@@ -880,6 +861,7 @@ function changeLanguage(lang, showMsg = true) {
     });
 
     closeModal('modal-language');
+    if (currentUser) updateLevel(currentUser.points || 0);
     
     if (showMsg) {
         const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
@@ -887,9 +869,53 @@ function changeLanguage(lang, showMsg = true) {
     }
 }
 
+// ==========================================
+// 1. SYSTEM LEVELI (RANGI)
+// ==========================================
+function updateLevel(pts) {
+    let lvl = "Bronze";
+    let next = 20;
+    let min = 0;
+
+    if (pts >= 500) { 
+        lvl = "Milk King"; next = pts; min = 500; 
+    } else if (pts >= 200) { 
+        lvl = "Platinium"; next = 500; min = 200;
+    } else if (pts >= 100) { 
+        lvl = "Diamond"; next = 200; min = 100;
+    } else if (pts >= 50) { 
+        lvl = "Gold"; next = 100; min = 50;
+    } else if (pts >= 20) { 
+        lvl = "Silver"; next = 50; min = 20;
+    } else {
+        lvl = "Bronze"; next = 20; min = 0;
+    }
+
+    document.getElementById('user-level-name').innerText = lvl;
+    
+    const progress = pts >= 500 ? 100 : ((pts - min) / (next - min)) * 100;
+    document.getElementById('level-progress-bar').style.width = progress + "%";
+    
+    const nextInfo = document.getElementById('next-level-info');
+    if (pts < 500) {
+        nextInfo.innerText = `${next - pts} ${translations[currentLang].lvl_next} ${getLevelName(next)}`;
+    } else {
+        nextInfo.innerText = "MAX LEVEL";
+    }
+}
+
+function getLevelName(targetPts) {
+    if(targetPts === 20) return "Silver";
+    if(targetPts === 50) return "Gold";
+    if(targetPts === 100) return "Diamond";
+    if(targetPts === 200) return "Platinium";
+    if(targetPts === 500) return "Milk King";
+    return "";
+}
+
 
 // ==========================================
-// 1. ZMIENNE APLIKACJI
+// 2. ZMIENNE APLIKACJI
 // ==========================================
 let currentUser = null;
 let currentToken = null;
@@ -940,12 +966,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   updateTimer();
   countdownInterval = setInterval(updateTimer, 1000);
-
-  setTimeout(() => {
-      const fill = document.querySelector('.loyalty-progress-fill');
-      if(fill) fill.style.width = '83%';
-  }, 500);
-
 });
 
 // ==========================================
@@ -959,6 +979,7 @@ async function handleAuthSubmit(e) {
     const mainApp = document.getElementById('main-app');
 
     if (isLogin) {
+        // --- LOGIKA LOGOWANIA ---
         const inputs = document.querySelectorAll('#form-login .form-control');
         const loginOrEmail = inputs[0].value;
         const password = inputs[1].value;
@@ -991,6 +1012,7 @@ async function handleAuthSubmit(e) {
         }
 
     } else {
+        // --- LOGIKA REJESTRACJI ---
         const inputs = document.querySelectorAll('#form-register .form-control');
         const username = inputs[0].value;
         const email = inputs[1].value;
@@ -1093,6 +1115,7 @@ async function initUserData() {
         personalDataInputs[2].value = currentUser.phone || '';
     }
 
+    updateLevel(userPoints);
     renderActivities(currentUser.history || []); 
 }
 
@@ -1296,6 +1319,7 @@ function selectAmount(el, val) {
 function processPayment(msg) {
   showToast("Przekierowanie do płatności...");
   setTimeout(() => {
+      closeModal('topup-modal');
       closeModal('gift-modal');
       showToast(msg);
   }, 2000);
