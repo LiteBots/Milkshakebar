@@ -202,6 +202,10 @@ app.get('/api/admin/stats', async (req, res) => {
         const redeemedAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$redeemedPoints" } } }]);
         const spentMilkosy = redeemedAgg.length > 0 ? redeemedAgg[0].total : 0;
 
+        // NOWE: Sumowanie wszystkich aktualnie posiadanych punktów przez wszystkich użytkowników
+        const totalPointsAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$points" } } }]);
+        const totalPointsCirculating = totalPointsAgg.length > 0 ? totalPointsAgg[0].total : 0;
+
         res.json({
             success: true,
             data: {
@@ -210,7 +214,8 @@ app.get('/api/admin/stats', async (req, res) => {
                 usersWithPoints,
                 activePrepaidCards,
                 totalPrepaidBalance,
-                spentMilkosy
+                spentMilkosy,
+                totalPointsCirculating // Przekazujemy nową zmienną na front
             }
         });
     } catch (err) {
