@@ -398,6 +398,7 @@
         <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value" id="stat-reservations">0</div><div class="stat-label">Łączna liczba rezerwacji</div></div>
         <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-star"></i></div><div class="stat-value" id="stat-spent-points">0</div><div class="stat-label">Wydanych Milkosów</div></div>
         <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div><div class="stat-value" id="stat-users-with-points">0</div><div class="stat-label">Użytkownicy z punktami</div></div>
+        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-coins"></i></div><div class="stat-value" id="stat-total-points">0</div><div class="stat-label">Punkty w obiegu (Klienci)</div></div>
         <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div><div class="stat-value" id="stat-active-prepaid">0</div><div class="stat-label">Aktywne karty Pre-paid</div></div>
         <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div><div class="stat-value" id="stat-prepaid-balance">0.00 zł</div><div class="stat-label">Środki na kontach</div></div>
       </div>
@@ -1131,6 +1132,11 @@
             document.getElementById('stat-reservations').innerText = json.data.totalReservations;
             document.getElementById('stat-spent-points').innerText = json.data.spentMilkosy;
             document.getElementById('stat-users-with-points').innerText = json.data.usersWithPoints;
+            
+            if (document.getElementById('stat-total-points')) {
+                document.getElementById('stat-total-points').innerText = json.data.totalPointsCirculating;
+            }
+            
             document.getElementById('stat-active-prepaid').innerText = json.data.activePrepaidCards;
             document.getElementById('stat-prepaid-balance').innerText = `${json.data.totalPrepaidBalance.toFixed(2)} zł`;
         }
