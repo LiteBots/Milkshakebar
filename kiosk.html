@@ -21,7 +21,7 @@
       --border: #E5E7EB;
       
       --sidebar-width: 260px;
-      --cart-width: 380px; /* Nieco szerszy koszyk pod ekrany dotykowe */
+      --cart-width: 380px; 
       --radius-l: 24px;
       --radius-m: 16px;
       --radius-s: 8px;
@@ -32,364 +32,243 @@
       --status-info: #3B82F6;
     }
 
-    body.dark-mode {
-      --bg-body: #0F0F0F;
-      --bg-surface: #1C1C1E;
-      --text-main: #FFFFFF;
-      --text-sub: #9CA3AF;
-      --border: #2D2D30;
-      --primary-glow: rgba(255, 102, 0, 0.5);
-    }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       background-color: var(--bg-body);
-      transition: background 0.3s, color 0.3s;
       height: 100vh;
       display: flex;
       overflow: hidden;
-      user-select: none; /* Zapobiega zaznaczaniu tekstu na kiosku */
+      user-select: none; 
       -webkit-touch-callout: none;
     }
 
-    /* --- SIDEBAR --- */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: var(--bg-surface);
-      border-right: 1px solid var(--border);
-      height: 100vh;
-      padding: 30px 20px;
-      display: flex; flex-direction: column;
-      z-index: 100;
-    }
-
-    .brand {
-      font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px;
-    }
-    .brand span { color: var(--primary); }
-    .brand small { 
-      font-size: 0.7rem; color: var(--text-sub); 
-      font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-      display: block; margin-top: 5px; 
-    }
-
-    .nav-category {
-      font-size: 0.75rem; text-transform: uppercase; color: var(--text-sub);
-      font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; margin-top: 20px; padding-left: 10px;
-    }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 18px 16px; /* Większy padding dla dotyku */
-      border-radius: var(--radius-m);
-      color: var(--text-sub); text-decoration: none;
-      font-weight: 700; font-size: 1.1rem; transition: 0.2s;
-      margin-bottom: 10px; cursor: pointer;
+    /* --- WELCOME SCREEN --- */
+    #welcome-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+      background: var(--bg-surface); z-index: 10000;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: opacity 0.5s ease;
     }
     
+    .welcome-logo { font-size: 4rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 20px; }
+    .welcome-logo span { color: var(--primary); }
+    .welcome-subtitle { font-size: 1.5rem; color: var(--text-sub); font-weight: 600; margin-bottom: 60px; }
+
+    .lang-container { display: flex; gap: 30px; }
+    .lang-btn {
+      background: var(--bg-body); border: 2px solid var(--border);
+      border-radius: var(--radius-l); padding: 30px 40px;
+      display: flex; flex-direction: column; align-items: center; gap: 15px;
+      cursor: pointer; transition: 0.2s; width: 220px;
+    }
+    .lang-btn:active { transform: scale(0.95); border-color: var(--primary); }
+    .lang-btn img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .lang-btn span { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
+
+    /* --- POS APP CONTAINER --- */
+    #pos-app { display: none; width: 100%; height: 100%; flex-direction: row; }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border);
+      height: 100vh; padding: 30px 20px; display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .brand { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 40px; padding-left: 10px; }
+    .brand span { color: var(--primary); }
+    .brand small { font-size: 0.7rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: block; margin-top: 5px; }
+
+    .nav-category { font-size: 0.75rem; text-transform: uppercase; color: var(--text-sub); font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; margin-top: 20px; padding-left: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 18px 16px; border-radius: var(--radius-m); color: var(--text-sub); font-weight: 700; font-size: 1.1rem; transition: 0.2s; margin-bottom: 10px; cursor: pointer; }
     .nav-item:hover { background: var(--bg-body); color: var(--text-main); }
     .nav-item.active { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
     .nav-item i { width: 24px; text-align: center; font-size: 1.3rem; }
 
-    /* --- MAIN CONTENT --- */
-    .main-content {
-      flex: 1;
-      padding: 30px 40px;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
+    /* --- SUBMENU (AKORDEON) --- */
+    .has-submenu { justify-content: space-between !important; margin-bottom: 5px; }
+    .sub-nav { display: none; flex-direction: column; padding-left: 20px; margin-bottom: 10px; gap: 5px; animation: fadeIn 0.3s ease-out; }
+    .sub-nav.open { display: flex; }
+    .sub-nav-item { padding: 14px 16px; border-radius: var(--radius-m); color: var(--text-sub); font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+    .sub-nav-item:hover { background: var(--bg-body); color: var(--text-main); }
+    .sub-nav-item.active { background: rgba(255, 102, 0, 0.1); color: var(--primary); font-weight: 700; }
+    .sub-nav-item i { font-size: 0.8rem; width: 15px; }
 
+    /* --- MAIN CONTENT --- */
+    .main-content { flex: 1; padding: 30px 40px; overflow-y: auto; scroll-behavior: smooth; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
     .welcome-text h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 5px; }
     .welcome-text p { color: var(--text-sub); font-weight: 500; font-size: 1.1rem; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 24px;
-    }
-
-    .product-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-l);
-      padding: 24px;
-      text-align: center;
-      transition: transform 0.2s, border-color 0.2s;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+    .product-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 24px; text-align: center; transition: transform 0.2s, border-color 0.2s; cursor: pointer; display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .product-card:active { transform: scale(0.96); border-color: var(--primary); }
-
-    .product-card img {
-      width: 140px; height: 140px; object-fit: contain;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-    }
-
+    .product-card img { width: 140px; height: 140px; object-fit: contain; margin-bottom: 20px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
     .product-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main); }
-    .product-card .price {
-      font-weight: 800;
-      color: var(--primary);
-      font-size: 1.3rem;
-      background: rgba(255, 102, 0, 0.1);
-      padding: 8px 20px;
-      border-radius: var(--radius-m);
-      display: inline-block;
-    }
+    .product-card .price { font-weight: 800; color: var(--primary); font-size: 1.3rem; background: rgba(255, 102, 0, 0.1); padding: 8px 20px; border-radius: var(--radius-m); display: inline-block; }
 
     /* --- CART SIDEBAR --- */
-    .cart-sidebar {
-      width: var(--cart-width);
-      background: var(--bg-surface);
-      border-left: 1px solid var(--border);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cart-header {
-      padding: 30px;
-      border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .cart-sidebar { width: var(--cart-width); background: var(--bg-surface); border-left: 1px solid var(--border); height: 100vh; display: flex; flex-direction: column; }
+    .cart-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .cart-header-text h2 { font-size: 1.6rem; font-weight: 800; }
     .cart-header-text p { color: var(--text-sub); font-size: 0.95rem; margin-top: 5px; }
-
-    .btn-clear-cart {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--status-err);
-      border: none; padding: 10px 15px; border-radius: var(--radius-s);
-      font-weight: 700; cursor: pointer; display: none; /* Pokazuje się z JS */
-      transition: 0.2s;
-    }
+    .btn-clear-cart { background: rgba(239, 68, 68, 0.1); color: var(--status-err); border: none; padding: 10px 15px; border-radius: var(--radius-s); font-weight: 700; cursor: pointer; display: none; transition: 0.2s; }
     .btn-clear-cart:active { background: var(--status-err); color: white; }
-
-    .cart-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 15px;
-      background: var(--bg-body);
-      border-radius: var(--radius-m);
-      margin-bottom: 15px;
-      border: 1px solid var(--border);
-      animation: fadeIn 0.3s ease-out;
-    }
-
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+    .cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m); margin-bottom: 15px; border: 1px solid var(--border); animation: fadeIn 0.3s ease-out; }
     .cart-item img { width: 60px; height: 60px; object-fit: contain; }
     .cart-item-info { flex: 1; }
     .cart-item-info h4 { font-size: 1rem; font-weight: 700; color: var(--text-main); }
     .cart-item-info p { font-size: 0.9rem; color: var(--primary); font-weight: 600; margin-top: 4px; }
-    .remove-btn {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--status-err);
-      border: none;
-      width: 44px; height: 44px; /* Większy dla palca */
-      border-radius: var(--radius-s);
-      cursor: pointer;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 1.2rem;
-    }
+    .remove-btn { background: rgba(239, 68, 68, 0.1); color: var(--status-err); border: none; width: 44px; height: 44px; border-radius: var(--radius-s); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
     .remove-btn:active { background: var(--status-err); color: white; }
-
-    .cart-footer {
-      padding: 30px;
-      background: var(--bg-surface);
-      border-top: 1px solid var(--border);
-    }
-
-    .total-row {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-    }
+    .cart-footer { padding: 30px; background: var(--bg-surface); border-top: 1px solid var(--border); }
+    .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .total-row span { font-weight: 600; color: var(--text-sub); font-size: 1.1rem; }
     .total-row strong { font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
-
-    .btn-pay {
-      width: 100%;
-      padding: 24px;
-      background: var(--status-ok);
-      color: white;
-      border: none;
-      border-radius: var(--radius-m);
-      font-size: 1.4rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex; justify-content: center; align-items: center; gap: 12px;
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-      transition: opacity 0.2s, transform 0.1s;
-    }
+    .btn-pay { width: 100%; padding: 24px; background: var(--status-ok); color: white; border: none; border-radius: var(--radius-m); font-size: 1.4rem; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 12px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); transition: opacity 0.2s, transform 0.1s; }
     .btn-pay:active { transform: scale(0.98); }
     .btn-pay:disabled { background: var(--border); color: var(--text-sub); box-shadow: none; }
 
     /* --- MODALS --- */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-      z-index: 9999; display: none; justify-content: center; align-items: center;
-    }
-
-    .modal-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-l);
-      width: 90%; max-width: 550px;
-      padding: 40px;
-      position: relative;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-      animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes modalPop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .close-modal {
-      position: absolute; top: 20px; right: 20px;
-      background: var(--bg-body); border: 1px solid var(--border);
-      width: 50px; height: 50px; border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      cursor: pointer; color: var(--text-main); font-size: 1.2rem;
-    }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 9999; display: none; justify-content: center; align-items: center; }
+    .modal-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l); width: 90%; max-width: 550px; padding: 40px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes modalPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .close-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-body); border: 1px solid var(--border); width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-main); font-size: 1.2rem; }
     .close-modal:active { background: var(--border); }
-
     .modal-header { text-align: center; margin-bottom: 30px; }
     .modal-header img { width: 150px; height: 150px; object-fit: contain; margin-bottom: 15px; }
     .modal-header h2 { font-size: 2rem; font-weight: 800; }
-    
-    .extra-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 20px; background: var(--bg-body);
-      border: 1px solid var(--border); border-radius: var(--radius-m);
-      margin-bottom: 12px; transition: 0.2s;
-    }
+    .extra-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); margin-bottom: 12px; transition: 0.2s; }
     .extra-item.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
-    
     .extra-info strong { display: block; font-size: 1.1rem; color: var(--text-main); }
     .extra-info span { color: var(--primary); font-size: 0.95rem; font-weight: 700; }
-
     .qty-controls { display: flex; align-items: center; gap: 15px; }
-    .qty-btn {
-      width: 44px; height: 44px;
-      border-radius: var(--radius-s);
-      border: 1px solid var(--border);
-      background: var(--bg-surface);
-      color: var(--text-main);
-      font-weight: 700; font-size: 1.5rem;
-      cursor: pointer; display: flex; justify-content: center; align-items: center;
-    }
+    .qty-btn { width: 44px; height: 44px; border-radius: var(--radius-s); border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-main); font-weight: 700; font-size: 1.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
     .qty-btn:active { background: var(--border); }
     .qty-val { font-weight: 800; font-size: 1.3rem; width: 24px; text-align: center; }
-
-    .btn-add {
-      width: 100%; padding: 22px; margin-top: 20px;
-      background: var(--primary); color: white;
-      border: none; border-radius: var(--radius-m);
-      font-size: 1.2rem; font-weight: 800; cursor: pointer;
-      box-shadow: 0 10px 20px var(--primary-glow);
-    }
+    .btn-add { width: 100%; padding: 22px; margin-top: 20px; background: var(--primary); color: white; border: none; border-radius: var(--radius-m); font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--primary-glow); }
     .btn-add:active { transform: scale(0.98); }
 
-    /* Theme Toggle */
-    .theme-toggle { 
-      position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; 
-      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; 
-      display: flex; align-items: center; justify-content: center; cursor: pointer; 
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 200; color: var(--text-main); font-size: 1.2rem;
-    }
-
-    /* Grubszy Scrollbar pod Kiosk dotykowy */
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 12px; }
     ::-webkit-scrollbar-track { background: var(--bg-body); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; border: 3px solid var(--bg-body); }
     ::-webkit-scrollbar-thumb:active { background: #94A3B8; }
 
-    /* Ekran Sukcesu */
-    .success-icon {
-      font-size: 5rem; color: var(--status-ok); margin-bottom: 20px;
-      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    /* Success */
+    .success-icon { font-size: 5rem; color: var(--status-ok); margin-bottom: 20px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <aside class="sidebar">
-    <div class="brand">MilkMi<span>.</span> <small>Kiosk POS</small></div>
+  <div id="welcome-screen">
+    <div class="welcome-logo">Witaj w MilkMi<span>.</span></div>
+    <div class="welcome-subtitle">Wybierz swój język / Select your language</div>
     
-    <div class="nav-category">Nasze Menu</div>
-    <div class="nav-item active" onclick="switchCategory('burgery', this)"><i class="fas fa-hamburger"></i><span>Burgery</span></div>
-    <div class="nav-item" onclick="switchCategory('zestawy', this)"><i class="fas fa-box-open"></i><span>Zestawy</span></div>
-    <div class="nav-item" onclick="switchCategory('napoje', this)"><i class="fas fa-coffee"></i><span>Napoje</span></div>
-    <div class="nav-item" onclick="switchCategory('desery', this)"><i class="fas fa-ice-cream"></i><span>Desery</span></div>
-  </aside>
-
-  <main class="main-content">
-    <header class="top-bar">
-      <div class="welcome-text">
-        <h1 id="cat-title">Burgery</h1>
-        <p>Wybierz swoje ulubione pozycje z menu</p>
+    <div class="lang-container">
+      <div class="lang-btn" onclick="startOrder('pl')">
+        <img src="https://flagcdn.com/w160/pl.png" alt="Polski">
+        <span>Polski</span>
       </div>
-      <div style="background: var(--bg-surface); padding: 14px 28px; border-radius: var(--radius-m); border: 1px solid var(--border); font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-clock"></i> <span id="clock">12:00</span>
+      <div class="lang-btn" onclick="startOrder('en')">
+        <img src="https://flagcdn.com/w160/gb.png" alt="English">
+        <span>English</span>
       </div>
-    </header>
-
-    <div class="grid" id="product-grid">
-      </div>
-  </main>
-
-  <aside class="cart-sidebar">
-    <div class="cart-header">
-      <div class="cart-header-text">
-        <h2>Twój Koszyk</h2>
-        <p>Przejrzyj swoje zamówienie</p>
-      </div>
-      <button class="btn-clear-cart" id="clear-cart-btn" onclick="clearCart()">
-        <i class="fas fa-trash-alt"></i> Usuń
-      </button>
-    </div>
-    
-    <div class="cart-items" id="cart-list">
-      <div style="text-align: center; color: var(--text-sub); margin-top: 80px; font-weight: 600;" id="empty-msg">
-        <i class="fas fa-shopping-basket" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.3;"></i><br>
-        <span style="font-size: 1.1rem;">Koszyk jest pusty</span>
+      <div class="lang-btn" onclick="startOrder('es')">
+        <img src="https://flagcdn.com/w160/es.png" alt="Español">
+        <span>Español</span>
       </div>
     </div>
-    
-    <div class="cart-footer">
-      <div class="total-row">
-        <span>Do zapłaty:</span>
-        <strong id="cart-total">0.00 zł</strong>
-      </div>
-      <button class="btn-pay" id="checkout-btn" disabled onclick="processPayment()">
-        <i class="fas fa-credit-card"></i> ZAMÓW I ZAPŁAĆ
-      </button>
-    </div>
-  </aside>
+  </div>
 
-  <button class="theme-toggle" onclick="document.body.classList.toggle('dark-mode')">
-    <i class="fas fa-adjust"></i>
-  </button>
+  <div id="pos-app">
+    <aside class="sidebar">
+      <div class="brand">MilkMi<span>.</span> <small>Kiosk POS</small></div>
+      
+      <div class="nav-category" id="i18n-menu">Nasze Menu</div>
+
+      <div class="nav-item has-submenu" onclick="toggleSubmenu('shake-sub')">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fas fa-blender"></i><span id="i18n-shake">Shake</span>
+        </div>
+        <i class="fas fa-chevron-down" style="font-size: 0.9rem;"></i>
+      </div>
+      <div class="sub-nav open" id="shake-sub">
+        <div class="sub-nav-item active" onclick="switchCategory('shake_klasyczne', dict[currentLang].cat_shake_classic, this)"><i class="fas fa-circle"></i><span id="i18n-shake-1">Klasyczne</span></div>
+        <div class="sub-nav-item" onclick="switchCategory('shake_owocowe', dict[currentLang].cat_shake_fruit, this)"><i class="fas fa-circle"></i><span id="i18n-shake-2">Owocowe</span></div>
+        <div class="sub-nav-item" onclick="switchCategory('shake_vip', 'Shake VIP', this)"><i class="fas fa-circle"></i>VIP</div>
+        <div class="sub-nav-item" onclick="switchCategory('shake_bestoff', 'Shake Best Off', this)"><i class="fas fa-circle"></i>Best Off</div>
+      </div>
+
+      <div class="nav-item has-submenu" onclick="toggleSubmenu('kawa-sub')">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fas fa-mug-hot"></i><span id="i18n-coffee">Kawa</span>
+        </div>
+        <i class="fas fa-chevron-down" style="font-size: 0.9rem;"></i>
+      </div>
+      <div class="sub-nav" id="kawa-sub">
+        <div class="sub-nav-item" onclick="switchCategory('kawa_mrozona', dict[currentLang].cat_coffee_iced, this)"><i class="fas fa-snowflake"></i><span id="i18n-coffee-1">Mrożona</span></div>
+        <div class="sub-nav-item" onclick="switchCategory('kawa_goraca', dict[currentLang].cat_coffee_hot, this)"><i class="fas fa-fire"></i><span id="i18n-coffee-2">Gorąca</span></div>
+      </div>
+
+      <div class="nav-item" onclick="switchCategory('smoothie', 'Smoothie', this)"><i class="fas fa-glass-water"></i><span>Smoothie</span></div>
+      <div class="nav-item" onclick="switchCategory('matcha', 'Matcha', this)"><i class="fas fa-leaf"></i><span>Matcha</span></div>
+      <div class="nav-item" onclick="switchCategory('jogurt_mrozony', dict[currentLang].cat_yogurt, this)"><i class="fas fa-ice-cream"></i><span id="i18n-yogurt">Jogurt Mrożony</span></div>
+      <div class="nav-item" onclick="switchCategory('lody', dict[currentLang].cat_icecream, this)"><i class="fas fa-cubes"></i><span id="i18n-icecream">Lody</span></div>
+      <div class="nav-item" onclick="switchCategory('desery_lodowe', dict[currentLang].cat_desserts, this)"><i class="fas fa-spoon"></i><span id="i18n-desserts">Desery Lodowe</span></div>
+      <div class="nav-item" onclick="switchCategory('gofry', dict[currentLang].cat_waffles, this)"><i class="fas fa-border-all"></i><span id="i18n-waffles">Gofry</span></div>
+      <div class="nav-item" onclick="switchCategory('gofry_amerykanskie', dict[currentLang].cat_waffles_usa, this)"><i class="fas fa-layer-group"></i><span id="i18n-waffles-usa">Gofry Amerykańskie</span></div>
+      <div class="nav-item" onclick="switchCategory('pancakes', 'Pancakes', this)"><i class="fas fa-cookie"></i><span>Pancakes</span></div>
+      <div class="nav-item" onclick="switchCategory('napoje', dict[currentLang].cat_drinks, this)"><i class="fas fa-bottle-water"></i><span id="i18n-drinks">Napoje</span></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="welcome-text">
+          <h1 id="cat-title">Shake Klasyczne</h1>
+          <p id="i18n-subtitle">Wybierz swoje ulubione pozycje z menu</p>
+        </div>
+        <div style="background: var(--bg-surface); padding: 14px 28px; border-radius: var(--radius-m); border: 1px solid var(--border); font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px;">
+          <i class="fas fa-clock"></i> <span id="clock">12:00</span>
+        </div>
+      </header>
+
+      <div class="grid" id="product-grid"></div>
+    </main>
+
+    <aside class="cart-sidebar">
+      <div class="cart-header">
+        <div class="cart-header-text">
+          <h2 id="i18n-cart-title">Twój Koszyk</h2>
+          <p id="i18n-cart-desc">Przejrzyj swoje zamówienie</p>
+        </div>
+        <button class="btn-clear-cart" id="clear-cart-btn" onclick="clearCart()">
+          <i class="fas fa-trash-alt"></i> <span id="i18n-btn-clear">Usuń</span>
+        </button>
+      </div>
+      
+      <div class="cart-items" id="cart-list">
+        <div style="text-align: center; color: var(--text-sub); margin-top: 80px; font-weight: 600;" id="empty-msg">
+          <i class="fas fa-shopping-basket" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.3;"></i><br>
+          <span style="font-size: 1.1rem;" id="i18n-cart-empty">Koszyk jest pusty</span>
+        </div>
+      </div>
+      
+      <div class="cart-footer">
+        <div class="total-row">
+          <span id="i18n-to-pay">Do zapłaty:</span>
+          <strong id="cart-total">0.00 zł</strong>
+        </div>
+        <button class="btn-pay" id="checkout-btn" disabled onclick="processPayment()">
+          <i class="fas fa-credit-card"></i> <span id="i18n-btn-pay">ZAMÓW I ZAPŁAĆ</span>
+        </button>
+      </div>
+    </aside>
+  </div>
 
   <div class="modal-overlay" id="modal">
     <div class="modal-card">
@@ -398,14 +277,16 @@
       <div class="modal-header">
         <img id="m-img" src="">
         <h2 id="m-name">Nazwa Produktu</h2>
-        <div style="color: var(--text-sub); margin-top: 5px; font-weight: 600; font-size: 1.1rem;">Cena bazowa: <span id="m-price" style="color: var(--primary);">0.00 zł</span></div>
+        <div style="color: var(--text-sub); margin-top: 5px; font-weight: 600; font-size: 1.1rem;">
+          <span id="i18n-base-price">Cena bazowa:</span> <span id="m-price" style="color: var(--primary);">0.00 zł</span>
+        </div>
       </div>
 
-      <div style="margin-bottom: 15px; font-weight: 800; color: var(--text-sub); font-size: 0.9rem; text-transform: uppercase;">Dostosuj dodatki:</div>
+      <div style="margin-bottom: 15px; font-weight: 800; color: var(--text-sub); font-size: 0.9rem; text-transform: uppercase;" id="i18n-addons">Dostosuj dodatki:</div>
       
       <div class="extra-item" id="box-cheese">
         <div class="extra-info">
-          <strong>Dodatkowy Ser</strong>
+          <strong id="i18n-cream">Bita śmietana</strong>
           <span>+3.00 zł</span>
         </div>
         <div class="qty-controls">
@@ -417,7 +298,7 @@
 
       <div class="extra-item" id="box-bacon">
         <div class="extra-info">
-          <strong>Chrupiący Bekon</strong>
+          <strong id="i18n-sprinkles">Posypka Czekoladowa</strong>
           <span>+4.50 zł</span>
         </div>
         <div class="qty-controls">
@@ -427,53 +308,218 @@
         </div>
       </div>
 
-      <button class="btn-add" onclick="addToCart()"><i class="fas fa-plus"></i> DODAJ DO ZAMÓWIENIA</button>
+      <button class="btn-add" onclick="addToCart()"><i class="fas fa-plus"></i> <span id="i18n-btn-add">DODAJ DO ZAMÓWIENIA</span></button>
     </div>
   </div>
 
   <div class="modal-overlay" id="success-modal">
     <div class="modal-card" style="text-align: center; padding: 60px 40px;">
       <i class="fas fa-check-circle success-icon"></i>
-      <h2 style="font-size: 2.2rem; font-weight: 800;">Gotowe!</h2>
-      <p style="color: var(--text-sub); font-size: 1.1rem; margin-top: 10px;">Twoje zamówienie zostało przyjęte.</p>
+      <h2 style="font-size: 2.2rem; font-weight: 800;" id="i18n-success-title">Gotowe!</h2>
+      <p style="color: var(--text-sub); font-size: 1.1rem; margin-top: 10px;" id="i18n-success-desc">Twoje zamówienie zostało przyjęte.</p>
       
       <div style="margin: 40px 0; padding: 30px; background: var(--bg-body); border-radius: var(--radius-m); border: 2px dashed var(--border);">
-        <p style="font-weight: 700; color: var(--text-sub); text-transform: uppercase; font-size: 0.9rem;">Numer zamówienia</p>
+        <p style="font-weight: 700; color: var(--text-sub); text-transform: uppercase; font-size: 0.9rem;" id="i18n-order-num">Numer zamówienia</p>
         <div id="order-number" style="font-size: 4.5rem; font-weight: 800; color: var(--primary); letter-spacing: -2px; margin-top: 10px;">#000</div>
       </div>
 
-      <p style="font-size: 1.2rem; font-weight: 700; margin-bottom: 30px;">
+      <p style="font-size: 1.2rem; font-weight: 700; margin-bottom: 30px;" id="i18n-go-register">
         Udaj się do kasy, podaj swój numer <br>i <span style="color: var(--primary);">opłać zamówienie.</span>
       </p>
 
-      <button class="btn-add" style="background: var(--text-main); box-shadow: none;" onclick="resetKiosk()">
-        ZAMKNIJ (Ekran zamknie się za <span id="timeout-count">10</span>s)
+      <button class="btn-add" style="background: var(--text-main); box-shadow: none;" onclick="returnToWelcomeScreen()">
+        <span id="i18n-btn-close">ZAMKNIJ (Ekran zamknie się za</span> <span id="timeout-count">10</span>s)
       </button>
     </div>
   </div>
 
   <script>
-    // Ujednolicona ikona burgera dla WSZYSTKICH produktów
-    const uniformImg = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png';
+    // --- SŁOWNIK JĘZYKÓW ---
+    const dict = {
+      pl: {
+        menu: "Nasze Menu", shake: "Shake", shake1: "Klasyczne", shake2: "Owocowe",
+        coffee: "Kawa", coffee1: "Mrożona", coffee2: "Gorąca",
+        yogurt: "Jogurt Mrożony", icecream: "Lody", desserts: "Desery Lodowe", 
+        waffles: "Gofry", wafflesUsa: "Gofry Amerykańskie", drinks: "Napoje",
+        subtitle: "Wybierz swoje ulubione pozycje z menu",
+        cartTitle: "Twój Koszyk", cartDesc: "Przejrzyj swoje zamówienie", btnClear: "Usuń",
+        cartEmpty: "Koszyk jest pusty", toPay: "Do zapłaty:", btnPay: "ZAMÓW I ZAPŁAĆ",
+        basePrice: "Cena bazowa:", addons: "Dostosuj dodatki:", btnAdd: "DODAJ DO ZAMÓWIENIA",
+        cream: "Bita śmietana", sprinkles: "Posypka Czekoladowa",
+        successTitle: "Gotowe!", successDesc: "Twoje zamówienie zostało przyjęte.",
+        orderNum: "Numer zamówienia",
+        goRegister: "Udaj się do kasy, podaj swój numer <br>i <span style='color: var(--primary);'>opłać zamówienie.</span>",
+        btnClose: "ZAMKNIJ (Ekran zamknie się za",
+        cat_shake_classic: "Shake Klasyczne", cat_shake_fruit: "Shake Owocowe", 
+        cat_coffee_iced: "Kawa Mrożona", cat_coffee_hot: "Kawa Gorąca", cat_yogurt: "Jogurt Mrożony",
+        cat_icecream: "Lody", cat_desserts: "Desery Lodowe", cat_waffles: "Gofry", 
+        cat_waffles_usa: "Gofry Amerykańskie", cat_drinks: "Napoje"
+      },
+      en: {
+        menu: "Our Menu", shake: "Shakes", shake1: "Classic", shake2: "Fruit",
+        coffee: "Coffee", coffee1: "Iced", coffee2: "Hot",
+        yogurt: "Frozen Yogurt", icecream: "Ice Cream", desserts: "Ice Cream Desserts", 
+        waffles: "Waffles", wafflesUsa: "American Waffles", drinks: "Beverages",
+        subtitle: "Choose your favorite items from the menu",
+        cartTitle: "Your Cart", cartDesc: "Review your order", btnClear: "Clear",
+        cartEmpty: "Your cart is empty", toPay: "Total to pay:", btnPay: "ORDER & PAY",
+        basePrice: "Base price:", addons: "Customize addons:", btnAdd: "ADD TO ORDER",
+        cream: "Whipped Cream", sprinkles: "Chocolate Sprinkles",
+        successTitle: "Success!", successDesc: "Your order has been received.",
+        orderNum: "Order number",
+        goRegister: "Go to the register, provide your number <br>and <span style='color: var(--primary);'>pay for the order.</span>",
+        btnClose: "CLOSE (Screen closes in",
+        cat_shake_classic: "Classic Shakes", cat_shake_fruit: "Fruit Shakes", 
+        cat_coffee_iced: "Iced Coffee", cat_coffee_hot: "Hot Coffee", cat_yogurt: "Frozen Yogurt",
+        cat_icecream: "Ice Cream", cat_desserts: "Ice Cream Desserts", cat_waffles: "Waffles", 
+        cat_waffles_usa: "American Waffles", cat_drinks: "Beverages"
+      },
+      es: {
+        menu: "Nuestro Menú", shake: "Batidos", shake1: "Clásico", shake2: "De frutas",
+        coffee: "Café", coffee1: "Helado", coffee2: "Caliente",
+        yogurt: "Yogur Helado", icecream: "Helado", desserts: "Postres Helados", 
+        waffles: "Gofres", wafflesUsa: "Gofres Americanos", drinks: "Bebidas",
+        subtitle: "Elige tus artículos favoritos del menú",
+        cartTitle: "Tu Carrito", cartDesc: "Revisa tu pedido", btnClear: "Vaciar",
+        cartEmpty: "Tu carrito está vacío", toPay: "Total a pagar:", btnPay: "PEDIR Y PAGAR",
+        basePrice: "Precio base:", addons: "Personalizar extras:", btnAdd: "AÑADIR AL PEDIDO",
+        cream: "Crema Batida", sprinkles: "Chispas de Chocolate",
+        successTitle: "¡Listo!", successDesc: "Tu pedido ha sido recibido.",
+        orderNum: "Número de pedido",
+        goRegister: "Ve a la caja, da tu número <br>y <span style='color: var(--primary);'>paga el pedido.</span>",
+        btnClose: "CERRAR (La pantalla se cierra en",
+        cat_shake_classic: "Batidos Clásicos", cat_shake_fruit: "Batidos de Frutas", 
+        cat_coffee_iced: "Café Helado", cat_coffee_hot: "Café Caliente", cat_yogurt: "Yogur Helado",
+        cat_icecream: "Helados", cat_desserts: "Postres Helados", cat_waffles: "Gofres", 
+        cat_waffles_usa: "Gofres Americanos", cat_drinks: "Bebidas"
+      }
+    };
 
+    let currentLang = 'pl';
+
+    function setLanguageText() {
+      const l = dict[currentLang];
+      document.getElementById('i18n-menu').innerText = l.menu;
+      document.getElementById('i18n-shake').innerText = l.shake;
+      document.getElementById('i18n-shake-1').innerText = l.shake1;
+      document.getElementById('i18n-shake-2').innerText = l.shake2;
+      document.getElementById('i18n-coffee').innerText = l.coffee;
+      document.getElementById('i18n-coffee-1').innerText = l.coffee1;
+      document.getElementById('i18n-coffee-2').innerText = l.coffee2;
+      document.getElementById('i18n-yogurt').innerText = l.yogurt;
+      document.getElementById('i18n-icecream').innerText = l.icecream;
+      document.getElementById('i18n-desserts').innerText = l.desserts;
+      document.getElementById('i18n-waffles').innerText = l.waffles;
+      document.getElementById('i18n-waffles-usa').innerText = l.wafflesUsa;
+      document.getElementById('i18n-drinks').innerText = l.drinks;
+      
+      document.getElementById('i18n-subtitle').innerText = l.subtitle;
+      document.getElementById('i18n-cart-title').innerText = l.cartTitle;
+      document.getElementById('i18n-cart-desc').innerText = l.cartDesc;
+      document.getElementById('i18n-btn-clear').innerText = l.btnClear;
+      document.getElementById('i18n-cart-empty').innerText = l.cartEmpty;
+      document.getElementById('i18n-to-pay').innerText = l.toPay;
+      document.getElementById('i18n-btn-pay').innerText = l.btnPay;
+      
+      document.getElementById('i18n-base-price').innerText = l.basePrice;
+      document.getElementById('i18n-addons').innerText = l.addons;
+      document.getElementById('i18n-btn-add').innerText = l.btnAdd;
+      document.getElementById('i18n-cream').innerText = l.cream;
+      document.getElementById('i18n-sprinkles').innerText = l.sprinkles;
+      
+      document.getElementById('i18n-success-title').innerText = l.successTitle;
+      document.getElementById('i18n-success-desc').innerText = l.successDesc;
+      document.getElementById('i18n-order-num').innerText = l.orderNum;
+      document.getElementById('i18n-go-register').innerHTML = l.goRegister;
+      document.getElementById('i18n-btn-close').innerText = l.btnClose;
+    }
+
+    function startOrder(lang) {
+      currentLang = lang;
+      setLanguageText();
+      
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('pos-app').style.display = 'flex';
+      
+      // Inicjalizacja pierwszej kategorii z odpowiednią nazwą przetłumaczoną
+      switchCategory('shake_klasyczne', dict[currentLang].cat_shake_classic, document.querySelector('.sub-nav-item.active'));
+    }
+
+    // --- BAZA DANYCH ---
+    const uniformImg = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png';
     const database = {
-      burgery: [
-        { id: 1, name: 'Classic Burger', price: 24.00, img: uniformImg },
-        { id: 2, name: 'Spicy Jalapeno', price: 28.50, img: uniformImg },
-        { id: 3, name: 'Double Bacon', price: 32.00, img: uniformImg },
-        { id: 4, name: 'Vege Halloumi', price: 29.00, img: uniformImg }
+      shake_klasyczne: [
+        { id: 101, name: 'Waniliowy Klasyk', price: 16.00, img: uniformImg },
+        { id: 102, name: 'Mocna Czekolada', price: 16.00, img: uniformImg },
+        { id: 103, name: 'Słodka Truskawka', price: 16.00, img: uniformImg },
+        { id: 104, name: 'Karmelove', price: 17.00, img: uniformImg },
+        { id: 105, name: 'Śmietankowa Chmurka', price: 15.00, img: uniformImg }
       ],
-      zestawy: [
-        { id: 5, name: 'Box dla Dwojga', price: 65.00, img: uniformImg },
-        { id: 6, name: 'Party Set', price: 110.00, img: uniformImg }
+      shake_owocowe: [
+        { id: 201, name: 'Malinowy Raj', price: 18.00, img: uniformImg },
+        { id: 202, name: 'Egzotyczne Mango', price: 19.00, img: uniformImg },
+        { id: 203, name: 'Bananowy Potwór', price: 17.00, img: uniformImg },
+        { id: 204, name: 'Owoce Leśne', price: 18.00, img: uniformImg },
+        { id: 205, name: 'Rześka Brzoskwinia', price: 18.00, img: uniformImg }
+      ],
+      shake_vip: [
+        { id: 301, name: 'Pistacja Premium', price: 24.00, img: uniformImg },
+        { id: 302, name: 'Złota Czekolada', price: 25.00, img: uniformImg },
+        { id: 303, name: 'Słony Karmel & Orzech', price: 23.00, img: uniformImg },
+        { id: 304, name: 'Biała Trufla', price: 26.00, img: uniformImg },
+        { id: 305, name: 'Kremowe Raffaello', price: 24.00, img: uniformImg }
+      ],
+      shake_bestoff: [
+        { id: 401, name: 'Oreo Miazga', price: 21.00, img: uniformImg },
+        { id: 402, name: 'Snickers Crunch', price: 22.00, img: uniformImg },
+        { id: 403, name: 'Bountylishous', price: 21.00, img: uniformImg },
+        { id: 404, name: 'Nutella Dream', price: 22.00, img: uniformImg },
+        { id: 405, name: 'Peanut Butter Jelly', price: 21.00, img: uniformImg }
+      ],
+      smoothie: [
+        { id: 501, name: 'Zielony Detox', price: 16.00, img: uniformImg },
+        { id: 502, name: 'Mango Marakuja', price: 18.00, img: uniformImg }
+      ],
+      kawa_mrozona: [
+        { id: 601, name: 'Iced Latte', price: 15.00, img: uniformImg },
+        { id: 602, name: 'Frappe Caramel', price: 17.00, img: uniformImg }
+      ],
+      kawa_goraca: [
+        { id: 701, name: 'Espresso', price: 9.00, img: uniformImg },
+        { id: 702, name: 'Cappuccino', price: 14.00, img: uniformImg },
+        { id: 703, name: 'Flat White', price: 16.00, img: uniformImg }
+      ],
+      matcha: [
+        { id: 801, name: 'Matcha Latte', price: 18.00, img: uniformImg },
+        { id: 802, name: 'Iced Matcha z Truskawką', price: 20.00, img: uniformImg }
+      ],
+      jogurt_mrozony: [
+        { id: 901, name: 'Jogurt Naturalny', price: 12.00, img: uniformImg },
+        { id: 902, name: 'Jogurt z Owocami', price: 16.00, img: uniformImg }
+      ],
+      lody: [
+        { id: 1001, name: '1 Gałka Lodu', price: 7.00, img: uniformImg },
+        { id: 1002, name: '2 Gałki Lodu', price: 13.00, img: uniformImg }
+      ],
+      desery_lodowe: [
+        { id: 1101, name: 'Puchar Truskawkowy', price: 22.00, img: uniformImg },
+        { id: 1102, name: 'Banana Split', price: 25.00, img: uniformImg }
+      ],
+      gofry: [
+        { id: 1201, name: 'Gofry z Cukrem Pudrem', price: 9.00, img: uniformImg },
+        { id: 1202, name: 'Gofry z Bitą Śmietaną', price: 14.00, img: uniformImg }
+      ],
+      gofry_amerykanskie: [
+        { id: 1301, name: 'Z Syropem Klonowym i Bekonem', price: 24.00, img: uniformImg },
+        { id: 1302, name: 'Z Owocami i Śmietaną', price: 22.00, img: uniformImg }
+      ],
+      pancakes: [
+        { id: 1401, name: 'Pancakes z Nutellą', price: 19.00, img: uniformImg },
+        { id: 1402, name: 'Pancakes z Syropem Klonowym', price: 18.00, img: uniformImg }
       ],
       napoje: [
-        { id: 7, name: 'Cola Zero', price: 9.00, img: uniformImg },
-        { id: 8, name: 'Sok Pomarańczowy', price: 11.00, img: uniformImg }
-      ],
-      desery: [
-        { id: 9, name: 'Lody Oreo', price: 15.00, img: uniformImg },
-        { id: 10, name: 'Brownie z Wiśniami', price: 18.00, img: uniformImg }
+        { id: 1501, name: 'Woda Niegazowana', price: 6.00, img: uniformImg },
+        { id: 1502, name: 'Świeża Lemoniada', price: 12.00, img: uniformImg }
       ]
     };
 
@@ -484,27 +530,40 @@
     let autoCloseTimer;
     let countdownInterval;
 
-    function switchCategory(cat, btnElement) {
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      btnElement.classList.add('active');
+    function toggleSubmenu(id) {
+      const menu = document.getElementById(id);
+      menu.classList.toggle('open');
+      const icon = menu.previousElementSibling.querySelector('.fa-chevron-down');
+      if (menu.classList.contains('open')) { icon.style.transform = 'rotate(180deg)'; } 
+      else { icon.style.transform = 'rotate(0deg)'; }
+      icon.style.transition = 'transform 0.3s';
+    }
+
+    function switchCategory(catId, catDisplayTitle, btnElement) {
+      document.querySelectorAll('.nav-item, .sub-nav-item').forEach(el => el.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
       
       const grid = document.getElementById('product-grid');
       const title = document.getElementById('cat-title');
-      title.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
       
+      title.innerText = catDisplayTitle;
       grid.innerHTML = '';
       
-      database[cat].forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.onclick = () => openModal(p);
-        card.innerHTML = `
-          <img src="${p.img}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <div class="price">${p.price.toFixed(2)} zł</div>
-        `;
-        grid.appendChild(card);
-      });
+      if(database[catId]) {
+        database[catId].forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.onclick = () => openModal(p);
+          card.innerHTML = `
+            <img src="${p.img}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <div class="price">${p.price.toFixed(2)} zł</div>
+          `;
+          grid.appendChild(card);
+        });
+      } else {
+        grid.innerHTML = `<p style="color:var(--text-sub); grid-column: 1 / -1;">Brak produktów w tej kategorii.</p>`;
+      }
     }
 
     function openModal(product) {
@@ -529,7 +588,6 @@
     function updateModalUI() {
       document.getElementById('val-cheese').innerText = extrasConfig.cheese;
       document.getElementById('val-bacon').innerText = extrasConfig.bacon;
-      
       document.getElementById('box-cheese').classList.toggle('active', extrasConfig.cheese > 0);
       document.getElementById('box-bacon').classList.toggle('active', extrasConfig.bacon > 0);
     }
@@ -555,7 +613,9 @@
     }
 
     function clearCart() {
-      if(confirm("Czy na pewno chcesz usunąć całe zamówienie?")) {
+      const askStr = currentLang === 'pl' ? "Czy na pewno chcesz usunąć całe zamówienie?" : 
+                     (currentLang === 'en' ? "Are you sure you want to clear your order?" : "¿Estás seguro de que deseas eliminar tu pedido?");
+      if(confirm(askStr)) {
         cart = [];
         updateCartDisplay();
       }
@@ -565,6 +625,9 @@
       const list = document.getElementById('cart-list');
       const emptyMsg = document.getElementById('empty-msg');
       const clearBtn = document.getElementById('clear-cart-btn');
+      
+      // Dynamic text for empty msg handled correctly
+      document.getElementById('i18n-cart-empty').innerText = dict[currentLang].cartEmpty;
       
       list.innerHTML = '';
       
@@ -582,8 +645,8 @@
       cart.forEach(item => {
         total += item.finalPrice;
         let extrasText = '';
-        if(item.extras.cheese > 0) extrasText += `+ ${item.extras.cheese}x Ser `;
-        if(item.extras.bacon > 0) extrasText += `+ ${item.extras.bacon}x Bekon`;
+        if(item.extras.cheese > 0) extrasText += `+ ${item.extras.cheese}x ${dict[currentLang].cream} `;
+        if(item.extras.bacon > 0) extrasText += `+ ${item.extras.bacon}x ${dict[currentLang].sprinkles}`;
         
         list.innerHTML += `
           <div class="cart-item">
@@ -603,31 +666,28 @@
     }
 
     function processPayment() {
-      // Wygeneruj numer od 001 do 999
       const orderString = String(orderCounter).padStart(3, '0');
       document.getElementById('order-number').innerText = '#' + orderString;
       
-      // Pokaz modal sukcesu
       document.getElementById('success-modal').style.display = 'flex';
       
-      // Zwiększ licznik
       orderCounter++;
       if (orderCounter > 999) orderCounter = 1;
 
-      // Odliczanie do zamknięcia (10 sekund)
       let timeLeft = 10;
       document.getElementById('timeout-count').innerText = timeLeft;
       
       countdownInterval = setInterval(() => {
         timeLeft--;
         document.getElementById('timeout-count').innerText = timeLeft;
-        if(timeLeft <= 0) resetKiosk();
+        if(timeLeft <= 0) returnToWelcomeScreen();
       }, 1000);
 
-      autoCloseTimer = setTimeout(resetKiosk, 10000);
+      autoCloseTimer = setTimeout(returnToWelcomeScreen, 10000);
     }
 
-    function resetKiosk() {
+    // Nowa funkcja - powrót do ekranu wyboru języka
+    function returnToWelcomeScreen() {
       clearTimeout(autoCloseTimer);
       clearInterval(countdownInterval);
       
@@ -635,10 +695,8 @@
       updateCartDisplay();
       
       document.getElementById('success-modal').style.display = 'none';
-      switchCategory('burgery', document.querySelector('.nav-item')); // Wróć do burgerów
-      
-      // Powrót do jasnego motywu jeśli chcesz by nowy klient miał defaultowo jasny
-      // document.body.classList.remove('dark-mode'); 
+      document.getElementById('pos-app').style.display = 'none';
+      document.getElementById('welcome-screen').style.display = 'flex';
     }
 
     // Zegarek
@@ -646,9 +704,6 @@
       const now = new Date();
       document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }, 1000);
-
-    // Inicjalizacja pierwszej kategorii
-    switchCategory('burgery', document.querySelector('.nav-item.active'));
 
   </script>
 </body>
