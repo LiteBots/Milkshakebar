@@ -82,7 +82,7 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  // Aktywne (odebrane w apce, ale jeszcze nieużyte przy kasie) nagrody
+  // Aktywne (odebrane w apce, ale jeszcze nieużyte przy kasie) nagrody - Pozostawione dla wstecznej kompatybilności bazy
   activeRewards: [{
     rewardId: String,
     name: String,
@@ -202,7 +202,7 @@ app.get('/api/admin/stats', async (req, res) => {
         const redeemedAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$redeemedPoints" } } }]);
         const spentMilkosy = redeemedAgg.length > 0 ? redeemedAgg[0].total : 0;
 
-        // NOWE: Sumowanie wszystkich aktualnie posiadanych punktów przez wszystkich użytkowników
+        // Sumowanie wszystkich aktualnie posiadanych punktów przez wszystkich użytkowników
         const totalPointsAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$points" } } }]);
         const totalPointsCirculating = totalPointsAgg.length > 0 ? totalPointsAgg[0].total : 0;
 
@@ -215,7 +215,7 @@ app.get('/api/admin/stats', async (req, res) => {
                 activePrepaidCards,
                 totalPrepaidBalance,
                 spentMilkosy,
-                totalPointsCirculating // Przekazujemy nową zmienną na front
+                totalPointsCirculating
             }
         });
     } catch (err) {
@@ -604,38 +604,45 @@ app.post('/api/reservations', async (req, res) => {
   }
 });
 
-// --- API: WYMIANA PUNKTÓW NA NAGRODĘ (APP) ---
-app.post('/api/rewards/claim', async (req, res) => {
+// --- API: WYMIANA PUNKTÓW NA DOŁADOWANIE PORTFELA (vPLN) ---
+app.post('/api/rewards/exchange', async (req, res) => {
     try {
-        const { userId, rewardId, cost, rewardName } = req.body;
+        const { userId, pointsCost, vplnAmount } = req.body;
         const user = await User.findById(userId);
         
-        if (!user || user.points < cost) {
+        if (!user || user.points < pointsCost) {
             return res.status(400).json({ success: false, message: 'Niewystarczająca liczba punktów.' });
         }
 
-        // Odjęcie punktów
-        user.points -= cost;
-        user.redeemedPoints = (user.redeemedPoints || 0) + cost; // Dodajemy do statystyk wydane punkty
-        user.history.unshift({ text: `- ${cost} pkt • Odebrano nagrodę: ${rewardName}` });
+        // 1. Odjęcie punktów
+        user.points -= pointsCost;
+        // 2. Automatyczne dodanie środków do portfela vPLN
+        user.walletBalance = (user.walletBalance || 0) + vplnAmount;
         
-        // Zapisanie aktywnej nagrody w schowku klienta
-        user.activeRewards.push({
-            rewardId: rewardId,
-            name: rewardName,
-            cost: cost
-        });
-
+        // 3. Wpisy do historii klienta
+        user.history.unshift({ text: `- ${pointsCost} pkt • Kupiono bon do portfela` });
+        user.history.unshift({ text: `+ ${vplnAmount} PLN • Zasilenie z punktów lojalnościowych` });
+        
         if(user.history.length > 20) {
-            user.history.pop();
+            user.history = user.history.slice(0, 20);
         }
+
         await user.save();
+
+        // 4. Zapis transakcji do panelu admina (Zaksięgowane w Pre-paid)
+        const tx = new WalletTransaction({
+            userDisplay: `${user.username} (${user.phone})`,
+            amount: vplnAmount,
+            action: 'add'
+        });
+        await tx.save();
 
         res.json({ 
             success: true, 
             points: user.points, 
-            activeRewards: user.activeRewards,
-            message: 'Nagroda została pomyślnie odebrana!' 
+            walletBalance: user.walletBalance,
+            history: user.history,
+            message: `Pomyślnie zamieniono ${pointsCost} pkt na ${vplnAmount} PLN!` 
         });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Błąd serwera.' });
@@ -719,7 +726,7 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({
       message: 'Zalogowano pomyślnie.',
       token,
-      // Zwracamy dane, w tym activeRewards do aplikacji frontowej
+      // Zwracamy dane do aplikacji frontowej
       user: {
         id: user._id,
         username: user.username,
