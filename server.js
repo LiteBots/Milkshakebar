@@ -77,12 +77,12 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  // Śledzenie wydanych punktów na nagrody
+  // Śledzenie wydanych punktów na nagrody (Bony vPLN)
   redeemedPoints: { 
     type: Number, 
     default: 0 
   },
-  // Aktywne (odebrane w apce, ale jeszcze nieużyte przy kasie) nagrody - Pozostawione dla wstecznej kompatybilności bazy
+  // Zostawiamy dla kompatybilności wstecznej bazy
   activeRewards: [{
     rewardId: String,
     name: String,
@@ -126,19 +126,6 @@ const walletTransactionSchema = new mongoose.Schema({
 });
 
 const WalletTransaction = mongoose.model('WalletTransaction', walletTransactionSchema);
-
-// --- SCHEMAT TRANSAKCJI NAGRÓD (Zrealizowane nagrody przy kasie) ---
-const rewardTransactionSchema = new mongoose.Schema({
-    userDisplay: String,
-    rewardName: String,
-    cost: Number,
-    date: { 
-        type: Date, 
-        default: Date.now 
-    }
-});
-
-const RewardTransaction = mongoose.model('RewardTransaction', rewardTransactionSchema);
 
 // --- SCHEMAT REZERWACJI ---
 const reservationSchema = new mongoose.Schema({
@@ -198,7 +185,7 @@ app.get('/api/admin/stats', async (req, res) => {
         const balanceAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$walletBalance" } } }]);
         const totalPrepaidBalance = balanceAgg.length > 0 ? balanceAgg[0].total : 0;
 
-        // Sumowanie wszystkich wydanych punktów na nagrody
+        // Sumowanie wszystkich wydanych punktów na nagrody (w tym kupione bony)
         const redeemedAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$redeemedPoints" } } }]);
         const spentMilkosy = redeemedAgg.length > 0 ? redeemedAgg[0].total : 0;
 
@@ -430,87 +417,6 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
     }
 });
 
-
-// ==========================================
-// --- API ADMINA (REALIZACJA NAGRÓD) ---
-// ==========================================
-
-// 1. Wyszukiwanie nagród klienta
-app.post('/api/admin/rewards/search', async (req, res) => {
-    try {
-        const { identifier } = req.body;
-        const cleanId = identifier.trim().toLowerCase();
-        
-        const user = await User.findOne({ $or: [{ email: cleanId }, { phone: cleanId }] });
-        
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'Nie znaleziono klienta.' });
-        }
-        
-        res.json({ 
-            success: true, 
-            user: { 
-                id: user._id, 
-                username: user.username, 
-                phone: user.phone,
-                activeRewards: user.activeRewards || []
-            } 
-        });
-    } catch(err) {
-        res.status(500).json({ success: false, message: 'Błąd serwera.' });
-    }
-});
-
-// 2. Realizacja (usunięcie/oznaczenie jako użytej) nagrody przy kasie
-app.post('/api/admin/rewards/use', async (req, res) => {
-    try {
-        const { userId, rewardObjId } = req.body;
-        const user = await User.findById(userId);
-        
-        if (!user) return res.status(404).json({ success: false, message: 'Użytkownik nie istnieje.' });
-
-        const rewardIndex = user.activeRewards.findIndex(r => r._id.toString() === rewardObjId);
-        
-        if (rewardIndex === -1) {
-            return res.status(400).json({ success: false, message: 'Nagroda nie znaleziona lub już została wykorzystana.' });
-        }
-
-        const rewardName = user.activeRewards[rewardIndex].name;
-        const rewardCost = user.activeRewards[rewardIndex].cost;
-        
-        // Usuwamy nagrodę z aktywnych
-        user.activeRewards.splice(rewardIndex, 1);
-        
-        // Dodajemy informację o realizacji do historii klienta
-        user.history.unshift({ text: `✓ Zrealizowano w lokalu: ${rewardName}` });
-        if(user.history.length > 20) user.history.pop();
-
-        await user.save();
-
-        // Zapis do GLOBALNEJ HISTORII nagród dla Admin Panelu
-        const tx = new RewardTransaction({
-            userDisplay: `${user.username} (${user.phone})`,
-            rewardName: rewardName,
-            cost: rewardCost
-        });
-        await tx.save();
-
-        res.json({ success: true, message: 'Nagroda została pomyślnie zrealizowana!', activeRewards: user.activeRewards });
-    } catch(err) {
-        res.status(500).json({ success: false, message: 'Błąd serwera.' });
-    }
-});
-
-// 3. Pobieranie historii globalnej zrealizowanych nagród
-app.get('/api/admin/reward-transactions', async (req, res) => {
-    try {
-        const txs = await RewardTransaction.find().sort({ date: -1 }).limit(50);
-        res.json({ success: true, data: txs });
-    } catch(err) {
-        res.status(500).json({ success: false });
-    }
-});
-
 // ==========================================
 // --- API ADMINA (REZERWACJE) ---
 // ==========================================
@@ -616,10 +522,14 @@ app.post('/api/rewards/exchange', async (req, res) => {
 
         // 1. Odjęcie punktów
         user.points -= pointsCost;
-        // 2. Automatyczne dodanie środków do portfela vPLN
+        
+        // 2. Dodanie punktów do statystyk wydanych
+        user.redeemedPoints = (user.redeemedPoints || 0) + pointsCost; 
+
+        // 3. Automatyczne dodanie środków do portfela vPLN
         user.walletBalance = (user.walletBalance || 0) + vplnAmount;
         
-        // 3. Wpisy do historii klienta
+        // 4. Wpisy do historii klienta
         user.history.unshift({ text: `- ${pointsCost} pkt • Kupiono bon do portfela` });
         user.history.unshift({ text: `+ ${vplnAmount} PLN • Zasilenie z punktów lojalnościowych` });
         
@@ -629,7 +539,7 @@ app.post('/api/rewards/exchange', async (req, res) => {
 
         await user.save();
 
-        // 4. Zapis transakcji do panelu admina (Zaksięgowane w Pre-paid)
+        // 5. Zapis transakcji do panelu admina (Zaksięgowane w Pre-paid)
         const tx = new WalletTransaction({
             userDisplay: `${user.username} (${user.phone})`,
             amount: vplnAmount,
