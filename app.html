@@ -205,8 +205,15 @@
     .ad-btn { background: #000; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
     body.dark-mode .ad-btn { background: var(--primary); }
 
-    /* --- WALLET VISUALS --- */
-    .milk-card { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); color: white; border-radius: 20px; padding: 24px; position: relative; overflow: hidden; margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); aspect-ratio: 1.58 / 1; display: flex; flex-direction: column; justify-content: space-between; }
+    /* --- WALLET VISUALS (ZAKTUALIZOWANE) --- */
+    .milk-card { 
+      border-radius: 20px; padding: 24px; position: relative; overflow: hidden; 
+      margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+      border: 1px solid rgba(255,255,255,0.1); aspect-ratio: 1.58 / 1; 
+      display: flex; flex-direction: column; justify-content: space-between; 
+      color: white; 
+      transition: background 0.5s ease, color 0.5s ease;
+    }
     .milk-card::after { content: ''; position: absolute; top: -20%; right: -10%; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.3; border-radius: 50%; }
     .milk-card-top { display: flex; justify-content: space-between; align-items: center; z-index: 2; }
     .milk-card-name { font-weight: 800; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; }
@@ -214,6 +221,25 @@
     .milk-card-balance { z-index: 2; }
     .milk-card-num { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 15px; }
     .wallet-info-box { background: rgba(255, 102, 0, 0.1); border: 1px dashed var(--primary); padding: 15px; border-radius: var(--radius-m); margin-bottom: 24px; text-align: center; font-size: 0.85rem; color: var(--text-main); }
+    
+    /* VPLN Card Tiers */
+    .milk-card.tier-default { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); }
+    .milk-card.tier-bronze  { background: linear-gradient(135deg, #8B5A2B 0%, #CD853F 100%); }
+    .milk-card.tier-silver  { background: linear-gradient(135deg, #bdc3c7 0%, #7f8c8d 100%); }
+    .milk-card.tier-gold    { background: linear-gradient(135deg, #B8860B 0%, #FFD700 100%); color: #000; }
+    .milk-card.tier-diamond { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+    .milk-card.tier-platinum{ background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); color: #000; }
+    .milk-card.tier-shiny { 
+        background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); 
+        background-size: 200% 200%; 
+        animation: shinyGold 3s ease infinite; 
+        color: #000; 
+    }
+    @keyframes shinyGold {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
 
     /* --- ACTIVITY LIST --- */
     .section-title { font-size: 1.1rem; font-weight: 700; margin: 24px 0 12px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
@@ -450,12 +476,6 @@
           </span>
       </div>
 
-      <div id="my-active-rewards-container" style="display: none; padding: 0 24px 20px;">
-        <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--status-ok);" data-i18n="reward_active_title">Twoje aktywne nagrody do odbioru w lokalu:</h3>
-        <div id="my-active-rewards-list" style="display: flex; flex-direction: column; gap: 10px;">
-          </div>
-      </div>
-
       <div class="rewards-grid-layout" id="rewards-grid">
         </div>
   </section>
@@ -528,7 +548,7 @@
     <div class="section-title" data-i18n="wallet_title">Mój Portfel</div>
       
     <div style="padding: 0 24px;">
-        <div class="milk-card">
+        <div class="milk-card tier-default">
             <div class="milk-card-top">
                 <div class="milk-card-name">MilkCard</div>
                 <div class="milk-card-chip"></div>
@@ -773,8 +793,7 @@ const translations = {
         zone_front: "Sala frontowa", zone_main: "Sala główna", zone_kids: "Kącik dzieci",
         wallet_title: "Mój Portfel", wallet_balance: "Saldo karty", wallet_info: "Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.", wallet_topup: "Doładuj kartę online", wallet_gift: "Kup kartę na prezent",
         hist_title: "Ostatnia aktywność", hist_sub: "Historia", wallet_hist: "Historia transakcji",
-        reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Odbierz", reward_btn_no: "Za mało pkt",
-        reward_active_title: "Twoje aktywne nagrody do odbioru w lokalu:", reward_active_sub: "Gotowa do użycia przy kasie", reward_confirm: "Czy na pewno chcesz wymienić punkty na tę nagrodę?",
+        reward_title: "Centrum Nagród", reward_sub: "Twoje Milkosy", reward_btn: "Kup bon", reward_btn_no: "Za mało pkt",
         home_hello: "Cześć", home_nice: "Miło Cię widzieć!",
         temp_unavailable: "Chwilowo niedostępna", topup_local_only: "Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.", gift_local_only: "Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.", feature_locked_desc: "Pracujemy nad nową wersją tej funkcji. Zapraszamy wkrótce!",
         lvl_next: "do rangi"
@@ -797,8 +816,7 @@ const translations = {
         zone_front: "Front room", zone_main: "Main room", zone_kids: "Kids area",
         wallet_title: "My Wallet", wallet_balance: "Card Balance", wallet_info: "You can top up your card in the app or with cash/card at the local register.", wallet_topup: "Top up card online", wallet_gift: "Buy a gift card",
         hist_title: "Recent Activity", hist_sub: "History", wallet_hist: "Transaction History",
-        reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Claim", reward_btn_no: "Not enough pts",
-        reward_active_title: "Your active rewards available at the counter:", reward_active_sub: "Ready to use at the register", reward_confirm: "Are you sure you want to redeem your points for this reward?",
+        reward_title: "Rewards Center", reward_sub: "Your Milkos", reward_btn: "Buy voucher", reward_btn_no: "Not enough pts",
         home_hello: "Hello", home_nice: "Nice to see you!",
         temp_unavailable: "Temporarily unavailable", topup_local_only: "Top-up is temporarily only possible at the register.", gift_local_only: "Gift cards are temporarily available only at the register.", feature_locked_desc: "We are working on a new version of this feature. Check back soon!",
         lvl_next: "to level"
@@ -821,8 +839,7 @@ const translations = {
         zone_front: "Sala principal", zone_main: "Comedor", zone_kids: "Zona infantil",
         wallet_title: "Mi Cartera", wallet_balance: "Saldo de tarjeta", wallet_info: "Puedes recargar tu tarjeta en la app o en la caja del local.", wallet_topup: "Recargar tarjeta online", wallet_gift: "Comprar tarjeta regalo",
         hist_title: "Actividad Reciente", hist_sub: "Historial", wallet_hist: "Historial de transacciones",
-        reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Canjear", reward_btn_no: "Faltan pts",
-        reward_active_title: "Tus premios activos disponibles en el local:", reward_active_sub: "Listo para usar en la caja", reward_confirm: "¿Estás seguro de que quieres canjear tus puntos por este premio?",
+        reward_title: "Centro de Premios", reward_sub: "Tus Milkos", reward_btn: "Comprar bono", reward_btn_no: "Faltan pts",
         home_hello: "Hola", home_nice: "¡Qué bueno verte!",
         temp_unavailable: "Temporalmente no disponible", topup_local_only: "La recarga temporalmente solo es posible en la caja.", gift_local_only: "Las tarjetas de regalo temporalmente solo están disponibles en la caja.", feature_locked_desc: "Estamos trabajando en una nueva versión de esta función. ¡Vuelve pronto!",
         lvl_next: "para nivel"
@@ -846,7 +863,6 @@ function changeLanguage(lang, showMsg = true) {
     closeModal('modal-language');
     if (currentUser) updateLevel(currentUser.points || 0);
     renderRewards(); // Odświeża język w nagrodach
-    if (currentUser) renderActiveRewards(currentUser.activeRewards || []);
     
     if (showMsg) {
         const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
@@ -1092,7 +1108,6 @@ async function initUserData() {
           userPoints = data.points;
           currentUser.walletBalance = data.walletBalance;
           currentUser.history = data.history;
-          currentUser.activeRewards = data.activeRewards || [];
       } else if (res.status === 404) {
           logout();
           return;
@@ -1109,10 +1124,13 @@ async function initUserData() {
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
     
-    const walletBalance = document.querySelector('.milk-card-balance div:nth-child(2)');
-    if (walletBalance) {
+    const walletBalanceDisplay = document.querySelector('.milk-card-balance div:nth-child(2)');
+    if (walletBalanceDisplay) {
         const bal = currentUser.walletBalance || 0;
-        walletBalance.innerText = `${bal.toFixed(2)} PLN`;
+        walletBalanceDisplay.innerText = `${bal.toFixed(2)} PLN`;
+        
+        // Zmiana koloru karty na podstawie salda vPLN
+        updateCardVisuals(bal); 
     }
 
     document.getElementById('set-name-display').innerText = currentUser.username;
@@ -1129,7 +1147,24 @@ async function initUserData() {
     updateLevel(userPoints);
     renderActivities(currentUser.history || []); 
     renderRewards();
-    renderActiveRewards(currentUser.activeRewards || []);
+}
+
+// Funkcja odpowiedzialna za aktualizację koloru karty na podstawie salda (vPLN)
+function updateCardVisuals(balance) {
+    const card = document.querySelector('.milk-card');
+    if(!card) return;
+
+    // Resetowanie klas
+    card.classList.remove('tier-default', 'tier-bronze', 'tier-silver', 'tier-gold', 'tier-diamond', 'tier-platinum', 'tier-shiny');
+
+    // Nadawanie klas zależnie od salda (kolejność od największej)
+    if (balance >= 500) { card.classList.add('tier-shiny'); }
+    else if (balance >= 200) { card.classList.add('tier-platinum'); }
+    else if (balance >= 100) { card.classList.add('tier-diamond'); }
+    else if (balance >= 50) { card.classList.add('tier-gold'); }
+    else if (balance >= 20) { card.classList.add('tier-silver'); }
+    else if (balance >= 10) { card.classList.add('tier-bronze'); }
+    else { card.classList.add('tier-default'); }
 }
 
 // ==========================================
@@ -1213,7 +1248,7 @@ function toggleNoticeDetails() {
 }
 
 // ==========================================
-// 4. RENDERING & FUNKCJE (NAGRODY I HISTORIA)
+// 4. RENDERING & FUNKCJE (BON DO PORTFELA)
 // ==========================================
 function renderActivities(historyArray = []) {
   const homeContainer = document.getElementById('activity-container-home');
@@ -1248,83 +1283,67 @@ function renderActivities(historyArray = []) {
   if(walletContainer) walletContainer.innerHTML = html;
 }
 
-// Baza dostępnych nagród
-const availableRewards = [
-  { id: 'r1', cost: 25, namePl: 'Milkshake do 30 PLN', nameEn: 'Milkshake up to 30 PLN', nameEs: 'Batido hasta 30 PLN', icon: 'fa-glass-water' },
-  { id: 'r2', cost: 50, namePl: 'Zestaw Burger do 60 PLN', nameEn: 'Burger set up to 60 PLN', nameEs: 'Menú Hamburguesa hasta 60 PLN', icon: 'fa-hamburger' },
-  { id: 'r3', cost: 100, namePl: 'Zamówienie do 120 PLN', nameEn: 'Order up to 120 PLN', nameEs: 'Pedido hasta 120 PLN', icon: 'fa-shopping-bag' }
+// Baza Bonów do Portfela vPLN
+const availableVouchers = [
+  { cost: 10, vpln: 10, namePl: 'Bon 10 PLN', nameEn: '10 PLN Voucher', nameEs: 'Bono 10 PLN', icon: 'fa-coins' },
+  { cost: 20, vpln: 20, namePl: 'Bon 20 PLN', nameEn: '20 PLN Voucher', nameEs: 'Bono 20 PLN', icon: 'fa-coins' },
+  { cost: 50, vpln: 50, namePl: 'Bon 50 PLN', nameEn: '50 PLN Voucher', nameEs: 'Bono 50 PLN', icon: 'fa-money-bill-wave' },
+  { cost: 100, vpln: 100, namePl: 'Bon 100 PLN', nameEn: '100 PLN Voucher', nameEs: 'Bono 100 PLN', icon: 'fa-money-bill-wave' },
+  { cost: 200, vpln: 200, namePl: 'Bon 200 PLN', nameEn: '200 PLN Voucher', nameEs: 'Bono 200 PLN', icon: 'fa-wallet' },
+  { cost: 500, vpln: 500, namePl: 'Bon 500 PLN', nameEn: '500 PLN Voucher', nameEs: 'Bono 500 PLN', icon: 'fa-gem' }
 ];
 
 function renderRewards() {
   const grid = document.getElementById('rewards-grid');
   grid.innerHTML = '';
 
-  availableRewards.forEach(r => {
-    const canAfford = userPoints >= r.cost;
-    const name = currentLang === 'pl' ? r.namePl : (currentLang === 'en' ? r.nameEn : r.nameEs);
+  availableVouchers.forEach(v => {
+    const canAfford = userPoints >= v.cost;
+    const name = currentLang === 'pl' ? v.namePl : (currentLang === 'en' ? v.nameEn : v.nameEs);
     const btnText = canAfford ? translations[currentLang].reward_btn : translations[currentLang].reward_btn_no;
     
     grid.innerHTML += `
       <div class="reward-card">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,102,0,0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 12px;">
-            <i class="fas ${r.icon}"></i>
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(16,185,129,0.1); color: var(--status-ok); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 12px;">
+            <i class="fas ${v.icon}"></i>
         </div>
-        <div class="reward-cost">${r.cost} Milkosów</div>
-        <div class="reward-name">${name}</div>
-        <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="claimReward('${r.id}', ${r.cost}, '${name}')">${btnText}</button>
+        <div class="reward-cost" style="color: var(--status-ok); border-color: rgba(16,185,129,0.2);">${v.cost} Milkosów</div>
+        <div class="reward-name" style="font-weight: 800;">${name}</div>
+        <button class="btn-redeem" ${canAfford ? '' : 'disabled'} onclick="exchangeToVpln(${v.cost}, ${v.vpln})">${btnText}</button>
       </div>
     `;
   });
 }
 
-async function claimReward(rewardId, cost, rewardName) {
-  const confirmMsg = translations[currentLang].reward_confirm;
-  if (!confirm(`${confirmMsg}\n\n${rewardName} (-${cost} pkt)`)) return;
+// Funkcja wywoływana, gdy klient wymienia punkty na doładowanie vPLN
+async function exchangeToVpln(pointsCost, vplnAmount) {
+  if (!confirm(`Czy na pewno chcesz wydać ${pointsCost} pkt i kupić doładowanie portfela o wartości ${vplnAmount} PLN?`)) return;
 
   try {
-    const res = await fetch('/api/rewards/claim', {
+    const res = await fetch('/api/rewards/exchange', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: currentUser.id || currentUser._id, rewardId, cost, rewardName })
+      body: JSON.stringify({ userId: currentUser.id || currentUser._id, pointsCost, vplnAmount })
     });
     const data = await res.json();
     
     if (data.success) {
-      showToast('Nagroda pomyślnie przypisana do konta!');
+      showToast(data.message);
+      
+      // Nadpisujemy lokalne dane nowymi informacjami z bazy
       userPoints = data.points;
       currentUser.points = data.points;
-      currentUser.activeRewards = data.activeRewards;
-      initUserData(); // Odświeża wszystko (punkty, nagrody, historię)
+      currentUser.walletBalance = data.walletBalance;
+      if(data.history) currentUser.history = data.history;
+      
+      // Odświeżamy widok - punkty znikną, saldo portfela wzrośnie, a karta zmieni kolor
+      initUserData(); 
     } else {
       showToast(data.message, false);
     }
   } catch (err) {
     showToast('Błąd połączenia z serwerem.', false);
   }
-}
-
-function renderActiveRewards(activeRewards) {
-  const container = document.getElementById('my-active-rewards-container');
-  const list = document.getElementById('my-active-rewards-list');
-  
-  if (!activeRewards || activeRewards.length === 0) {
-    container.style.display = 'none';
-    return;
-  }
-  
-  container.style.display = 'block';
-  list.innerHTML = '';
-  
-  activeRewards.forEach(r => {
-    list.innerHTML += `
-      <div style="background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--status-ok); padding: 12px 16px; border-radius: var(--radius-m); display: flex; align-items: center; justify-content: space-between;">
-        <div>
-          <div style="font-weight: 800; font-size: 0.95rem; color: var(--status-ok);"><i class="fas fa-gift" style="margin-right: 5px;"></i> ${r.name}</div>
-          <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 3px;" data-i18n="reward_active_sub">${translations[currentLang].reward_active_sub}</div>
-        </div>
-      </div>
-    `;
-  });
 }
 
 // ==========================================
