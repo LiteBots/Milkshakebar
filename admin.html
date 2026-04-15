@@ -344,7 +344,6 @@
     <div class="nav-category">MilkMi App</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
     <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Z kasy)</span></div>
-    <div class="nav-item" onclick="switchView('rewards-admin', this)"><i class="fas fa-gift"></i><span>Realizacja Nagród</span></div>
     <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Portfel Pre-paid</span></div>
     <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
     <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
@@ -450,51 +449,6 @@
               </tr>
             </thead>
             <tbody id="point-transactions-body">
-              <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-rewards-admin" class="view-section">
-      <div class="card">
-        <div class="section-header">Realizacja Nagród (Przy Kasie)</div>
-        <p style="color:var(--text-sub); margin-bottom: 20px;">Wyszukaj klienta, aby sprawdzić i zrealizować jego aktywne nagrody odebrane w aplikacji.</p>
-        
-        <div class="form-group">
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="reward-search-input" class="form-control" placeholder="E-mail lub telefon klienta..." style="flex:1;">
-                <button class="btn btn-primary" onclick="searchUserRewards()" style="width: auto;"><i class="fas fa-search"></i> Szukaj</button>
-            </div>
-        </div>
-        
-        <div id="reward-user-details" style="display:none; margin-top: 20px; padding: 25px; border: 2px solid var(--status-ok); border-radius: var(--radius-l); background: rgba(16, 185, 129, 0.05);">
-            <div style="margin-bottom: 20px;">
-                <h3 id="reward-user-name" style="margin-bottom: 5px; font-size: 1.5rem; color: var(--status-ok);">Imię Nazwisko</h3>
-                <span id="reward-user-contact" style="color:var(--text-sub); font-size: 0.9rem; font-weight: 600;">kontakt</span>
-            </div>
-            
-            <h4 style="margin-bottom: 15px; font-size: 1.1rem;">Aktywne nagrody do odbioru:</h4>
-            <div id="active-rewards-list" style="display: flex; flex-direction: column; gap: 10px;">
-                </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top: 20px;">
-        <div class="section-header">Globalna historia wydanych nagród</div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Klient</th>
-                <th>Wydana Nagroda</th>
-                <th>Koszt (Milkosy)</th>
-                <th>Data</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="reward-transactions-body">
               <tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>
             </tbody>
           </table>
@@ -1070,7 +1024,6 @@
       const titles = {
         'dashboard': 'Dashboard',
         'points': 'Nabijanie Punktów (Kasa)',
-        'rewards-admin': 'Realizacja Nagród',
         'prepaid': 'Portfel Pre-paid',
         'users': 'Baza Klientów',
         'reservations': 'Rezerwacje',
@@ -1101,8 +1054,6 @@
         loadPointTransactions();
       } else if (viewId === 'prepaid') {
         loadWalletTransactions(); 
-      } else if (viewId === 'rewards-admin') {
-        loadRewardTransactions(); // Ładowanie historii wydanych nagród
       } else if (viewId === 'reservations') {
         loadAllReservations();
       } else if (viewId === 'dashboard') {
@@ -1261,128 +1212,6 @@
                             <td style="color:var(--status-ok); font-weight:800;">+ ${tx.pointsAwarded} pkt</td>
                             <td>${formattedDate}</td>
                             <td><span class="badge green">Naliczone</span></td>
-                        </tr>
-                    `;
-                });
-            }
-        } catch (err) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
-        }
-    }
-
-    // =====================================
-    // REALIZACJA NAGRÓD (W KASIE)
-    // =====================================
-    let currentRewardUserId = null;
-
-    async function searchUserRewards() {
-        const identifier = document.getElementById('reward-search-input').value;
-        if(!identifier) return showToast('Wpisz dane klienta', 'error');
-
-        try {
-            const res = await fetch('/api/admin/rewards/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier })
-            });
-            const data = await res.json();
-            
-            if(data.success) {
-                currentRewardUserId = data.user.id;
-                document.getElementById('reward-user-name').innerText = data.user.username;
-                
-                const contactStatus = document.getElementById('reward-user-contact');
-                if (data.user.activeRewards.length > 0) {
-                    contactStatus.innerText = 'Klient posiada nagrody do odbioru!';
-                    contactStatus.style.color = 'var(--status-ok)';
-                } else {
-                    contactStatus.innerText = 'Brak aktywnych nagród na koncie.';
-                    contactStatus.style.color = 'var(--text-sub)';
-                }
-                
-                const listContainer = document.getElementById('active-rewards-list');
-                listContainer.innerHTML = '';
-                
-                if (data.user.activeRewards.length === 0) {
-                    listContainer.innerHTML = '<div style="color: var(--text-sub);">Brak nagród do zrealizowania.</div>';
-                } else {
-                    data.user.activeRewards.forEach(reward => {
-                        listContainer.innerHTML += `
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 15px; border-radius: var(--radius-m); border: 1px solid var(--border);">
-                                <div>
-                                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">${reward.name}</strong>
-                                    <span style="font-size: 0.8rem; color: var(--text-sub);">Wartość: ${reward.cost} pkt</span>
-                                </div>
-                                <button class="btn" style="background: var(--status-ok); color: white; width: auto;" onclick="useReward('${reward._id}')">
-                                    <i class="fas fa-check"></i> Wydaj nagrodę
-                                </button>
-                            </div>
-                        `;
-                    });
-                }
-                
-                document.getElementById('reward-user-details').style.display = 'block';
-            } else {
-                document.getElementById('reward-user-details').style.display = 'none';
-                showToast(data.message, 'error');
-            }
-        } catch(err) {
-            showToast('Błąd wyszukiwania klienta.', 'error');
-        }
-    }
-
-    async function useReward(rewardObjId) {
-        if(!currentRewardUserId) return;
-        if(!confirm('Czy na pewno chcesz zrealizować tę nagrodę i usunąć ją z konta klienta?')) return;
-
-        try {
-            const res = await fetch('/api/admin/rewards/use', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentRewardUserId, rewardObjId })
-            });
-            const data = await res.json();
-            
-            if(data.success) {
-                showToast(data.message, 'success');
-                searchUserRewards(); // Odśwież listę u klienta po zrealizowaniu nagrody
-                loadRewardTransactions(); // Odśwież globalną tabelę historii
-            } else {
-                showToast(data.message, 'error');
-            }
-        } catch(err) {
-            showToast('Błąd podczas realizacji nagrody.', 'error');
-        }
-    }
-
-    // --- ŁADOWANIE HISTORII WYDANYCH NAGRÓD ---
-    async function loadRewardTransactions() {
-        const tbody = document.getElementById('reward-transactions-body');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
-        
-        try {
-            const res = await fetch('/api/admin/reward-transactions');
-            const data = await res.json();
-            
-            if(data.success) {
-                tbody.innerHTML = '';
-                
-                if(data.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak historii wydanych nagród.</td></tr>';
-                    return;
-                }
-                
-                data.data.forEach(tx => {
-                    const dateObj = new Date(tx.date);
-                    const formattedDate = dateObj.toLocaleDateString('pl-PL') + ', ' + dateObj.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
-                    
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${tx.userDisplay}</strong></td>
-                            <td><strong>${tx.rewardName}</strong></td>
-                            <td style="color:var(--status-err); font-weight:800;">- ${tx.cost} pkt</td>
-                            <td>${formattedDate}</td>
-                            <td><span class="badge green">Wydano</span></td>
                         </tr>
                     `;
                 });
