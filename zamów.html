@@ -92,25 +92,45 @@
     .view-section.active { display: block; }
     .section-title { font-size: 1.2rem; font-weight: 800; margin: 20px 24px 15px; }
 
-    /* Kategorie (POTĘŻNE KARTY - ok 1/3 ekranu) */
-    .categories-list { display: flex; flex-direction: column; gap: 20px; padding: 0 24px; }
+    /* Kategorie (POTĘŻNE KARTY - od krawędzi do krawędzi) */
+    .categories-list { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 2px; /* Minimalny odstęp między zdjęciami */
+      padding: 0; /* Usunięto marginesy boczne */
+    }
     .category-card {
       position: relative; 
-      height: 30vh; /* Zajmuje 30% wysokości ekranu */
-      min-height: 240px; /* Zabezpieczenie dla bardzo małych ekranów */
-      border-radius: var(--radius-l);
-      overflow: hidden; cursor: pointer; box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-      background-color: var(--bg-surface); transform: scale(1); transition: transform 0.2s;
+      height: 30vh; 
+      min-height: 240px; 
+      border-radius: 0; /* Usunięto zaokrąglenia */
+      overflow: hidden; 
+      cursor: pointer; 
+      background-color: var(--bg-surface); 
     }
-    .category-card:active { transform: scale(0.96); }
-    .category-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-    .category-card:active img { transform: scale(1.05); }
+    .category-card img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      transition: transform 0.4s ease; 
+    }
+    .category-card:active img { 
+      transform: scale(1.08); /* Wyraźniejsze powiększenie zdjęcia przy kliknięciu */
+    }
     .category-overlay {
-      position: absolute; inset: 0; padding: 25px;
+      position: absolute; inset: 0; 
+      padding: 25px 15px; /* Tekst na maksa dosunięty do lewej (15px to tylko bezpieczny margines na ekran) */
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%);
       display: flex; align-items: flex-end;
     }
-    .category-title { color: #fff; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 4px 10px rgba(0,0,0,0.7); line-height: 1; }
+    .category-title { 
+      color: #fff; 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      letter-spacing: -0.5px; 
+      text-shadow: 0 4px 10px rgba(0,0,0,0.7); 
+      line-height: 1; 
+    }
 
     /* Nagłówek powrotu wewnątrz menu */
     .menu-header { display: flex; align-items: center; gap: 15px; padding: 15px 24px 25px; }
