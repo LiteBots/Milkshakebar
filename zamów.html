@@ -350,7 +350,7 @@ const menuData = {
             { id: 'lunch_dania', name: 'Dania główne', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }
         ]
     },
-    // Wszystkie przedmioty wyczyszczone zgodnie z prośbą
+    // Obiekt wypełniany dynamicznie z bazy danych
     items: {} 
 };
 
@@ -583,8 +583,41 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove('visible'), 2500);
 }
 
+// ==========================================
+// POBIERANIE PRODUKTÓW Z BAZY MONGO DB
+// ==========================================
+async function fetchProductsFromDB() {
+    try {
+        const res = await fetch('/api/menu');
+        const json = await res.json();
+        
+        if (json.success) {
+            menuData.items = {}; // Czyścimy obiekt
+            
+            json.data.forEach(prod => {
+                if (!menuData.items[prod.categoryId]) {
+                    menuData.items[prod.categoryId] = [];
+                }
+                
+                menuData.items[prod.categoryId].push({
+                    id: prod._id, // MongoDB ID
+                    name: prod.name,
+                    desc: prod.description,
+                    price: prod.price,
+                    img: prod.imageUrl
+                });
+            });
+        }
+    } catch (err) {
+        console.error("Nie udało się pobrać produktów z serwera", err);
+    }
+}
+
 // Inicjalizacja przy załadowaniu strony
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Pobierz produkty z bazy MongoDB
+    await fetchProductsFromDB();
+    // 2. Wyrenderuj główne kategorie
     renderCategories();
 });
 </script>
