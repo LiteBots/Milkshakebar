@@ -538,6 +538,31 @@ app.post('/api/admin/menu', async (req, res) => {
   }
 });
 
+// AKTUALIZACJA PRODUKTU (EDYTKOWANIE - Tylko Admin)
+app.put('/api/admin/menu/:id', async (req, res) => {
+  try {
+    const { name, description, price, imageUrl, categoryId } = req.body;
+    
+    if (!name || !price || !imageUrl || !categoryId) {
+      return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, description, price, imageUrl, categoryId },
+      { new: true } // Zwraca zaktualizowany dokument
+    );
+    
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: 'Nie znaleziono produktu.' });
+    }
+
+    res.json({ success: true, product: updatedProduct, message: 'Produkt zaktualizowany pomyślnie!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd aktualizacji produktu.' });
+  }
+});
+
 // USUWANIE PRODUKTU (Tylko Admin)
 app.delete('/api/admin/menu/:id', async (req, res) => {
   try {
