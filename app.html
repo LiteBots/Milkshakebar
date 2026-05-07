@@ -7,10 +7,10 @@
     
   <meta name="theme-color" content="#FF6600">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
     :root {
       /* Palette - Premium Flat */
       --primary: #FF6600;
-      --primary-glow: rgba(255, 102, 0, 0.3);
+      --primary-glow: rgba(255, 102, 0, 0.15);
       --bg-body: #F2F4F6;
       --bg-surface: #FFFFFF;
       --text-main: #111827;
@@ -44,7 +44,7 @@
       --status-ok: #10B981;
       --status-err: #EF4444;
 
-      /* Dynamic Notch / Status Bar Spacing - Increased for better visibility */
+      /* Dynamic Notch / Status Bar Spacing */
       --safe-top: env(safe-area-inset-top, 44px);
     }
 
@@ -56,7 +56,7 @@
       --border: #2D2D30;
       --glass-bg: rgba(28, 28, 30, 0.85);
       --glass-border: rgba(255, 255, 255, 0.1);
-      --primary-glow: rgba(255, 102, 0, 0.5);
+      --primary-glow: rgba(255, 102, 0, 0.2);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -65,7 +65,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       background-color: var(--bg-body);
-      overflow: hidden;
+      overflow-x: hidden;
       overscroll-behavior-y: none;
       transition: background 0.3s, color 0.3s;
       padding-bottom: calc(var(--nav-height) + 30px);
@@ -88,9 +88,9 @@
     .cd-box span { display: block; font-size: 1.6rem; font-weight: 800; color: var(--primary); }
     .cd-box .cd-label { font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; font-weight: 600; }
     
-    .dev-dot { position: absolute; bottom: 15px; left: 15px; color: rgba(255, 255, 255, 0.15); font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: flex-end; justify-content: flex-start; user-select: none; -webkit-tap-highlight-color: transparent; z-index: 10000; }
+    .dev-dot { position: absolute; bottom: 15px; left: 15px; color: rgba(255, 255, 255, 0.15); font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: flex-end; justify-content: flex-start; user-select: none; z-index: 10000; }
 
-    /* --- AUTH SCREEN (NEW) --- */
+    /* --- AUTH SCREEN --- */
     #auth-screen {
       max-width: 480px; margin: 0 auto; min-height: 100vh;
       display: none;
@@ -122,7 +122,6 @@
     .app-container {
       max-width: 480px; margin: 0 auto; min-height: 100vh;
       position: relative; background: var(--bg-body);
-      box-shadow: 0 0 40px rgba(0,0,0,0.05);
       display: none;
       opacity: 0; 
       transition: opacity 0.5s ease;
@@ -141,7 +140,6 @@
     .header-actions { display: flex; gap: 10px; align-items: center; height: 40px;}
     .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 1rem; cursor: pointer; position: relative; transition: 0.2s; }
     .icon-btn:active { transform: scale(0.9); }
-    .badge { position: absolute; top: -2px; right: -2px; background: var(--primary); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; border: 2px solid var(--bg-surface); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
     /* --- DYNAMIC APP BAR (ANNOUNCEMENT) --- */
     #dynamic-app-bar {
@@ -156,11 +154,6 @@
       z-index: 89;
       position: relative;
       animation: slideDown 0.4s ease-out;
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
     }
 
     /* --- SETTINGS STYLES --- */
@@ -205,7 +198,7 @@
     .ad-btn { background: #000; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
     body.dark-mode .ad-btn { background: var(--primary); }
 
-    /* --- WALLET VISUALS (ZAKTUALIZOWANE) --- */
+    /* --- WALLET VISUALS --- */
     .milk-card { 
       border-radius: 20px; padding: 24px; position: relative; overflow: hidden; 
       margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
@@ -222,7 +215,6 @@
     .milk-card-num { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 15px; }
     .wallet-info-box { background: rgba(255, 102, 0, 0.1); border: 1px dashed var(--primary); padding: 15px; border-radius: var(--radius-m); margin-bottom: 24px; text-align: center; font-size: 0.85rem; color: var(--text-main); }
     
-    /* VPLN Card Tiers */
     .milk-card.tier-default { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); }
     .milk-card.tier-bronze  { background: linear-gradient(135deg, #8B5A2B 0%, #CD853F 100%); }
     .milk-card.tier-silver  { background: linear-gradient(135deg, #bdc3c7 0%, #7f8c8d 100%); }
@@ -235,11 +227,7 @@
         animation: shinyGold 3s ease infinite; 
         color: #000; 
     }
-    @keyframes shinyGold {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
+    @keyframes shinyGold { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
     /* --- ACTIVITY LIST --- */
     .section-title { font-size: 1.1rem; font-weight: 700; margin: 24px 0 12px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
@@ -257,17 +245,18 @@
     /* --- RESERVATION VISUALS --- */
     .table-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
     .table-select { border: 2px solid var(--border); border-radius: var(--radius-m); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-surface); font-size: 0.8rem; font-weight: 600; }
-    .table-select.selected { border-color: var(--primary); background: rgba(255,102,0,0.05); color: var(--primary); }
+    .table-select.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary); }
     .table-select i { font-size: 1.2rem; display: block; margin-bottom: 6px; opacity: 0.6; }
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; width: 100%;}
     .form-group label { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); }
     .form-control { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 0.9rem; }
     .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    /* --- BOTTOM NAV --- */
+    /* --- BOTTOM NAV / SIDEBAR --- */
+    .sidebar-brand { display: none; }
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)); background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 1000; border-radius: 24px 24px 0 0; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-sub); text-decoration: none; font-size: 0.65rem; font-weight: 600; flex: 1; transition: color 0.2s, background 0.2s; }
     .nav-item.active { color: var(--primary); }
     .nav-item i { font-size: 1.4rem; transition: transform 0.2s; }
     .nav-item.active i { transform: translateY(-3px); }
@@ -277,7 +266,6 @@
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
     .modal-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-surface); border-radius: 30px 30px 0 0; padding: 30px 24px calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
-    
     .modal-sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(45px + var(--safe-top)); }
 
     /* Utils */
@@ -294,7 +282,7 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
 
-    /* Animations & Keyframes */
+    /* Animations */
     @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
     @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
     @keyframes splashPop { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
@@ -302,6 +290,154 @@
     /* Toast */
     .toast { position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--bg-surface); color: var(--text-main); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border); }
     .toast.visible { transform: translateX(-50%) translateY(0); }
+
+    /* ========================================================
+       DESKTOP RESPONSIVENESS (BANK PANEL LOOK)
+       ======================================================== */
+    @media (min-width: 992px) {
+      body {
+        padding-bottom: 0;
+        background-color: var(--bg-body);
+      }
+
+      /* Center Auth Screen */
+      #auth-screen {
+        max-width: 450px;
+        min-height: auto;
+        margin: 10vh auto;
+        border-radius: var(--radius-l);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        border: 1px solid var(--border);
+        padding: 40px;
+      }
+
+      /* Desktop Layout Grid */
+      .app-container {
+        max-width: 1400px;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+          "sidebar header"
+          "sidebar topbar"
+          "sidebar main";
+        box-shadow: none;
+        min-height: 100vh;
+      }
+
+      /* Sidebar (was Bottom Nav) */
+      .bottom-nav {
+        grid-area: sidebar;
+        position: sticky;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 40px 20px;
+        border-radius: 0;
+        border-top: none;
+        border-right: 1px solid var(--border);
+        background: var(--bg-surface);
+        z-index: 100;
+      }
+
+      .sidebar-brand {
+        display: block;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 50px;
+        padding-left: 15px;
+        letter-spacing: -1px;
+      }
+      .sidebar-brand span { color: var(--primary); }
+
+      .nav-item {
+        flex-direction: row;
+        width: 100%;
+        flex: none;
+        padding: 16px 20px;
+        font-size: 1rem;
+        justify-content: flex-start;
+        gap: 15px;
+        border-radius: var(--radius-m);
+        margin-bottom: 8px;
+      }
+      .nav-item i { font-size: 1.2rem; width: 24px; text-align: center; }
+      .nav-item.active { background: var(--primary-glow); color: var(--primary); }
+      .nav-item.active i { transform: none; }
+
+      /* Top Header */
+      .app-header {
+        grid-area: header;
+        position: sticky;
+        top: 0;
+        margin-top: 0;
+        padding: 24px 40px;
+        border-bottom: 1px solid var(--border);
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        z-index: 90;
+        align-items: center;
+      }
+      .brand-container .brand { display: none; } /* Hide mobile logo */
+      .location-selector { margin-top: 0; font-size: 0.9rem; padding: 8px 16px; }
+
+      /* Dynamic App Bar */
+      #dynamic-app-bar {
+        grid-area: topbar;
+        border-radius: var(--radius-m);
+        margin: 20px 40px 0;
+        width: auto;
+      }
+
+      /* Main Content Area */
+      .view-section {
+        grid-area: main;
+        padding: 40px;
+        max-width: 1100px;
+      }
+
+      /* Desktop tweaks for components */
+      .loyalty-card-premium, .card, .milk-card {
+        margin-left: 0;
+        margin-right: 0;
+        max-width: 550px;
+      }
+
+      .section-title, .activity-list, .rewards-grid-layout, .rewards-hero, .ad-banner {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .rewards-grid-layout {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .table-grid { grid-template-columns: repeat(3, 1fr); }
+      .form-row { grid-template-columns: 1fr 1fr 1fr; }
+
+      /* Desktop Modals */
+      .modal-overlay { align-items: center; justify-content: center; padding: 20px; }
+      .modal-sheet {
+        transform: scale(0.95);
+        opacity: 0;
+        border-radius: var(--radius-l) !important;
+        height: auto !important;
+        max-height: 85vh !important;
+        padding-top: 30px !important;
+        max-width: 500px;
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
+      }
+      .modal-sheet.full { padding-top: 30px !important; }
+      .modal-overlay.open .modal-sheet { transform: scale(1); opacity: 1; }
+    }
 
   </style>
 </head>
@@ -392,6 +528,24 @@
 
 <div class="app-container" id="main-app">
 
+  <!-- Desktop Sidebar Nav (Also acts as bottom-nav on mobile) -->
+  <nav class="bottom-nav">
+    <div class="sidebar-brand">MilkMi<span>.</span></div>
+    <a href="#" class="nav-item active" onclick="switchTab('home', event)">
+      <i class="fas fa-home"></i> <span data-i18n="nav_start">Start</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('order', event)">
+      <i class="fas fa-shopping-basket"></i> <span data-i18n="nav_order">Zamów</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('rewards', event)">
+      <i class="fas fa-gift"></i> <span data-i18n="nav_rewards">Nagrody</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('wallet', event)">
+      <i class="fas fa-wallet"></i> <span data-i18n="nav_wallet">Portfel</span>
+    </a>
+  </nav>
+
+  <!-- Top Header Area -->
   <header class="app-header">
     <div class="brand-container">
         <div class="brand">MilkMi<span>.</span></div>
@@ -415,9 +569,10 @@
 
   <div id="dynamic-app-bar">Ładowanie informacji...</div>
 
+  <!-- Main Views Area -->
   <section id="view-home" class="view-section active">
       
-    <div style="padding: 10px 24px 20px;">
+    <div style="padding: 10px 0 20px;">
       <h2 style="font-size: 1.8rem; line-height: 1.2;">
         <span data-i18n="home_hello">Cześć</span> <span id="home-username-placeholder"></span>, <br>
         <span style="color:var(--text-sub); font-size: 1.1rem; font-weight:500;" data-i18n="home_nice">Miło Cię widzieć!</span>
@@ -443,7 +598,7 @@
       </div>
     </div>
     
-    <div style="padding: 0 24px 24px;">
+    <div style="max-width: 550px; margin-bottom: 24px;">
         <button class="btn-outline" onclick="switchTab('reservation', event)" style="width:100%; border-color:var(--primary); color:var(--primary); margin-bottom: 0;">
             <i class="fas fa-calendar-alt" style="margin-right:8px;"></i> <span data-i18n="btn_reserve">Zarezerwuj Stolik</span>
         </button>
@@ -464,7 +619,7 @@
     </div>
 
     <div class="activity-list" id="activity-container-home">
-      </div>
+    </div>
 
   </section>
   
@@ -477,7 +632,7 @@
       </div>
 
       <div class="rewards-grid-layout" id="rewards-grid">
-        </div>
+      </div>
   </section>
 
   <section id="view-order" class="view-section">
@@ -494,7 +649,7 @@
   <section id="view-reservation" class="view-section">
     <div class="section-title" data-i18n="res_title">Zarezerwuj Stolik</div>
       
-    <div class="card">
+    <div class="card" style="max-width: 800px;">
       <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block;" data-i18n="res_zone_title">Wybierz strefę</label>
       <div class="table-grid">
         <div class="table-select selected" onclick="selectZone(this, 'Sala frontowa')">
@@ -506,16 +661,17 @@
         <div class="table-select" onclick="selectZone(this, 'Przy kąciku dla dzieci')">
           <i class="fas fa-child"></i> <span data-i18n="zone_kids">Kącik dzieci</span>
         </div>
-        </div>
-
-      <div class="form-group">
-        <label data-i18n="res_name">Imię i Nazwisko</label>
-        <input type="text" class="form-control" placeholder="np. Jan Kowalski">
       </div>
 
-      <div class="form-group">
-        <label data-i18n="res_phone">Numer telefonu</label>
-        <input type="tel" class="form-control" placeholder="+48 000 000 000">
+      <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="res_name">Imię i Nazwisko</label>
+            <input type="text" class="form-control" placeholder="np. Jan Kowalski">
+          </div>
+          <div class="form-group">
+            <label data-i18n="res_phone">Numer telefonu</label>
+            <input type="tel" class="form-control" placeholder="+48 000 000 000">
+          </div>
       </div>
 
       <div class="form-row">
@@ -540,14 +696,14 @@
         <textarea class="form-control" rows="2" placeholder="..."></textarea>
       </div>
 
-      <button class="btn-main" style="margin-top: 10px;" onclick="submitReservation()" data-i18n="res_btn">Potwierdź rezerwację</button>
+      <button class="btn-main" style="margin-top: 10px; max-width: 300px;" onclick="submitReservation()" data-i18n="res_btn">Potwierdź rezerwację</button>
     </div>
   </section>
 
   <section id="view-wallet" class="view-section">
     <div class="section-title" data-i18n="wallet_title">Mój Portfel</div>
       
-    <div style="padding: 0 24px;">
+    <div>
         <div class="milk-card tier-default">
             <div class="milk-card-top">
                 <div class="milk-card-name">MilkCard</div>
@@ -560,16 +716,18 @@
             <div class="milk-card-num">**** **** **** 8829</div>
         </div>
 
-        <div class="wallet-info-box">
-            <i class="fas fa-info-circle"></i> <span data-i18n="wallet_info">Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.</span>
-        </div>
+        <div style="max-width: 550px;">
+          <div class="wallet-info-box">
+              <i class="fas fa-info-circle"></i> <span data-i18n="wallet_info">Kartę możesz doładować w aplikacji lub gotówką/kartą przy kasie w lokalu.</span>
+          </div>
 
-        <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
-            <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="topup_local_only">Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.</span>
-        </div>
-        
-        <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
-            <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="gift_local_only">Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.</span>
+          <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
+              <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="topup_local_only">Chwilowo doładowanie możliwe wyłącznie przy kasie w lokalu.</span>
+          </div>
+          
+          <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed var(--status-err); padding: 15px; border-radius: var(--radius-m); margin-bottom: 12px; text-align: center; color: var(--status-err); font-size: 0.85rem; font-weight: 600;">
+              <i class="fas fa-lock" style="margin-right: 5px;"></i> <span data-i18n="gift_local_only">Kupno karty na prezent chwilowo możliwe wyłącznie w lokalu.</span>
+          </div>
         </div>
     </div>
 
@@ -578,191 +736,177 @@
     </div>
   </section>
 
-  <div class="modal-overlay" id="settings-modal" onclick="closeModal('settings-modal')">
-    <div class="modal-sheet full" onclick="event.stopPropagation()">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px;">
-            <h2 data-i18n="set_title">Ustawienia</h2>
-            <button class="icon-btn" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button>
-        </div>
+</div>
 
-        <div class="user-profile-header">
-            <div class="user-avatar">M</div>
-            <h3 id="set-name-display">Użytkownik</h3>
-            <p style="color: var(--text-sub); font-size: 0.9rem;" id="set-email-display">email@example.com</p>
-        </div>
-
-        <div class="settings-list">
-            <div class="settings-item" onclick="openModal('modal-personal-data')">
-                <i class="fas fa-user-circle"></i>
-                <div class="label" data-i18n="set_personal">Dane osobowe</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-             
-            <div class="settings-item" onclick="openModal('modal-language')">
-                <i class="fas fa-language"></i>
-                <div class="label" id="setting-lang-label" data-i18n="set_lang">Język (Polski)</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
-            <div class="settings-item" onclick="openModal('modal-notifications')">
-                <i class="fas fa-bell"></i>
-                <div class="label" data-i18n="set_notif">Powiadomienia PUSH</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
-            <div class="settings-item" onclick="openModal('modal-security')">
-                <i class="fas fa-shield-alt"></i>
-                <div class="label" data-i18n="set_security">Bezpieczeństwo (FaceID/PIN)</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
-            <div class="settings-item" onclick="openModal('modal-business')">
-                <i class="fas fa-briefcase"></i>
-                <div class="label" data-i18n="set_business">Milk for Business</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid var(--border); margin: 15px 0;">
-
-            <div class="settings-item" onclick="openModal('modal-about')">
-                <i class="fas fa-info-circle"></i>
-                <div class="label" data-i18n="set_about">O nas</div>
-                <i class="fas fa-chevron-right chevron"></i>
-            </div>
-
-            <div class="settings-item" onclick="logout()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
-                <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
-                <div class="label" data-i18n="set_logout">Wyloguj się</div>
-            </div>
-        </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-personal-data" onclick="closeModal('modal-personal-data')">
-      <div class="modal-sheet" onclick="event.stopPropagation()">
-          <h3 data-i18n="set_personal">Dane osobowe</h3>
-          <div class="form-group" style="margin-top:20px;">
-              <label>Imię</label>
-              <input type="text" class="form-control" value="">
-          </div>
-          <div class="form-group">
-              <label>Email</label>
-              <input type="email" class="form-control" value="">
-          </div>
-          <div class="form-group">
-              <label>Telefon</label>
-              <input type="tel" class="form-control" value="">
-          </div>
-          <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')" data-i18n="btn_save">Zapisz zmiany</button>
+<!-- Modals System -->
+<div class="modal-overlay" id="settings-modal" onclick="closeModal('settings-modal')">
+  <div class="modal-sheet full" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px;">
+          <h2 data-i18n="set_title">Ustawienia</h2>
+          <button class="icon-btn" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button>
       </div>
-  </div>
 
-  <div class="modal-overlay" id="modal-language" onclick="closeModal('modal-language')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="lang_title">Wybierz język</h3>
-        <div class="settings-list">
-            <div class="settings-item" onclick="changeLanguage('pl')">
-                <div class="label">Polski</div>
-            </div>
-            <div class="settings-item" onclick="changeLanguage('en')">
-                <div class="label">English</div>
-            </div>
-            <div class="settings-item" onclick="changeLanguage('es')">
-                <div class="label">Español</div>
-            </div>
-        </div>
-    </div>
-  </div>
+      <div class="user-profile-header">
+          <div class="user-avatar">M</div>
+          <h3 id="set-name-display">Użytkownik</h3>
+          <p style="color: var(--text-sub); font-size: 0.9rem;" id="set-email-display">email@example.com</p>
+      </div>
 
-  <div class="modal-overlay" id="modal-notifications" onclick="closeModal('modal-notifications')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="set_notif">Powiadomienia</h3>
-        <div class="settings-item" style="cursor:default">
-            <div class="label">Powiadomienia o promocjach</div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="settings-item" style="cursor:default">
-            <div class="label">Status zamówienia</div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-notifications')">Gotowe</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-security" onclick="closeModal('modal-security')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="set_security">Bezpieczeństwo</h3>
-        <div class="settings-item" style="cursor:default">
-            <div class="label">Logowanie biometryczne</div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-security')">Zamknij</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-business" onclick="closeModal('modal-business')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="set_business">Milk for Business</h3>
-        <p style="color:var(--text-sub); margin-bottom:20px; font-size: 0.95rem; line-height: 1.5;">Jesteś zainteresowany/a współpracą? Napisz do nas na: <br><strong style="color: var(--text-main);">marcin@milkshakebar.pl</strong></p>
-        <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-business')">Powrót</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <h3 data-i18n="set_about">O MilkMi</h3>
-        <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.0</p>
-        <p style="font-size:0.9rem; line-height:1.5;">Aplikacja stworzona pod Milkshake Bar w Słupsku i Rowach.</p>
-        <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="modal-location" onclick="closeModal('modal-location')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <h3>Wybierz lokalizację</h3>
-      <p style="color: var(--text-sub); margin-bottom: 15px;">Wybierz lokal, w którym chcesz złożyć zamówienie:</p>
-      
       <div class="settings-list">
-          <div class="settings-item" onclick="changeLocation('Słupsk, Szczecińska 17')">
-              <i class="fas fa-map-marker-alt"></i>
-              <div class="label">Słupsk, Szczecińska 17</div>
+          <div class="settings-item" onclick="openModal('modal-personal-data')">
+              <i class="fas fa-user-circle"></i>
+              <div class="label" data-i18n="set_personal">Dane osobowe</div>
               <i class="fas fa-chevron-right chevron"></i>
           </div>
-          <div class="settings-item" onclick="changeLocation('Rowy, Wydmowa 2')">
-              <i class="fas fa-umbrella-beach"></i>
-              <div class="label">Rowy, Wydmowa 2</div>
+             
+          <div class="settings-item" onclick="openModal('modal-language')">
+              <i class="fas fa-language"></i>
+              <div class="label" id="setting-lang-label" data-i18n="set_lang">Język (Polski)</div>
               <i class="fas fa-chevron-right chevron"></i>
+          </div>
+
+          <div class="settings-item" onclick="openModal('modal-notifications')">
+              <i class="fas fa-bell"></i>
+              <div class="label" data-i18n="set_notif">Powiadomienia PUSH</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+
+          <div class="settings-item" onclick="openModal('modal-security')">
+              <i class="fas fa-shield-alt"></i>
+              <div class="label" data-i18n="set_security">Bezpieczeństwo (FaceID/PIN)</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+
+          <div class="settings-item" onclick="openModal('modal-business')">
+              <i class="fas fa-briefcase"></i>
+              <div class="label" data-i18n="set_business">Milk for Business</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 15px 0;">
+
+          <div class="settings-item" onclick="openModal('modal-about')">
+              <i class="fas fa-info-circle"></i>
+              <div class="label" data-i18n="set_about">O nas</div>
+              <i class="fas fa-chevron-right chevron"></i>
+          </div>
+
+          <div class="settings-item" onclick="logout()" style="margin-top: 20px; border-color: #fee2e2; color: #ef4444;">
+              <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+              <div class="label" data-i18n="set_logout">Wyloguj się</div>
           </div>
       </div>
-      
-      <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-location')">Anuluj</button>
-    </div>
   </div>
+</div>
 
-  <nav class="bottom-nav">
-    <a href="#" class="nav-item active" onclick="switchTab('home', event)">
-      <i class="fas fa-home"></i> <span data-i18n="nav_start">Start</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('order', event)">
-      <i class="fas fa-shopping-basket"></i> <span data-i18n="nav_order">Zamów</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('rewards', event)">
-      <i class="fas fa-gift"></i> <span data-i18n="nav_rewards">Nagrody</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('wallet', event)">
-      <i class="fas fa-wallet"></i> <span data-i18n="nav_wallet">Portfel</span>
-    </a>
-  </nav>
+<div class="modal-overlay" id="modal-personal-data" onclick="closeModal('modal-personal-data')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+        <h3 data-i18n="set_personal">Dane osobowe</h3>
+        <div class="form-group" style="margin-top:20px;">
+            <label>Imię</label>
+            <input type="text" class="form-control" value="">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" value="">
+        </div>
+        <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" class="form-control" value="">
+        </div>
+        <button class="btn-main" onclick="showToast('Dane zapisane'); closeModal('modal-personal-data')" data-i18n="btn_save">Zapisz zmiany</button>
+    </div>
+</div>
 
+<div class="modal-overlay" id="modal-language" onclick="closeModal('modal-language')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3 data-i18n="lang_title">Wybierz język</h3>
+      <div class="settings-list">
+          <div class="settings-item" onclick="changeLanguage('pl')">
+              <div class="label">Polski</div>
+          </div>
+          <div class="settings-item" onclick="changeLanguage('en')">
+              <div class="label">English</div>
+          </div>
+          <div class="settings-item" onclick="changeLanguage('es')">
+              <div class="label">Español</div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-notifications" onclick="closeModal('modal-notifications')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3 data-i18n="set_notif">Powiadomienia</h3>
+      <div class="settings-item" style="cursor:default">
+          <div class="label">Powiadomienia o promocjach</div>
+          <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+          </label>
+      </div>
+      <div class="settings-item" style="cursor:default">
+          <div class="label">Status zamówienia</div>
+          <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+          </label>
+      </div>
+      <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-notifications')">Gotowe</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-security" onclick="closeModal('modal-security')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3 data-i18n="set_security">Bezpieczeństwo</h3>
+      <div class="settings-item" style="cursor:default">
+          <div class="label">Logowanie biometryczne</div>
+          <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+          </label>
+      </div>
+      <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-security')">Zamknij</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-business" onclick="closeModal('modal-business')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3 data-i18n="set_business">Milk for Business</h3>
+      <p style="color:var(--text-sub); margin-bottom:20px; font-size: 0.95rem; line-height: 1.5;">Jesteś zainteresowany/a współpracą? Napisz do nas na: <br><strong style="color: var(--text-main);">marcin@milkshakebar.pl</strong></p>
+      <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-business')">Powrót</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-about" onclick="closeModal('modal-about')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+      <h3 data-i18n="set_about">O MilkMi</h3>
+      <p style="color:var(--text-sub); margin-bottom:15px;">Wersja aplikacji: 2.0</p>
+      <p style="font-size:0.9rem; line-height:1.5;">Aplikacja stworzona pod Milkshake Bar w Słupsku i Rowach.</p>
+      <button class="btn-main" style="margin-top:20px;" onclick="closeModal('modal-about')">Zamknij</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-location" onclick="closeModal('modal-location')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <h3>Wybierz lokalizację</h3>
+    <p style="color: var(--text-sub); margin-bottom: 15px;">Wybierz lokal, w którym chcesz złożyć zamówienie:</p>
+    
+    <div class="settings-list">
+        <div class="settings-item" onclick="changeLocation('Słupsk, Szczecińska 17')">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="label">Słupsk, Szczecińska 17</div>
+            <i class="fas fa-chevron-right chevron"></i>
+        </div>
+        <div class="settings-item" onclick="changeLocation('Rowy, Wydmowa 2')">
+            <i class="fas fa-umbrella-beach"></i>
+            <div class="label">Rowy, Wydmowa 2</div>
+            <i class="fas fa-chevron-right chevron"></i>
+        </div>
+    </div>
+    
+    <button class="btn-outline" style="border:none; margin-top:10px;" onclick="closeModal('modal-location')">Anuluj</button>
+  </div>
 </div>
 
 <div id="toast" class="toast">
@@ -770,10 +914,8 @@
   <span id="toast-msg">Sukces</span>
 </div>
 
+<!-- ===================================== JS ===================================== -->
 <script>
-// ==========================================
-// 0. SYSTEM TŁUMACZEŃ (i18n)
-// ==========================================
 const translations = {
     pl: {
         nav_start: "Start", nav_order: "Zamów", nav_rewards: "Nagrody", nav_wallet: "Portfel",
@@ -862,7 +1004,7 @@ function changeLanguage(lang, showMsg = true) {
 
     closeModal('modal-language');
     if (currentUser) updateLevel(currentUser.points || 0);
-    renderRewards(); // Odświeża język w nagrodach
+    renderRewards();
     
     if (showMsg) {
         const msgs = { pl: 'Język zmieniony na Polski', en: 'Language set to English', es: 'Idioma cambiado a Español' };
@@ -870,27 +1012,17 @@ function changeLanguage(lang, showMsg = true) {
     }
 }
 
-// ==========================================
-// 1. SYSTEM LEVELI (RANGI)
-// ==========================================
 function updateLevel(pts) {
     let lvl = "Bronze";
     let next = 20;
     let min = 0;
 
-    if (pts >= 500) { 
-        lvl = "Milk King"; next = pts; min = 500; 
-    } else if (pts >= 200) { 
-        lvl = "Platinium"; next = 500; min = 200;
-    } else if (pts >= 100) { 
-        lvl = "Diamond"; next = 200; min = 100;
-    } else if (pts >= 50) { 
-        lvl = "Gold"; next = 100; min = 50;
-    } else if (pts >= 20) { 
-        lvl = "Silver"; next = 50; min = 20;
-    } else {
-        lvl = "Bronze"; next = 20; min = 0;
-    }
+    if (pts >= 500) { lvl = "Milk King"; next = pts; min = 500; } 
+    else if (pts >= 200) { lvl = "Platinium"; next = 500; min = 200; } 
+    else if (pts >= 100) { lvl = "Diamond"; next = 200; min = 100; } 
+    else if (pts >= 50)  { lvl = "Gold"; next = 100; min = 50; } 
+    else if (pts >= 20)  { lvl = "Silver"; next = 50; min = 20; } 
+    else                 { lvl = "Bronze"; next = 20; min = 0; }
 
     document.getElementById('user-level-name').innerText = lvl;
     
@@ -914,10 +1046,6 @@ function getLevelName(targetPts) {
     return "";
 }
 
-
-// ==========================================
-// 2. ZMIENNE APLIKACJI
-// ==========================================
 let currentUser = null;
 let currentToken = null;
 let userPoints = 0;
@@ -936,16 +1064,10 @@ let selectedGiftAmount = 100;
 let currentLocation = "Słupsk, Szczecińska 17";
 let countdownInterval;
 
-// ==========================================
-// 3. INIT BAZOWY I POBIERANIE BANERÓW
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Wczytywanie Motywu z localStorage
   if (localStorage.getItem('milkmi_theme') === 'dark') {
       document.body.classList.add('dark-mode');
   }
-
-  // Wczytywanie Języka z localStorage
   const savedLang = localStorage.getItem('milkmi_lang') || 'pl';
   changeLanguage(savedLang, false);
 
@@ -969,7 +1091,6 @@ document.addEventListener('DOMContentLoaded', () => {
   countdownInterval = setInterval(updateTimer, 1000);
 });
 
-// POBIERANIE USTAWIEN BANERA APLIKACJI
 async function fetchAppBar() {
   try {
     const res = await fetch('/api/banners');
@@ -988,13 +1109,10 @@ async function fetchAppBar() {
       }
     }
   } catch (err) {
-    console.error('Nie udało się pobrać danych banerów', err);
+    console.log('Brak banera z serwera');
   }
 }
 
-// ==========================================
-// AUTORYZACJA
-// ==========================================
 async function handleAuthSubmit(e) {
     e.preventDefault();
     
@@ -1003,7 +1121,6 @@ async function handleAuthSubmit(e) {
     const mainApp = document.getElementById('main-app');
 
     if (isLogin) {
-        // --- LOGIKA LOGOWANIA ---
         const inputs = document.querySelectorAll('#form-login .form-control');
         const loginOrEmail = inputs[0].value;
         const password = inputs[1].value;
@@ -1036,7 +1153,6 @@ async function handleAuthSubmit(e) {
         }
 
     } else {
-        // --- LOGIKA REJESTRACJI ---
         const inputs = document.querySelectorAll('#form-register .form-control');
         const username = inputs[0].value;
         const email = inputs[1].value;
@@ -1086,7 +1202,7 @@ function transitionToApp(auth, main) {
     auth.style.opacity = '0';
     setTimeout(() => {
         auth.style.display = 'none';
-        main.style.display = 'block';
+        main.style.display = 'grid'; // Changed to GRID for responsive layout
         void main.offsetWidth; 
         main.style.opacity = '1';
         
@@ -1094,9 +1210,6 @@ function transitionToApp(auth, main) {
     }, 500);
 }
 
-// ==========================================
-// INICJALIZACJA DANYCH UŻYTKOWNIKA W UI
-// ==========================================
 async function initUserData() {
     if (!currentUser) return;
 
@@ -1117,9 +1230,7 @@ async function initUserData() {
     }
 
     const namePlaceholder = document.getElementById('home-username-placeholder');
-    if (namePlaceholder) {
-        namePlaceholder.innerText = currentUser.username;
-    }
+    if (namePlaceholder) namePlaceholder.innerText = currentUser.username;
 
     const pointsEls = document.querySelectorAll('#user-points, #rewards-points-display');
     pointsEls.forEach(el => { if(el) el.innerText = userPoints; });
@@ -1128,8 +1239,6 @@ async function initUserData() {
     if (walletBalanceDisplay) {
         const bal = currentUser.walletBalance || 0;
         walletBalanceDisplay.innerText = `${bal.toFixed(2)} PLN`;
-        
-        // Zmiana koloru karty na podstawie salda vPLN
         updateCardVisuals(bal); 
     }
 
@@ -1149,15 +1258,12 @@ async function initUserData() {
     renderRewards();
 }
 
-// Funkcja odpowiedzialna za aktualizację koloru karty na podstawie salda (vPLN)
 function updateCardVisuals(balance) {
     const card = document.querySelector('.milk-card');
     if(!card) return;
 
-    // Resetowanie klas
     card.classList.remove('tier-default', 'tier-bronze', 'tier-silver', 'tier-gold', 'tier-diamond', 'tier-platinum', 'tier-shiny');
-
-    // Nadawanie klas zależnie od salda (kolejność od największej)
+    
     if (balance >= 500) { card.classList.add('tier-shiny'); }
     else if (balance >= 200) { card.classList.add('tier-platinum'); }
     else if (balance >= 100) { card.classList.add('tier-diamond'); }
@@ -1167,9 +1273,6 @@ function updateCardVisuals(balance) {
     else { card.classList.add('tier-default'); }
 }
 
-// ==========================================
-// LOGIKA WYLOGOWANIA
-// ==========================================
 function logout() {
     localStorage.removeItem('milkmi_user');
     localStorage.removeItem('milkmi_token');
@@ -1188,7 +1291,7 @@ function unlockApp() {
       splash.style.visibility = 'hidden';
       
       if (currentUser && currentToken) {
-          mainApp.style.display = 'block';
+          mainApp.style.display = window.innerWidth >= 992 ? 'grid' : 'block'; 
           void mainApp.offsetWidth;
           mainApp.style.opacity = '1';
           initUserData();
@@ -1247,9 +1350,6 @@ function toggleNoticeDetails() {
     details.classList.toggle('open');
 }
 
-// ==========================================
-// 4. RENDERING & FUNKCJE (BON DO PORTFELA)
-// ==========================================
 function renderActivities(historyArray = []) {
   const homeContainer = document.getElementById('activity-container-home');
   const walletContainer = document.getElementById('activity-container-wallet');
@@ -1283,7 +1383,6 @@ function renderActivities(historyArray = []) {
   if(walletContainer) walletContainer.innerHTML = html;
 }
 
-// Baza Bonów do Portfela vPLN
 const availableVouchers = [
   { cost: 10, vpln: 10, namePl: 'Bon 10 PLN', nameEn: '10 PLN Voucher', nameEs: 'Bono 10 PLN', icon: 'fa-coins' },
   { cost: 20, vpln: 20, namePl: 'Bon 20 PLN', nameEn: '20 PLN Voucher', nameEs: 'Bono 20 PLN', icon: 'fa-coins' },
@@ -1315,7 +1414,6 @@ function renderRewards() {
   });
 }
 
-// Funkcja wywoływana, gdy klient wymienia punkty na doładowanie vPLN
 async function exchangeToVpln(pointsCost, vplnAmount) {
   if (!confirm(`Czy na pewno chcesz wydać ${pointsCost} pkt i kupić doładowanie portfela o wartości ${vplnAmount} PLN?`)) return;
 
@@ -1329,14 +1427,10 @@ async function exchangeToVpln(pointsCost, vplnAmount) {
     
     if (data.success) {
       showToast(data.message);
-      
-      // Nadpisujemy lokalne dane nowymi informacjami z bazy
       userPoints = data.points;
       currentUser.points = data.points;
       currentUser.walletBalance = data.walletBalance;
       if(data.history) currentUser.history = data.history;
-      
-      // Odświeżamy widok - punkty znikną, saldo portfela wzrośnie, a karta zmieni kolor
       initUserData(); 
     } else {
       showToast(data.message, false);
@@ -1346,9 +1440,6 @@ async function exchangeToVpln(pointsCost, vplnAmount) {
   }
 }
 
-// ==========================================
-// REALNE WYSYŁANIE REZERWACJI
-// ==========================================
 async function submitReservation() {
   const inputs = document.querySelectorAll('#view-reservation .form-control');
   const name = inputs[0].value;
@@ -1367,23 +1458,13 @@ async function submitReservation() {
     const response = await fetch('/api/reservations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        phone,
-        datetime,
-        guests,
-        zone: selectedZone,
-        notes
-      })
+      body: JSON.stringify({ name, phone, datetime, guests, zone: selectedZone, notes })
     });
 
     const data = await response.json();
     if(data.success) {
       showToast('Rezerwacja wysłana! Czekamy na potwierdzenie z lokalu.', true);
-      // Czyszczenie pól
-      inputs[0].value = '';
-      inputs[1].value = '';
-      inputs[2].value = '';
+      inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = '';
       if(inputs[4]) inputs[4].value = '';
     } else {
       showToast('Wystąpił błąd, spróbuj ponownie.', false);
@@ -1393,9 +1474,6 @@ async function submitReservation() {
   }
 }
 
-// ==========================================
-// 5. NAWIGACJA & UI
-// ==========================================
 function changeLocation(loc) {
     currentLocation = loc;
     document.getElementById('header-loc-text').innerText = currentLocation;
@@ -1422,21 +1500,6 @@ function switchTab(tabId, event) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function selectAmount(el, val) {
-  document.querySelectorAll('.amount-chip').forEach(x => x.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedGiftAmount = val;
-}
-
-function processPayment(msg) {
-  showToast("Przekierowanie do płatności...");
-  setTimeout(() => {
-      closeModal('topup-modal');
-      closeModal('gift-modal');
-      showToast(msg);
-  }, 2000);
-}
-
 function selectZone(el, zoneName) {
   document.querySelectorAll('.table-select').forEach(x => x.classList.remove('selected'));
   el.classList.add('selected');
@@ -1445,8 +1508,6 @@ function selectZone(el, zoneName) {
 
 function toggleTheme() { 
     document.body.classList.toggle('dark-mode'); 
-    
-    // ZAPAMIĘTYWANIE WYBORU W LOCAL STORAGE
     const isDark = document.body.classList.contains('dark-mode');
     localStorage.setItem('milkmi_theme', isDark ? 'dark' : 'light');
 }
