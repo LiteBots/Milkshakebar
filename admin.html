@@ -183,6 +183,7 @@
     .stat-card {
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l);
       padding: 24px; position: relative; overflow: hidden; transition: transform 0.2s;
+      cursor: pointer; /* Dodano, aby karty na dashboardzie wyglądały na klikalne */
     }
     .stat-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
     .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 15px; }
@@ -393,13 +394,41 @@
     <section id="view-dashboard" class="view-section active">
       <div class="section-header">Statystyki MilkMi (App) <button class="btn btn-outline btn-sm" onclick="loadDashboardStats()" style="margin-left: 15px; width:auto;"><i class="fas fa-sync"></i></button></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-users">0</div><div class="stat-label">Wszystkich Użytkowników</div></div>
-        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div><div class="stat-value" id="stat-reservations">0</div><div class="stat-label">Łączna liczba rezerwacji</div></div>
-        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-star"></i></div><div class="stat-value" id="stat-spent-points">0</div><div class="stat-label">Wydanych Milkosów</div></div>
-        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div><div class="stat-value" id="stat-users-with-points">0</div><div class="stat-label">Użytkownicy z punktami</div></div>
-        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-coins"></i></div><div class="stat-value" id="stat-total-points">0</div><div class="stat-label">Punkty w obiegu (Klienci)</div></div>
-        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div><div class="stat-value" id="stat-active-prepaid">0</div><div class="stat-label">Aktywne karty Pre-paid</div></div>
-        <div class="stat-card"><div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div><div class="stat-value" id="stat-prepaid-balance">0.00 zł</div><div class="stat-label">Środki na kontach</div></div>
+        <div class="stat-card" onclick="switchView('users')">
+          <div class="stat-icon bg-orange"><i class="fas fa-users"></i></div>
+          <div class="stat-value" id="stat-users">0</div>
+          <div class="stat-label">Wszystkich Użytkowników</div>
+        </div>
+        <div class="stat-card" onclick="switchView('reservations')">
+          <div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-value" id="stat-reservations">0</div>
+          <div class="stat-label">Łączna liczba rezerwacji</div>
+        </div>
+        <div class="stat-card" onclick="switchView('points')">
+          <div class="stat-icon bg-orange"><i class="fas fa-star"></i></div>
+          <div class="stat-value" id="stat-spent-points">0</div>
+          <div class="stat-label">Wydanych Milkosów</div>
+        </div>
+        <div class="stat-card" onclick="switchView('users')">
+          <div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div>
+          <div class="stat-value" id="stat-users-with-points">0</div>
+          <div class="stat-label">Użytkownicy z punktami</div>
+        </div>
+        <div class="stat-card" onclick="switchView('points')">
+          <div class="stat-icon bg-purple"><i class="fas fa-coins"></i></div>
+          <div class="stat-value" id="stat-total-points">0</div>
+          <div class="stat-label">Punkty w obiegu (Klienci)</div>
+        </div>
+        <div class="stat-card" onclick="switchView('prepaid')">
+          <div class="stat-icon bg-green"><i class="fas fa-credit-card"></i></div>
+          <div class="stat-value" id="stat-active-prepaid">0</div>
+          <div class="stat-label">Aktywne karty Pre-paid</div>
+        </div>
+        <div class="stat-card" onclick="switchView('prepaid')">
+          <div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div>
+          <div class="stat-value" id="stat-prepaid-balance">0.00 zł</div>
+          <div class="stat-label">Środki na kontach</div>
+        </div>
       </div>
       
       <div class="section-header" style="margin-top:40px;">Statystyki MilkShakeBar (Web)</div>
@@ -410,8 +439,16 @@
 
       <div class="section-header" style="margin-top:40px;">Statystyki WorkMi (Internal)</div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-cubes"></i></div><div class="stat-value">4,120</div><div class="stat-label">Liczba Artykułów (Magazyn)</div></div>
-        <div class="stat-card"><div class="stat-icon bg-red"><i class="fas fa-truck-loading"></i></div><div class="stat-value">5</div><div class="stat-label">Nadchodzące dostawy</div></div>
+        <div class="stat-card" onclick="switchView('work-products')">
+          <div class="stat-icon bg-purple"><i class="fas fa-cubes"></i></div>
+          <div class="stat-value">4,120</div>
+          <div class="stat-label">Liczba Artykułów (Magazyn)</div>
+        </div>
+        <div class="stat-card" onclick="switchView('work-products')">
+          <div class="stat-icon bg-red"><i class="fas fa-truck-loading"></i></div>
+          <div class="stat-value">5</div>
+          <div class="stat-label">Nadchodzące dostawy</div>
+        </div>
       </div>
     </section>
 
@@ -691,7 +728,6 @@
       </div>
     </section>
 
-    <!-- ZAAKTUALIZOWANA SEKCJA MENU -->
     <section id="view-menu" class="view-section">
       <div class="card" id="product-form-card">
         <div class="section-header" id="product-form-header">Dodaj nowy produkt do Menu</div>
@@ -1097,7 +1133,15 @@
       document.getElementById('view-' + viewId).classList.add('active');
       
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      if(navElement) navElement.classList.add('active');
+      
+      // Jeśli navElement jest dostarczony z menu bocznego - użyj go.
+      // Jeśli nie, znajdź odpowiedni w menu (dla kliknięć z kart Dashboardu)
+      if(navElement) {
+          navElement.classList.add('active');
+      } else {
+          const matchingNav = document.querySelector(`.nav-item[onclick*="'${viewId}'"]`);
+          if(matchingNav) matchingNav.classList.add('active');
+      }
 
       const titles = {
         'dashboard': 'Dashboard',
