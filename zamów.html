@@ -113,7 +113,7 @@
     /* Siatka produktów */
     .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
     .item-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-m); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: transform 0.2s; }
-    .item-card:hover { border-color: var(--primary); }
+    .item-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
     .item-img-wrapper { height: 130px; width: 100%; overflow: hidden; background: #eee; }
     .item-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     .item-content { padding: 12px; display: flex; flex-direction: column; flex: 1; }
@@ -148,7 +148,6 @@
     .form-control { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface); color: var(--text-main); font-family: inherit; font-size: 1rem; outline: none; transition: 0.2s; }
     .form-control:focus { border-color: var(--primary); }
     
-    /* Wybór metody dostawy (Radio Cards) */
     .delivery-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .method-card { border: 2px solid var(--border); border-radius: var(--radius-m); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-surface); }
     .method-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
@@ -162,31 +161,54 @@
     .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--bg-surface); color: var(--text-main); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border); }
     .toast.visible { transform: translateX(-50%) translateY(0); }
 
-    /* Animacje */
-    @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
-    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
-
     /* ========================================================
-       DESKTOP / LAPTOP BUDOWA (Trochę inna, rozszerzona)
+       DESKTOP / LAPTOP BUDOWA (Pełny Ekran - Full Screen)
        ======================================================== */
     @media (min-width: 768px) {
       .app-container {
-        max-width: 1000px; /* Szerszy widok dla PC */
-        border-radius: var(--radius-l);
-        margin: 40px auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        overflow: hidden;
+        max-width: 100%; /* Rozciągnięcie na całą szerokość */
+        margin: 0;
+        box-shadow: none;
+        border-radius: 0;
       }
-      .app-header { border-radius: var(--radius-l) var(--radius-l) 0 0; padding: 20px 40px; }
       
-      /* Siatki na dużym ekranie */
-      .categories-list { flex-direction: row; flex-wrap: wrap; gap: 16px; padding: 0 40px; }
-      .category-card { flex: 1 1 calc(33.333% - 16px); height: 220px; min-height: unset; border-radius: var(--radius-m); }
+      .app-header { 
+        padding: 20px 5%; /* dynamiczne, szerokie marginesy po bokach */
+      }
       
-      .menu-header { padding: 20px 40px; }
-      .items-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 0 40px; }
+      /* Siatka kategorii z automatycznym dopasowaniem ilości kolumn */
+      .categories-list { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+        gap: 24px; 
+        padding: 0 5%; 
+      }
+      .category-card { 
+        height: 250px; 
+        min-height: unset; 
+        border-radius: var(--radius-m); 
+      }
+      
+      .section-title { 
+        margin-left: 5%; 
+        font-size: 1.6rem; 
+      }
+      .menu-header { 
+        padding: 25px 5%; 
+      }
+      
+      /* Siatka produktów automatycznie uzupełniająca luki */
+      .items-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+        gap: 24px; 
+        padding: 0 5%; 
+      }
+      .item-img-wrapper { height: 180px; } /* większe zdjęcia na desktopie */
+      .item-name { font-size: 1rem; }
 
-      .cart-container, .checkout-form { padding: 0 40px; max-width: 600px; margin: 0 auto; }
+      /* Formularze i koszyk na środku (żeby zapobiec nieczytelnemu rozciągnięciu do np. 1920px szerokości) */
+      .cart-container { max-width: 800px; margin: 0 auto; padding: 0; }
+      .checkout-form { max-width: 800px; margin: 0 auto; padding: 0; }
     }
   </style>
 </head>
@@ -208,7 +230,7 @@
 
   <!-- WIDOK 1: Główne Kategorie -->
   <section id="view-categories" class="view-section active">
-      <div class="section-title" style="margin-left: 24px;">Co zamawiamy?</div>
+      <div class="section-title">Menu Główne</div>
       <div class="categories-list" id="categories-container"></div>
   </section>
 
@@ -348,7 +370,7 @@ const menuData = {
 // ==========================================
 // KOSZYK - LOGIKA
 // ==========================================
-let cart = []; // Tablica przechowująca obiekty z koszyka
+let cart = []; 
 
 function addToCart(event, id, name, price) {
     event.stopPropagation();
@@ -381,11 +403,11 @@ function changeQuantity(id, delta) {
     if (itemIndex > -1) {
         cart[itemIndex].quantity += delta;
         if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1); // Usuwa jeśli ilość wynosi 0
+            cart.splice(itemIndex, 1); 
         }
     }
     updateCartBadge();
-    renderCart(); // Przeładuj widok koszyka
+    renderCart(); 
 }
 
 // ==========================================
@@ -535,7 +557,6 @@ function renderCart() {
 
 // WIDOK KASY (CHECKOUT)
 function openCheckoutView() {
-    // Obliczanie minimalnego czasu (+60 min od teraz)
     const timeInput = document.getElementById('pickup-time');
     const now = new Date();
     now.setMinutes(now.getMinutes() + 60);
@@ -545,16 +566,15 @@ function openCheckoutView() {
     const minTimeStr = `${h}:${m}`;
     
     timeInput.min = minTimeStr;
-    timeInput.value = minTimeStr; // Ustawia domyślnie najbliższy możliwy czas
+    timeInput.value = minTimeStr; 
 
     switchView('view-checkout');
 }
 
 function submitOrder(event) {
-    event.preventDefault(); // Zatrzymuje przeładowanie strony
+    event.preventDefault(); 
     showToast("Zamówienie przyjęte! Dziękujemy.");
     
-    // Czyszczenie koszyka i powrót do głównego menu
     cart = [];
     updateCartBadge();
     setTimeout(() => {
