@@ -691,12 +691,87 @@
       </div>
     </section>
 
+    <!-- ZAAKTUALIZOWANA SEKCJA MENU -->
     <section id="view-menu" class="view-section">
-      <div class="section-header">Zarządzanie Menu</div>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3 style="margin-bottom:5px;">Oreo Dream</h3>
-          <p style="color:var(--text-sub);">19.00 PLN</p>
+      <div class="card">
+        <div class="section-header">Dodaj nowy produkt do Menu</div>
+        <form id="add-product-form" onsubmit="addMenuProduct(event)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+              <label>Nazwa produktu</label>
+              <input type="text" id="prod-name" class="form-control" required placeholder="np. Shake Oreo">
+            </div>
+            <div class="form-group">
+              <label>Cena (PLN)</label>
+              <input type="number" step="0.01" id="prod-price" class="form-control" required placeholder="np. 19.99">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Kategoria docelowa</label>
+            <select id="prod-category" class="form-control" required>
+              <option value="" disabled selected>Wybierz kategorię...</option>
+              <optgroup label="Shakes">
+                <option value="shakes_klasyczne">Klasyczne</option>
+                <option value="shakes_owocowe">Owocowe</option>
+                <option value="shakes_vip">Tylko dla Vip</option>
+                <option value="shakes_best">Best of</option>
+              </optgroup>
+              <optgroup label="Desery">
+                <option value="desery_wloskie">Lody włoskie</option>
+                <option value="desery_lodowe">Desery lodowe</option>
+                <option value="desery_gofry">Gofry amerykańskie</option>
+                <option value="desery_pancakes">Pancakes</option>
+              </optgroup>
+              <option value="burgery" style="font-weight:bold;">🍔 Burgery (Brak podkategorii)</option>
+              <optgroup label="Lunch">
+                <option value="lunch_startery">Startery</option>
+                <option value="lunch_kanapki">Kanapki</option>
+                <option value="lunch_dania">Dania główne</option>
+              </optgroup>
+              <option value="sniadania" style="font-weight:bold;">🍳 Śniadania (Brak podkategorii)</option>
+              <optgroup label="Mexico">
+                <option value="mexico_quesadillas">Tex-mex quesadias</option>
+                <option value="mexico_fajita">Fajita</option>
+                <option value="mexico_pasta">Pasta</option>
+                <option value="mexico_salaty">Sałaty</option>
+                <option value="mexico_churros">Churros</option>
+              </optgroup>
+              <option value="napoje" style="font-weight:bold;">☕ Kawa i napoje (Brak podkategorii)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Krótki opis</label>
+            <input type="text" id="prod-desc" class="form-control" placeholder="np. Lody waniliowe, ciasteczka oreo, bita śmietana...">
+          </div>
+
+          <div class="form-group">
+            <label>Link do zdjęcia (np. Imgur)</label>
+            <input type="url" id="prod-img" class="form-control" required placeholder="https://i.imgur.com/...">
+          </div>
+
+          <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Dodaj do menu</button>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <div class="section-header">Aktualne pozycje w Menu</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Miniatura</th>
+                <th>Nazwa</th>
+                <th>ID Kategorii</th>
+                <th>Cena</th>
+                <th>Akcja</th>
+              </tr>
+            </thead>
+            <tbody id="menu-products-body">
+              <tr><td colspan="5" style="text-align:center;">Ładowanie produktów...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -1058,6 +1133,8 @@
         loadAllReservations();
       } else if (viewId === 'dashboard') {
         loadDashboardStats();
+      } else if (viewId === 'menu') {
+        loadMenuProducts(); // Ładowanie produktów do zakładki Menu
       }
     }
 
@@ -1632,6 +1709,83 @@
         showToast('Błąd usuwania konta', 'error');
       }
     }
+
+    // =====================================
+    // ZARZĄDZANIE MENU (PRODUKTY)
+    // =====================================
+    async function loadMenuProducts() {
+      const tbody = document.getElementById('menu-products-body');
+      try {
+        const res = await fetch('/api/menu');
+        const json = await res.json();
+        
+        if (json.success) {
+          tbody.innerHTML = '';
+          if(json.data.length === 0) {
+             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak produktów w menu.</td></tr>';
+             return;
+          }
+          
+          json.data.forEach(prod => {
+            tbody.innerHTML += `
+              <tr>
+                <td><img src="${prod.imageUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;"></td>
+                <td><strong>${prod.name}</strong><br><small style="color:var(--text-sub);">${prod.description}</small></td>
+                <td><span class="badge blue">${prod.categoryId}</span></td>
+                <td><strong style="color:var(--primary);">${prod.price.toFixed(2)} PLN</strong></td>
+                <td>
+                  <button class="btn btn-sm" style="background:var(--status-err); color:white; width:auto;" onclick="deleteMenuProduct('${prod._id}')">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function addMenuProduct(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('prod-name').value,
+        price: document.getElementById('prod-price').value,
+        categoryId: document.getElementById('prod-category').value,
+        description: document.getElementById('prod-desc').value,
+        imageUrl: document.getElementById('prod-img').value
+      };
+
+      try {
+        const res = await fetch('/api/admin/menu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        
+        if(json.success) {
+          showToast(json.message, 'success');
+          document.getElementById('add-product-form').reset();
+          loadMenuProducts();
+        } else {
+          showToast(json.message, 'error');
+        }
+      } catch(err) { showToast('Błąd połączenia', 'error'); }
+    }
+
+    async function deleteMenuProduct(id) {
+      if(!confirm('Czy na pewno chcesz usunąć ten produkt z menu? Zniknie on również z aplikacji klienckiej.')) return;
+      try {
+        const res = await fetch(`/api/admin/menu/${id}`, { method: 'DELETE' });
+        if(res.ok) {
+          showToast('Produkt usunięty.', 'success');
+          loadMenuProducts();
+        }
+      } catch(err) {}
+    }
+
 
     // --- WORKMI TEAM LOGIC ---
     async function fetchTeam() {
