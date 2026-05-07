@@ -693,9 +693,9 @@
 
     <!-- ZAAKTUALIZOWANA SEKCJA MENU -->
     <section id="view-menu" class="view-section">
-      <div class="card">
-        <div class="section-header">Dodaj nowy produkt do Menu</div>
-        <form id="add-product-form" onsubmit="addMenuProduct(event)">
+      <div class="card" id="product-form-card">
+        <div class="section-header" id="product-form-header">Dodaj nowy produkt do Menu</div>
+        <form id="add-product-form" onsubmit="handleProductSubmit(event)">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="form-group">
               <label>Nazwa produktu</label>
@@ -751,7 +751,10 @@
             <input type="url" id="prod-img" class="form-control" required placeholder="https://i.imgur.com/...">
           </div>
 
-          <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Dodaj do menu</button>
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" id="product-submit-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Dodaj do menu</button>
+            <button type="button" id="product-cancel-btn" class="btn btn-outline" style="display:none;" onclick="cancelEdit()"><i class="fas fa-times"></i> Anuluj edycję</button>
+          </div>
         </form>
       </div>
 
@@ -1713,6 +1716,9 @@
     // =====================================
     // ZARZĄDZANIE MENU (PRODUKTY)
     // =====================================
+    let allProducts = [];
+    let editingProductId = null;
+
     async function loadMenuProducts() {
       const tbody = document.getElementById('menu-products-body');
       try {
@@ -1720,6 +1726,7 @@
         const json = await res.json();
         
         if (json.success) {
+          allProducts = json.data; // Zapisujemy by móc potem pobrać dane do edycji
           tbody.innerHTML = '';
           if(json.data.length === 0) {
              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak produktów w menu.</td></tr>';
@@ -1734,6 +1741,9 @@
                 <td><span class="badge blue">${prod.categoryId}</span></td>
                 <td><strong style="color:var(--primary);">${prod.price.toFixed(2)} PLN</strong></td>
                 <td>
+                  <button class="btn btn-sm" style="background:var(--status-warn); color:white; width:auto; margin-right:5px;" onclick="startEditProduct('${prod._id}')">
+                    <i class="fas fa-pen"></i>
+                  </button>
                   <button class="btn btn-sm" style="background:var(--status-err); color:white; width:auto;" onclick="deleteMenuProduct('${prod._id}')">
                     <i class="fas fa-trash"></i>
                   </button>
@@ -1747,8 +1757,35 @@
       }
     }
 
-    async function addMenuProduct(e) {
+    function startEditProduct(id) {
+      const prod = allProducts.find(p => p._id === id);
+      if(!prod) return;
+
+      editingProductId = id;
+      document.getElementById('prod-name').value = prod.name;
+      document.getElementById('prod-price').value = prod.price;
+      document.getElementById('prod-category').value = prod.categoryId;
+      document.getElementById('prod-desc').value = prod.description || '';
+      document.getElementById('prod-img').value = prod.imageUrl;
+
+      document.getElementById('product-form-header').innerText = 'Edytuj pozycję w Menu';
+      document.getElementById('product-submit-btn').innerHTML = '<i class="fas fa-save"></i> Zapisz zmiany';
+      document.getElementById('product-cancel-btn').style.display = 'inline-flex';
+
+      window.scrollTo({ top: document.getElementById('product-form-card').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingProductId = null;
+      document.getElementById('add-product-form').reset();
+      document.getElementById('product-form-header').innerText = 'Dodaj nowy produkt do Menu';
+      document.getElementById('product-submit-btn').innerHTML = '<i class="fas fa-plus"></i> Dodaj do menu';
+      document.getElementById('product-cancel-btn').style.display = 'none';
+    }
+
+    async function handleProductSubmit(e) {
       e.preventDefault();
+      
       const payload = {
         name: document.getElementById('prod-name').value,
         price: document.getElementById('prod-price').value,
@@ -1757,9 +1794,12 @@
         imageUrl: document.getElementById('prod-img').value
       };
 
+      const url = editingProductId ? `/api/admin/menu/${editingProductId}` : '/api/admin/menu';
+      const method = editingProductId ? 'PUT' : 'POST';
+
       try {
-        const res = await fetch('/api/admin/menu', {
-          method: 'POST',
+        const res = await fetch(url, {
+          method: method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
@@ -1767,7 +1807,7 @@
         
         if(json.success) {
           showToast(json.message, 'success');
-          document.getElementById('add-product-form').reset();
+          cancelEdit(); // Czyści formularz i resetuje stan
           loadMenuProducts();
         } else {
           showToast(json.message, 'error');
