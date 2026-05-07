@@ -152,6 +152,18 @@ const bannerSchema = new mongoose.Schema({
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
+// --- SCHEMAT PRODUKTU (MENU) ---
+const productSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, default: '' },
+  price: { type: Number, required: true },
+  imageUrl: { type: String, required: true },
+  categoryId: { type: String, required: true }, // Np. 'shakes_klasyczne', 'burgery'
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Product = mongoose.model('Product', productSchema);
+
 // --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
 const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
@@ -491,6 +503,48 @@ app.get('/api/banners', async (req, res) => {
     res.json({ success: true, data: banners });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd pobierania banerów.' });
+  }
+});
+
+// ==========================================
+// --- API MENU (PRODUKTY) ---
+// ==========================================
+
+// POBIERANIE CAŁEGO MENU (Dla aplikacji klienckiej i admina)
+app.get('/api/menu', async (req, res) => {
+  try {
+    const products = await Product.find().sort({ categoryId: 1, name: 1 });
+    res.json({ success: true, data: products });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania menu.' });
+  }
+});
+
+// DODAWANIE NOWEGO PRODUKTU (Tylko Admin)
+app.post('/api/admin/menu', async (req, res) => {
+  try {
+    const { name, description, price, imageUrl, categoryId } = req.body;
+    
+    if (!name || !price || !imageUrl || !categoryId) {
+      return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
+    }
+
+    const newProduct = new Product({ name, description, price, imageUrl, categoryId });
+    await newProduct.save();
+    
+    res.json({ success: true, product: newProduct, message: 'Produkt dodany do menu!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd dodawania produktu.' });
+  }
+});
+
+// USUWANIE PRODUKTU (Tylko Admin)
+app.delete('/api/admin/menu/:id', async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Produkt usunięty.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd usuwania produktu.' });
   }
 });
 
