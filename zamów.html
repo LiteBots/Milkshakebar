@@ -166,17 +166,16 @@
        ======================================================== */
     @media (min-width: 768px) {
       .app-container {
-        max-width: 100%; /* Rozciągnięcie na całą szerokość */
+        max-width: 100%; 
         margin: 0;
         box-shadow: none;
         border-radius: 0;
       }
       
       .app-header { 
-        padding: 20px 5%; /* dynamiczne, szerokie marginesy po bokach */
+        padding: 20px 5%; 
       }
       
-      /* Siatka kategorii z automatycznym dopasowaniem ilości kolumn */
       .categories-list { 
         display: grid; 
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
@@ -189,26 +188,18 @@
         border-radius: var(--radius-m); 
       }
       
-      .section-title { 
-        margin-left: 5%; 
-        font-size: 1.6rem; 
-      }
-      .menu-header { 
-        padding: 25px 5%; 
-      }
+      .section-title { margin-left: 5%; font-size: 1.6rem; }
+      .menu-header { padding: 25px 5%; }
       
-      /* Siatka produktów automatycznie uzupełniająca luki */
       .items-grid { 
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
         gap: 24px; 
         padding: 0 5%; 
       }
-      .item-img-wrapper { height: 180px; } /* większe zdjęcia na desktopie */
+      .item-img-wrapper { height: 180px; }
       .item-name { font-size: 1rem; }
 
-      /* Formularze i koszyk na środku (żeby zapobiec nieczytelnemu rozciągnięciu do np. 1920px szerokości) */
-      .cart-container { max-width: 800px; margin: 0 auto; padding: 0; }
-      .checkout-form { max-width: 800px; margin: 0 auto; padding: 0; }
+      .cart-container, .checkout-form { max-width: 800px; margin: 0 auto; padding: 0; }
     }
   </style>
 </head>
@@ -272,7 +263,6 @@
       
       <form class="checkout-form" id="checkoutForm" onsubmit="submitOrder(event)">
           
-          <!-- Metoda dostawy -->
           <div class="form-group">
               <label>Wybierz sposób odbioru</label>
               <div class="delivery-methods">
@@ -322,7 +312,7 @@
 
 <script>
 // ==========================================
-// BAZA DANYCH MENU
+// BAZA DANYCH MENU (Z podkategoriami, bez produktów)
 // ==========================================
 const menuData = {
     categories: [
@@ -340,31 +330,28 @@ const menuData = {
             { id: 'shakes_owocowe', name: 'Owocowe', image: 'https://images.unsplash.com/photo-1553177595-4de6bb080e5b?auto=format&fit=crop&w=600&q=80' },
             { id: 'shakes_vip', name: 'Tylko dla Vip', image: 'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=600&q=80' },
             { id: 'shakes_best', name: 'Best of', image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=600&q=80' }
-        ]
-    },
-    items: {
-        'shakes_klasyczne': [
-            { id: 's1', name: 'Waniliowy Klasyk', desc: 'Prawdziwa wanilia z Madagaskaru.', price: 14.90, img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80' },
-            { id: 's2', name: 'Czekoladowy Sen', desc: 'Podwójna belgijska czekolada.', price: 15.90, img: 'https://images.unsplash.com/photo-1553787762-b5f52815a14c?auto=format&fit=crop&w=400&q=80' }
         ],
-        'shakes_owocowe': [
-            { id: 's3', name: 'Truskawkowa Chmura', desc: 'Klasyczny szejk truskawkowy.', price: 16.90, img: 'https://images.unsplash.com/photo-1553177595-4de6bb080e5b?auto=format&fit=crop&w=400&q=80' }
-        ],
-        'shakes_vip': [
-            { id: 's4', name: 'Złoty Jednorożec', desc: 'Jadalne złoto, kruszone makaroniki.', price: 39.90, img: 'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=400&q=80' }
-        ],
-        'shakes_best': [
-            { id: 's5', name: 'Oreo Monster', desc: 'Szejk z ciastkami Oreo.', price: 18.90, img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=400&q=80' },
-            { id: 's6', name: 'Słony Karmel', desc: 'Karmel, sól morska, precle.', price: 19.90, img: 'https://images.unsplash.com/photo-1528740561666-dc2479dc08ab?auto=format&fit=crop&w=400&q=80' }
-        ],
-        'burgery': [
-            { id: 'b1', name: 'Classic Smash', desc: 'Podwójna wołowina, cheddar.', price: 32.00, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80' },
-            { id: 'b2', name: 'Bacon BBQ', desc: 'Bekon, krążki cebulowe, sos BBQ.', price: 36.00, img: 'https://images.unsplash.com/photo-1594212691516-7360252b5757?auto=format&fit=crop&w=400&q=80' }
+        'desery': [
+            { id: 'desery_wloskie', name: 'Lody włoskie', image: 'https://images.unsplash.com/photo-1557142046-c704a3adf364?auto=format&fit=crop&w=600&q=80' },
+            { id: 'desery_lodowe', name: 'Desery lodowe', image: 'https://images.unsplash.com/photo-1563805042-7684c8a9e9ce?auto=format&fit=crop&w=600&q=80' },
+            { id: 'desery_gofry', name: 'Gofry amerykańskie', image: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=600&q=80' },
+            { id: 'desery_pancakes', name: 'Pancakes', image: 'https://images.unsplash.com/photo-1528207776546-384cb1119b27?auto=format&fit=crop&w=600&q=80' }
         ],
         'mexico': [
-            { id: 'm1', name: 'Quesadilla Kurczak', desc: 'Tortilla, ciągnący się ser.', price: 28.00, img: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=400&q=80' }
+            { id: 'mexico_quesadillas', name: 'Tex-mex quesadias', image: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=600&q=80' },
+            { id: 'mexico_fajita', name: 'Fajita', image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=600&q=80' },
+            { id: 'mexico_pasta', name: 'Pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=600&q=80' },
+            { id: 'mexico_salaty', name: 'Sałaty', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' },
+            { id: 'mexico_churros', name: 'Churros', image: 'https://images.unsplash.com/photo-1624371414361-e670edf4898d?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'lunch': [
+            { id: 'lunch_startery', name: 'Startery', image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?auto=format&fit=crop&w=600&q=80' },
+            { id: 'lunch_kanapki', name: 'Kanapki', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80' },
+            { id: 'lunch_dania', name: 'Dania główne', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }
         ]
-    }
+    },
+    // Wszystkie przedmioty wyczyszczone zgodnie z prośbą
+    items: {} 
 };
 
 // ==========================================
@@ -478,6 +465,7 @@ function openItems(id, name, cameFromSubcategories) {
     
     const items = menuData.items[id] || [];
     
+    // Zabezpieczenie przed pustą kategorią
     if (items.length === 0) {
         container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px 0; color: var(--text-sub);">Pozycje wkrótce się pojawią.</div>';
     } else {
