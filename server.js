@@ -141,15 +141,23 @@ const reservationSchema = new mongoose.Schema({
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
 
+// --- SCHEMAT LICZNIKA (Dla numeracji zamówień MI-XXXX) ---
+const counterSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
+});
+const Counter = mongoose.model('Counter', counterSchema);
+
 // --- SCHEMAT ZAMÓWIENIA ---
 const orderSchema = new mongoose.Schema({
+  orderNumber: String, // Np. MI-0004
   customerName: String,
   customerPhone: String,
   pickupTime: String,
   notes: String,
   items: Array, // Tablica z produktami (id, nazwa, cena, ilosc)
   totalAmount: Number,
-  status: { type: String, default: 'pending' }, // 'pending', 'preparing', 'on_the_way', 'completed', 'cancelled'
+  status: { type: String, default: 'pending' }, // 'pending', 'preparing', 'completed', 'cancelled'
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -204,6 +212,7 @@ app.get('/api/admin/stats', async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const totalReservations = await Reservation.countDocuments();
+        const totalOrders = await Order.countDocuments();
         const usersWithPoints = await User.countDocuments({ points: { $gte: 1 } });
         const activePrepaidCards = await User.countDocuments({ walletBalance: { $gte: 1 } });
 
@@ -224,6 +233,7 @@ app.get('/api/admin/stats', async (req, res) => {
             data: {
                 totalUsers,
                 totalReservations,
+                totalOrders,
                 usersWithPoints,
                 activePrepaidCards,
                 totalPrepaidBalance,
@@ -450,13 +460,45 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
 // KLIENCI - Złożenie nowego zamówienia z poziomu aplikacji
 app.post('/api/orders', async (req, res) => {
   try {
-    const newOrder = new Order(req.body);
+    // Generowanie numeru MI-XXXX
+    let counter = await Counter.findOneAndUpdate(
+      { id: 'orderNum' },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    
+    // Reset licznika po 9999
+    if (counter.seq > 9999) {
+        counter.seq = 1;
+        await counter.save();
+    }
+    
+    // Formatowanie z zerami z przodu np. MI-0004
+    const orderNumber = `MI-${String(counter.seq).padStart(4, '0')}`;
+
+    const newOrder = new Order({
+        ...req.body,
+        orderNumber: orderNumber
+    });
+    
     await newOrder.save();
-    res.json({ success: true, message: 'Zamówienie zostało przyjęte!' });
+    
+    res.json({ success: true, orderId: newOrder._id, orderNumber: orderNumber, message: 'Zamówienie zostało przyjęte!' });
   } catch (err) {
     console.error('Błąd zapisu zamówienia:', err);
     res.status(500).json({ success: false, message: 'Błąd serwera przy składaniu zamówienia.' });
   }
+});
+
+// KLIENCI - Sprawdzanie statusu zamówienia (na ekranie paragonu)
+app.get('/api/orders/:id', async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ success: false, message: 'Nie znaleziono zamówienia' });
+        res.json({ success: true, data: order });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
 });
 
 // ADMIN - Pobranie nowych zamówień do ALARMU (Tylko oczekujące)
@@ -479,7 +521,7 @@ app.get('/api/admin/orders', async (req, res) => {
   }
 });
 
-// ADMIN - Zmiana statusu zamówienia (np. z pending na preparing, completed itp.)
+// ADMIN - Zmiana statusu zamówienia
 app.post('/api/admin/orders/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -637,18 +679,6 @@ app.delete('/api/admin/menu/:id', async (req, res) => {
 // ==========================================
 // --- API APLIKACJI (KLIENCI) ---
 // ==========================================
-
-// --- API: UTWORZENIE REZERWACJI PRZEZ KLIENTA ---
-app.post('/api/reservations', async (req, res) => {
-  try {
-    const newRes = new Reservation(req.body);
-    await newRes.save();
-    res.json({ success: true, message: 'Rezerwacja wysłana do lokalu!' });
-  } catch (err) {
-    console.error('Błąd przy zapisie rezerwacji:', err);
-    res.status(500).json({ success: false, message: 'Błąd serwera' });
-  }
-});
 
 // --- API: WYMIANA PUNKTÓW NA DOŁADOWANIE PORTFELA (vPLN) ---
 app.post('/api/rewards/exchange', async (req, res) => {
