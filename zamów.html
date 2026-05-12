@@ -157,6 +157,20 @@
     .method-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
     .method-sub { font-size: 0.7rem; color: var(--text-sub); }
 
+    /* --- EKRAN STATUSU / PARAGON --- */
+    .receipt-card { background: var(--bg-surface); border: 2px dashed var(--border); border-radius: var(--radius-l); padding: 30px 20px; text-align: center; margin: 20px 24px; }
+    .receipt-num { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 5px 0 20px; letter-spacing: -1px; }
+    .status-badge-lg { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 50px; font-weight: 800; font-size: 0.95rem; margin-bottom: 25px; transition: 0.3s; }
+    .status-pending { background: #F3F4F6; color: #6B7280; }
+    .status-preparing { background: #FEF3C7; color: #D97706; animation: pulsePrep 2s infinite; }
+    .status-completed { background: #D1FAE5; color: #059669; }
+    .status-cancelled { background: #FEE2E2; color: #DC2626; }
+    .receipt-items { text-align: left; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 15px 0; margin-bottom: 15px; }
+    .receipt-item-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+    .receipt-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+    
+    @keyframes pulsePrep { 0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); } }
+
     /* Toast Powiadomienia */
     .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--bg-surface); color: var(--text-main); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border); }
     .toast.visible { transform: translateX(-50%) translateY(0); }
@@ -303,6 +317,22 @@
       </form>
   </section>
 
+  <!-- WIDOK 5: Status Zamówienia (Paragon) -->
+  <section id="view-order-status" class="view-section">
+      <div class="menu-header">
+          <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-home"></i></button>
+          <h2 style="font-size: 1.6rem; font-weight: 800;">Status zamówienia</h2>
+      </div>
+      
+      <div class="receipt-card" id="receipt-container">
+         <!-- Wygenerowane dynamicznie przez JS -->
+      </div>
+      
+      <div style="padding: 0 24px;">
+        <button class="primary-btn" style="background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border);" onclick="showMainCategories()">Wróć do Menu</button>
+      </div>
+  </section>
+
 </div>
 
 <div id="toast" class="toast">
@@ -400,7 +430,7 @@ function changeQuantity(id, delta) {
 // ==========================================
 // ZARZĄDZANIE WIDOKAMI
 // ==========================================
-const views = ['view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout'];
+const views = ['view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout', 'view-order-status'];
 
 function switchView(targetViewId) {
     views.forEach(viewId => {
@@ -465,7 +495,6 @@ function openItems(id, name, cameFromSubcategories) {
     
     const items = menuData.items[id] || [];
     
-    // Zabezpieczenie przed pustą kategorią
     if (items.length === 0) {
         container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px 0; color: var(--text-sub);">Pozycje wkrótce się pojawią.</div>';
     } else {
@@ -559,30 +588,32 @@ function openCheckoutView() {
     switchView('view-checkout');
 }
 
-// === ZAKTUALIZOWANA FUNKCJA WYSYŁANIA ZAMÓWIENIA ===
+// === LOGIKA WYSYŁANIA I ODPYTYWANIA O STATUS ZAMÓWIENIA ===
+let currentPollingInterval = null;
+
 async function submitOrder(event) {
     event.preventDefault(); 
-    
-    if (cart.length === 0) {
-        showToast('Koszyk jest pusty!');
-        return;
-    }
+    if (cart.length === 0) return showToast('Koszyk jest pusty!');
 
     const name = document.getElementById('checkout-name').value;
     const phone = document.getElementById('checkout-phone').value;
     const pickupTime = document.getElementById('pickup-time').value;
     const notes = document.getElementById('checkout-notes').value;
     
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 2; // +2 za opakowania
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 2;
 
-    const orderData = {
-        customerName: name,
-        customerPhone: phone,
-        pickupTime: pickupTime,
-        notes: notes,
-        items: cart,
-        totalAmount: totalAmount
+    const orderData = { 
+        customerName: name, 
+        customerPhone: phone, 
+        pickupTime: pickupTime, 
+        notes: notes, 
+        items: cart, 
+        totalAmount: totalAmount 
     };
+
+    const submitBtn = document.querySelector('#view-checkout .primary-btn');
+    submitBtn.innerText = 'Wysyłanie...';
+    submitBtn.disabled = true;
 
     try {
         const response = await fetch('/api/orders', {
@@ -593,18 +624,88 @@ async function submitOrder(event) {
         const result = await response.json();
 
         if (result.success) {
-            showToast("Zamówienie przyjęte! Dziękujemy.");
+            showToast("Zamówienie złożone!");
             cart = [];
             updateCartBadge();
-            setTimeout(() => {
-                showMainCategories();
-                document.getElementById('checkoutForm').reset();
-            }, 2000);
+            document.getElementById('checkoutForm').reset();
+            submitBtn.innerText = 'Złóż zamówienie z obowiązkiem zapłaty';
+            submitBtn.disabled = false;
+            
+            // Start ekranu paragonu
+            startOrderTracking(result.orderId);
         } else {
-            showToast("Wystąpił problem. Spróbuj ponownie.");
+            showToast("Wystąpił problem.");
+            submitBtn.innerText = 'Złóż zamówienie z obowiązkiem zapłaty';
+            submitBtn.disabled = false;
         }
     } catch (err) {
-        showToast("Błąd połączenia z serwerem.");
+        showToast("Błąd serwera.");
+        submitBtn.innerText = 'Złóż zamówienie z obowiązkiem zapłaty';
+        submitBtn.disabled = false;
+    }
+}
+
+function startOrderTracking(orderId) {
+    switchView('view-order-status');
+    fetchAndRenderOrder(orderId);
+    
+    // Sprawdzaj status co 5 sekund
+    if(currentPollingInterval) clearInterval(currentPollingInterval);
+    currentPollingInterval = setInterval(() => fetchAndRenderOrder(orderId), 5000);
+}
+
+async function fetchAndRenderOrder(orderId) {
+    try {
+        const res = await fetch(`/api/orders/${orderId}`);
+        const result = await res.json();
+        
+        if (result.success) {
+            const order = result.data;
+            const container = document.getElementById('receipt-container');
+            
+            // Słownik statusów
+            const statusConfig = {
+                'pending': { text: '⏳ Oczekuje na akceptację', class: 'status-pending' },
+                'preparing': { text: '🍳 W przygotowaniu', class: 'status-preparing' },
+                'completed': { text: '✅ Zrealizowane - Zapraszamy!', class: 'status-completed' },
+                'cancelled': { text: '❌ Zamówienie anulowane', class: 'status-cancelled' }
+            };
+            
+            const s = statusConfig[order.status] || statusConfig['pending'];
+            
+            // Generowanie listy produktów
+            let itemsHtml = '';
+            order.items.forEach(i => {
+                itemsHtml += `<div class="receipt-item-row"><span>${i.quantity}x ${i.name}</span><span>${(i.price * i.quantity).toFixed(2)} zł</span></div>`;
+            });
+            itemsHtml += `<div class="receipt-item-row"><span style="color:var(--text-sub);">Opakowanie</span><span>2.00 zł</span></div>`;
+
+            container.innerHTML = `
+                <div style="font-weight: 700; color: var(--text-sub); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Numer zamówienia</div>
+                <div class="receipt-num">${order.orderNumber}</div>
+                
+                <div class="status-badge-lg ${s.class}">${s.text}</div>
+                
+                <div class="receipt-items">
+                    ${itemsHtml}
+                </div>
+                
+                <div class="receipt-total">
+                    <span>Suma</span>
+                    <span style="color: var(--primary);">${order.totalAmount.toFixed(2)} zł</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-sub);">
+                    Odbiór zaplanowany na: <strong>${order.pickupTime}</strong>
+                </div>
+            `;
+            
+            // Zatrzymaj odpytywanie jeśli zakończono
+            if (['completed', 'cancelled'].includes(order.status)) {
+                clearInterval(currentPollingInterval);
+            }
+        }
+    } catch (e) { 
+        console.log('Błąd odświeżania paragonu'); 
     }
 }
 
