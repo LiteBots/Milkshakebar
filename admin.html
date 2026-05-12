@@ -183,7 +183,7 @@
     .stat-card {
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l);
       padding: 24px; position: relative; overflow: hidden; transition: transform 0.2s;
-      cursor: pointer;
+      cursor: pointer; /* Dodano, aby karty na dashboardzie wyglądały na klikalne */
     }
     .stat-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
     .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 15px; }
@@ -233,7 +233,7 @@
     @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-    /* --- ALARM REZERWACJI I ZAMÓWIEŃ (MIGAWKA) --- */
+    /* --- ALARM REZERWACJI (MIGAWKA) --- */
     @keyframes flashAlert { 0% { background-color: #FFFFFF; color: #FF6600; } 50% { background-color: #FF6600; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #FF6600; } }
     @keyframes flashOrderAlert { 0% { background-color: #FFFFFF; color: #EF4444; } 50% { background-color: #EF4444; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #EF4444; } }
     
@@ -267,6 +267,7 @@
       .sidebar.active { transform: translateX(0); }
       .main-content { margin-left: 0; padding: 20px; }
       
+      /* --- ZAKTUALIZOWANY PRZYCISK MENU --- */
       #mobile-menu-toggle { 
         display: inline-flex !important; 
         background: transparent; 
@@ -286,38 +287,42 @@
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: 1fr; }
       
+      /* Formularze z gridem na kolumny */
       form[onsubmit="awardPoints(event)"] { grid-template-columns: 1fr; gap: 15px; }
       .btn { width: 100%; justify-content: center; margin-top: 5px;}
       
+      /* Portfel Pre-paid */
       #wallet-user-details > div:first-child { flex-direction: column; align-items: flex-start; gap: 15px; }
       #wallet-user-details > div:first-child > div:last-child { text-align: left; }
       #wallet-user-details > div:last-child { flex-direction: column; }
       #wallet-amount { max-width: 100% !important; width: 100%; }
       .form-group > div[style*="display:flex"] { flex-direction: column; }
       
+      /* User Modal */
       #user-modal-overlay .card { width: 95%; padding: 20px; }
       #user-modal-overlay > div > div:nth-child(3) { flex-direction: column; }
       
+      /* Widok nagłówka modalów / kart */
       .section-header { font-size: 1.1rem; }
       
+      /* Alarm Rezerwacji */
       #reservation-alarm h1, #order-alarm h1 { font-size: 2.2rem !important; }
       #reservation-alarm p, #order-alarm p { font-size: 1.1rem !important; }
       #btn-accept-alarm, #btn-accept-order { padding: 15px 30px !important; font-size: 1.2rem !important; border-width: 3px !important; }
 
+      /* Szukajki na pełną szerokość */
       #user-search { max-width: 100% !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- MIGAWKA: REZERWACJA -->
   <div id="reservation-alarm">
     <h1>🚨 NOWA REZERWACJA! 🚨</h1>
     <p id="alarm-details">Ładowanie danych...</p>
     <button id="btn-accept-alarm" onclick="acceptReservationFromAlarm()">PRZYJMIJ REZERWACJĘ</button>
   </div>
 
-  <!-- MIGAWKA: ZAMÓWIENIE -->
   <div id="order-alarm" style="position: fixed; inset: 0; z-index: 9999999; display: none; flex-direction: column; justify-content: center; align-items: center; background-color: #EF4444; color: #FFFFFF; animation: flashOrderAlert 0.4s infinite; text-align: center; padding: 20px;">
     <h1 style="font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">🚨 NOWE ZAMÓWIENIE! 🚨</h1>
     <p id="order-alarm-details" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 40px;">Ładowanie danych...</p>
@@ -397,6 +402,11 @@
     <section id="view-dashboard" class="view-section active">
       <div class="section-header">Statystyki MilkMi (App) <button class="btn btn-outline btn-sm" onclick="loadDashboardStats()" style="margin-left: 15px; width:auto;"><i class="fas fa-sync"></i></button></div>
       <div class="stats-grid">
+        <div class="stat-card" onclick="switchView('orders')">
+          <div class="stat-icon bg-blue"><i class="fas fa-shopping-bag"></i></div>
+          <div class="stat-value" id="stat-total-orders">0</div>
+          <div class="stat-label">Wszystkich Zamówień</div>
+        </div>
         <div class="stat-card" onclick="switchView('users')">
           <div class="stat-icon bg-orange"><i class="fas fa-users"></i></div>
           <div class="stat-value" id="stat-users">0</div>
@@ -624,9 +634,9 @@
     <!-- ZAKŁADKA ZAMÓWIEŃ -->
     <section id="view-orders" class="view-section">
       <div class="stats-grid" style="margin-bottom:20px;">
-        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">...</div><div class="stat-label">Nowych</div></div>
-        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">...</div><div class="stat-label">W realizacji</div></div>
-        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value">...</div><div class="stat-label">Zakończonych</div></div>
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-new">0</div><div class="stat-label">Oczekujących</div></div>
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-prep">0</div><div class="stat-label">W realizacji</div></div>
+        <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-done">0</div><div class="stat-label">Zakończonych</div></div>
       </div>
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:20px;">
@@ -1135,8 +1145,6 @@
       
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       
-      // Jeśli navElement jest dostarczony z menu bocznego - użyj go.
-      // Jeśli nie, znajdź odpowiedni w menu (dla kliknięć z kart Dashboardu)
       if(navElement) {
           navElement.classList.add('active');
       } else {
@@ -1166,7 +1174,6 @@
       
       document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
 
-      // Ukryj menu po kliknięciu jeśli jesteśmy na urządzeniu mobilnym
       if (window.innerWidth <= 992) {
         toggleSidebar();
       }
@@ -1182,9 +1189,9 @@
       } else if (viewId === 'dashboard') {
         loadDashboardStats();
       } else if (viewId === 'menu') {
-        loadMenuProducts(); // Ładowanie produktów do zakładki Menu
+        loadMenuProducts();
       } else if (viewId === 'orders') {
-        loadAllOrders(); // Załadowanie tabeli z zamówieniami
+        loadAllOrders(); 
       }
     }
 
@@ -1206,6 +1213,7 @@
         const json = await res.json();
         
         if (json.success) {
+            document.getElementById('stat-total-orders').innerText = json.data.totalOrders;
             document.getElementById('stat-users').innerText = json.data.totalUsers;
             document.getElementById('stat-reservations').innerText = json.data.totalReservations;
             document.getElementById('stat-spent-points').innerText = json.data.spentMilkosy;
@@ -1256,7 +1264,7 @@
             }
 
             checkNewReservations();
-            checkNewOrders(); // Zainicjowanie sprawdzania zamówień przy starcie
+            checkNewOrders();
             loadDashboardStats();
             loadBannerSettings(); 
         } else {
@@ -1359,7 +1367,7 @@
     let audioCtx;
 
     async function checkNewReservations() {
-      if (alarmActive || orderAlarmActive) return; // Zapobiega nakładaniu alarmów
+      if (alarmActive || orderAlarmActive) return;
       
       try {
         const res = await fetch('/api/admin/reservations/pending');
@@ -1582,34 +1590,47 @@
         
         if (result.success) {
           tbody.innerHTML = '';
+          
+          let countNew = 0; let countPrep = 0; let countDone = 0;
+
           if(result.data.length === 0) {
               tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">Brak zamówień</td></tr>';
-              return;
+          } else {
+              result.data.forEach(order => {
+                  if(order.status === 'pending') countNew++;
+                  if(order.status === 'preparing') countPrep++;
+                  if(order.status === 'completed') countDone++;
+
+                  const itemsList = order.items.map(i => `<b>${i.quantity}x</b> ${i.name}`).join('<br>');
+                  const dateStr = new Date(order.createdAt).toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
+
+                  tbody.innerHTML += `
+                    <tr>
+                      <td>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:5px;">${order.orderNumber}</div>
+                        <span style="color:var(--text-sub); font-size: 0.8rem;">${dateStr}</span><br>
+                        <strong>Odbiór: ${order.pickupTime}</strong>
+                      </td>
+                      <td><strong>${order.customerName}</strong><br><span style="font-size:0.8rem; color:var(--text-sub);">${order.customerPhone}</span></td>
+                      <td><span style="font-size: 0.85rem;">${itemsList}</span><br><em style="font-size:0.75rem; color:var(--status-warn);">${order.notes || ''}</em></td>
+                      <td><strong style="color:var(--primary);">${order.totalAmount.toFixed(2)} zł</strong></td>
+                      <td><i class="fas fa-store"></i> Odbiór</td>
+                      <td>
+                        <select class="form-control" style="width: auto; padding: 5px; font-weight: bold; font-size: 0.8rem;" onchange="changeOrderStatus('${order._id}', this.value)">
+                          <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ Oczekuje</option>
+                          <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>🍳 W przygotowaniu</option>
+                          <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>✅ Zrealizowane</option>
+                          <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Anulowane</option>
+                        </select>
+                      </td>
+                    </tr>
+                  `;
+              });
           }
-
-          result.data.forEach(order => {
-              const itemsList = order.items.map(i => `<b>${i.quantity}x</b> ${i.name}`).join('<br>');
-              const dateStr = new Date(order.createdAt).toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
-
-              tbody.innerHTML += `
-                <tr>
-                  <td><span style="color:var(--text-sub); font-size: 0.8rem;">${dateStr}</span><br><strong>Odbiór: ${order.pickupTime}</strong></td>
-                  <td><strong>${order.customerName}</strong><br><span style="font-size:0.8rem; color:var(--text-sub);">${order.customerPhone}</span></td>
-                  <td><span style="font-size: 0.85rem;">${itemsList}</span><br><em style="font-size:0.75rem; color:var(--status-warn);">${order.notes || ''}</em></td>
-                  <td><strong style="color:var(--primary);">${order.totalAmount.toFixed(2)} zł</strong></td>
-                  <td><i class="fas fa-store"></i> Odbiór</td>
-                  <td>
-                    <select class="form-control" style="width: auto; padding: 5px; font-weight: bold; font-size: 0.8rem;" onchange="changeOrderStatus('${order._id}', this.value)">
-                      <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ Oczekuje</option>
-                      <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>🍳 W przygotowaniu</option>
-                      <option value="on_the_way" ${order.status === 'on_the_way' ? 'selected' : ''} disabled>🛵 W drodze</option>
-                      <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>✅ Zrealizowane</option>
-                      <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Anulowane</option>
-                    </select>
-                  </td>
-                </tr>
-              `;
-          });
+          
+          document.getElementById('orders-stat-new').innerText = countNew;
+          document.getElementById('orders-stat-prep').innerText = countPrep;
+          document.getElementById('orders-stat-done').innerText = countDone;
         }
       } catch (err) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--status-err);">Błąd serwera.</td></tr>';
