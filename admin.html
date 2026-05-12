@@ -160,6 +160,7 @@
       color: var(--text-main); font-family: inherit; font-size: 1rem; outline: none;
     }
     .form-control:focus { border-color: var(--primary); }
+    .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
     
     .btn {
       padding: 12px 24px; border-radius: var(--radius-m); border: none;
@@ -183,7 +184,7 @@
     .stat-card {
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l);
       padding: 24px; position: relative; overflow: hidden; transition: transform 0.2s;
-      cursor: pointer; /* Dodano, aby karty na dashboardzie wyglądały na klikalne */
+      cursor: pointer;
     }
     .stat-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
     .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 15px; }
@@ -200,6 +201,11 @@
     /* View Management */
     .view-section { display: none; animation: fadeIn 0.3s ease; width: 100%; }
     .view-section.active { display: block; }
+
+    /* Godziny otwarcia grid */
+    .hours-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+    .hours-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .hours-row .day-label { width: 120px; font-weight: 700; font-size: 1rem; }
 
     /* Theme Toggle */
     .theme-toggle { 
@@ -233,7 +239,7 @@
     @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-    /* --- ALARM REZERWACJI (MIGAWKA) --- */
+    /* --- ALARM REZERWACJI I ZAMÓWIEŃ (MIGAWKA) --- */
     @keyframes flashAlert { 0% { background-color: #FFFFFF; color: #FF6600; } 50% { background-color: #FF6600; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #FF6600; } }
     @keyframes flashOrderAlert { 0% { background-color: #FFFFFF; color: #EF4444; } 50% { background-color: #EF4444; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #EF4444; } }
     
@@ -267,7 +273,6 @@
       .sidebar.active { transform: translateX(0); }
       .main-content { margin-left: 0; padding: 20px; }
       
-      /* --- ZAKTUALIZOWANY PRZYCISK MENU --- */
       #mobile-menu-toggle { 
         display: inline-flex !important; 
         background: transparent; 
@@ -287,42 +292,42 @@
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: 1fr; }
       
-      /* Formularze z gridem na kolumny */
       form[onsubmit="awardPoints(event)"] { grid-template-columns: 1fr; gap: 15px; }
       .btn { width: 100%; justify-content: center; margin-top: 5px;}
       
-      /* Portfel Pre-paid */
       #wallet-user-details > div:first-child { flex-direction: column; align-items: flex-start; gap: 15px; }
       #wallet-user-details > div:first-child > div:last-child { text-align: left; }
       #wallet-user-details > div:last-child { flex-direction: column; }
       #wallet-amount { max-width: 100% !important; width: 100%; }
       .form-group > div[style*="display:flex"] { flex-direction: column; }
       
-      /* User Modal */
       #user-modal-overlay .card { width: 95%; padding: 20px; }
       #user-modal-overlay > div > div:nth-child(3) { flex-direction: column; }
       
-      /* Widok nagłówka modalów / kart */
       .section-header { font-size: 1.1rem; }
       
-      /* Alarm Rezerwacji */
       #reservation-alarm h1, #order-alarm h1 { font-size: 2.2rem !important; }
       #reservation-alarm p, #order-alarm p { font-size: 1.1rem !important; }
       #btn-accept-alarm, #btn-accept-order { padding: 15px 30px !important; font-size: 1.2rem !important; border-width: 3px !important; }
 
-      /* Szukajki na pełną szerokość */
       #user-search { max-width: 100% !important; }
+
+      .hours-row { flex-wrap: wrap; }
+      .hours-row .day-label { width: 100%; margin-bottom: 5px; }
+      .hours-row input[type="time"] { flex: 1; }
     }
   </style>
 </head>
 <body>
 
+  <!-- MIGAWKA: REZERWACJA -->
   <div id="reservation-alarm">
     <h1>🚨 NOWA REZERWACJA! 🚨</h1>
     <p id="alarm-details">Ładowanie danych...</p>
     <button id="btn-accept-alarm" onclick="acceptReservationFromAlarm()">PRZYJMIJ REZERWACJĘ</button>
   </div>
 
+  <!-- MIGAWKA: ZAMÓWIENIE -->
   <div id="order-alarm" style="position: fixed; inset: 0; z-index: 9999999; display: none; flex-direction: column; justify-content: center; align-items: center; background-color: #EF4444; color: #FFFFFF; animation: flashOrderAlert 0.4s infinite; text-align: center; padding: 20px;">
     <h1 style="font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">🚨 NOWE ZAMÓWIENIE! 🚨</h1>
     <p id="order-alarm-details" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 40px;">Ładowanie danych...</p>
@@ -362,6 +367,7 @@
 
     <div class="nav-category">MilkShakeBar WEB</div>
     <div class="nav-item" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
+    <div class="nav-item" onclick="switchView('hours', this)"><i class="fas fa-clock"></i><span>Godziny otwarcia</span></div>
     <div class="nav-item" onclick="switchView('menu', this)"><i class="fas fa-utensils"></i><span>Menu</span></div>
     <div class="nav-item" onclick="switchView('newsletter', this)"><i class="fas fa-envelope-open-text"></i><span>Newsletter</span></div>
 
@@ -669,6 +675,7 @@
       </div>
     </section>
 
+    <!-- ZAKŁADKA: BANER APP -->
     <section id="view-app-bar" class="view-section">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Baner w Aplikacji</div>
@@ -704,6 +711,7 @@
       </div>
     </section>
 
+    <!-- ZAKŁADKA: BANER WEB -->
     <section id="view-web-bar" class="view-section">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Pasek na stronie WWW</div>
@@ -736,6 +744,98 @@
         </div>
 
         <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveBannerSettings('web')"><i class="fas fa-save"></i> Zapisz ustawienia</button>
+      </div>
+    </section>
+
+    <!-- ZAKŁADKA: GODZINY OTWARCIA (NOWA) -->
+    <section id="view-hours" class="view-section">
+      <div class="card" style="max-width: 650px;">
+        <div class="section-header">Godziny otwarcia lokalu</div>
+        <p style="color:var(--text-sub); margin-bottom: 25px;">Ustaw godziny otwarcia lokalu. Będą one automatycznie aktualizować się na stronie internetowej.</p>
+        
+        <form id="hours-form" onsubmit="saveHoursSettings(event)">
+          
+          <div class="hours-row">
+            <div class="day-label">Poniedziałek</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-mon-active" checked onchange="toggleDayHours('mon')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-mon-from" class="form-control" style="width: 110px;" value="12:00">
+            <span>-</span>
+            <input type="time" id="hours-mon-to" class="form-control" style="width: 110px;" value="22:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label">Wtorek</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-tue-active" checked onchange="toggleDayHours('tue')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-tue-from" class="form-control" style="width: 110px;" value="12:00">
+            <span>-</span>
+            <input type="time" id="hours-tue-to" class="form-control" style="width: 110px;" value="22:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label">Środa</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-wed-active" checked onchange="toggleDayHours('wed')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-wed-from" class="form-control" style="width: 110px;" value="12:00">
+            <span>-</span>
+            <input type="time" id="hours-wed-to" class="form-control" style="width: 110px;" value="22:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label">Czwartek</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-thu-active" checked onchange="toggleDayHours('thu')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-thu-from" class="form-control" style="width: 110px;" value="12:00">
+            <span>-</span>
+            <input type="time" id="hours-thu-to" class="form-control" style="width: 110px;" value="22:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label">Piątek</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-fri-active" checked onchange="toggleDayHours('fri')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-fri-from" class="form-control" style="width: 110px;" value="12:00">
+            <span>-</span>
+            <input type="time" id="hours-fri-to" class="form-control" style="width: 110px;" value="23:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label">Sobota</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-sat-active" checked onchange="toggleDayHours('sat')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-sat-from" class="form-control" style="width: 110px;" value="11:00">
+            <span>-</span>
+            <input type="time" id="hours-sat-to" class="form-control" style="width: 110px;" value="23:00">
+          </div>
+
+          <div class="hours-row">
+            <div class="day-label" style="color: var(--primary);">Niedziela</div>
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="hours-sun-active" checked onchange="toggleDayHours('sun')">
+              <span class="slider"></span>
+            </label>
+            <input type="time" id="hours-sun-from" class="form-control" style="width: 110px;" value="11:00">
+            <span>-</span>
+            <input type="time" id="hours-sun-to" class="form-control" style="width: 110px;" value="21:00">
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 30px;">
+            <i class="fas fa-save"></i> Zapisz godziny otwarcia
+          </button>
+        </form>
       </div>
     </section>
 
@@ -1138,6 +1238,64 @@
       }
     }
 
+    // --- ZARZĄDZANIE GODZINAMI OTWARCIA (NOWE) ---
+    function toggleDayHours(day) {
+      const isActive = document.getElementById(`hours-${day}-active`).checked;
+      document.getElementById(`hours-${day}-from`).disabled = !isActive;
+      document.getElementById(`hours-${day}-to`).disabled = !isActive;
+    }
+
+    async function saveHoursSettings(e) {
+      e.preventDefault();
+      
+      const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      const hoursData = {};
+      
+      days.forEach(day => {
+        hoursData[day] = {
+          isOpen: document.getElementById(`hours-${day}-active`).checked,
+          from: document.getElementById(`hours-${day}-from`).value,
+          to: document.getElementById(`hours-${day}-to`).value
+        };
+      });
+
+      try {
+        const res = await fetch('/api/admin/hours', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(hoursData)
+        });
+        if(res.ok) {
+          showToast('Godziny otwarcia zostały zapisane!', 'success');
+        } else {
+          showToast('Wystąpił błąd przy zapisie.', 'error');
+        }
+      } catch (err) {
+        showToast('Błąd połączenia z serwerem.', 'error');
+      }
+    }
+
+    async function loadHoursSettings() {
+      try {
+        const res = await fetch('/api/hours'); 
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+          days.forEach(day => {
+            if(data.data[day]) {
+              document.getElementById(`hours-${day}-active`).checked = data.data[day].isOpen;
+              document.getElementById(`hours-${day}-from`).value = data.data[day].from;
+              document.getElementById(`hours-${day}-to`).value = data.data[day].to;
+              toggleDayHours(day);
+            }
+          });
+        }
+      } catch(err) {
+        console.log('Brak ustawień godzin otwarcia na serwerze (lub błąd).');
+      }
+    }
+
     // --- VIEW MANAGEMENT ---
     function switchView(viewId, navElement) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -1162,6 +1320,7 @@
         'push': 'Powiadomienia Push',
         'app-bar': 'Pasek w Aplikacji',
         'web-bar': 'Pasek na WWW',
+        'hours': 'Godziny Otwarcia',
         'menu': 'Edycja Menu',
         'newsletter': 'Newsletter',
         'team': 'Zespół',
@@ -1192,6 +1351,8 @@
         loadMenuProducts();
       } else if (viewId === 'orders') {
         loadAllOrders(); 
+      } else if (viewId === 'hours') {
+        loadHoursSettings();
       }
     }
 
@@ -1367,7 +1528,7 @@
     let audioCtx;
 
     async function checkNewReservations() {
-      if (alarmActive || orderAlarmActive) return;
+      if (alarmActive || orderAlarmActive) return; 
       
       try {
         const res = await fetch('/api/admin/reservations/pending');
