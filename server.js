@@ -141,6 +141,20 @@ const reservationSchema = new mongoose.Schema({
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
 
+// --- SCHEMAT ZAMÓWIENIA ---
+const orderSchema = new mongoose.Schema({
+  customerName: String,
+  customerPhone: String,
+  pickupTime: String,
+  notes: String,
+  items: Array, // Tablica z produktami (id, nazwa, cena, ilosc)
+  totalAmount: Number,
+  status: { type: String, default: 'pending' }, // 'pending', 'preparing', 'on_the_way', 'completed', 'cancelled'
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
 // --- SCHEMAT USTAWIEŃ BANERÓW (Pasek w aplikacji i na stronie) ---
 const bannerSchema = new mongoose.Schema({
   target: { type: String, required: true, unique: true }, // 'app' lub 'web'
@@ -427,6 +441,53 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
     } catch(err) {
         res.status(500).json({ success: false });
     }
+});
+
+// ==========================================
+// --- API ZAMÓWIEŃ (ORDERS) ---
+// ==========================================
+
+// KLIENCI - Złożenie nowego zamówienia z poziomu aplikacji
+app.post('/api/orders', async (req, res) => {
+  try {
+    const newOrder = new Order(req.body);
+    await newOrder.save();
+    res.json({ success: true, message: 'Zamówienie zostało przyjęte!' });
+  } catch (err) {
+    console.error('Błąd zapisu zamówienia:', err);
+    res.status(500).json({ success: false, message: 'Błąd serwera przy składaniu zamówienia.' });
+  }
+});
+
+// ADMIN - Pobranie nowych zamówień do ALARMU (Tylko oczekujące)
+app.get('/api/admin/orders/pending', async (req, res) => {
+  try {
+    const pendingOrders = await Order.find({ status: 'pending' }).sort({ createdAt: 1 });
+    res.json({ success: true, data: pendingOrders });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// ADMIN - Pobranie wszystkich zamówień do tabeli
+app.get('/api/admin/orders', async (req, res) => {
+  try {
+    const allOrders = await Order.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: allOrders });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// ADMIN - Zmiana statusu zamówienia (np. z pending na preparing, completed itp.)
+app.post('/api/admin/orders/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    await Order.findByIdAndUpdate(req.params.id, { status: status });
+    res.json({ success: true, message: 'Status zaktualizowany' });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
 });
 
 // ==========================================
