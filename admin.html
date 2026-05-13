@@ -41,6 +41,15 @@
       --primary-glow: rgba(255, 102, 0, 0.5);
     }
 
+    /* Morski motyw dla lokalizacji ROWY */
+    body.rowy-mode {
+      --primary: #0EA5E9; 
+      --primary-glow: rgba(14, 165, 233, 0.3);
+    }
+    body.rowy-mode .brand span {
+      color: var(--primary);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -93,7 +102,7 @@
     }
     
     .nav-item:hover { background: var(--bg-body); color: var(--text-main); }
-    .nav-item.active { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
+    .nav-item.active { background: var(--primary-glow); color: var(--primary); }
     .nav-item i { width: 20px; text-align: center; }
 
     /* --- MAIN CONTENT --- */
@@ -192,7 +201,7 @@
     .stat-label { color: var(--text-sub); font-size: 0.85rem; font-weight: 600; }
 
     /* Colors for icons */
-    .bg-orange { background: rgba(255, 102, 0, 0.1); color: var(--primary); }
+    .bg-orange { background: rgba(255, 102, 0, 0.1); color: #FF6600; }
     .bg-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
     .bg-green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
     .bg-purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
@@ -320,6 +329,20 @@
 </head>
 <body>
 
+  <!-- MODAL: ZMIANA LOKALIZACJI -->
+  <div id="location-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999999; display: none; justify-content: center; align-items: center;">
+    <div class="card" style="width: 90%; max-width: 400px; text-align: center; margin: 0; animation: fadeIn 0.3s ease;">
+      <h2 style="margin-bottom: 10px; font-weight: 800;">Zmiana lokalizacji</h2>
+      <p style="color: var(--text-sub); margin-bottom: 25px; font-size: 0.95rem;" id="location-modal-text">
+        Czy na pewno chcesz się przełączyć na admin panel Rowy?
+      </p>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline" style="flex: 1; justify-content: center;" onclick="closeLocationModal()">Anuluj</button>
+        <button class="btn btn-primary" style="flex: 1; justify-content: center;" onclick="confirmLocationSwitch()">Tak, przełącz</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MIGAWKA: REZERWACJA -->
   <div id="reservation-alarm">
     <h1>🚨 NOWA REZERWACJA! 🚨</h1>
@@ -350,33 +373,46 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
   <aside class="sidebar">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 40px;">
-      <div class="brand" style="margin-bottom:0;">MilkMi<span>.</span> <small>Admin Panel</small></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+      <div class="brand" style="margin-bottom:0;">MilkMi<span>.</span> <small id="location-badge">Słupsk (Główna)</small></div>
       <button id="close-menu-btn" class="btn btn-outline" style="display:none; padding:5px 10px;" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- PRZYCISK ZMIANY LOKALIZACJI -->
+    <div style="margin-bottom: 25px; padding: 0 10px;">
+      <button id="location-switch-btn" class="btn btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; border-color: var(--primary); color: var(--primary);" onclick="promptLocationSwitch()">
+        <i class="fas fa-map-marker-alt"></i> Przełącz na Rowy
+      </button>
     </div>
 
     <div class="nav-category">MilkMi App</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
     <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Z kasy)</span></div>
     <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Portfel Pre-paid</span></div>
-    <div class="nav-item" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
-    <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
+    
+    <!-- Elementy widoczne TYLKO dla Słupska -->
+    <div class="nav-item slupsk-only" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
+    
     <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia</span></div>
-    <div class="nav-item" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
-    <div class="nav-item" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek w Aplikacji</span></div>
+    
+    <div class="nav-item slupsk-only" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek w Aplikacji</span></div>
 
-    <div class="nav-category">MilkShakeBar WEB</div>
-    <div class="nav-item" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
-    <div class="nav-item" onclick="switchView('hours', this)"><i class="fas fa-clock"></i><span>Godziny otwarcia</span></div>
-    <div class="nav-item" onclick="switchView('menu', this)"><i class="fas fa-utensils"></i><span>Menu</span></div>
-    <div class="nav-item" onclick="switchView('newsletter', this)"><i class="fas fa-envelope-open-text"></i><span>Newsletter</span></div>
+    <div class="nav-category slupsk-only">MilkShakeBar WEB</div>
+    <div class="nav-item slupsk-only" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('hours', this)"><i class="fas fa-clock"></i><span>Godziny otwarcia</span></div>
+    
+    <div class="nav-item" onclick="switchView('menu', this)"><i class="fas fa-utensils"></i><span>Menu App/Kiosk</span></div>
+    
+    <div class="nav-item slupsk-only" onclick="switchView('newsletter', this)"><i class="fas fa-envelope-open-text"></i><span>Newsletter</span></div>
 
-    <div class="nav-category">WorkMi (System)</div>
-    <div class="nav-item" onclick="switchView('work-system', this)"><i class="fas fa-server"></i><span>System</span></div>
-    <div class="nav-item" onclick="switchView('work-products', this)"><i class="fas fa-boxes"></i><span>Produkty</span></div>
-    <div class="nav-item" onclick="switchView('work-time', this)"><i class="fas fa-clock"></i><span>Czas Pracy</span></div>
-    <div class="nav-item" onclick="switchView('work-costs', this)"><i class="fas fa-money-bill-wave"></i><span>Koszta Pracowników</span></div>
-    <div class="nav-item" onclick="switchView('team', this)"><i class="fas fa-user-friends"></i><span>Zespół</span></div>
+    <div class="nav-category slupsk-only">WorkMi (System)</div>
+    <div class="nav-item slupsk-only" onclick="switchView('work-system', this)"><i class="fas fa-server"></i><span>System</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('work-products', this)"><i class="fas fa-boxes"></i><span>Produkty</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('work-time', this)"><i class="fas fa-clock"></i><span>Czas Pracy</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('work-costs', this)"><i class="fas fa-money-bill-wave"></i><span>Koszta Pracowników</span></div>
+    <div class="nav-item slupsk-only" onclick="switchView('team', this)"><i class="fas fa-user-friends"></i><span>Zespół</span></div>
     
     <div style="flex: 1"></div>
     <div class="nav-item" onclick="switchView('dev', this)" style="color: var(--primary);"><i class="fas fa-code"></i><span>Napisz do Developera</span></div>
@@ -418,7 +454,7 @@
           <div class="stat-value" id="stat-users">0</div>
           <div class="stat-label">Wszystkich Użytkowników</div>
         </div>
-        <div class="stat-card" onclick="switchView('reservations')">
+        <div class="stat-card slupsk-only" onclick="switchView('reservations')">
           <div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div>
           <div class="stat-value" id="stat-reservations">0</div>
           <div class="stat-label">Łączna liczba rezerwacji</div>
@@ -428,7 +464,7 @@
           <div class="stat-value" id="stat-spent-points">0</div>
           <div class="stat-label">Wydanych Milkosów</div>
         </div>
-        <div class="stat-card" onclick="switchView('users')">
+        <div class="stat-card slupsk-only" onclick="switchView('users')">
           <div class="stat-icon bg-purple"><i class="fas fa-user-tag"></i></div>
           <div class="stat-value" id="stat-users-with-points">0</div>
           <div class="stat-label">Użytkownicy z punktami</div>
@@ -450,23 +486,25 @@
         </div>
       </div>
       
-      <div class="section-header" style="margin-top:40px;">Statystyki MilkShakeBar (Web)</div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-eye"></i></div><div class="stat-value">1,205</div><div class="stat-label">Wyświetleń Menu (Dziś)</div></div>
-        <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-laptop-house"></i></div><div class="stat-value">18</div><div class="stat-label">Rezerwacji przez WWW</div></div>
-      </div>
-
-      <div class="section-header" style="margin-top:40px;">Statystyki WorkMi (Internal)</div>
-      <div class="stats-grid">
-        <div class="stat-card" onclick="switchView('work-products')">
-          <div class="stat-icon bg-purple"><i class="fas fa-cubes"></i></div>
-          <div class="stat-value">4,120</div>
-          <div class="stat-label">Liczba Artykułów (Magazyn)</div>
+      <div class="slupsk-only">
+        <div class="section-header" style="margin-top:40px;">Statystyki MilkShakeBar (Web)</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-eye"></i></div><div class="stat-value">1,205</div><div class="stat-label">Wyświetleń Menu (Dziś)</div></div>
+          <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-laptop-house"></i></div><div class="stat-value">18</div><div class="stat-label">Rezerwacji przez WWW</div></div>
         </div>
-        <div class="stat-card" onclick="switchView('work-products')">
-          <div class="stat-icon bg-red"><i class="fas fa-truck-loading"></i></div>
-          <div class="stat-value">5</div>
-          <div class="stat-label">Nadchodzące dostawy</div>
+
+        <div class="section-header" style="margin-top:40px;">Statystyki WorkMi (Internal)</div>
+        <div class="stats-grid">
+          <div class="stat-card" onclick="switchView('work-products')">
+            <div class="stat-icon bg-purple"><i class="fas fa-cubes"></i></div>
+            <div class="stat-value">4,120</div>
+            <div class="stat-label">Liczba Artykułów (Magazyn)</div>
+          </div>
+          <div class="stat-card" onclick="switchView('work-products')">
+            <div class="stat-icon bg-red"><i class="fas fa-truck-loading"></i></div>
+            <div class="stat-value">5</div>
+            <div class="stat-label">Nadchodzące dostawy</div>
+          </div>
         </div>
       </div>
     </section>
@@ -565,7 +603,7 @@
       </div>
     </section>
 
-    <section id="view-users" class="view-section">
+    <section id="view-users" class="view-section slupsk-only">
       <div class="card">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
           <input type="text" id="user-search" class="form-control" placeholder="Szukaj (email/telefon/imię)..." style="max-width:300px;" oninput="filterUsers()">
@@ -620,7 +658,7 @@
       </div>
     </div>
 
-    <section id="view-reservations" class="view-section">
+    <section id="view-reservations" class="view-section slupsk-only">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:20px; flex-wrap: wrap; gap:10px;">
           <div class="section-header" style="margin:0">Baza wszystkich rezerwacji</div>
@@ -660,7 +698,7 @@
       </div>
     </section>
 
-    <section id="view-push" class="view-section">
+    <section id="view-push" class="view-section slupsk-only">
       <div class="card" style="max-width:600px;">
         <div class="section-header">Wyślij powiadomienie</div>
         <div class="form-group">
@@ -676,7 +714,7 @@
     </section>
 
     <!-- ZAKŁADKA: BANER APP -->
-    <section id="view-app-bar" class="view-section">
+    <section id="view-app-bar" class="view-section slupsk-only">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Baner w Aplikacji</div>
         <p style="color:var(--text-sub); margin-bottom: 20px;">Zarządzaj paskiem informacyjnym wyświetlanym na samej górze aplikacji mobilnej.</p>
@@ -712,7 +750,7 @@
     </section>
 
     <!-- ZAKŁADKA: BANER WEB -->
-    <section id="view-web-bar" class="view-section">
+    <section id="view-web-bar" class="view-section slupsk-only">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Pasek na stronie WWW</div>
         <p style="color:var(--text-sub); margin-bottom: 20px;">Zarządzaj paskiem promocyjnym na górze strony internetowej Eatmi/Milkshakebar.</p>
@@ -747,8 +785,8 @@
       </div>
     </section>
 
-    <!-- ZAKŁADKA: GODZINY OTWARCIA (NOWA) -->
-    <section id="view-hours" class="view-section">
+    <!-- ZAKŁADKA: GODZINY OTWARCIA -->
+    <section id="view-hours" class="view-section slupsk-only">
       <div class="card" style="max-width: 650px;">
         <div class="section-header">Godziny otwarcia lokalu</div>
         <p style="color:var(--text-sub); margin-bottom: 25px;">Ustaw godziny otwarcia lokalu. Będą one automatycznie aktualizować się na stronie internetowej.</p>
@@ -926,14 +964,14 @@
       </div>
     </section>
 
-    <section id="view-newsletter" class="view-section">
+    <section id="view-newsletter" class="view-section slupsk-only">
       <div class="card">
         <div class="section-header">Baza subskrybentów</div>
         <p style="color:var(--text-sub);">Liczba aktywnych: 540</p>
       </div>
     </section>
 
-    <section id="view-team" class="view-section">
+    <section id="view-team" class="view-section slupsk-only">
       <div class="card">
         <div class="section-header">Dodaj nowego pracownika</div>
         <form id="add-employee-form" onsubmit="addEmployee(event)">
@@ -971,7 +1009,7 @@
       </div>
     </section>
 
-    <section id="view-work-system" class="view-section">
+    <section id="view-work-system" class="view-section slupsk-only">
       <div class="section-header">Status Systemów WorkMi</div>
       <div class="stats-grid">
         <div class="stat-card">
@@ -998,7 +1036,7 @@
       </div>
     </section>
 
-    <section id="view-work-products" class="view-section">
+    <section id="view-work-products" class="view-section slupsk-only">
       <div class="card">
         <div class="section-header">Stany Magazynowe (Artykuły)</div>
         <div class="table-container">
@@ -1032,7 +1070,7 @@
       </div>
     </section>
 
-    <section id="view-work-time" class="view-section">
+    <section id="view-work-time" class="view-section slupsk-only">
       <div class="card">
         <div class="section-header">Rejestr Czasu Pracy (Dziś)</div>
         <div class="table-container">
@@ -1059,7 +1097,7 @@
       </div>
     </section>
 
-    <section id="view-work-costs" class="view-section">
+    <section id="view-work-costs" class="view-section slupsk-only">
       <div class="stats-grid" style="margin-bottom:20px;">
         <div class="stat-card">
           <div class="stat-icon bg-red"><i class="fas fa-coins"></i></div>
@@ -1168,6 +1206,60 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    // --- ZARZĄDZANIE LOKALIZACJAMI (Słupsk / Rowy) ---
+    let currentLocation = 'slupsk';
+    let pendingLocationSwitch = null;
+
+    function promptLocationSwitch() {
+      pendingLocationSwitch = currentLocation === 'slupsk' ? 'rowy' : 'slupsk';
+      const locName = pendingLocationSwitch === 'rowy' ? 'Rowy' : 'Słupsk';
+      
+      document.getElementById('location-modal-text').innerHTML = `Czy na pewno chcesz przełączyć panel administracyjny na lokalizację: <strong>${locName}</strong>?`;
+      document.getElementById('location-modal-overlay').style.display = 'flex';
+    }
+
+    function closeLocationModal() {
+      document.getElementById('location-modal-overlay').style.display = 'none';
+      pendingLocationSwitch = null;
+    }
+
+    function confirmLocationSwitch() {
+      if (!pendingLocationSwitch) return;
+      currentLocation = pendingLocationSwitch;
+      closeLocationModal();
+      applyLocationTheme();
+    }
+
+    function applyLocationTheme() {
+      const body = document.body;
+      const locBadge = document.getElementById('location-badge');
+      const switchBtn = document.getElementById('location-switch-btn');
+      const slupskOnlyElements = document.querySelectorAll('.slupsk-only');
+      const pageTitle = document.getElementById('page-title');
+
+      if (currentLocation === 'rowy') {
+        body.classList.add('rowy-mode');
+        locBadge.innerText = 'Rowy (Sezonowa)';
+        switchBtn.innerHTML = '<i class="fas fa-undo"></i> Wróć do panelu Słupsk';
+        slupskOnlyElements.forEach(el => el.style.display = 'none');
+        pageTitle.innerText = 'Dashboard - Rowy';
+      } else {
+        body.classList.remove('rowy-mode');
+        locBadge.innerText = 'Słupsk (Główna)';
+        switchBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Przełącz na Rowy';
+        slupskOnlyElements.forEach(el => {
+          if(el.classList.contains('nav-category')) el.style.display = 'block';
+          else el.style.display = 'flex';
+        });
+        pageTitle.innerText = 'Dashboard - Słupsk';
+      }
+      
+      switchView('dashboard');
+      showToast(`Zmieniono lokalizację na: ${currentLocation === 'rowy' ? 'Rowy' : 'Słupsk'}`, 'success');
+      loadDashboardStats(); // Wywołanie ponownego ładowania danych, żeby np. odświeżyć liczniki po zmianie lokacji
+    }
+
 
     // --- ZARZĄDZANIE BANERAMI (APP & WEB) ---
     function updateBannerPreview(target) {
@@ -1331,7 +1423,9 @@
         'dev': 'Kontakt z Developerem'
       };
       
-      document.getElementById('page-title').innerText = titles[viewId] || 'Panel';
+      // Jeżeli jesteśmy w widoku innej lokalizacji, chcemy dopisek
+      const locationSuffix = currentLocation === 'rowy' ? ' - Rowy' : ' - Słupsk';
+      document.getElementById('page-title').innerText = (titles[viewId] || 'Panel') + locationSuffix;
 
       if (window.innerWidth <= 992) {
         toggleSidebar();
@@ -1370,7 +1464,7 @@
     // --- ŁADOWANIE STATYSTYK DO DASHBOARDU ---
     async function loadDashboardStats() {
       try {
-        const res = await fetch('/api/admin/stats');
+        const res = await fetch(`/api/admin/stats?location=${currentLocation}`);
         const json = await res.json();
         
         if (json.success) {
@@ -1462,7 +1556,7 @@
             const res = await fetch('/api/admin/award-points', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, amountSpent })
+                body: JSON.stringify({ identifier, amountSpent, location: currentLocation })
             });
             
             const data = await res.json();
@@ -1487,7 +1581,7 @@
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
         
         try {
-            const res = await fetch('/api/admin/point-transactions');
+            const res = await fetch(`/api/admin/point-transactions?location=${currentLocation}`);
             const data = await res.json();
             
             if(data.success) {
@@ -1528,7 +1622,7 @@
     let audioCtx;
 
     async function checkNewReservations() {
-      if (alarmActive || orderAlarmActive) return; 
+      if (alarmActive || orderAlarmActive || currentLocation === 'rowy') return; 
       
       try {
         const res = await fetch('/api/admin/reservations/pending');
@@ -1595,6 +1689,7 @@
     }
 
     async function loadAllReservations() {
+      if (currentLocation === 'rowy') return; // Zabezpieczenie przed ładowaniem w Rowach
       const tbody = document.getElementById('reservations-table-body');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
       
@@ -1681,7 +1776,7 @@
       if (orderAlarmActive || alarmActive) return; 
       
       try {
-        const res = await fetch('/api/admin/orders/pending');
+        const res = await fetch(`/api/admin/orders/pending?location=${currentLocation}`);
         const data = await res.json();
         
         if (data.success && data.data.length > 0) {
@@ -1746,7 +1841,7 @@
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Ładowanie zamówień...</td></tr>';
       
       try {
-        const res = await fetch('/api/admin/orders');
+        const res = await fetch(`/api/admin/orders?location=${currentLocation}`);
         const result = await res.json();
         
         if (result.success) {
@@ -1859,7 +1954,7 @@
             const res = await fetch('/api/admin/wallet/modify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentWalletUserId, amount, action })
+                body: JSON.stringify({ userId: currentWalletUserId, amount, action, location: currentLocation })
             });
             const data = await res.json();
             
@@ -1868,7 +1963,6 @@
                 document.getElementById('wallet-amount').value = '';
                 showToast(data.message, 'success');
                 
-                // ODŚWIEŻENIE HISTORII PRE-PAID PO UDANEJ TRANSAKCJI
                 loadWalletTransactions(); 
             } else {
                 showToast(data.message, 'error');
@@ -1884,7 +1978,7 @@
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
         
         try {
-            const res = await fetch('/api/admin/wallet-transactions');
+            const res = await fetch(`/api/admin/wallet-transactions?location=${currentLocation}`);
             const data = await res.json();
             
             if(data.success) {
@@ -1927,6 +2021,7 @@
     let currentSelectedUserId = null;
 
     async function loadUsers() {
+      if (currentLocation === 'rowy') return; // Funkcjonalność zablokowana dla Rowów
       const tbody = document.getElementById('users-table-body');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
       
@@ -2085,11 +2180,11 @@
     async function loadMenuProducts() {
       const tbody = document.getElementById('menu-products-body');
       try {
-        const res = await fetch('/api/menu');
+        const res = await fetch(`/api/menu?location=${currentLocation}`);
         const json = await res.json();
         
         if (json.success) {
-          allProducts = json.data; // Zapisujemy by móc potem pobrać dane do edycji
+          allProducts = json.data;
           tbody.innerHTML = '';
           if(json.data.length === 0) {
              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Brak produktów w menu.</td></tr>';
@@ -2154,7 +2249,8 @@
         price: document.getElementById('prod-price').value,
         categoryId: document.getElementById('prod-category').value,
         description: document.getElementById('prod-desc').value,
-        imageUrl: document.getElementById('prod-img').value
+        imageUrl: document.getElementById('prod-img').value,
+        location: currentLocation // dodane przesyłanie lokacji
       };
 
       const url = editingProductId ? `/api/admin/menu/${editingProductId}` : '/api/admin/menu';
@@ -2170,7 +2266,7 @@
         
         if(json.success) {
           showToast(json.message, 'success');
-          cancelEdit(); // Czyści formularz i resetuje stan
+          cancelEdit();
           loadMenuProducts();
         } else {
           showToast(json.message, 'error');
@@ -2192,6 +2288,7 @@
 
     // --- WORKMI TEAM LOGIC ---
     async function fetchTeam() {
+      if (currentLocation === 'rowy') return; // Tylko Słupsk
       try {
         const response = await fetch('/api/team');
         const result = await response.json();
