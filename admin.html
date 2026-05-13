@@ -1248,10 +1248,12 @@
         body.classList.remove('rowy-mode');
         locBadge.innerText = 'Słupsk (Główna)';
         switchBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Przełącz na Rowy';
+        
+        // ZAMIAST WYMUSZAĆ FLEX/BLOCK, CZYŚCIMY INLINE STYLE
         slupskOnlyElements.forEach(el => {
-          if(el.classList.contains('nav-category')) el.style.display = 'block';
-          else el.style.display = 'flex';
+          el.style.display = ''; 
         });
+        
         pageTitle.innerText = 'Dashboard - Słupsk';
       }
       
