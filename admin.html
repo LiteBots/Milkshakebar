@@ -390,18 +390,17 @@
     <div class="nav-item" onclick="switchView('points', this)"><i class="fas fa-coins"></i><span>Punkty (Z kasy)</span></div>
     <div class="nav-item" onclick="switchView('prepaid', this)"><i class="fas fa-wallet"></i><span>Portfel Pre-paid</span></div>
     
-    <!-- Elementy widoczne TYLKO dla Słupska -->
     <div class="nav-item slupsk-only" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
-    <div class="nav-item slupsk-only" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
+    <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
     
     <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia</span></div>
     
     <div class="nav-item slupsk-only" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
     <div class="nav-item slupsk-only" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek w Aplikacji</span></div>
 
-    <div class="nav-category slupsk-only">MilkShakeBar WEB</div>
-    <div class="nav-item slupsk-only" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
-    <div class="nav-item slupsk-only" onclick="switchView('hours', this)"><i class="fas fa-clock"></i><span>Godziny otwarcia</span></div>
+    <div class="nav-category">MilkShakeBar WEB</div>
+    <div class="nav-item" onclick="switchView('web-bar', this)"><i class="fas fa-columns"></i><span>Pasek Na Stronie</span></div>
+    <div class="nav-item" onclick="switchView('hours', this)"><i class="fas fa-clock"></i><span>Godziny otwarcia</span></div>
     
     <div class="nav-item" onclick="switchView('menu', this)"><i class="fas fa-utensils"></i><span>Menu App/Kiosk</span></div>
     
@@ -454,7 +453,7 @@
           <div class="stat-value" id="stat-users">0</div>
           <div class="stat-label">Wszystkich Użytkowników</div>
         </div>
-        <div class="stat-card slupsk-only" onclick="switchView('reservations')">
+        <div class="stat-card" onclick="switchView('reservations')">
           <div class="stat-icon bg-blue"><i class="fas fa-calendar-alt"></i></div>
           <div class="stat-value" id="stat-reservations">0</div>
           <div class="stat-label">Łączna liczba rezerwacji</div>
@@ -658,7 +657,7 @@
       </div>
     </div>
 
-    <section id="view-reservations" class="view-section slupsk-only">
+    <section id="view-reservations" class="view-section">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:20px; flex-wrap: wrap; gap:10px;">
           <div class="section-header" style="margin:0">Baza wszystkich rezerwacji</div>
@@ -750,7 +749,7 @@
     </section>
 
     <!-- ZAKŁADKA: BANER WEB -->
-    <section id="view-web-bar" class="view-section slupsk-only">
+    <section id="view-web-bar" class="view-section">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Pasek na stronie WWW</div>
         <p style="color:var(--text-sub); margin-bottom: 20px;">Zarządzaj paskiem promocyjnym na górze strony internetowej Eatmi/Milkshakebar.</p>
@@ -786,7 +785,7 @@
     </section>
 
     <!-- ZAKŁADKA: GODZINY OTWARCIA -->
-    <section id="view-hours" class="view-section slupsk-only">
+    <section id="view-hours" class="view-section">
       <div class="card" style="max-width: 650px;">
         <div class="section-header">Godziny otwarcia lokalu</div>
         <p style="color:var(--text-sub); margin-bottom: 25px;">Ustaw godziny otwarcia lokalu. Będą one automatycznie aktualizować się na stronie internetowej.</p>
@@ -1354,7 +1353,7 @@
       });
 
       try {
-        const res = await fetch('/api/admin/hours', {
+        const res = await fetch(`/api/admin/hours?location=${currentLocation}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(hoursData)
@@ -1371,7 +1370,7 @@
 
     async function loadHoursSettings() {
       try {
-        const res = await fetch('/api/hours'); 
+        const res = await fetch(`/api/hours?location=${currentLocation}`); 
         const data = await res.json();
         
         if (data.success && data.data) {
@@ -1624,7 +1623,7 @@
     let audioCtx;
 
     async function checkNewReservations() {
-      if (alarmActive || orderAlarmActive || currentLocation === 'rowy') return; 
+      if (alarmActive || orderAlarmActive) return; 
       
       try {
         const res = await fetch('/api/admin/reservations/pending');
@@ -1691,7 +1690,6 @@
     }
 
     async function loadAllReservations() {
-      if (currentLocation === 'rowy') return; // Zabezpieczenie przed ładowaniem w Rowach
       const tbody = document.getElementById('reservations-table-body');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
       
