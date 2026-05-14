@@ -186,6 +186,23 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
+// --- SCHEMAT GODZIN OTWARCIA LOKALI ---
+const hoursSchema = new mongoose.Schema({
+  location: { type: String, required: true, unique: true }, // 'slupsk' lub 'rowy'
+  schedule: {
+    mon: { isOpen: Boolean, from: String, to: String },
+    tue: { isOpen: Boolean, from: String, to: String },
+    wed: { isOpen: Boolean, from: String, to: String },
+    thu: { isOpen: Boolean, from: String, to: String },
+    fri: { isOpen: Boolean, from: String, to: String },
+    sat: { isOpen: Boolean, from: String, to: String },
+    sun: { isOpen: Boolean, from: String, to: String }
+  },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const LocationHours = mongoose.model('LocationHours', hoursSchema);
+
 // --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
 const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
@@ -702,6 +719,47 @@ app.delete('/api/admin/menu/:id', async (req, res) => {
     res.json({ success: true, message: 'Produkt usunięty.' });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd usuwania produktu.' });
+  }
+});
+
+// ==========================================
+// --- API GODZIN OTWARCIA (HOURS) ---
+// ==========================================
+
+// 1. ZAPISYWANIE GODZIN (Tylko Admin)
+app.post('/api/admin/hours', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    const scheduleData = req.body; // Zawiera obiekt z dniami: mon, tue, wed...
+
+    // Zapisujemy lub aktualizujemy (upsert) godziny dla danej lokalizacji
+    const updatedHours = await LocationHours.findOneAndUpdate(
+      { location: location },
+      { schedule: scheduleData, updatedAt: Date.now() },
+      { new: true, upsert: true }
+    );
+
+    res.json({ success: true, message: `Godziny otwarcia dla ${location} zaktualizowane!`, data: updatedHours });
+  } catch (err) {
+    console.error('Błąd zapisu godzin:', err);
+    res.status(500).json({ success: false, message: 'Wystąpił błąd podczas zapisu godzin.' });
+  }
+});
+
+// 2. POBIERANIE GODZIN (Strona główna WWW oraz Panel Admina)
+app.get('/api/hours', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    const hoursDoc = await LocationHours.findOne({ location: location });
+
+    if (hoursDoc && hoursDoc.schedule) {
+      res.json({ success: true, data: hoursDoc.schedule });
+    } else {
+      // Jeśli jeszcze nie zapisano żadnych godzin dla lokalizacji
+      res.json({ success: false, message: 'Brak ustawionych godzin dla tej lokalizacji.' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania godzin.' });
   }
 });
 
