@@ -533,8 +533,37 @@ app.post('/api/admin/orders/:id/status', async (req, res) => {
 });
 
 // ==========================================
-// --- API ADMINA (REZERWACJE) ---
+// --- API REZERWACJE ---
 // ==========================================
+
+// --- KLIENCI: Złożenie nowej rezerwacji ze strony WWW ---
+app.post('/api/reservations', async (req, res) => {
+  try {
+    const { name, phone, datetime, guests, zone, notes } = req.body;
+    
+    if (!name || !phone || !datetime || !guests) {
+      return res.status(400).json({ success: false, message: 'Brakujące pola' });
+    }
+
+    const newReservation = new Reservation({
+      name,
+      phone,
+      datetime,
+      guests,
+      zone,
+      notes,
+      status: 'pending' // to wyzwoli alarm w panelu admina
+    });
+
+    await newReservation.save();
+    console.log(`🛎️ Wpadła nowa rezerwacja od: ${name}`);
+    
+    res.json({ success: true, message: 'Rezerwacja została przyjęta do systemu' });
+  } catch (err) {
+    console.error('Błąd zapisu rezerwacji:', err);
+    res.status(500).json({ success: false, message: 'Wystąpił błąd serwera' });
+  }
+});
 
 // 1. PANEL ADMINA - Pobieranie nowych (pending) TYLKO dla mechanizmu alarmu
 app.get('/api/admin/reservations/pending', async (req, res) => {
