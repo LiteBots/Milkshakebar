@@ -149,10 +149,16 @@
 
     /* --- PREMIUM HERO SECTION --- */
     .hero { position: relative; min-height: 90vh; display: flex; align-items: center; padding: 60px 0; overflow: hidden; width: 100%; box-sizing: border-box; }
-    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; width: 100%; max-width: 100%; }
-    .hero-content { position: relative; z-index: 2; width: 100%; max-width: 100%; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; width: 100%; max-width: 100%; }
     
-    /* Pełne łamanie tekstu, by nie ucinało po lewej */
+    .hero-content { 
+      position: relative; 
+      z-index: 2; 
+      width: 100%; 
+      max-width: 100%; 
+      padding-left: clamp(10px, 8vw, 120px); /* Przesunięcie tekstów do środka */
+    }
+    
     .hero-title, .section-title { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%; }
     .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 24px; color: var(--text-main); }
     .hero-desc { font-size: clamp(1rem, 4vw, 1.15rem); color: var(--text-sub); line-height: 1.6; margin-bottom: 40px; max-width: 540px; word-wrap: break-word; }
@@ -164,7 +170,16 @@
     .stat-item p { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
     .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; width: 100%; max-width: 100%; }
-    .hero-image { width: 100%; max-width: 600px; height: auto; border-radius: var(--radius-xl); box-shadow: 0 30px 60px rgba(0,0,0,0.15); transform: rotate(2deg); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    
+    .hero-image { 
+      width: 100%; 
+      max-width: 460px; /* Zmniejszone ze starych 600px */
+      height: auto; 
+      border-radius: var(--radius-xl); 
+      box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
+      transform: rotate(2deg); 
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+    }
     .hero-image-wrapper:hover .hero-image { transform: rotate(0deg) scale(1.03); }
 
     /* --- BENTO GRID --- */
@@ -232,8 +247,8 @@
        ===================================== */
     @media(max-width: 1024px) {
       .hero-grid { grid-template-columns: 1fr; }
-      /* Centrowanie kontentu z odpowiednim ograniczeniem, by uniknąć wyjazdu poza ekran */
-      .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+      /* Reset paddingu na telefonach, aby wyśrodkować ładnie zawartość */
+      .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; padding-left: 0; }
       .hero-title { max-width: 100%; }
       .hero-desc { margin: 0 auto; max-width: 100%; }
       .hero-actions { justify-content: center; }
@@ -349,7 +364,6 @@
           <h1 class="hero-title" data-i18n="hero_title">Sztuka idealnego <br><span class="text-gradient">milkshake'a</span>.</h1>
           <p class="hero-desc" data-i18n="hero_desc">Zanurz się w świecie kremowej perfekcji. Tworzymy kompozycje, które pobudzą Twoje zmysły i wywołają uśmiech. Bez kompromisów.</p>
           
-          <!-- Zmieniono na zdefiniowaną klasę hero-actions dla 100% pewności układu -->
           <div class="hero-actions">
             <a href="app.html" class="btn-main"><span data-i18n="hero_btn_app">Odbierz zniżkę w aplikacji</span> <i class="fas fa-arrow-right"></i></a>
             <a href="#menu-section" class="btn-outline"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
