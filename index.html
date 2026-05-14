@@ -40,11 +40,11 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
       
-    /* PANCERNE BLOKOWANIE POZIOMEGO SCROLLA */
+    /* PANCERNE BLOKOWANIE POZIOMEGO SCROLLA I PRZESUWANIA */
     html, body {
       overflow-x: hidden !important;
       width: 100%;
-      max-width: 100vw;
+      max-width: 100%; /* Zmieniono z 100vw na 100% - to naprawia zjeżdżanie */
       position: relative;
     }
 
@@ -376,16 +376,47 @@
     }
 
     @media(max-width: 600px) {
-      .footer-grid { grid-template-columns: 1fr; text-align: center; }
-      .social-links { justify-content: center; }
-      .footer-bottom { flex-direction: column; justify-content: center; text-align: center; }
+      /* Odzyskiwanie cennej przestrzeni po bokach na małych ekranach */
+      .container { padding: 0 16px; }
+
+      /* KOMPRESJA NAGŁÓWKA */
+      .brand { font-size: 1.3rem; }
+      .header-actions { gap: 8px; }
+      .lang-btn-ui { padding: 8px 10px; font-size: 0.8rem; }
       
-      .hero-stats { gap: 15px; justify-content: center; }
+      /* Ukrywamy tekst "Zaloguj" na telefonach - zostawiamy tylko ikonkę */
+      .header-actions .btn-main { padding: 10px 14px; }
+      .header-actions .btn-main span[data-i18n="btn_login"] { display: none; }
+
+      /* KOREKTA HERO SECTION */
+      .hero { padding: 40px 0; min-height: auto; }
+      .hero-title { font-size: 2.2rem; margin-bottom: 16px; }
+      .hero-desc { font-size: 0.95rem; }
+      
+      /* Przyciski w telefonie na pełną szerokość i jeden pod drugim */
+      .hero-content > div:nth-child(4) { 
+        flex-direction: column; 
+        width: 100%; 
+        gap: 12px;
+      }
+      .btn-main, .btn-outline { width: 100%; display: flex; justify-content: center; }
+
+      /* Mniejsza czcionka w statystykach */
+      .hero-stats { gap: 15px; justify-content: center; padding-top: 24px; margin-top: 24px; }
       .stat-item h4 { font-size: 1.5rem; }
       
-      /* Przyciski w telefonie na pełną szerokość */
-      .hero-content > div:nth-child(4) { flex-direction: column; width: 100%; }
-      .btn-main, .btn-outline { width: 100%; display: flex; justify-content: center; }
+      /* Zmniejszenie sekcji bento, aby nie była przytłaczająca */
+      .section { padding: 50px 0; }
+      .section-title { font-size: 1.8rem; }
+      .bento-card { padding: 24px; }
+      .bento-icon { width: 48px; height: 48px; font-size: 1.4rem; margin-bottom: 16px; }
+      
+      /* Układ stopki */
+      footer { margin-top: 40px; padding: 50px 0 30px; }
+      .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 32px; }
+      .social-links { justify-content: center; margin-top: 16px; }
+      .footer-desc { margin: 0 auto; }
+      .footer-bottom { flex-direction: column; justify-content: center; text-align: center; gap: 12px; }
     }
   </style>
 </head>
