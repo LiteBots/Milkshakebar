@@ -13,7 +13,7 @@
 
   <style>
     :root {
-      /* Palette - Premium Light (Only Light Mode) */
+      /* Palette - Premium Light */
       --primary: #FF6600;
       --primary-hover: #E65C00;
       --primary-glow: rgba(255, 102, 0, 0.25);
@@ -40,11 +40,12 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
       
-    /* Zablokowanie zjeżdżania do lewej/prawej (poziomy scroll) na urządzeniach mobilnych */
+    /* PANCERNE BLOKOWANIE POZIOMEGO SCROLLA */
     html, body {
-      overflow-x: hidden;
+      overflow-x: hidden !important;
       width: 100%;
-      max-width: 100%;
+      max-width: 100vw;
+      position: relative;
     }
 
     body {
@@ -93,7 +94,16 @@
     }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-3px); }
 
-    /* --- ANIMACJE --- */
+    /* --- BEZPIECZNE ANIMACJE TŁA (BLOBY) --- */
+    .background-blobs {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1); }
       33% { transform: translate(30px, -50px) scale(1.1); }
@@ -102,13 +112,12 @@
     }
     
     .blob {
-      position: absolute; filter: blur(120px); z-index: -1;
+      position: absolute; filter: blur(120px);
       border-radius: 50%; animation: floatOrb 10s infinite alternate ease-in-out;
       opacity: 0.15;
     }
-    /* Zapobieganie rozpychaniu strony przez bloby */
-    .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; max-width: 500px; max-height: 500px; background: #FF6600; }
-    .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; max-width: 600px; max-height: 600px; background: #FF9900; animation-delay: -5s; }
+    .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #FF6600; }
+    .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #FF9900; animation-delay: -5s; }
 
     /* Intersection Observer Classes */
     .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -121,7 +130,7 @@
       display: flex; flex-direction: column; gap: 10px; pointer-events: none;
     }
     .toast {
-      min-width: 280px; padding: 16px 20px; border-radius: var(--radius-m); color: white;
+      min-width: 280px; max-width: 90vw; padding: 16px 20px; border-radius: var(--radius-m); color: white;
       font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out forwards;
       opacity: 0; transform: translateX(100%);
@@ -185,44 +194,53 @@
       position: relative; min-height: 90vh; display: flex; align-items: center;
       padding: 60px 0; overflow: hidden;
     }
-    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
-    .hero-content { position: relative; z-index: 2; }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; width: 100%; }
+    .hero-content { position: relative; z-index: 2; width: 100%; }
+    
+    /* Zabezpieczenie długich słów przed rozpychaniem ekranu */
+    .hero-title, .section-title {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
+
     .hero-title {
-      font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.05;
+      font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 900; line-height: 1.05;
       letter-spacing: -2px; margin-bottom: 24px; color: var(--text-main);
     }
     .hero-desc {
-      font-size: clamp(1rem, 3vw, 1.25rem); color: var(--text-sub); line-height: 1.6;
+      font-size: clamp(1rem, 4vw, 1.25rem); color: var(--text-sub); line-height: 1.6;
       margin-bottom: 40px; max-width: 540px;
     }
     .hero-stats {
       display: flex; gap: 32px; margin-top: 40px; padding-top: 40px;
       border-top: 1px solid var(--border);
+      flex-wrap: wrap; /* Zezwolenie na łamanie statystyk */
     }
-    .stat-item h4 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+    .stat-item h4 { font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
     .stat-item p { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-    .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; }
+    .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; width: 100%; }
     .hero-image {
-      width: 100%; max-width: 600px; border-radius: var(--radius-xl);
+      width: 100%; max-width: 600px; height: auto; border-radius: var(--radius-xl);
       box-shadow: 0 30px 60px rgba(0,0,0,0.15); transform: rotate(2deg);
       transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     .hero-image-wrapper:hover .hero-image { transform: rotate(0deg) scale(1.03); }
 
     /* --- BENTO GRID (Aplikacja & Cechy) --- */
-    .section { padding: 100px 0; position: relative; }
+    .section { padding: 100px 0; position: relative; width: 100%; }
     .section-header { text-align: center; margin-bottom: 64px; }
-    .section-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
-    .section-desc { color: var(--text-sub); font-size: 1.15rem; max-width: 650px; margin: 0 auto; line-height: 1.6; }
+    .section-title { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
+    .section-desc { color: var(--text-sub); font-size: clamp(1rem, 4vw, 1.15rem); max-width: 650px; margin: 0 auto; line-height: 1.6; }
 
     .bento-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-      grid-auto-rows: minmax(280px, auto);
+      grid-auto-rows: minmax(280px, auto); width: 100%;
     }
     .bento-card {
       background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); padding: 40px;
+      border-radius: var(--radius-xl); padding: clamp(20px, 4vw, 40px);
       display: flex; flex-direction: column; justify-content: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden; position: relative;
       transition: transform 0.3s ease, border-color 0.3s ease;
@@ -236,39 +254,39 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 1.8rem; margin-bottom: 24px;
     }
-    .bento-card h3 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
-    .bento-card p { color: var(--text-sub); font-size: 1.05rem; line-height: 1.6; }
+    .bento-card h3 { font-size: clamp(1.2rem, 4vw, 1.6rem); font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
+    .bento-card p { color: var(--text-sub); font-size: clamp(0.9rem, 3vw, 1.05rem); line-height: 1.6; }
 
     /* --- REZERWACJE WIDGET --- */
     .booking-wrapper {
       background: var(--bg-surface-elevated); border: 1px solid var(--border);
       border-radius: var(--radius-xl); padding: 8px;
       display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.05); width: 100%;
     }
-    .booking-form { padding: 40px; }
+    .booking-form { padding: clamp(20px, 4vw, 40px); }
     .booking-image { border-radius: var(--radius-l); overflow: hidden; position: relative; }
     .booking-image img { width: 100%; height: 100%; object-fit: cover; }
     
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .form-group { text-align: left; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; width: 100%; }
+    .form-group { text-align: left; width: 100%; }
     .form-group label { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
     .form-control {
       width: 100%; padding: 16px; background: var(--bg-body); border: 1px solid var(--border);
       border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 1rem; font-weight: 500;
-      transition: all 0.2s;
+      transition: all 0.2s; box-sizing: border-box;
     }
     .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); box-shadow: 0 0 0 4px var(--primary-glow); }
 
     /* --- LOKALIZACJE Z GODZINAMI OTWARCIA --- */
-    .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; }
     .loc-card {
       background: var(--bg-surface); border: 1px solid var(--border);
       border-radius: var(--radius-xl); overflow: hidden; display: flex; flex-direction: column;
       box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: transform 0.3s;
     }
     .loc-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
-    .loc-info { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+    .loc-info { padding: clamp(20px, 4vw, 32px); flex: 1; display: flex; flex-direction: column; }
     .loc-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
     .loc-title i { color: var(--primary); }
     .loc-desc { color: var(--text-sub); font-size: 1.05rem; margin-bottom: 24px; }
@@ -278,7 +296,6 @@
       border-radius: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text-main);
     }
     
-    /* Godziny Otwarcia Dropdown */
     .hours-btn {
       background: var(--bg-body); border: 1px solid var(--border); border-radius: 12px;
       padding: 12px 16px; font-weight: 700; font-size: 0.95rem; color: var(--text-main);
@@ -297,16 +314,16 @@
     .hours-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; font-weight: 500; color: var(--text-sub); }
     .hours-row strong { color: var(--text-main); font-weight: 700; }
 
-    .loc-map { width: 100%; height: 300px; border: none; border-top: 1px solid var(--border); }
+    .loc-map { width: 100%; height: 300px; border: none; border-top: 1px solid var(--border); display: block; }
 
     /* --- ROZBUDOWANY FOOTER --- */
     footer {
       background: var(--bg-surface-elevated); border-top: 1px solid var(--border);
-      padding: 80px 0 40px; margin-top: 80px;
+      padding: 80px 0 40px; margin-top: 80px; width: 100%;
     }
     .footer-grid {
       display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
-      margin-bottom: 60px;
+      margin-bottom: 60px; width: 100%;
     }
     .footer-brand { font-size: 2rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; color: var(--text-main); }
     .footer-brand span { color: var(--primary); }
@@ -321,7 +338,7 @@
     .social-links a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-3px); }
     
     .footer-col h4 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .footer-col ul { list-style: none; }
+    .footer-col ul { list-style: none; padding-left: 0; }
     .footer-col ul li { margin-bottom: 12px; }
     .footer-col ul li a {
       color: var(--text-sub); text-decoration: none; font-size: 0.95rem; font-weight: 500;
@@ -332,7 +349,7 @@
     .footer-bottom {
       border-top: 1px solid var(--border); padding-top: 32px;
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.9rem; color: var(--text-sub); font-weight: 600;
+      font-size: 0.9rem; color: var(--text-sub); font-weight: 600; flex-wrap: wrap; gap: 16px;
     }
 
     /* =====================================
@@ -341,7 +358,7 @@
     @media(max-width: 1024px) {
       .hero-grid { grid-template-columns: 1fr; text-align: center; }
       .hero-desc { margin-left: auto; margin-right: auto; }
-      .hero-stats { justify-content: center; flex-wrap: wrap; }
+      .hero-stats { justify-content: center; }
       .bento-grid { grid-template-columns: 1fr; }
       .span-2 { grid-column: span 1; }
       .booking-wrapper { grid-template-columns: 1fr; }
@@ -351,26 +368,24 @@
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .footer-desc { max-width: 100%; }
     }
+
     @media(max-width: 768px) {
-      /* Formularze na mniejszych ekranach przechodzą w 1 kolumnę */
+      /* Formularze układają się w jedną kolumnę - zapobiega rozpychaniu ekranu */
       .form-grid-2 { grid-template-columns: 1fr; gap: 15px; }
-      .booking-form { padding: 24px; }
-      
-      /* Ciasne przyciski i teksty */
-      .hero-title { font-size: 2.8rem; }
       .section { padding: 60px 0; }
     }
+
     @media(max-width: 600px) {
       .footer-grid { grid-template-columns: 1fr; text-align: center; }
       .social-links { justify-content: center; }
-      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .footer-bottom { flex-direction: column; justify-content: center; text-align: center; }
       
-      .hero-stats { gap: 20px; }
+      .hero-stats { gap: 15px; justify-content: center; }
       .stat-item h4 { font-size: 1.5rem; }
       
-      /* Pełna szerokość przycisków w hero */
-      .hero-content > div:nth-child(4) { flex-direction: column; }
-      .btn-main, .btn-outline { width: 100%; }
+      /* Przyciski w telefonie na pełną szerokość */
+      .hero-content > div:nth-child(4) { flex-direction: column; width: 100%; }
+      .btn-main, .btn-outline { width: 100%; display: flex; justify-content: center; }
     }
   </style>
 </head>
@@ -379,14 +394,16 @@
   <!-- KONTENER NA POWIADOMIENIA (TOAST) -->
   <div id="toast-container"></div>
 
-  <!-- BANER INFORMACYJNY (Dynamiczny z panelu admina) -->
-  <div id="web-top-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: #fff; z-index: 1001; transition: background 0.3s;">
-    <span id="web-banner-text"></span>
+  <!-- BEZPIECZNE TŁO BLOBÓW (Nie rozpycha strony) -->
+  <div class="background-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
   </div>
 
-  <!-- Efekty tła (Subtelne jasne) -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
+  <!-- BANER INFORMACYJNY (Dynamiczny z panelu admina) -->
+  <div id="web-top-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: #fff; z-index: 1001; transition: background 0.3s; box-sizing: border-box;">
+    <span id="web-banner-text"></span>
+  </div>
 
   <!-- HEADER -->
   <header id="header">
