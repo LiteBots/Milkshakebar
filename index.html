@@ -40,15 +40,21 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
       
+    /* Zablokowanie zjeżdżania do lewej/prawej (poziomy scroll) na urządzeniach mobilnych */
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100%;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
       background-color: var(--bg-body);
-      overflow-x: hidden;
       padding-top: calc(var(--nav-height) + var(--safe-top));
     }
 
-    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
     /* --- GŁÓWNE KOMPONENTY --- */
     .text-gradient {
@@ -94,25 +100,44 @@
       66% { transform: translate(-20px, 20px) scale(0.9); }
       100% { transform: translate(0, 0) scale(1); }
     }
+    
     .blob {
       position: absolute; filter: blur(120px); z-index: -1;
       border-radius: 50%; animation: floatOrb 10s infinite alternate ease-in-out;
-      opacity: 0.15; /* Subtelne na białym tle */
+      opacity: 0.15;
     }
-    .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #FF6600; }
-    .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #FF9900; animation-delay: -5s; }
+    /* Zapobieganie rozpychaniu strony przez bloby */
+    .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; max-width: 500px; max-height: 500px; background: #FF6600; }
+    .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; max-width: 600px; max-height: 600px; background: #FF9900; animation-delay: -5s; }
 
     /* Intersection Observer Classes */
     .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* --- POWIADOMIENIA TOAST (SUKCES REZERWACJI) --- */
+    #toast-container {
+      position: fixed; top: 100px; right: 20px; z-index: 999999;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+    .toast {
+      min-width: 280px; padding: 16px 20px; border-radius: var(--radius-m); color: white;
+      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out forwards;
+      opacity: 0; transform: translateX(100%);
+    }
+    .toast.success { background: #10B981; }
+    .toast.error { background: #EF4444; }
+    .toast.fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
+    @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeOutRight { to { opacity: 0; transform: translateX(100%); } }
+
     /* --- HEADER --- */
     header {
       position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
       background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--glass-border); z-index: 1000;
-      display: flex; align-items: center; transition: background 0.4s, box-shadow 0.4s;
+      display: flex; align-items: center; transition: background 0.4s, box-shadow 0.4s, top 0.3s;
     }
     .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .brand { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; text-decoration: none; color: var(--text-main); }
@@ -163,18 +188,18 @@
     .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
     .hero-content { position: relative; z-index: 2; }
     .hero-title {
-      font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.05;
+      font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.05;
       letter-spacing: -2px; margin-bottom: 24px; color: var(--text-main);
     }
     .hero-desc {
-      font-size: 1.25rem; color: var(--text-sub); line-height: 1.6;
+      font-size: clamp(1rem, 3vw, 1.25rem); color: var(--text-sub); line-height: 1.6;
       margin-bottom: 40px; max-width: 540px;
     }
     .hero-stats {
       display: flex; gap: 32px; margin-top: 40px; padding-top: 40px;
       border-top: 1px solid var(--border);
     }
-    .stat-item h4 { font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+    .stat-item h4 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
     .stat-item p { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
     .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; }
@@ -188,7 +213,7 @@
     /* --- BENTO GRID (Aplikacja & Cechy) --- */
     .section { padding: 100px 0; position: relative; }
     .section-header { text-align: center; margin-bottom: 64px; }
-    .section-title { font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
+    .section-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
     .section-desc { color: var(--text-sub); font-size: 1.15rem; max-width: 650px; margin: 0 auto; line-height: 1.6; }
 
     .bento-grid {
@@ -310,11 +335,13 @@
       font-size: 0.9rem; color: var(--text-sub); font-weight: 600;
     }
 
-    /* Responsive */
+    /* =====================================
+       RESPONSYWNOŚĆ (MEDIA QUERIES)
+       ===================================== */
     @media(max-width: 1024px) {
       .hero-grid { grid-template-columns: 1fr; text-align: center; }
       .hero-desc { margin-left: auto; margin-right: auto; }
-      .hero-stats { justify-content: center; }
+      .hero-stats { justify-content: center; flex-wrap: wrap; }
       .bento-grid { grid-template-columns: 1fr; }
       .span-2 { grid-column: span 1; }
       .booking-wrapper { grid-template-columns: 1fr; }
@@ -324,16 +351,35 @@
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .footer-desc { max-width: 100%; }
     }
+    @media(max-width: 768px) {
+      /* Formularze na mniejszych ekranach przechodzą w 1 kolumnę */
+      .form-grid-2 { grid-template-columns: 1fr; gap: 15px; }
+      .booking-form { padding: 24px; }
+      
+      /* Ciasne przyciski i teksty */
+      .hero-title { font-size: 2.8rem; }
+      .section { padding: 60px 0; }
+    }
     @media(max-width: 600px) {
       .footer-grid { grid-template-columns: 1fr; text-align: center; }
       .social-links { justify-content: center; }
       .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      
+      .hero-stats { gap: 20px; }
+      .stat-item h4 { font-size: 1.5rem; }
+      
+      /* Pełna szerokość przycisków w hero */
+      .hero-content > div:nth-child(4) { flex-direction: column; }
+      .btn-main, .btn-outline { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- BANER INFORMACYJNY -->
+  <!-- KONTENER NA POWIADOMIENIA (TOAST) -->
+  <div id="toast-container"></div>
+
+  <!-- BANER INFORMACYJNY (Dynamiczny z panelu admina) -->
   <div id="web-top-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: #fff; z-index: 1001; transition: background 0.3s;">
     <span id="web-banner-text"></span>
   </div>
@@ -370,7 +416,7 @@
         </div>
 
         <!-- Przycisk Zaloguj -->
-        <a href="app.html" class="btn-main" style="padding: 10px 24px; font-size: 0.95rem;">
+        <a href="app.html" class="btn-main" style="padding: 10px 24px; font-size: 0.95rem; width: auto;">
           <i class="fas fa-user"></i> <span data-i18n="btn_login">Zaloguj</span>
         </a>
       </div>
@@ -387,7 +433,7 @@
         
         <div style="display: flex; gap: 16px; flex-wrap: wrap;">
           <a href="app.html" class="btn-main"><span data-i18n="hero_btn_app">Odbierz zniżkę w aplikacji</span> <i class="fas fa-arrow-right"></i></a>
-          <a href="#menu-section" class="btn-outline"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
+          <a href="#menu-section" class="btn-outline" style="width: auto;"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
         </div>
 
         <div class="hero-stats">
@@ -451,7 +497,7 @@
     </div>
     
     <div style="text-align: center; margin-top: 60px;" class="reveal">
-      <a href="app.html" class="btn-outline"><i class="fas fa-arrow-right"></i> <span data-i18n="btn_enter_app">Otwórz portal MilkMi</span></a>
+      <a href="app.html" class="btn-outline" style="width: auto;"><i class="fas fa-arrow-right"></i> <span data-i18n="btn_enter_app">Otwórz portal MilkMi</span></a>
     </div>
   </section>
 
@@ -541,7 +587,7 @@
           </button>
           
           <div id="slupsk-hours" class="hours-content">
-            <!-- Dynamicznie generowane godziny otwarcia -->
+            <!-- Dynamicznie generowane godziny otwarcia ze skryptu JS -->
             <div class="hours-row"><span data-i18n="day_mon_thu">Ładowanie...</span></div>
           </div>
         </div>
@@ -562,7 +608,8 @@
           </button>
           
           <div id="rowy-hours" class="hours-content">
-            <div class="hours-row"><span data-i18n="day_mon_sun">Poniedziałek - Niedziela</span> <strong>09:00 - 21:00</strong></div>
+            <!-- Dynamicznie generowane godziny otwarcia ze skryptu JS -->
+            <div class="hours-row"><span data-i18n="day_mon_sun">Ładowanie...</span></div>
             <div style="margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: 600;"><i class="fas fa-sun"></i> Otwieramy w sezonie letnim!</div>
           </div>
         </div>
@@ -633,6 +680,22 @@
       const content = document.getElementById(id);
       content.classList.toggle('open');
       btnElement.classList.toggle('open');
+    }
+
+    // --- SYSTEM POWIADOMIEŃ PUSH (TOAST) ---
+    function showToast(message, type = 'success') {
+      let container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+      toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
     // --- OBSŁUGA JĘZYKA (i18n) ---
@@ -751,14 +814,14 @@
         });
         
         if (res.ok) {
-          alert('Twoja rezerwacja została wysłana! Czekamy na potwierdzenie przez obsługę.');
+          showToast('Twoja rezerwacja została pomyślnie złożona!', 'success');
           document.getElementById('reservation-form').reset();
         } else {
-          alert('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.');
+          showToast('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.', 'error');
         }
       } catch (err) {
         console.error('Błąd rezerwacji:', err);
-        alert('Błąd połączenia z serwerem.');
+        showToast('Błąd połączenia z serwerem.', 'error');
       } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -791,23 +854,23 @@
       }
     }
 
-    // --- POBIERANIE GODZIN OTWARCIA ---
+    // --- POBIERANIE GODZIN OTWARCIA DLA SŁUPSKA I ROWÓW ---
     async function loadOpeningHours() {
+      const daysPl = { mon: 'Poniedziałek', tue: 'Wtorek', wed: 'Środa', thu: 'Czwartek', fri: 'Piątek', sat: 'Sobota', sun: 'Niedziela' };
+      
+      // Słupsk
       try {
-        const res = await fetch('/api/hours');
-        const data = await res.json();
+        const resSlupsk = await fetch('/api/hours?location=slupsk');
+        const dataSlupsk = await resSlupsk.json();
+        const slupskContainer = document.getElementById('slupsk-hours');
         
-        if (data.success && data.data) {
-          const daysPl = { mon: 'Poniedziałek', tue: 'Wtorek', wed: 'Środa', thu: 'Czwartek', fri: 'Piątek', sat: 'Sobota', sun: 'Niedziela' };
-          const hoursContainer = document.getElementById('slupsk-hours');
-          hoursContainer.innerHTML = ''; // Czyścimy statyczne wartości
-
+        if (dataSlupsk.success && dataSlupsk.data) {
+          slupskContainer.innerHTML = ''; 
           Object.keys(daysPl).forEach(day => {
-            if (data.data[day]) {
-              const info = data.data[day];
+            if (dataSlupsk.data[day]) {
+              const info = dataSlupsk.data[day];
               const timeText = info.isOpen ? `${info.from} - ${info.to}` : `<span style="color: var(--status-err);">Zamknięte</span>`;
-              
-              hoursContainer.innerHTML += `
+              slupskContainer.innerHTML += `
                 <div class="hours-row">
                   <span>${daysPl[day]}</span> 
                   <strong>${timeText}</strong>
@@ -816,18 +879,37 @@
             }
           });
         }
-      } catch (err) {
-        console.error('Błąd ładowania godzin otwarcia', err);
-      }
+      } catch (err) { console.error(err); }
+
+      // Rowy
+      try {
+        const resRowy = await fetch('/api/hours?location=rowy');
+        const dataRowy = await resRowy.json();
+        const rowyContainer = document.getElementById('rowy-hours');
+        
+        if (dataRowy.success && dataRowy.data) {
+          rowyContainer.innerHTML = ''; 
+          Object.keys(daysPl).forEach(day => {
+            if (dataRowy.data[day]) {
+              const info = dataRowy.data[day];
+              const timeText = info.isOpen ? `${info.from} - ${info.to}` : `<span style="color: var(--status-err);">Zamknięte</span>`;
+              rowyContainer.innerHTML += `
+                <div class="hours-row">
+                  <span>${daysPl[day]}</span> 
+                  <strong>${timeText}</strong>
+                </div>
+              `;
+            }
+          });
+        }
+      } catch (err) { console.error(err); }
     }
 
     // --- INICJALIZACJA PRZY STARCIE ---
     document.addEventListener('DOMContentLoaded', () => {
-      // Wczytaj Język
       const savedLang = localStorage.getItem('milkmi_lang') || 'pl';
       changeLanguage(savedLang);
 
-      // Inicjalizacja nowych funkcji API
       loadDynamicBanner();
       loadOpeningHours();
 
