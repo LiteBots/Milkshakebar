@@ -40,12 +40,14 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
       
-    /* PANCERNE BLOKOWANIE POZIOMEGO SCROLLA I PRZESUWANIA */
+    /* PANCERNE BLOKOWANIE POZIOMEGO SCROLLA */
     html, body {
       overflow-x: hidden !important;
       width: 100%;
-      max-width: 100%; /* Zmieniono z 100vw na 100% - to naprawia zjeżdżanie */
+      max-width: 100%;
       position: relative;
+      margin: 0;
+      padding: 0;
     }
 
     body {
@@ -55,7 +57,16 @@
       padding-top: calc(var(--nav-height) + var(--safe-top));
     }
 
-    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    /* GŁÓWNY WRAPPER - Wymusza trzymanie strony w ryzach na iOS/Safari */
+    .site-wrapper {
+      width: 100%;
+      overflow-x: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; width: 100%; box-sizing: border-box; }
 
     /* --- GŁÓWNE KOMPONENTY --- */
     .text-gradient {
@@ -73,49 +84,31 @@
       margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
     }
 
-    .btn-main {
+    .btn-main, .btn-outline {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
       padding: 16px 32px; border-radius: 50px;
-      background: var(--gradient-brand); color: #fff;
-      font-weight: 700; font-size: 1.05rem; text-decoration: none;
-      border: none; cursor: pointer;
-      box-shadow: 0 10px 25px var(--primary-glow);
+      font-weight: 700; font-size: 1.05rem; text-decoration: none; cursor: pointer;
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-sizing: border-box;
     }
+    .btn-main { background: var(--gradient-brand); color: #fff; border: none; box-shadow: 0 10px 25px var(--primary-glow); }
     .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 35px var(--primary-glow); color: #fff; }
-
-    .btn-outline {
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 16px 32px; border-radius: 50px;
-      background: var(--bg-surface); color: var(--text-main);
-      font-weight: 700; font-size: 1.05rem; text-decoration: none;
-      border: 1px solid var(--border); cursor: pointer;
-      transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-    }
+    
+    .btn-outline { background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-3px); }
 
     /* --- BEZPIECZNE ANIMACJE TŁA (BLOBY) --- */
     .background-blobs {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      overflow: hidden;
-      z-index: -1;
-      pointer-events: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+      overflow: hidden; z-index: -1; pointer-events: none;
     }
-    
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1); }
       33% { transform: translate(30px, -50px) scale(1.1); }
       66% { transform: translate(-20px, 20px) scale(0.9); }
       100% { transform: translate(0, 0) scale(1); }
     }
-    
-    .blob {
-      position: absolute; filter: blur(120px);
-      border-radius: 50%; animation: floatOrb 10s infinite alternate ease-in-out;
-      opacity: 0.15;
-    }
+    .blob { position: absolute; filter: blur(120px); border-radius: 50%; animation: floatOrb 10s infinite alternate ease-in-out; opacity: 0.15; }
     .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #FF6600; }
     .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #FF9900; animation-delay: -5s; }
 
@@ -125,16 +118,8 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     /* --- POWIADOMIENIA TOAST (SUKCES REZERWACJI) --- */
-    #toast-container {
-      position: fixed; top: 100px; right: 20px; z-index: 999999;
-      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
-    }
-    .toast {
-      min-width: 280px; max-width: 90vw; padding: 16px 20px; border-radius: var(--radius-m); color: white;
-      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out forwards;
-      opacity: 0; transform: translateX(100%);
-    }
+    #toast-container { position: fixed; top: 100px; right: 20px; z-index: 999999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast { min-width: 280px; max-width: 90%; padding: 16px 20px; border-radius: var(--radius-m); color: white; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out forwards; opacity: 0; transform: translateX(100%); }
     .toast.success { background: #10B981; }
     .toast.error { background: #EF4444; }
     .toast.fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
@@ -142,222 +127,116 @@
     @keyframes fadeOutRight { to { opacity: 0; transform: translateX(100%); } }
 
     /* --- HEADER --- */
-    header {
-      position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-      background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--glass-border); z-index: 1000;
-      display: flex; align-items: center; transition: background 0.4s, box-shadow 0.4s, top 0.3s;
-    }
+    header { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border); z-index: 1000; display: flex; align-items: center; transition: background 0.4s, box-shadow 0.4s, top 0.3s; }
     .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .brand { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; text-decoration: none; color: var(--text-main); }
     .brand span { color: var(--primary); }
-    
     .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links a {
-      color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.95rem;
-      transition: color 0.2s; position: relative;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 2px;
-      background: var(--primary); transition: 0.3s;
-    }
+    .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 2px; background: var(--primary); transition: 0.3s; }
     .nav-links a:hover { color: var(--primary); }
     .nav-links a:hover::after { width: 100%; }
-
     .header-actions { display: flex; gap: 16px; align-items: center; }
 
     /* Dropdown Języka */
     .lang-selector { position: relative; }
-    .lang-btn-ui {
-      display: flex; align-items: center; gap: 8px; padding: 10px 16px;
-      border-radius: 50px; background: var(--bg-surface); border: 1px solid var(--border);
-      font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s; color: var(--text-main);
-    }
+    .lang-btn-ui { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 50px; background: var(--bg-surface); border: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s; color: var(--text-main); }
     .lang-btn-ui:hover { border-color: var(--primary); color: var(--primary); }
-    .lang-menu {
-      position: absolute; top: 130%; right: 0; background: var(--bg-surface-elevated);
-      border: 1px solid var(--border); border-radius: var(--radius-m);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 150px;
-      opacity: 0; visibility: hidden; transform: translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 100;
-      padding: 8px;
-    }
+    .lang-menu { position: absolute; top: 130%; right: 0; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-m); box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 100; padding: 8px; }
     .lang-selector.active .lang-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-    .lang-item {
-      padding: 10px 16px; font-weight: 600; font-size: 0.9rem; color: var(--text-main);
-      cursor: pointer; transition: 0.2s; border-radius: 8px;
-    }
+    .lang-item { padding: 10px 16px; font-weight: 600; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; border-radius: 8px; }
     .lang-item:hover { background: rgba(255,102,0,0.1); color: var(--primary); }
 
     /* --- PREMIUM HERO SECTION --- */
-    .hero {
-      position: relative; min-height: 90vh; display: flex; align-items: center;
-      padding: 60px 0; overflow: hidden;
-    }
-    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; width: 100%; }
-    .hero-content { position: relative; z-index: 2; width: 100%; }
+    .hero { position: relative; min-height: 90vh; display: flex; align-items: center; padding: 60px 0; overflow: hidden; width: 100%; box-sizing: border-box; }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; width: 100%; max-width: 100%; }
+    .hero-content { position: relative; z-index: 2; width: 100%; max-width: 100%; }
     
-    /* Zabezpieczenie długich słów przed rozpychaniem ekranu */
-    .hero-title, .section-title {
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      hyphens: auto;
-    }
-
-    .hero-title {
-      font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 900; line-height: 1.05;
-      letter-spacing: -2px; margin-bottom: 24px; color: var(--text-main);
-    }
-    .hero-desc {
-      font-size: clamp(1rem, 4vw, 1.25rem); color: var(--text-sub); line-height: 1.6;
-      margin-bottom: 40px; max-width: 540px;
-    }
-    .hero-stats {
-      display: flex; gap: 32px; margin-top: 40px; padding-top: 40px;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap; /* Zezwolenie na łamanie statystyk */
-    }
+    /* Pełne łamanie tekstu, by nie ucinało po lewej */
+    .hero-title, .section-title { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%; }
+    .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 24px; color: var(--text-main); }
+    .hero-desc { font-size: clamp(1rem, 4vw, 1.15rem); color: var(--text-sub); line-height: 1.6; margin-bottom: 40px; max-width: 540px; word-wrap: break-word; }
+    
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; max-width: 100%; }
+    
+    .hero-stats { display: flex; gap: 32px; margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border); flex-wrap: wrap; width: 100%; box-sizing: border-box; }
     .stat-item h4 { font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
     .stat-item p { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-    .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; width: 100%; }
-    .hero-image {
-      width: 100%; max-width: 600px; height: auto; border-radius: var(--radius-xl);
-      box-shadow: 0 30px 60px rgba(0,0,0,0.15); transform: rotate(2deg);
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
+    .hero-image-wrapper { position: relative; display: flex; justify-content: center; z-index: 2; width: 100%; max-width: 100%; }
+    .hero-image { width: 100%; max-width: 600px; height: auto; border-radius: var(--radius-xl); box-shadow: 0 30px 60px rgba(0,0,0,0.15); transform: rotate(2deg); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
     .hero-image-wrapper:hover .hero-image { transform: rotate(0deg) scale(1.03); }
 
-    /* --- BENTO GRID (Aplikacja & Cechy) --- */
-    .section { padding: 100px 0; position: relative; width: 100%; }
+    /* --- BENTO GRID --- */
+    .section { padding: 100px 0; position: relative; width: 100%; box-sizing: border-box; }
     .section-header { text-align: center; margin-bottom: 64px; }
     .section-title { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
-    .section-desc { color: var(--text-sub); font-size: clamp(1rem, 4vw, 1.15rem); max-width: 650px; margin: 0 auto; line-height: 1.6; }
+    .section-desc { color: var(--text-sub); font-size: clamp(1rem, 4vw, 1.15rem); max-width: 650px; margin: 0 auto; line-height: 1.6; word-wrap: break-word; }
 
-    .bento-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-      grid-auto-rows: minmax(280px, auto); width: 100%;
-    }
-    .bento-card {
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); padding: clamp(20px, 4vw, 40px);
-      display: flex; flex-direction: column; justify-content: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden; position: relative;
-      transition: transform 0.3s ease, border-color 0.3s ease;
-    }
+    .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; grid-auto-rows: minmax(280px, auto); width: 100%; }
+    .bento-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: clamp(20px, 4vw, 40px); display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden; position: relative; transition: transform 0.3s ease, border-color 0.3s ease; }
     .bento-card:hover { transform: translateY(-5px); border-color: rgba(255,102,0,0.3); box-shadow: 0 15px 40px rgba(255,102,0,0.05); }
     .span-2 { grid-column: span 2; }
-    
-    .bento-icon {
-      width: 64px; height: 64px; border-radius: var(--radius-m);
-      background: rgba(255,102,0,0.1); color: var(--primary);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; margin-bottom: 24px;
-    }
+    .bento-icon { width: 64px; height: 64px; border-radius: var(--radius-m); background: rgba(255,102,0,0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 24px; }
     .bento-card h3 { font-size: clamp(1.2rem, 4vw, 1.6rem); font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
     .bento-card p { color: var(--text-sub); font-size: clamp(0.9rem, 3vw, 1.05rem); line-height: 1.6; }
 
     /* --- REZERWACJE WIDGET --- */
-    .booking-wrapper {
-      background: var(--bg-surface-elevated); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); padding: 8px;
-      display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.05); width: 100%;
-    }
+    .booking-wrapper { background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 8px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box; }
     .booking-form { padding: clamp(20px, 4vw, 40px); }
     .booking-image { border-radius: var(--radius-l); overflow: hidden; position: relative; }
     .booking-image img { width: 100%; height: 100%; object-fit: cover; }
-    
     .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; width: 100%; }
     .form-group { text-align: left; width: 100%; }
     .form-group label { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-control {
-      width: 100%; padding: 16px; background: var(--bg-body); border: 1px solid var(--border);
-      border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 1rem; font-weight: 500;
-      transition: all 0.2s; box-sizing: border-box;
-    }
+    .form-control { width: 100%; padding: 16px; background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-m); color: var(--text-main); font-family: inherit; font-size: 1rem; font-weight: 500; transition: all 0.2s; box-sizing: border-box; }
     .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); box-shadow: 0 0 0 4px var(--primary-glow); }
 
     /* --- LOKALIZACJE Z GODZINAMI OTWARCIA --- */
     .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; }
-    .loc-card {
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); overflow: hidden; display: flex; flex-direction: column;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: transform 0.3s;
-    }
+    .loc-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: transform 0.3s; }
     .loc-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
     .loc-info { padding: clamp(20px, 4vw, 32px); flex: 1; display: flex; flex-direction: column; }
     .loc-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
     .loc-title i { color: var(--primary); }
     .loc-desc { color: var(--text-sub); font-size: 1.05rem; margin-bottom: 24px; }
-    
-    .loc-badge {
-      display: inline-block; padding: 6px 12px; background: var(--bg-body); border: 1px solid var(--border);
-      border-radius: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text-main);
-    }
-    
-    .hours-btn {
-      background: var(--bg-body); border: 1px solid var(--border); border-radius: 12px;
-      padding: 12px 16px; font-weight: 700; font-size: 0.95rem; color: var(--text-main);
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; transition: 0.2s; margin-top: auto;
-    }
+    .loc-badge { display: inline-block; padding: 6px 12px; background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); }
+    .hours-btn { background: var(--bg-body); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-weight: 700; font-size: 0.95rem; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; margin-top: auto; }
     .hours-btn:hover { border-color: var(--primary); color: var(--primary); }
     .hours-btn i { transition: transform 0.3s ease; }
     .hours-btn.open i { transform: rotate(180deg); }
-    
-    .hours-content {
-      display: none; padding-top: 16px; margin-top: 16px;
-      border-top: 1px dashed var(--border);
-    }
+    .hours-content { display: none; padding-top: 16px; margin-top: 16px; border-top: 1px dashed var(--border); }
     .hours-content.open { display: block; animation: fadeIn 0.3s ease; }
     .hours-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; font-weight: 500; color: var(--text-sub); }
     .hours-row strong { color: var(--text-main); font-weight: 700; }
-
     .loc-map { width: 100%; height: 300px; border: none; border-top: 1px solid var(--border); display: block; }
 
     /* --- ROZBUDOWANY FOOTER --- */
-    footer {
-      background: var(--bg-surface-elevated); border-top: 1px solid var(--border);
-      padding: 80px 0 40px; margin-top: 80px; width: 100%;
-    }
-    .footer-grid {
-      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
-      margin-bottom: 60px; width: 100%;
-    }
+    footer { background: var(--bg-surface-elevated); border-top: 1px solid var(--border); padding: 80px 0 40px; margin-top: 80px; width: 100%; box-sizing: border-box; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; width: 100%; }
     .footer-brand { font-size: 2rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; color: var(--text-main); }
     .footer-brand span { color: var(--primary); }
     .footer-desc { color: var(--text-sub); font-size: 1rem; line-height: 1.6; margin-bottom: 24px; max-width: 350px; }
-    
     .social-links { display: flex; gap: 12px; }
-    .social-links a {
-      width: 44px; height: 44px; border-radius: 50%; background: var(--bg-body); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center; color: var(--text-main);
-      font-size: 1.2rem; text-decoration: none; transition: 0.3s;
-    }
+    .social-links a { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-body); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 1.2rem; text-decoration: none; transition: 0.3s; }
     .social-links a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-3px); }
-    
     .footer-col h4 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; }
     .footer-col ul { list-style: none; padding-left: 0; }
     .footer-col ul li { margin-bottom: 12px; }
-    .footer-col ul li a {
-      color: var(--text-sub); text-decoration: none; font-size: 0.95rem; font-weight: 500;
-      transition: color 0.2s, padding-left 0.2s;
-    }
+    .footer-col ul li a { color: var(--text-sub); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s, padding-left 0.2s; }
     .footer-col ul li a:hover { color: var(--primary); padding-left: 5px; }
-    
-    .footer-bottom {
-      border-top: 1px solid var(--border); padding-top: 32px;
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.9rem; color: var(--text-sub); font-weight: 600; flex-wrap: wrap; gap: 16px;
-    }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 32px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-sub); font-weight: 600; flex-wrap: wrap; gap: 16px; }
 
     /* =====================================
        RESPONSYWNOŚĆ (MEDIA QUERIES)
        ===================================== */
     @media(max-width: 1024px) {
-      .hero-grid { grid-template-columns: 1fr; text-align: center; }
-      .hero-desc { margin-left: auto; margin-right: auto; }
+      .hero-grid { grid-template-columns: 1fr; }
+      /* Centrowanie kontentu z odpowiednim ograniczeniem, by uniknąć wyjazdu poza ekran */
+      .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .hero-title { max-width: 100%; }
+      .hero-desc { margin: 0 auto; max-width: 100%; }
+      .hero-actions { justify-content: center; }
       .hero-stats { justify-content: center; }
       .bento-grid { grid-template-columns: 1fr; }
       .span-2 { grid-column: span 1; }
@@ -370,48 +249,38 @@
     }
 
     @media(max-width: 768px) {
-      /* Formularze układają się w jedną kolumnę - zapobiega rozpychaniu ekranu */
       .form-grid-2 { grid-template-columns: 1fr; gap: 15px; }
       .section { padding: 60px 0; }
     }
 
     @media(max-width: 600px) {
-      /* Odzyskiwanie cennej przestrzeni po bokach na małych ekranach */
       .container { padding: 0 16px; }
 
-      /* KOMPRESJA NAGŁÓWKA */
+      /* NAGŁÓWEK */
       .brand { font-size: 1.3rem; }
       .header-actions { gap: 8px; }
       .lang-btn-ui { padding: 8px 10px; font-size: 0.8rem; }
-      
-      /* Ukrywamy tekst "Zaloguj" na telefonach - zostawiamy tylko ikonkę */
       .header-actions .btn-main { padding: 10px 14px; }
       .header-actions .btn-main span[data-i18n="btn_login"] { display: none; }
 
-      /* KOREKTA HERO SECTION */
+      /* HERO */
       .hero { padding: 40px 0; min-height: auto; }
       .hero-title { font-size: 2.2rem; margin-bottom: 16px; }
       .hero-desc { font-size: 0.95rem; }
       
-      /* Przyciski w telefonie na pełną szerokość i jeden pod drugim */
-      .hero-content > div:nth-child(4) { 
-        flex-direction: column; 
-        width: 100%; 
-        gap: 12px;
-      }
-      .btn-main, .btn-outline { width: 100%; display: flex; justify-content: center; }
+      .hero-actions { flex-direction: column; width: 100%; gap: 12px; align-items: stretch; }
+      .hero-actions a.btn-main, .hero-actions a.btn-outline { width: 100%; justify-content: center; box-sizing: border-box; }
 
-      /* Mniejsza czcionka w statystykach */
-      .hero-stats { gap: 15px; justify-content: center; padding-top: 24px; margin-top: 24px; }
+      .hero-stats { gap: 15px; padding-top: 24px; margin-top: 24px; }
       .stat-item h4 { font-size: 1.5rem; }
       
-      /* Zmniejszenie sekcji bento, aby nie była przytłaczająca */
+      /* BENTO */
       .section { padding: 50px 0; }
       .section-title { font-size: 1.8rem; }
       .bento-card { padding: 24px; }
       .bento-icon { width: 48px; height: 48px; font-size: 1.4rem; margin-bottom: 16px; }
       
-      /* Układ stopki */
+      /* FOOTER */
       footer { margin-top: 40px; padding: 50px 0 30px; }
       .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 32px; }
       .social-links { justify-content: center; margin-top: 16px; }
@@ -422,331 +291,318 @@
 </head>
 <body>
 
-  <!-- KONTENER NA POWIADOMIENIA (TOAST) -->
-  <div id="toast-container"></div>
+  <!-- NAJWAŻNIEJSZE: Wrapper chroniący stronę przed rozjeżdżaniem -->
+  <div class="site-wrapper">
 
-  <!-- BEZPIECZNE TŁO BLOBÓW (Nie rozpycha strony) -->
-  <div class="background-blobs">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
+    <!-- KONTENER NA POWIADOMIENIA (TOAST) -->
+    <div id="toast-container"></div>
 
-  <!-- BANER INFORMACYJNY (Dynamiczny z panelu admina) -->
-  <div id="web-top-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: #fff; z-index: 1001; transition: background 0.3s; box-sizing: border-box;">
-    <span id="web-banner-text"></span>
-  </div>
-
-  <!-- HEADER -->
-  <header id="header">
-    <div class="container nav-container">
-      <a href="#" class="brand">Milkshakebar<span>.</span></a>
-      
-      <ul class="nav-links">
-        <li><a href="#app-section" data-i18n="nav_app">Aplikacja MilkMi</a></li>
-        <li><a href="#menu-section" data-i18n="nav_menu">Odkryj Menu</a></li>
-        <li><a href="#reservation-section" data-i18n="nav_res">Rezerwacje</a></li>
-        <li><a href="#location-section" data-i18n="nav_loc">Nasze Lokale</a></li>
-      </ul>
-
-      <div class="header-actions">
-        <!-- Język -->
-        <div class="lang-selector" id="langSelector">
-          <button class="lang-btn-ui" onclick="toggleLangMenu()">
-            <i class="fas fa-globe" style="color: var(--primary);"></i> 
-            <span id="current-lang">PL</span>
-            <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: var(--text-sub);"></i>
-          </button>
-          <div class="lang-menu" id="langMenu">
-            <div class="lang-item" onclick="changeLanguage('pl')">Polski</div>
-            <div class="lang-item" onclick="changeLanguage('en')">English</div>
-            <div class="lang-item" onclick="changeLanguage('es')">Español</div>
-          </div>
-        </div>
-
-        <!-- Przycisk Zaloguj -->
-        <a href="app.html" class="btn-main" style="padding: 10px 24px; font-size: 0.95rem; width: auto;">
-          <i class="fas fa-user"></i> <span data-i18n="btn_login">Zaloguj</span>
-        </a>
-      </div>
+    <!-- BEZPIECZNE TŁO BLOBÓW -->
+    <div class="background-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
     </div>
-  </header>
 
-  <!-- HERO SECTION -->
-  <section class="hero container">
-    <div class="hero-grid">
-      <div class="hero-content reveal">
-        <div class="pill-badge" data-i18n="hero_badge">✨ Odkryj letnie smaki</div>
-        <h1 class="hero-title" data-i18n="hero_title">Sztuka idealnego <br><span class="text-gradient">milkshake'a</span>.</h1>
-        <p class="hero-desc" data-i18n="hero_desc">Zanurz się w świecie kremowej perfekcji. Tworzymy kompozycje, które pobudzą Twoje zmysły i wywołają uśmiech. Bez kompromisów.</p>
+    <!-- BANER INFORMACYJNY -->
+    <div id="web-top-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: #fff; z-index: 1001; transition: background 0.3s; box-sizing: border-box;">
+      <span id="web-banner-text"></span>
+    </div>
+
+    <!-- HEADER -->
+    <header id="header">
+      <div class="container nav-container">
+        <a href="#" class="brand">Milkshakebar<span>.</span></a>
         
-        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-          <a href="app.html" class="btn-main"><span data-i18n="hero_btn_app">Odbierz zniżkę w aplikacji</span> <i class="fas fa-arrow-right"></i></a>
-          <a href="#menu-section" class="btn-outline" style="width: auto;"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
+        <ul class="nav-links">
+          <li><a href="#app-section" data-i18n="nav_app">Aplikacja MilkMi</a></li>
+          <li><a href="#menu-section" data-i18n="nav_menu">Odkryj Menu</a></li>
+          <li><a href="#reservation-section" data-i18n="nav_res">Rezerwacje</a></li>
+          <li><a href="#location-section" data-i18n="nav_loc">Nasze Lokale</a></li>
+        </ul>
+
+        <div class="header-actions">
+          <div class="lang-selector" id="langSelector">
+            <button class="lang-btn-ui" onclick="toggleLangMenu()">
+              <i class="fas fa-globe" style="color: var(--primary);"></i> 
+              <span id="current-lang">PL</span>
+              <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: var(--text-sub);"></i>
+            </button>
+            <div class="lang-menu" id="langMenu">
+              <div class="lang-item" onclick="changeLanguage('pl')">Polski</div>
+              <div class="lang-item" onclick="changeLanguage('en')">English</div>
+              <div class="lang-item" onclick="changeLanguage('es')">Español</div>
+            </div>
+          </div>
+
+          <a href="app.html" class="btn-main" style="padding: 10px 24px; font-size: 0.95rem; width: auto;">
+            <i class="fas fa-user"></i> <span data-i18n="btn_login">Zaloguj</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero container">
+      <div class="hero-grid">
+        <div class="hero-content reveal">
+          <div class="pill-badge" data-i18n="hero_badge">✨ Odkryj letnie smaki</div>
+          <h1 class="hero-title" data-i18n="hero_title">Sztuka idealnego <br><span class="text-gradient">milkshake'a</span>.</h1>
+          <p class="hero-desc" data-i18n="hero_desc">Zanurz się w świecie kremowej perfekcji. Tworzymy kompozycje, które pobudzą Twoje zmysły i wywołają uśmiech. Bez kompromisów.</p>
+          
+          <!-- Zmieniono na zdefiniowaną klasę hero-actions dla 100% pewności układu -->
+          <div class="hero-actions">
+            <a href="app.html" class="btn-main"><span data-i18n="hero_btn_app">Odbierz zniżkę w aplikacji</span> <i class="fas fa-arrow-right"></i></a>
+            <a href="#menu-section" class="btn-outline"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h4>2</h4>
+              <p data-i18n="stat_1">Lokale</p>
+            </div>
+            <div class="stat-item">
+              <h4>50+</h4>
+              <p data-i18n="stat_2">Smaków</p>
+            </div>
+            <div class="stat-item">
+              <h4>10k+</h4>
+              <p data-i18n="stat_3">Zadowolonych gości</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="hero-image-wrapper reveal" style="transition-delay: 0.2s;">
+          <img src="https://i.imgur.com/70NTMx8.png" alt="Premium Milkshake" class="hero-image">
+        </div>
+      </div>
+    </section>
+
+    <!-- BENTO GRID - APP SECTION -->
+    <section class="section container" id="app-section">
+      <div class="section-header reveal">
+        <h2 class="section-title" data-i18n="app_title">Poznaj system <span class="text-gradient">MilkMi</span></h2>
+        <p class="section-desc" data-i18n="app_desc">Aplikacja stworzona, by dawać więcej. Twój cyfrowy portfel, lojalność i wygoda na wyciągnięcie ręki.</p>
+      </div>
+
+      <div class="bento-grid">
+        <div class="bento-card span-2 reveal">
+          <div class="bento-icon"><i class="fas fa-wallet"></i></div>
+          <h3 data-i18n="bento_1_title">Wirtualny portfel vPLN</h3>
+          <p data-i18n="bento_1_desc">Płać szybciej i bezpieczniej bez gotówki. Doładuj swoje konto w aplikacji i korzystaj ze specjalnych premii za doładowania. Twój telefon to Twój portfel.</p>
+        </div>
+        
+        <div class="bento-card reveal" style="transition-delay: 0.1s; background: var(--gradient-brand); color: white; border: none;">
+          <div class="bento-icon" style="background: rgba(255,255,255,0.2); color: white;"><i class="fas fa-star"></i></div>
+          <h3 style="color: white;" data-i18n="bento_2_title">Zbieraj Milkosy</h3>
+          <p style="color: rgba(255,255,255,0.9);" data-i18n="bento_2_desc">Każda wydana złotówka wraca do Ciebie w postaci punktów. Osiągaj rangi i zdobywaj darmowe produkty.</p>
         </div>
 
-        <div class="hero-stats">
-          <div class="stat-item">
-            <h4>2</h4>
-            <p data-i18n="stat_1">Lokale</p>
-          </div>
-          <div class="stat-item">
-            <h4>50+</h4>
-            <p data-i18n="stat_2">Smaków</p>
-          </div>
-          <div class="stat-item">
-            <h4>10k+</h4>
-            <p data-i18n="stat_3">Zadowolonych gości</p>
-          </div>
+        <div class="bento-card reveal" style="transition-delay: 0.2s;">
+          <div class="bento-icon"><i class="fas fa-gift"></i></div>
+          <h3 data-i18n="bento_3_title">Prezenty</h3>
+          <p data-i18n="bento_3_desc">Zrób niespodziankę bliskim, wysyłając im wirtualną kartę podarunkową bezpośrednio w aplikacji.</p>
+        </div>
+
+        <div class="bento-card span-2 reveal" style="transition-delay: 0.3s; position: relative;">
+          <div style="position: absolute; right: -20px; bottom: -20px; font-size: 12rem; opacity: 0.05; color: var(--primary);"><i class="fas fa-mobile-alt"></i></div>
+          <div class="bento-icon"><i class="fas fa-chair"></i></div>
+          <h3 data-i18n="bento_4_title">Rezerwuj i odbieraj bez kolejki</h3>
+          <p data-i18n="bento_4_desc">Złóż zamówienie przed przyjściem do lokalu lub szybko zarezerwuj ulubiony stolik. Cenimy Twój czas, dlatego stworzyliśmy rozwiązania, które pozwalają ominąć kolejki.</p>
         </div>
       </div>
       
-      <div class="hero-image-wrapper reveal" style="transition-delay: 0.2s;">
-        <img src="https://i.imgur.com/70NTMx8.png" alt="Premium Milkshake" class="hero-image">
+      <div style="text-align: center; margin-top: 60px;" class="reveal">
+        <a href="app.html" class="btn-outline" style="width: auto;"><i class="fas fa-arrow-right"></i> <span data-i18n="btn_enter_app">Otwórz portal MilkMi</span></a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- BENTO GRID - APP SECTION -->
-  <section class="section container" id="app-section">
-    <div class="section-header reveal">
-      <h2 class="section-title" data-i18n="app_title">Poznaj system <span class="text-gradient">MilkMi</span></h2>
-      <p class="section-desc" data-i18n="app_desc">Aplikacja stworzona, by dawać więcej. Twój cyfrowy portfel, lojalność i wygoda na wyciągnięcie ręki.</p>
-    </div>
-
-    <div class="bento-grid">
-      <!-- Karta 1 - Duża -->
-      <div class="bento-card span-2 reveal">
-        <div class="bento-icon"><i class="fas fa-wallet"></i></div>
-        <h3 data-i18n="bento_1_title">Wirtualny portfel vPLN</h3>
-        <p data-i18n="bento_1_desc">Płać szybciej i bezpieczniej bez gotówki. Doładuj swoje konto w aplikacji i korzystaj ze specjalnych premii za doładowania. Twój telefon to Twój portfel.</p>
-      </div>
-      
-      <!-- Karta 2 -->
-      <div class="bento-card reveal" style="transition-delay: 0.1s; background: var(--gradient-brand); color: white; border: none;">
-        <div class="bento-icon" style="background: rgba(255,255,255,0.2); color: white;"><i class="fas fa-star"></i></div>
-        <h3 style="color: white;" data-i18n="bento_2_title">Zbieraj Milkosy</h3>
-        <p style="color: rgba(255,255,255,0.9);" data-i18n="bento_2_desc">Każda wydana złotówka wraca do Ciebie w postaci punktów. Osiągaj rangi i zdobywaj darmowe produkty.</p>
+    <!-- RESERVATION WIDGET -->
+    <section class="section container" id="reservation-section">
+      <div class="section-header reveal">
+        <h2 class="section-title" data-i18n="res_title">Zarezerwuj <span class="text-gradient">Stolik</span></h2>
+        <p class="section-desc" data-i18n="res_desc">Zapewnij sobie i swoim bliskim najlepsze miejsce. Formularz jest połączony z naszym systemem.</p>
       </div>
 
-      <!-- Karta 3 -->
-      <div class="bento-card reveal" style="transition-delay: 0.2s;">
-        <div class="bento-icon"><i class="fas fa-gift"></i></div>
-        <h3 data-i18n="bento_3_title">Prezenty</h3>
-        <p data-i18n="bento_3_desc">Zrób niespodziankę bliskim, wysyłając im wirtualną kartę podarunkową bezpośrednio w aplikacji.</p>
-      </div>
-
-      <!-- Karta 4 - Duża -->
-      <div class="bento-card span-2 reveal" style="transition-delay: 0.3s; position: relative;">
-        <div style="position: absolute; right: -20px; bottom: -20px; font-size: 12rem; opacity: 0.05; color: var(--primary);"><i class="fas fa-mobile-alt"></i></div>
-        <div class="bento-icon"><i class="fas fa-chair"></i></div>
-        <h3 data-i18n="bento_4_title">Rezerwuj i odbieraj bez kolejki</h3>
-        <p data-i18n="bento_4_desc">Złóż zamówienie przed przyjściem do lokalu lub szybko zarezerwuj ulubiony stolik. Cenimy Twój czas, dlatego stworzyliśmy rozwiązania, które pozwalają ominąć kolejki.</p>
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 60px;" class="reveal">
-      <a href="app.html" class="btn-outline" style="width: auto;"><i class="fas fa-arrow-right"></i> <span data-i18n="btn_enter_app">Otwórz portal MilkMi</span></a>
-    </div>
-  </section>
-
-  <!-- RESERVATION WIDGET -->
-  <section class="section container" id="reservation-section">
-    <div class="section-header reveal">
-      <h2 class="section-title" data-i18n="res_title">Zarezerwuj <span class="text-gradient">Stolik</span></h2>
-      <p class="section-desc" data-i18n="res_desc">Zapewnij sobie i swoim bliskim najlepsze miejsce. Formularz jest połączony z naszym systemem.</p>
-    </div>
-
-    <div class="booking-wrapper reveal">
-      <div class="booking-form">
-        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 24px;" data-i18n="form_heading">Szczegóły rezerwacji</h3>
-        <form id="reservation-form" onsubmit="submitReservation(event)">
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label data-i18n="form_name">Imię i Nazwisko</label>
-              <input type="text" id="res-name" class="form-control" placeholder="Jan Kowalski" required>
+      <div class="booking-wrapper reveal">
+        <div class="booking-form">
+          <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 24px;" data-i18n="form_heading">Szczegóły rezerwacji</h3>
+          <form id="reservation-form" onsubmit="submitReservation(event)">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label data-i18n="form_name">Imię i Nazwisko</label>
+                <input type="text" id="res-name" class="form-control" placeholder="Jan Kowalski" required>
+              </div>
+              <div class="form-group">
+                <label data-i18n="form_phone">Telefon kontaktowy</label>
+                <input type="tel" id="res-phone" class="form-control" placeholder="+48 000 000 000" required>
+              </div>
             </div>
-            <div class="form-group">
-              <label data-i18n="form_phone">Telefon kontaktowy</label>
-              <input type="tel" id="res-phone" class="form-control" placeholder="+48 000 000 000" required>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label data-i18n="form_date">Wybierz datę i czas</label>
+                <input type="datetime-local" id="res-date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label data-i18n="form_guests">Liczba gości</label>
+                <select id="res-guests" class="form-control" required>
+                  <option value="1">1 osoba</option>
+                  <option value="2" selected>2 osoby</option>
+                  <option value="3">3 osoby</option>
+                  <option value="4">4 osoby</option>
+                  <option value="5">5 osób</option>
+                  <option value="6">6 osób</option>
+                  <option value="7">7 osób</option>
+                  <option value="8">8 osób</option>
+                  <option value="9">9 osób</option>
+                  <option value="10">10 osób</option>
+                  <option value="11">11 osób</option>
+                  <option value="12">12 osób</option>
+                  <option value="13">13 osób</option>
+                  <option value="14">14 osób</option>
+                  <option value="15">15 osób</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label data-i18n="form_date">Wybierz datę i czas</label>
-              <input type="datetime-local" id="res-date" class="form-control" required>
-            </div>
-            <div class="form-group">
-              <label data-i18n="form_guests">Liczba gości</label>
-              <select id="res-guests" class="form-control" required>
-                <option value="1">1 osoba</option>
-                <option value="2" selected>2 osoby</option>
-                <option value="3">3 osoby</option>
-                <option value="4">4 osoby</option>
-                <option value="5">5 osób</option>
-                <option value="6">6 osób</option>
-                <option value="7">7 osób</option>
-                <option value="8">8 osób</option>
-                <option value="9">9 osób</option>
-                <option value="10">10 osób</option>
-                <option value="11">11 osób</option>
-                <option value="12">12 osób</option>
-                <option value="13">13 osób</option>
-                <option value="14">14 osób</option>
-                <option value="15">15 osób</option>
+            <div class="form-group" style="margin-bottom: 32px;">
+              <label data-i18n="form_zone">Preferowana Strefa</label>
+              <select id="res-zone" class="form-control" required>
+                <option value="Sala główna (Klimatyzowana)" data-i18n="zone_main">Sala główna (Klimatyzowana)</option>
+                <option value="Sala frontowa (Widok na miasto)" data-i18n="zone_front">Sala frontowa (Widok na miasto)</option>
+                <option value="Kącik dla dzieci" data-i18n="zone_kids">Kącik dla dzieci</option>
               </select>
             </div>
-          </div>
-          <div class="form-group" style="margin-bottom: 32px;">
-            <label data-i18n="form_zone">Preferowana Strefa</label>
-            <select id="res-zone" class="form-control" required>
-              <option value="Sala główna (Klimatyzowana)" data-i18n="zone_main">Sala główna (Klimatyzowana)</option>
-              <option value="Sala frontowa (Widok na miasto)" data-i18n="zone_front">Sala frontowa (Widok na miasto)</option>
-              <option value="Kącik dla dzieci" data-i18n="zone_kids">Kącik dla dzieci</option>
-            </select>
-          </div>
-          <button type="submit" id="res-submit-btn" class="btn-main" style="width: 100%;" data-i18n="form_btn">Zarezerwuj</button>
-        </form>
-      </div>
-      <div class="booking-image">
-        <img src="https://i.imgur.com/XeqbhHa.jpeg" alt="Wnętrze kawiarni">
-      </div>
-    </div>
-  </section>
-
-  <!-- LOCATIONS & OPENING HOURS -->
-  <section class="section container" id="location-section">
-    <div class="section-header reveal">
-      <h2 class="section-title" data-i18n="loc_title">Nasze <span class="text-gradient">Lokalizacje</span></h2>
-      <p class="section-desc" data-i18n="loc_desc">Znajdziesz nas w dwóch strategicznych punktach na mapie Pomorza. Czekamy na Ciebie!</p>
-    </div>
-
-    <div class="loc-grid">
-      <!-- Słupsk -->
-      <div class="loc-card reveal">
-        <div class="loc-info">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <h3 class="loc-title"><i class="fas fa-map-marker-alt"></i> Słupsk</h3>
-            <span class="loc-badge" data-i18n="badge_open">Otwarte</span>
-          </div>
-          <p class="loc-desc">ul. Szczecińska 17<br>76-200 Słupsk</p>
-          
-          <button class="hours-btn" onclick="toggleHours('slupsk-hours', this)">
-            <span data-i18n="btn_hours">Godziny otwarcia</span> <i class="fas fa-chevron-down"></i>
-          </button>
-          
-          <div id="slupsk-hours" class="hours-content">
-            <!-- Dynamicznie generowane godziny otwarcia ze skryptu JS -->
-            <div class="hours-row"><span data-i18n="day_mon_thu">Ładowanie...</span></div>
-          </div>
+            <button type="submit" id="res-submit-btn" class="btn-main" style="width: 100%;" data-i18n="form_btn">Zarezerwuj</button>
+          </form>
         </div>
-        <iframe class="loc-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2331.002829241513!2d17.01509831582845!3d54.46736898022934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fe1e12a4d3148d%3A0xe5a1b37937a6b5a3!2sSzczeci%C5%84ska%2017%2C%2076-200%20S%C5%82upsk!5e0!3m2!1spl!2spl!4v1694080000000" allowfullscreen="" loading="lazy"></iframe>
-      </div>
-
-      <!-- Rowy -->
-      <div class="loc-card reveal" style="transition-delay: 0.2s;">
-        <div class="loc-info">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <h3 class="loc-title"><i class="fas fa-umbrella-beach"></i> Rowy</h3>
-            <span class="loc-badge" style="background: var(--border); color: var(--text-sub);" data-i18n="badge_season">Sezonowo</span>
-          </div>
-          <p class="loc-desc">ul. Wydmowa 2<br>76-212 Rowy</p>
-          
-          <button class="hours-btn" onclick="toggleHours('rowy-hours', this)">
-            <span data-i18n="btn_hours">Godziny otwarcia</span> <i class="fas fa-chevron-down"></i>
-          </button>
-          
-          <div id="rowy-hours" class="hours-content">
-            <!-- Dynamicznie generowane godziny otwarcia ze skryptu JS -->
-            <div class="hours-row"><span data-i18n="day_mon_sun">Ładowanie...</span></div>
-            <div style="margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: 600;"><i class="fas fa-sun"></i> Otwieramy w sezonie letnim!</div>
-          </div>
-        </div>
-        <iframe class="loc-map" src="https://www.google.com/maps?q=Wydmowa+2,+76-212+Rowy&output=embed" allowfullscreen="" loading="lazy"></iframe>
-      </div>
-    </div>
-  </section>
-
-  <!-- ROZBUDOWANA STOPKA -->
-  <footer>
-    <div class="container">
-      <div class="footer-grid">
-        <!-- Kolumna 1: Brand & Socials -->
-        <div class="footer-col">
-          <div class="footer-brand">Milkshakebar<span>.</span></div>
-          <p class="footer-desc" data-i18n="footer_desc">Jesteśmy marką, która redefiniuje pojęcie deserów. Wierzymy w najwyższą jakość składników i design, który cieszy oko.</p>
-          <div class="social-links">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-          </div>
-        </div>
-
-        <!-- Kolumna 2: Firma -->
-        <div class="footer-col">
-          <h4 data-i18n="foot_title_1">Firma</h4>
-          <ul>
-            <li><a href="#" data-i18n="foot_link_1_1">O nas</a></li>
-            <li><a href="#" data-i18n="foot_link_1_2">Kariera</a></li>
-            <li><a href="#" data-i18n="foot_link_1_3">Nasze lokale</a></li>
-            <li><a href="#" data-i18n="foot_link_1_4">Menu</a></li>
-          </ul>
-        </div>
-
-        <!-- Kolumna 3: Pomoc -->
-        <div class="footer-col">
-          <h4 data-i18n="foot_title_2">Pomoc & Wsparcie</h4>
-          <ul>
-            <li><a href="#" data-i18n="foot_link_2_1">Aplikacja MilkMi</a></li>
-            <li><a href="#" data-i18n="foot_link_2_2">FAQ - Pytania</a></li>
-            <li><a href="#" data-i18n="foot_link_2_3">Zgłoś problem</a></li>
-            <li><a href="#" data-i18n="foot_link_2_4">Rezerwacje (Regulamin)</a></li>
-          </ul>
-        </div>
-
-        <!-- Kolumna 4: Informacje Prawne -->
-        <div class="footer-col">
-          <h4 data-i18n="foot_title_3">Informacje prawne</h4>
-          <ul>
-            <li><a href="#" data-i18n="foot_link_3_1">Polityka prywatności</a></li>
-            <li><a href="#" data-i18n="foot_link_3_2">Regulamin lokali</a></li>
-            <li><a href="#" data-i18n="foot_link_3_3">Regulamin aplikacji MilkMi</a></li>
-            <li><a href="#" data-i18n="foot_link_3_4">Zarządzaj Cookies</a></li>
-          </ul>
+        <div class="booking-image">
+          <img src="https://i.imgur.com/XeqbhHa.jpeg" alt="Wnętrze kawiarni">
         </div>
       </div>
+    </section>
 
-      <div class="footer-bottom">
-        <div>&copy; 2026 Milkshakebar Premium & MilkMi. Wszelkie prawa zastrzeżone.</div>
-        <div>Stworzone z pasją w Słupsku.</div>
+    <!-- LOCATIONS & OPENING HOURS -->
+    <section class="section container" id="location-section">
+      <div class="section-header reveal">
+        <h2 class="section-title" data-i18n="loc_title">Nasze <span class="text-gradient">Lokalizacje</span></h2>
+        <p class="section-desc" data-i18n="loc_desc">Znajdziesz nas w dwóch strategicznych punktach na mapie Pomorza. Czekamy na Ciebie!</p>
       </div>
-    </div>
-  </footer>
+
+      <div class="loc-grid">
+        <!-- Słupsk -->
+        <div class="loc-card reveal">
+          <div class="loc-info">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <h3 class="loc-title"><i class="fas fa-map-marker-alt"></i> Słupsk</h3>
+              <span class="loc-badge" data-i18n="badge_open">Otwarte</span>
+            </div>
+            <p class="loc-desc">ul. Szczecińska 17<br>76-200 Słupsk</p>
+            
+            <button class="hours-btn" onclick="toggleHours('slupsk-hours', this)">
+              <span data-i18n="btn_hours">Godziny otwarcia</span> <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div id="slupsk-hours" class="hours-content">
+              <div class="hours-row"><span data-i18n="day_mon_thu">Ładowanie...</span></div>
+            </div>
+          </div>
+          <iframe class="loc-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2331.002829241513!2d17.01509831582845!3d54.46736898022934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fe1e12a4d3148d%3A0xe5a1b37937a6b5a3!2sSzczeci%C5%84ska%2017%2C%2076-200%20S%C5%82upsk!5e0!3m2!1spl!2spl!4v1694080000000" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+        <!-- Rowy -->
+        <div class="loc-card reveal" style="transition-delay: 0.2s;">
+          <div class="loc-info">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <h3 class="loc-title"><i class="fas fa-umbrella-beach"></i> Rowy</h3>
+              <span class="loc-badge" style="background: var(--border); color: var(--text-sub);" data-i18n="badge_season">Sezonowo</span>
+            </div>
+            <p class="loc-desc">ul. Wydmowa 2<br>76-212 Rowy</p>
+            
+            <button class="hours-btn" onclick="toggleHours('rowy-hours', this)">
+              <span data-i18n="btn_hours">Godziny otwarcia</span> <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div id="rowy-hours" class="hours-content">
+              <div class="hours-row"><span data-i18n="day_mon_sun">Ładowanie...</span></div>
+              <div style="margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: 600;"><i class="fas fa-sun"></i> Otwieramy w sezonie letnim!</div>
+            </div>
+          </div>
+          <iframe class="loc-map" src="https://www.google.com/maps?q=Wydmowa+2,+76-212+Rowy&output=embed" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROZBUDOWANA STOPKA -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <div class="footer-brand">Milkshakebar<span>.</span></div>
+            <p class="footer-desc" data-i18n="footer_desc">Jesteśmy marką, która redefiniuje pojęcie deserów. Wierzymy w najwyższą jakość składników i design, który cieszy oko.</p>
+            <div class="social-links">
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+          </div>
+
+          <div class="footer-col">
+            <h4 data-i18n="foot_title_1">Firma</h4>
+            <ul>
+              <li><a href="#" data-i18n="foot_link_1_1">O nas</a></li>
+              <li><a href="#" data-i18n="foot_link_1_2">Kariera</a></li>
+              <li><a href="#" data-i18n="foot_link_1_3">Nasze lokale</a></li>
+              <li><a href="#" data-i18n="foot_link_1_4">Menu</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4 data-i18n="foot_title_2">Pomoc & Wsparcie</h4>
+            <ul>
+              <li><a href="#" data-i18n="foot_link_2_1">Aplikacja MilkMi</a></li>
+              <li><a href="#" data-i18n="foot_link_2_2">FAQ - Pytania</a></li>
+              <li><a href="#" data-i18n="foot_link_2_3">Zgłoś problem</a></li>
+              <li><a href="#" data-i18n="foot_link_2_4">Rezerwacje (Regulamin)</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4 data-i18n="foot_title_3">Informacje prawne</h4>
+            <ul>
+              <li><a href="#" data-i18n="foot_link_3_1">Polityka prywatności</a></li>
+              <li><a href="#" data-i18n="foot_link_3_2">Regulamin lokali</a></li>
+              <li><a href="#" data-i18n="foot_link_3_3">Regulamin aplikacji MilkMi</a></li>
+              <li><a href="#" data-i18n="foot_link_3_4">Zarządzaj Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div>&copy; 2026 Milkshakebar Premium & MilkMi. Wszelkie prawa zastrzeżone.</div>
+          <div>Stworzone z pasją w Słupsku.</div>
+        </div>
+      </div>
+    </footer>
+
+  <!-- KONIEC WRAPPERA -->
+  </div>
 
   <script>
-    // --- OBSŁUGA ROZWIJANYCH GODZIN OTWARCIA ---
     function toggleHours(id, btnElement) {
       const content = document.getElementById(id);
       content.classList.toggle('open');
       btnElement.classList.toggle('open');
     }
 
-    // --- SYSTEM POWIADOMIEŃ PUSH (TOAST) ---
     function showToast(message, type = 'success') {
       let container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      
       let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
       toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
       container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.classList.add('fade-out');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
-    // --- OBSŁUGA JĘZYKA (i18n) ---
     const translations = {
       pl: {
         nav_app: "Aplikacja MilkMi", nav_menu: "Odkryj Menu", nav_res: "Rezerwacje", nav_loc: "Nasze Lokale", btn_login: "Zaloguj",
@@ -797,7 +653,7 @@
         app_title: "Conoce el sistema <span class='text-gradient'>MilkMi</span>", app_desc: "Una app diseñada para dar más. Tu cartera digital, lealtad y comodidad a tu alcance.",
         bento_1_title: "Cartera Virtual vPLN", bento_1_desc: "Paga más rápido y seguro sin efectivo. Recarga tu cuenta en la app y disfruta de bonos especiales. Tu teléfono es tu cartera.",
         bento_2_title: "Colecciona Milkos", bento_2_desc: "Cada zloty gastado vuelve a ti como puntos. Consigue rangos y gana productos gratis.",
-        bento_3_title: "Regalos", bento_3_desc: "Sorprende a tus seres queridos enviándoles una tarjeta de regalo virtual directamente en la app.",
+        bento_3_title: "Regalos", bento_3_desc: "Surprise a tus seres queridos enviándoles una tarjeta de regalo virtual directamente en la app.",
         bento_4_title: "Reserva y recoge sin hacer cola", bento_4_desc: "Haz un pedido antes de llegar o reserva rápidamente tu mesa favorita. Valoramos tu tiempo, por eso creamos soluciones para evitar las colas.",
         btn_enter_app: "Abrir Portal MilkMi",
         res_title: "Reserva una <span class='text-gradient'>Mesa</span>", res_desc: "Asegura el mejor lugar para ti y los tuyos. El formulario está conectado a nuestro sistema.",
@@ -813,31 +669,21 @@
       }
     };
 
-    function toggleLangMenu() {
-      document.getElementById('langSelector').classList.toggle('active');
-    }
-
+    function toggleLangMenu() { document.getElementById('langSelector').classList.toggle('active'); }
     function changeLanguage(lang) {
       if (!translations[lang]) return;
       localStorage.setItem('milkmi_lang', lang);
       document.getElementById('current-lang').innerText = lang.toUpperCase();
-      
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          el.innerHTML = translations[lang][key];
-        }
+        if (translations[lang][key]) el.innerHTML = translations[lang][key];
       });
       document.getElementById('langSelector').classList.remove('active');
     }
-
     window.addEventListener('click', (e) => {
-      if (!document.getElementById('langSelector').contains(e.target)) {
-        document.getElementById('langSelector').classList.remove('active');
-      }
+      if (!document.getElementById('langSelector').contains(e.target)) document.getElementById('langSelector').classList.remove('active');
     });
 
-    // --- WYSYŁANIE REZERWACJI ---
     async function submitReservation(e) {
       e.preventDefault();
       const btn = document.getElementById('res-submit-btn');
@@ -846,141 +692,82 @@
       btn.disabled = true;
 
       const payload = {
-        name: document.getElementById('res-name').value,
-        phone: document.getElementById('res-phone').value,
-        datetime: document.getElementById('res-date').value,
-        guests: document.getElementById('res-guests').value,
-        zone: document.getElementById('res-zone').value,
-        status: 'pending' // Wymusza status do alarmu
+        name: document.getElementById('res-name').value, phone: document.getElementById('res-phone').value,
+        datetime: document.getElementById('res-date').value, guests: document.getElementById('res-guests').value,
+        zone: document.getElementById('res-zone').value, status: 'pending'
       };
 
       try {
-        const res = await fetch('/api/reservations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        
-        if (res.ok) {
-          showToast('Twoja rezerwacja została pomyślnie złożona!', 'success');
-          document.getElementById('reservation-form').reset();
-        } else {
-          showToast('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.', 'error');
-        }
-      } catch (err) {
-        console.error('Błąd rezerwacji:', err);
-        showToast('Błąd połączenia z serwerem.', 'error');
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
+        const res = await fetch('/api/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (res.ok) { showToast('Twoja rezerwacja została pomyślnie złożona!', 'success'); document.getElementById('reservation-form').reset(); }
+        else { showToast('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.', 'error'); }
+      } catch (err) { console.error('Błąd rezerwacji:', err); showToast('Błąd połączenia z serwerem.', 'error'); }
+      finally { btn.innerHTML = originalText; btn.disabled = false; }
     }
 
-    // --- POBIERANIE BANERA ---
     async function loadDynamicBanner() {
       try {
-        const res = await fetch('/api/banners');
-        const data = await res.json();
-        
+        const res = await fetch('/api/banners'); const data = await res.json();
         if (data.success && data.data) {
           const webBanner = data.data.find(b => b.target === 'web');
           if (webBanner && webBanner.isActive) {
             const bannerEl = document.getElementById('web-top-banner');
             document.getElementById('web-banner-text').innerText = webBanner.text;
-            bannerEl.style.backgroundColor = webBanner.backgroundColor;
-            bannerEl.style.display = 'block';
-            
-            // Przesunięcie headera i body w dół, aby baner go nie zasłaniał
+            bannerEl.style.backgroundColor = webBanner.backgroundColor; bannerEl.style.display = 'block';
             const bannerHeight = bannerEl.offsetHeight;
             document.getElementById('header').style.top = bannerHeight + 'px';
-            // Dodanie odpowiedniego marginesu do body uwzględniając baner
             document.body.style.paddingTop = `calc(var(--nav-height) + var(--safe-top) + ${bannerHeight}px)`;
           }
         }
-      } catch (err) {
-        console.error('Błąd pobierania banera', err);
-      }
+      } catch (err) { console.error('Błąd pobierania banera', err); }
     }
 
-    // --- POBIERANIE GODZIN OTWARCIA DLA SŁUPSKA I ROWÓW ---
     async function loadOpeningHours() {
       const daysPl = { mon: 'Poniedziałek', tue: 'Wtorek', wed: 'Środa', thu: 'Czwartek', fri: 'Piątek', sat: 'Sobota', sun: 'Niedziela' };
-      
-      // Słupsk
       try {
-        const resSlupsk = await fetch('/api/hours?location=slupsk');
-        const dataSlupsk = await resSlupsk.json();
+        const resSlupsk = await fetch('/api/hours?location=slupsk'); const dataSlupsk = await resSlupsk.json();
         const slupskContainer = document.getElementById('slupsk-hours');
-        
         if (dataSlupsk.success && dataSlupsk.data) {
           slupskContainer.innerHTML = ''; 
           Object.keys(daysPl).forEach(day => {
             if (dataSlupsk.data[day]) {
               const info = dataSlupsk.data[day];
               const timeText = info.isOpen ? `${info.from} - ${info.to}` : `<span style="color: var(--status-err);">Zamknięte</span>`;
-              slupskContainer.innerHTML += `
-                <div class="hours-row">
-                  <span>${daysPl[day]}</span> 
-                  <strong>${timeText}</strong>
-                </div>
-              `;
+              slupskContainer.innerHTML += `<div class="hours-row"><span>${daysPl[day]}</span><strong>${timeText}</strong></div>`;
             }
           });
         }
       } catch (err) { console.error(err); }
 
-      // Rowy
       try {
-        const resRowy = await fetch('/api/hours?location=rowy');
-        const dataRowy = await resRowy.json();
+        const resRowy = await fetch('/api/hours?location=rowy'); const dataRowy = await resRowy.json();
         const rowyContainer = document.getElementById('rowy-hours');
-        
         if (dataRowy.success && dataRowy.data) {
           rowyContainer.innerHTML = ''; 
           Object.keys(daysPl).forEach(day => {
             if (dataRowy.data[day]) {
               const info = dataRowy.data[day];
               const timeText = info.isOpen ? `${info.from} - ${info.to}` : `<span style="color: var(--status-err);">Zamknięte</span>`;
-              rowyContainer.innerHTML += `
-                <div class="hours-row">
-                  <span>${daysPl[day]}</span> 
-                  <strong>${timeText}</strong>
-                </div>
-              `;
+              rowyContainer.innerHTML += `<div class="hours-row"><span>${daysPl[day]}</span><strong>${timeText}</strong></div>`;
             }
           });
         }
       } catch (err) { console.error(err); }
     }
 
-    // --- INICJALIZACJA PRZY STARCIE ---
     document.addEventListener('DOMContentLoaded', () => {
-      const savedLang = localStorage.getItem('milkmi_lang') || 'pl';
-      changeLanguage(savedLang);
+      const savedLang = localStorage.getItem('milkmi_lang') || 'pl'; changeLanguage(savedLang);
+      loadDynamicBanner(); loadOpeningHours();
 
-      loadDynamicBanner();
-      loadOpeningHours();
-
-      // --- SCROLL ANIMACJE ---
       const header = document.getElementById('header');
       window.addEventListener('scroll', () => {
-        if(window.scrollY > 50) {
-          header.style.background = 'var(--glass-bg)';
-          header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)';
-        } else {
-          header.style.background = 'transparent';
-          header.style.boxShadow = 'none';
-        }
+        if(window.scrollY > 50) { header.style.background = 'var(--glass-bg)'; header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)'; }
+        else { header.style.background = 'transparent'; header.style.boxShadow = 'none'; }
       });
 
       const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
       }, observerOptions);
 
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
