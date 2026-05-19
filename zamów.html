@@ -57,20 +57,24 @@
       transition: max-width 0.3s ease;
     }
 
-    /* --- HEADER --- */
+    /* --- HEADER (Przyklejony kontener) --- */
+    .app-header-wrapper {
+      position: sticky; 
+      top: 0; 
+      z-index: 90; 
+      background: rgba(242, 244, 246, 0.95); 
+      backdrop-filter: blur(10px);
+      transition: background 0.3s;
+      border-bottom: 1px solid transparent; /* Zmienia się dynamicznie */
+    }
+    body.dark-mode .app-header-wrapper { background: rgba(15, 15, 15, 0.95); }
+    
     .app-header { 
       padding: 15px 24px; 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      position: sticky; 
-      top: 0; 
-      z-index: 90; 
-      background: rgba(242, 244, 246, 0.9); 
-      backdrop-filter: blur(10px);
-      transition: background 0.3s; 
     }
-    body.dark-mode .app-header { background: rgba(15, 15, 15, 0.9); }
     
     .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; cursor: pointer; }
     .brand span { color: var(--primary); }
@@ -87,6 +91,20 @@
       font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; border: 2px solid var(--bg-surface); 
       animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: none;
     }
+
+    /* --- PASEK INFO O DOSTAWIE --- */
+    .delivery-info-bar {
+      display: none; /* Ukryty domyślnie */
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px 15px;
+      cursor: pointer;
+    }
+    .dib-left { display: flex; align-items: center; gap: 12px; }
+    .dib-left i { color: var(--primary); font-size: 1.3rem; }
+    .dib-title { font-size: 0.8rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
+    .dib-desc { font-size: 0.75rem; color: var(--text-sub); }
+    .dib-right { color: var(--text-sub); font-size: 0.8rem; }
 
     /* --- WIDOKI --- */
     .view-section { display: none; padding-bottom: 40px; animation: fadeIn 0.3s ease; }
@@ -235,43 +253,19 @@
     .toast.visible { transform: translateX(-50%) translateY(0); }
 
     /* ========================================================
-       DESKTOP / LAPTOP BUDOWA (Pełny Ekran - Full Screen)
+       DESKTOP / LAPTOP BUDOWA
        ======================================================== */
     @media (min-width: 768px) {
-      .app-container {
-        max-width: 100%; 
-        margin: 0;
-        box-shadow: none;
-        border-radius: 0;
-      }
-      
-      .app-header { 
-        padding: 20px 5%; 
-      }
-      
-      .categories-list { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-        gap: 24px; 
-        padding: 0 5%; 
-      }
-      .category-card { 
-        height: 250px; 
-        min-height: unset; 
-        border-radius: var(--radius-m); 
-      }
-      
+      .app-container { max-width: 100%; margin: 0; box-shadow: none; border-radius: 0; }
+      .app-header { padding: 20px 5%; }
+      .delivery-info-bar { padding: 10px 5% 15px; }
+      .categories-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding: 0 5%; }
+      .category-card { height: 250px; min-height: unset; border-radius: var(--radius-m); }
       .section-title { margin-left: 5%; font-size: 1.6rem; }
       .menu-header { padding: 25px 5%; }
-      
-      .items-grid { 
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-        gap: 24px; 
-        padding: 0 5%; 
-      }
+      .items-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; padding: 0 5%; }
       .item-img-wrapper { height: 180px; }
       .item-name { font-size: 1rem; }
-
       .cart-container, .checkout-form { max-width: 800px; margin: 0 auto; padding: 0; }
     }
   </style>
@@ -280,17 +274,31 @@
 
 <div class="app-container">
 
-  <!-- Pasek górny -->
-  <header class="app-header">
-    <div class="brand" onclick="switchView('view-delivery-choice')">MilkMi<span>.</span></div>
-    <div class="header-actions">
-      <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-      <button class="icon-btn" onclick="openCartView()">
-        <i class="fas fa-shopping-bag"></i>
-        <div class="badge" id="cart-badge">0</div>
-      </button>
+  <!-- Kontener Nagłówka (Pasek Logo + Belka Info) -->
+  <div class="app-header-wrapper" id="main-header">
+    <header class="app-header">
+      <div class="brand" onclick="switchView('view-delivery-choice')">MilkMi<span>.</span></div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        <button class="icon-btn" onclick="openCartView()">
+          <i class="fas fa-shopping-bag"></i>
+          <div class="badge" id="cart-badge">0</div>
+        </button>
+      </div>
+    </header>
+
+    <!-- NOWOŚĆ: Belka przypominająca o wybranym sposobie realizacji -->
+    <div id="delivery-info-bar" class="delivery-info-bar" onclick="switchView('view-delivery-choice')">
+        <div class="dib-left">
+            <i class="fas fa-store" id="dib-icon"></i>
+            <div class="dib-text">
+                <div class="dib-title" id="dib-title">Odbiór osobisty</div>
+                <div class="dib-desc" id="dib-desc">Słupsk, ul. Szczecińska 17</div>
+            </div>
+        </div>
+        <i class="fas fa-chevron-right dib-right"></i>
     </div>
-  </header>
+  </div>
 
   <!-- WIDOK 0: Ekran powitalny (Wybór Dostawy) -->
   <section id="view-delivery-choice" class="view-section active">
@@ -543,12 +551,41 @@ function switchView(targetViewId) {
         document.getElementById(viewId).classList.remove('active');
     });
     document.getElementById(targetViewId).classList.add('active');
+    
+    // Logika wyświetlania "paska wyboru dostawy" u góry
+    const infoBar = document.getElementById('delivery-info-bar');
+    const headerWrapper = document.getElementById('main-header');
+    
+    // Jeśli jesteśmy na ekranie powitalnym, pasek znika. Wszędzie indziej się pojawia.
+    if (targetViewId === 'view-delivery-choice') {
+        infoBar.style.display = 'none';
+        headerWrapper.style.borderBottom = '1px solid transparent';
+    } else if (document.getElementById('checkout-delivery-method').value) {
+        infoBar.style.display = 'flex';
+        headerWrapper.style.borderBottom = '1px solid var(--border)';
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // WYBÓR STARTOWY METODY DOSTAWY
 function selectInitialDelivery(method) {
     document.getElementById('checkout-delivery-method').value = method;
+    
+    const icon = document.getElementById('dib-icon');
+    const title = document.getElementById('dib-title');
+    const desc = document.getElementById('dib-desc');
+    
+    if (method === 'pickup') {
+        icon.className = 'fas fa-store';
+        title.innerText = 'Odbiór osobisty';
+        desc.innerText = 'Słupsk, ul. Szczecińska 17';
+    } else if (method === 'delivery') {
+        icon.className = 'fas fa-motorcycle';
+        title.innerText = 'Dostawa';
+        desc.innerText = 'Pod wskazany adres';
+    }
+    
     showMainCategories();
 }
 
