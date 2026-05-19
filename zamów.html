@@ -207,7 +207,7 @@
     .form-control { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface); color: var(--text-main); font-family: inherit; font-size: 1rem; outline: none; transition: 0.2s; }
     .form-control:focus { border-color: var(--primary); }
     
-    .delivery-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .delivery-methods, .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .method-card { border: 2px solid var(--border); border-radius: var(--radius-m); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-surface); }
     .method-card.active { border-color: var(--primary); background: rgba(255, 102, 0, 0.05); }
     .method-card.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -295,7 +295,7 @@
   <!-- WIDOK 0: Ekran powitalny (Wybór Dostawy) -->
   <section id="view-delivery-choice" class="view-section active">
       <div class="delivery-split-container">
-          <div class="delivery-split-card active-choice" onclick="showMainCategories()">
+          <div class="delivery-split-card active-choice" onclick="selectInitialDelivery('pickup')">
               <i class="fas fa-store delivery-split-icon"></i>
               <div class="delivery-split-title">Odbiór własny</div>
               <div class="delivery-split-desc">Słupsk<br>ul. Szczecińska 17</div>
@@ -353,10 +353,13 @@
       
       <form class="checkout-form" id="checkoutForm" onsubmit="submitOrder(event)">
           
+          <input type="hidden" id="checkout-delivery-method" value="pickup">
+          <input type="hidden" id="checkout-payment-method" value="cash">
+
           <div class="form-group">
               <label>Wybierz sposób odbioru</label>
               <div class="delivery-methods">
-                  <div class="method-card active">
+                  <div class="method-card active" id="delivery-pickup">
                       <i class="fas fa-store method-icon"></i>
                       <div class="method-title">Odbiór osobisty</div>
                       <div class="method-sub">Za darmo</div>
@@ -365,6 +368,33 @@
                       <i class="fas fa-motorcycle method-icon"></i>
                       <div class="method-title">Dostawa</div>
                       <div class="method-sub">Chwilowo niedostępna</div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- SEKCJA WYBORU PŁATNOŚCI -->
+          <div class="form-group">
+              <label>Wybierz metodę płatności</label>
+              <div class="payment-methods">
+                  <div class="method-card active" onclick="selectPayment('cash')" id="pay-cash">
+                      <i class="fas fa-coins method-icon"></i>
+                      <div class="method-title">Gotówka</div>
+                      <div class="method-sub">Przy odbiorze</div>
+                  </div>
+                  <div class="method-card" onclick="selectPayment('card')" id="pay-card">
+                      <i class="fas fa-credit-card method-icon"></i>
+                      <div class="method-title">Karta</div>
+                      <div class="method-sub">Przy odbiorze</div>
+                  </div>
+                  <div class="method-card" onclick="selectPayment('online')" id="pay-online">
+                      <i class="fas fa-globe method-icon"></i>
+                      <div class="method-title">Online</div>
+                      <div class="method-sub">Przelewy24 / Blik</div>
+                  </div>
+                  <div class="method-card" onclick="selectPayment('prepaid')" id="pay-prepaid">
+                      <i class="fas fa-wallet method-icon"></i>
+                      <div class="method-title">Portfel MilkMi</div>
+                      <div class="method-sub">Tylko w lokalu</div>
                   </div>
               </div>
           </div>
@@ -504,7 +534,7 @@ function changeQuantity(id, delta) {
 }
 
 // ==========================================
-// ZARZĄDZANIE WIDOKAMI
+// ZARZĄDZANIE WIDOKAMI I METODAMI 
 // ==========================================
 const views = ['view-delivery-choice', 'view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout', 'view-order-status'];
 
@@ -514,6 +544,32 @@ function switchView(targetViewId) {
     });
     document.getElementById(targetViewId).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// WYBÓR STARTOWY METODY DOSTAWY
+function selectInitialDelivery(method) {
+    document.getElementById('checkout-delivery-method').value = method;
+    showMainCategories();
+}
+
+// WYBÓR METODY PŁATNOŚCI
+function selectPayment(method) {
+    const deliveryMethod = document.getElementById('checkout-delivery-method').value;
+    
+    // Logika blokady: Portfel Prepaid tylko dla odbioru osobistego
+    if (method === 'prepaid' && deliveryMethod !== 'pickup') {
+        showToast('Portfel Prepaid dostępny jest tylko przy odbiorze w lokalu.');
+        return;
+    }
+
+    // Aktualizacja wizualna
+    document.querySelectorAll('.payment-methods .method-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    document.getElementById(`pay-${method}`).classList.add('active');
+    
+    // Aktualizacja inputa
+    document.getElementById('checkout-payment-method').value = method;
 }
 
 // KATEGORIE
@@ -675,6 +731,8 @@ async function submitOrder(event) {
     const phone = document.getElementById('checkout-phone').value;
     const pickupTime = document.getElementById('pickup-time').value;
     const notes = document.getElementById('checkout-notes').value;
+    const deliveryMethod = document.getElementById('checkout-delivery-method').value;
+    const paymentMethod = document.getElementById('checkout-payment-method').value;
     
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 2;
 
@@ -682,6 +740,8 @@ async function submitOrder(event) {
         customerName: name, 
         customerPhone: phone, 
         pickupTime: pickupTime, 
+        deliveryMethod: deliveryMethod,
+        paymentMethod: paymentMethod,
         notes: notes, 
         items: cart, 
         totalAmount: totalAmount 
@@ -704,6 +764,10 @@ async function submitOrder(event) {
             cart = [];
             updateCartBadge();
             document.getElementById('checkoutForm').reset();
+            
+            // Przywróć domyślne płatności po resecie formularza
+            selectPayment('cash');
+            
             submitBtn.innerText = 'Złóż zamówienie z obowiązkiem zapłaty';
             submitBtn.disabled = false;
             
@@ -715,7 +779,8 @@ async function submitOrder(event) {
             submitBtn.disabled = false;
         }
     } catch (err) {
-        showToast("Błąd serwera.");
+        showToast("Błąd serwera. Sprawdź konsolę.");
+        console.error(err);
         submitBtn.innerText = 'Złóż zamówienie z obowiązkiem zapłaty';
         submitBtn.disabled = false;
     }
@@ -749,6 +814,15 @@ async function fetchAndRenderOrder(orderId) {
             
             const s = statusConfig[order.status] || statusConfig['pending'];
             
+            // Metody płatności - Tłumaczenie do paragonu
+            const paymentTranslation = {
+                'cash': 'Gotówka przy odbiorze',
+                'card': 'Karta przy odbiorze',
+                'online': 'Opłacone z góry (Online)',
+                'prepaid': 'Portfel Prepaid MilkMi'
+            };
+            const paymentText = paymentTranslation[order.paymentMethod] || 'Nieznana';
+            
             // Generowanie listy produktów
             let itemsHtml = '';
             order.items.forEach(i => {
@@ -771,7 +845,8 @@ async function fetchAndRenderOrder(orderId) {
                     <span style="color: var(--primary);">${order.totalAmount.toFixed(2)} zł</span>
                 </div>
                 <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-sub);">
-                    Odbiór zaplanowany na: <strong>${order.pickupTime}</strong>
+                    Odbiór zaplanowany na: <strong>${order.pickupTime}</strong><br>
+                    Metoda płatności: <strong>${paymentText}</strong>
                 </div>
             `;
             
@@ -814,7 +889,7 @@ async function fetchProductsFromDB() {
                 }
                 
                 menuData.items[prod.categoryId].push({
-                    id: prod._id, // MongoDB ID
+                    id: prod._id, 
                     name: prod.name,
                     desc: prod.description,
                     price: prod.price,
@@ -829,9 +904,7 @@ async function fetchProductsFromDB() {
 
 // Inicjalizacja przy załadowaniu strony
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Pobierz produkty z bazy MongoDB
     await fetchProductsFromDB();
-    // 2. Wyrenderuj główne kategorie
     renderCategories();
 });
 </script>
