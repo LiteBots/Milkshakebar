@@ -102,6 +102,65 @@
     }
     .back-btn:active { transform: scale(0.9); background: var(--border); }
 
+    /* --- EKRAN STARTOWY (WYBÓR DOSTAWY) --- */
+    #view-delivery-choice {
+      min-height: calc(100vh - 80px);
+      display: flex;
+      align-items: center;
+      padding: 24px;
+    }
+    .delivery-split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      min-height: 50vh; 
+    }
+    .delivery-split-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-l);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .delivery-split-card.active-choice {
+      border-color: var(--primary);
+      background: rgba(255, 102, 0, 0.05);
+      box-shadow: 0 10px 30px rgba(255, 102, 0, 0.1);
+    }
+    .delivery-split-card.active-choice:hover {
+      transform: translateY(-5px);
+    }
+    .delivery-split-card.disabled-choice {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--bg-body);
+    }
+    .delivery-split-icon {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+    .active-choice .delivery-split-icon {
+      color: var(--primary);
+    }
+    .delivery-split-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .delivery-split-desc {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
     /* Kategorie */
     .categories-list { display: flex; flex-direction: column; gap: 2px; padding: 0; }
     .category-card { position: relative; height: 30vh; min-height: 240px; overflow: hidden; cursor: pointer; background-color: var(--bg-surface); }
@@ -223,7 +282,7 @@
 
   <!-- Pasek górny -->
   <header class="app-header">
-    <div class="brand" onclick="showMainCategories()">MilkMi<span>.</span></div>
+    <div class="brand" onclick="switchView('view-delivery-choice')">MilkMi<span>.</span></div>
     <div class="header-actions">
       <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
       <button class="icon-btn" onclick="openCartView()">
@@ -233,8 +292,25 @@
     </div>
   </header>
 
+  <!-- WIDOK 0: Ekran powitalny (Wybór Dostawy) -->
+  <section id="view-delivery-choice" class="view-section active">
+      <div class="delivery-split-container">
+          <div class="delivery-split-card active-choice" onclick="showMainCategories()">
+              <i class="fas fa-store delivery-split-icon"></i>
+              <div class="delivery-split-title">Odbiór własny</div>
+              <div class="delivery-split-desc">Słupsk<br>ul. Szczecińska 17</div>
+          </div>
+          
+          <div class="delivery-split-card disabled-choice" onclick="showToast('Dostawa jest chwilowo niedostępna.')">
+              <i class="fas fa-motorcycle delivery-split-icon"></i>
+              <div class="delivery-split-title">Dostawa</div>
+              <div class="delivery-split-desc">Chwilowo<br>niedostępna</div>
+          </div>
+      </div>
+  </section>
+
   <!-- WIDOK 1: Główne Kategorie -->
-  <section id="view-categories" class="view-section active">
+  <section id="view-categories" class="view-section">
       <div class="section-title">Menu Główne</div>
       <div class="categories-list" id="categories-container"></div>
   </section>
@@ -430,7 +506,7 @@ function changeQuantity(id, delta) {
 // ==========================================
 // ZARZĄDZANIE WIDOKAMI
 // ==========================================
-const views = ['view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout', 'view-order-status'];
+const views = ['view-delivery-choice', 'view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout', 'view-order-status'];
 
 function switchView(targetViewId) {
     views.forEach(viewId => {
