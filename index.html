@@ -136,7 +136,7 @@
     .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 2px; background: var(--primary); transition: 0.3s; }
     .nav-links a:hover { color: var(--primary); }
     .nav-links a:hover::after { width: 100%; }
-    .header-actions { display: flex; gap: 16px; align-items: center; }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
 
     /* Dropdown Języka */
     .lang-selector { position: relative; }
@@ -156,7 +156,7 @@
       z-index: 2; 
       width: 100%; 
       max-width: 100%; 
-      padding-left: clamp(10px, 8vw, 120px); /* Przesunięcie tekstów do środka */
+      padding-left: clamp(10px, 8vw, 120px);
     }
     
     .hero-title, .section-title { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%; }
@@ -173,7 +173,7 @@
     
     .hero-image { 
       width: 100%; 
-      max-width: 460px; /* Zmniejszone ze starych 600px */
+      max-width: 460px; 
       height: auto; 
       border-radius: var(--radius-xl); 
       box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
@@ -242,12 +242,50 @@
     .footer-col ul li a:hover { color: var(--primary); padding-left: 5px; }
     .footer-bottom { border-top: 1px solid var(--border); padding-top: 32px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-sub); font-weight: 600; flex-wrap: wrap; gap: 16px; }
 
+    /* --- COOKIE BANNER --- */
+    .cookie-banner {
+      position: fixed;
+      bottom: -150px; /* Ukryty na start */
+      left: 0;
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+      z-index: 999999;
+      padding: 20px 24px;
+      transition: bottom 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-sizing: border-box;
+    }
+    .cookie-banner.show {
+      bottom: 0;
+    }
+    .cookie-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .cookie-text {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.95rem;
+      color: var(--text-sub);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .cookie-text i {
+      color: var(--primary);
+      font-size: 1.8rem;
+    }
+
     /* =====================================
        RESPONSYWNOŚĆ (MEDIA QUERIES)
        ===================================== */
     @media(max-width: 1024px) {
       .hero-grid { grid-template-columns: 1fr; }
-      /* Reset paddingu na telefonach, aby wyśrodkować ładnie zawartość */
       .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; padding-left: 0; }
       .hero-title { max-width: 100%; }
       .hero-desc { margin: 0 auto; max-width: 100%; }
@@ -275,8 +313,11 @@
       .brand { font-size: 1.3rem; }
       .header-actions { gap: 8px; }
       .lang-btn-ui { padding: 8px 10px; font-size: 0.8rem; }
-      .header-actions .btn-main { padding: 10px 14px; }
-      .header-actions .btn-main span[data-i18n="btn_login"] { display: none; }
+      
+      /* Ukrywamy teksty przycisków w headerze na mobile i zmniejszamy padding */
+      .header-actions .btn-main, .header-actions .btn-outline { padding: 10px 14px; }
+      .header-actions .btn-main span[data-i18n="btn_login"], 
+      .header-actions .btn-outline span[data-i18n="btn_order"] { display: none; }
 
       /* HERO */
       .hero { padding: 40px 0; min-height: auto; }
@@ -301,6 +342,11 @@
       .social-links { justify-content: center; margin-top: 16px; }
       .footer-desc { margin: 0 auto; }
       .footer-bottom { flex-direction: column; justify-content: center; text-align: center; gap: 12px; }
+      
+      /* COOKIES MOBILE */
+      .cookie-content { flex-direction: column; text-align: center; }
+      .cookie-text { flex-direction: column; gap: 12px; }
+      .cookie-banner button { width: 100%; }
     }
   </style>
 </head>
@@ -348,6 +394,11 @@
               <div class="lang-item" onclick="changeLanguage('es')">Español</div>
             </div>
           </div>
+
+          <!-- NOWY PRZYCISK ZAMÓW -->
+          <a href="zamów.html" class="btn-outline" style="padding: 10px 24px; font-size: 0.95rem; width: auto; background: var(--bg-surface-elevated);">
+            <i class="fas fa-shopping-bag"></i> <span data-i18n="btn_order">Zamów</span>
+          </a>
 
           <a href="app.html" class="btn-main" style="padding: 10px 24px; font-size: 0.95rem; width: auto;">
             <i class="fas fa-user"></i> <span data-i18n="btn_login">Zaloguj</span>
@@ -480,8 +531,8 @@
             <div class="form-group" style="margin-bottom: 32px;">
               <label data-i18n="form_zone">Preferowana Strefa</label>
               <select id="res-zone" class="form-control" required>
-                <option value="Sala główna" data-i18n="zone_main">Sala główna )</option>
-                <option value="Sala frontowa " data-i18n="zone_front">Sala frontowa </option>
+                <option value="Sala główna" data-i18n="zone_main">Sala główna</option>
+                <option value="Sala frontowa" data-i18n="zone_front">Sala frontowa</option>
                 <option value="Kącik dla dzieci" data-i18n="zone_kids">Kącik dla dzieci</option>
               </select>
             </div>
@@ -597,6 +648,17 @@
       </div>
     </footer>
 
+    <!-- COOKIE BANNER -->
+    <div id="cookie-banner" class="cookie-banner">
+      <div class="cookie-content">
+        <div class="cookie-text">
+          <i class="fas fa-cookie-bite"></i>
+          <span data-i18n="cookie_text">Używamy ciasteczek (cookies), aby zapewnić Ci najlepsze doświadczenia na naszej stronie oraz do celów analitycznych.</span>
+        </div>
+        <button id="accept-cookies" class="btn-main" style="padding: 12px 32px; font-size: 0.95rem;" data-i18n="cookie_btn">Akceptuję</button>
+      </div>
+    </div>
+
   <!-- KONIEC WRAPPERA -->
   </div>
 
@@ -619,7 +681,7 @@
 
     const translations = {
       pl: {
-        nav_app: "Aplikacja MilkMi", nav_menu: "Odkryj Menu", nav_res: "Rezerwacje", nav_loc: "Nasze Lokale", btn_login: "Zaloguj",
+        nav_app: "Aplikacja MilkMi", nav_menu: "Odkryj Menu", nav_res: "Rezerwacje", nav_loc: "Nasze Lokale", btn_login: "Zaloguj", btn_order: "Zamów",
         hero_badge: "✨ Odkryj letnie smaki", hero_title: "Sztuka idealnego <br><span class='text-gradient'>milkshake'a</span>.", hero_desc: "Zanurz się w świecie kremowej perfekcji. Tworzymy kompozycje, które pobudzą Twoje zmysły i wywołają uśmiech. Bez kompromisów.",
         hero_btn_app: "Przejdź do aplikacji", hero_btn_menu: "Sprawdź menu", stat_1: "Lokale", stat_2: "Smaków", stat_3: "Zadowolonych gości",
         app_title: "Poznaj system <span class='text-gradient'>MilkMi</span>", app_desc: "Aplikacja stworzona, by dawać więcej. Twój cyfrowy portfel, lojalność i wygoda na wyciągnięcie ręki.",
@@ -637,10 +699,11 @@
         footer_desc: "Jesteśmy marką, która redefiniuje pojęcie deserów. Wierzymy w najwyższą jakość składników i design, który cieszy oko.",
         foot_title_1: "Firma", foot_link_1_1: "O nas", foot_link_1_2: "Kariera", foot_link_1_3: "Nasze lokale", foot_link_1_4: "Menu",
         foot_title_2: "Pomoc & Wsparcie", foot_link_2_1: "Aplikacja MilkMi", foot_link_2_2: "FAQ - Pytania", foot_link_2_3: "Zgłoś problem", foot_link_2_4: "Rezerwacje (Regulamin)",
-        foot_title_3: "Informacje prawne", foot_link_3_1: "Polityka prywatności", foot_link_3_2: "Regulamin lokali", foot_link_3_3: "Regulamin aplikacji MilkMi", foot_link_3_4: "Zarządzaj Cookies"
+        foot_title_3: "Informacje prawne", foot_link_3_1: "Polityka prywatności", foot_link_3_2: "Regulamin lokali", foot_link_3_3: "Regulamin aplikacji MilkMi", foot_link_3_4: "Zarządzaj Cookies",
+        cookie_text: "Używamy ciasteczek (cookies), aby zapewnić Ci najlepsze doświadczenia na naszej stronie oraz do celów analitycznych.", cookie_btn: "Akceptuję"
       },
       en: {
-        nav_app: "MilkMi App", nav_menu: "Discover Menu", nav_res: "Reservations", nav_loc: "Our Locations", btn_login: "Log In",
+        nav_app: "MilkMi App", nav_menu: "Discover Menu", nav_res: "Reservations", nav_loc: "Our Locations", btn_login: "Log In", btn_order: "Order",
         hero_badge: "✨ Discover summer flavors", hero_title: "The art of the perfect <br><span class='text-gradient'>milkshake</span>.", hero_desc: "Immerse yourself in a world of creamy perfection. We create compositions that will awaken your senses and make you smile. No compromises.",
         hero_btn_app: "Go to app", hero_btn_menu: "Check menu", stat_1: "Locations", stat_2: "Flavors", stat_3: "Happy Guests",
         app_title: "Meet the <span class='text-gradient'>MilkMi</span> system", app_desc: "An app designed to give more. Your digital wallet, loyalty, and convenience at your fingertips.",
@@ -651,17 +714,18 @@
         btn_enter_app: "Open MilkMi Portal",
         res_title: "Book a <span class='text-gradient'>Table</span>", res_desc: "Secure the best spot for you and your loved ones. The form is connected to our system.",
         form_heading: "Reservation Details", form_name: "Full Name", form_phone: "Contact Phone", form_date: "Select Date and Time", form_guests: "Number of Guests", form_zone: "Preferred Zone",
-        zone_main: "Main Room (AC)", zone_front: "Front Room (City View)", zone_kids: "Kids Corner", form_btn: "Book ",
+        zone_main: "Main Room (AC)", zone_front: "Front Room (City View)", zone_kids: "Kids Corner", form_btn: "Book",
         loc_title: "Our <span class='text-gradient'>Locations</span>", loc_desc: "You will find us in two strategic points on the map of Pomerania. We are waiting for you!",
         badge_open: "Open", badge_season: "Seasonal", btn_hours: "Opening Hours",
         day_mon_thu: "Monday - Thursday", day_fri: "Friday", day_sat: "Saturday", day_sun: "Sunday", day_mon_sun: "Monday - Sunday",
         footer_desc: "We are a brand that redefines the concept of desserts. We believe in the highest quality ingredients and eye-pleasing design.",
         foot_title_1: "Company", foot_link_1_1: "About us", foot_link_1_2: "Careers", foot_link_1_3: "Our locations", foot_link_1_4: "Menu",
         foot_title_2: "Help & Support", foot_link_2_1: "MilkMi App", foot_link_2_2: "FAQ", foot_link_2_3: "Report an issue", foot_link_2_4: "Reservations (Terms)",
-        foot_title_3: "Legal Information", foot_link_3_1: "Privacy Policy", foot_link_3_2: "Premises Regulations", foot_link_3_3: "MilkMi App Terms", foot_link_3_4: "Manage Cookies"
+        foot_title_3: "Legal Information", foot_link_3_1: "Privacy Policy", foot_link_3_2: "Premises Regulations", foot_link_3_3: "MilkMi App Terms", foot_link_3_4: "Manage Cookies",
+        cookie_text: "We use cookies to ensure you get the best experience on our website and for analytical purposes.", cookie_btn: "Accept"
       },
       es: {
-        nav_app: "App MilkMi", nav_menu: "Descubrir Menú", nav_res: "Reservas", nav_loc: "Nuestros Locales", btn_login: "Entrar",
+        nav_app: "App MilkMi", nav_menu: "Descubrir Menú", nav_res: "Reservas", nav_loc: "Nuestros Locales", btn_login: "Entrar", btn_order: "Pedir",
         hero_badge: "✨ Descubre sabores de verano", hero_title: "El arte del <br><span class='text-gradient'>batido</span> perfecto.", hero_desc: "Sumérgete en un mundo de perfección cremosa. Creamos composiciones que despertarán tus sentidos y te harán sonreír. Sin compromisos.",
         hero_btn_app: "Ir a la aplicación", hero_btn_menu: "Ver menú", stat_1: "Locales", stat_2: "Sabores", stat_3: "Huéspedes Felices",
         app_title: "Conoce el sistema <span class='text-gradient'>MilkMi</span>", app_desc: "Una app diseñada para dar más. Tu cartera digital, lealtad y comodidad a tu alcance.",
@@ -679,7 +743,8 @@
         footer_desc: "Somos una marca que redefine el concepto de postres. Creemos en ingredientes de la más alta calidad y un diseño agradable a la vista.",
         foot_title_1: "Empresa", foot_link_1_1: "Sobre nosotros", foot_link_1_2: "Carreras", foot_link_1_3: "Nuestros locales", foot_link_1_4: "Menú",
         foot_title_2: "Ayuda y Soporte", foot_link_2_1: "App MilkMi", foot_link_2_2: "FAQ - Preguntas", foot_link_2_3: "Reportar un problema", foot_link_2_4: "Reservas (Términos)",
-        foot_title_3: "Información Legal", foot_link_3_1: "Política de privacidad", foot_link_3_2: "Normativa del local", foot_link_3_3: "Términos de la App", foot_link_3_4: "Gestionar Cookies"
+        foot_title_3: "Información Legal", foot_link_3_1: "Política de privacidad", foot_link_3_2: "Normativa del local", foot_link_3_3: "Términos de la App", foot_link_3_4: "Gestionar Cookies",
+        cookie_text: "Utilizamos cookies para asegurarnos de que obtenga la mejor experiencia en nuestro sitio web y para fines analíticos.", cookie_btn: "Aceptar"
       }
     };
 
@@ -785,6 +850,19 @@
       }, observerOptions);
 
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // --- LOGIKA COOKIES ---
+      const cookieBanner = document.getElementById('cookie-banner');
+      const acceptBtn = document.getElementById('accept-cookies');
+
+      if (!localStorage.getItem('milkshakebar_cookies_accepted')) {
+        setTimeout(() => { cookieBanner.classList.add('show'); }, 1500);
+      }
+
+      acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('milkshakebar_cookies_accepted', 'true');
+        cookieBanner.classList.remove('show');
+      });
     });
   </script>
 </body>
