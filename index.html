@@ -84,7 +84,7 @@
       margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
     }
 
-    .btn-main, .btn-outline {
+    .btn-main, .btn-outline, .btn-dark {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
       padding: 16px 32px; border-radius: 50px;
       font-weight: 700; font-size: 1.05rem; text-decoration: none; cursor: pointer;
@@ -94,6 +94,9 @@
     .btn-main { background: var(--gradient-brand); color: #fff; border: none; box-shadow: 0 10px 25px var(--primary-glow); }
     .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 35px var(--primary-glow); color: #fff; }
     
+    .btn-dark { background: var(--text-main); color: #fff; border: none; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
+    .btn-dark:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(15, 23, 42, 0.3); color: #fff; }
+
     .btn-outline { background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-3px); }
 
@@ -314,7 +317,6 @@
       .header-actions { gap: 8px; }
       .lang-btn-ui { padding: 8px 10px; font-size: 0.8rem; }
       
-      /* Ukrywamy teksty przycisków w headerze na mobile i zmniejszamy padding */
       .header-actions .btn-main, .header-actions .btn-outline { padding: 10px 14px; }
       .header-actions .btn-main span[data-i18n="btn_login"], 
       .header-actions .btn-outline span[data-i18n="btn_order"] { display: none; }
@@ -325,7 +327,7 @@
       .hero-desc { font-size: 0.95rem; }
       
       .hero-actions { flex-direction: column; width: 100%; gap: 12px; align-items: stretch; }
-      .hero-actions a.btn-main, .hero-actions a.btn-outline { width: 100%; justify-content: center; box-sizing: border-box; }
+      .hero-actions a.btn-main, .hero-actions a.btn-outline, .hero-actions a.btn-dark { width: 100%; justify-content: center; box-sizing: border-box; }
 
       .hero-stats { gap: 15px; padding-top: 24px; margin-top: 24px; }
       .stat-item h4 { font-size: 1.5rem; }
@@ -395,7 +397,7 @@
             </div>
           </div>
 
-          <!-- NOWY PRZYCISK ZAMÓW -->
+          <!-- PRZYCISK ZAMÓW - HEADER -->
           <a href="zamów.html" class="btn-outline" style="padding: 10px 24px; font-size: 0.95rem; width: auto; background: var(--bg-surface-elevated);">
             <i class="fas fa-shopping-bag"></i> <span data-i18n="btn_order">Zamów</span>
           </a>
@@ -417,6 +419,8 @@
           
           <div class="hero-actions">
             <a href="app.html" class="btn-main"><span data-i18n="hero_btn_app">Przejdź do aplikacji</span> <i class="fas fa-arrow-right"></i></a>
+            <!-- NOWY PRZYCISK ZAMÓW W HERO -->
+            <a href="zamów.html" class="btn-dark"><i class="fas fa-shopping-bag"></i> <span data-i18n="hero_btn_order">Zamów online</span></a>
             <a href="menu.html" class="btn-outline"><i class="fas fa-book-open"></i> <span data-i18n="hero_btn_menu">Sprawdź menu</span></a>
           </div>
 
@@ -683,7 +687,7 @@
       pl: {
         nav_app: "Aplikacja MilkMi", nav_menu: "Odkryj Menu", nav_res: "Rezerwacje", nav_loc: "Nasze Lokale", btn_login: "Zaloguj", btn_order: "Zamów",
         hero_badge: "✨ Odkryj letnie smaki", hero_title: "Sztuka idealnego <br><span class='text-gradient'>milkshake'a</span>.", hero_desc: "Zanurz się w świecie kremowej perfekcji. Tworzymy kompozycje, które pobudzą Twoje zmysły i wywołają uśmiech. Bez kompromisów.",
-        hero_btn_app: "Przejdź do aplikacji", hero_btn_menu: "Sprawdź menu", stat_1: "Lokale", stat_2: "Smaków", stat_3: "Zadowolonych gości",
+        hero_btn_app: "Przejdź do aplikacji", hero_btn_order: "Zamów online", hero_btn_menu: "Sprawdź menu", stat_1: "Lokale", stat_2: "Smaków", stat_3: "Zadowolonych gości",
         app_title: "Poznaj system <span class='text-gradient'>MilkMi</span>", app_desc: "Aplikacja stworzona, by dawać więcej. Twój cyfrowy portfel, lojalność i wygoda na wyciągnięcie ręki.",
         bento_1_title: "Wirtualny portfel vPLN", bento_1_desc: "Płać szybciej i bezpieczniej bez gotówki. Doładuj swoje konto w aplikacji i korzystaj ze specjalnych premii za doładowania. Twój telefon to Twój portfel.",
         bento_2_title: "Zbieraj Milkosy", bento_2_desc: "Każda wydana złotówka wraca do Ciebie w postaci punktów. Osiągaj rangi i zdobywaj darmowe produkty.",
@@ -705,7 +709,7 @@
       en: {
         nav_app: "MilkMi App", nav_menu: "Discover Menu", nav_res: "Reservations", nav_loc: "Our Locations", btn_login: "Log In", btn_order: "Order",
         hero_badge: "✨ Discover summer flavors", hero_title: "The art of the perfect <br><span class='text-gradient'>milkshake</span>.", hero_desc: "Immerse yourself in a world of creamy perfection. We create compositions that will awaken your senses and make you smile. No compromises.",
-        hero_btn_app: "Go to app", hero_btn_menu: "Check menu", stat_1: "Locations", stat_2: "Flavors", stat_3: "Happy Guests",
+        hero_btn_app: "Go to app", hero_btn_order: "Order online", hero_btn_menu: "Check menu", stat_1: "Locations", stat_2: "Flavors", stat_3: "Happy Guests",
         app_title: "Meet the <span class='text-gradient'>MilkMi</span> system", app_desc: "An app designed to give more. Your digital wallet, loyalty, and convenience at your fingertips.",
         bento_1_title: "Virtual vPLN Wallet", bento_1_desc: "Pay faster and safer without cash. Top up your account in the app and enjoy special top-up bonuses. Your phone is your wallet.",
         bento_2_title: "Collect Milkos", bento_2_desc: "Every zloty spent comes back to you as points. Achieve ranks and earn free products.",
@@ -727,7 +731,7 @@
       es: {
         nav_app: "App MilkMi", nav_menu: "Descubrir Menú", nav_res: "Reservas", nav_loc: "Nuestros Locales", btn_login: "Entrar", btn_order: "Pedir",
         hero_badge: "✨ Descubre sabores de verano", hero_title: "El arte del <br><span class='text-gradient'>batido</span> perfecto.", hero_desc: "Sumérgete en un mundo de perfección cremosa. Creamos composiciones que despertarán tus sentidos y te harán sonreír. Sin compromisos.",
-        hero_btn_app: "Ir a la aplicación", hero_btn_menu: "Ver menú", stat_1: "Locales", stat_2: "Sabores", stat_3: "Huéspedes Felices",
+        hero_btn_app: "Ir a la aplicación", hero_btn_order: "Pedir online", hero_btn_menu: "Ver menú", stat_1: "Locales", stat_2: "Sabores", stat_3: "Huéspedes Felices",
         app_title: "Conoce el sistema <span class='text-gradient'>MilkMi</span>", app_desc: "Una app diseñada para dar más. Tu cartera digital, lealtad y comodidad a tu alcance.",
         bento_1_title: "Cartera Virtual vPLN", bento_1_desc: "Paga más rápido y seguro sin efectivo. Recarga tu cuenta en la app y disfruta de bonos especiales. Tu teléfono es tu cartera.",
         bento_2_title: "Colecciona Milkos", bento_2_desc: "Cada zloty gastado vuelve a ti como puntos. Consigue rangos y gana productos gratis.",
