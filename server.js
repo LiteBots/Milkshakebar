@@ -35,7 +35,9 @@ const MONGO_URI = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://1
 console.log('🛠️ Aplikacja widzi ten adres bazy:', MONGO_URI);
 
 mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000, // Zamyka zawieszone połączenia
+  maxPoolSize: 50         // Utrzymuje do 50 otwartych połączeń dla lepszej wydajności
 })
   .then(() => {
     console.log('✅ Pomyślnie połączono z bazą MongoDB');
@@ -233,17 +235,21 @@ app.get('/api/admin/stats', async (req, res) => {
         const usersWithPoints = await User.countDocuments({ points: { $gte: 1 } });
         const activePrepaidCards = await User.countDocuments({ walletBalance: { $gte: 1 } });
 
-        // Sumowanie wszystkich środków w portfelach pre-paid
-        const balanceAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$walletBalance" } } }]);
-        const totalPrepaidBalance = balanceAgg.length > 0 ? balanceAgg[0].total : 0;
+        // OPTYMALIZACJA: Jedna agregacja zamiast trzech osobnych
+        const statsAgg = await User.aggregate([
+            { 
+                $group: { 
+                    _id: null, 
+                    totalPrepaidBalance: { $sum: "$walletBalance" },
+                    spentMilkosy: { $sum: "$redeemedPoints" },
+                    totalPointsCirculating: { $sum: "$points" }
+                } 
+            }
+        ]);
 
-        // Sumowanie wszystkich wydanych punktów na nagrody (w tym kupione bony)
-        const redeemedAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$redeemedPoints" } } }]);
-        const spentMilkosy = redeemedAgg.length > 0 ? redeemedAgg[0].total : 0;
-
-        // Sumowanie wszystkich aktualnie posiadanych punktów przez wszystkich użytkowników
-        const totalPointsAgg = await User.aggregate([{ $group: { _id: null, total: { $sum: "$points" } } }]);
-        const totalPointsCirculating = totalPointsAgg.length > 0 ? totalPointsAgg[0].total : 0;
+        const totalPrepaidBalance = statsAgg.length > 0 ? statsAgg[0].totalPrepaidBalance : 0;
+        const spentMilkosy = statsAgg.length > 0 ? statsAgg[0].spentMilkosy : 0;
+        const totalPointsCirculating = statsAgg.length > 0 ? statsAgg[0].totalPointsCirculating : 0;
 
         res.json({
             success: true,
