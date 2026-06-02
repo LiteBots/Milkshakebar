@@ -180,6 +180,8 @@
     .item-price { font-weight: 800; color: var(--primary); font-size: 0.95rem; }
     .item-add { background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
     .item-add:active { transform: scale(0.85); }
+    
+    .variant-select { width: 100%; padding: 6px; font-size: 0.8rem; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--primary); background: var(--bg-surface); color: var(--text-main); font-weight: 600; outline: none;}
 
     /* --- KOSZYK --- */
     .cart-container { padding: 0 24px; }
@@ -274,7 +276,6 @@
 
 <div class="app-container">
 
-  <!-- Kontener Nagłówka (musi zostać, bo ma logo, przełącznik nocny i koszyk) -->
   <div class="app-header-wrapper" id="main-header">
     <header class="app-header">
       <div class="brand" onclick="switchView('view-delivery-choice')">MilkMi<span>.</span></div>
@@ -288,7 +289,6 @@
     </header>
   </div>
 
-  <!-- WIDOK 0: Ekran powitalny (Wybór Dostawy) -->
   <section id="view-delivery-choice" class="view-section active">
       <div class="delivery-split-container">
           <div class="delivery-split-card active-choice" onclick="selectInitialDelivery('pickup')">
@@ -305,12 +305,10 @@
       </div>
   </section>
 
-  <!-- WIDOK 1: Główne Kategorie (Teraz zaczynają się od samej góry, usunięto napis Menu Główne) -->
   <section id="view-categories" class="view-section">
       <div class="categories-list" id="categories-container"></div>
   </section>
 
-  <!-- WIDOK 1.5: Podkategorie -->
   <section id="view-subcategories" class="view-section">
       <div class="menu-header">
           <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-arrow-left"></i></button>
@@ -319,7 +317,6 @@
       <div class="categories-list" id="subcategories-container"></div>
   </section>
 
-  <!-- WIDOK 2: Lista produktów -->
   <section id="view-items" class="view-section">
       <div class="menu-header">
           <button class="back-btn" id="items-back-btn"><i class="fas fa-arrow-left"></i></button>
@@ -328,18 +325,15 @@
       <div class="items-grid" id="items-container"></div>
   </section>
 
-  <!-- WIDOK 3: Koszyk -->
   <section id="view-cart" class="view-section">
       <div class="menu-header">
           <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-arrow-left"></i></button>
           <h2 style="font-size: 1.6rem; font-weight: 800;">Twój Koszyk</h2>
       </div>
       <div class="cart-container" id="cart-content">
-          <!-- Wygenerowane przez JS -->
-      </div>
+          </div>
   </section>
 
-  <!-- WIDOK 4: Kasa (Checkout) -->
   <section id="view-checkout" class="view-section">
       <div class="menu-header">
           <button class="back-btn" onclick="openCartView()"><i class="fas fa-arrow-left"></i></button>
@@ -416,7 +410,6 @@
       </form>
   </section>
 
-  <!-- WIDOK 5: Status Zamówienia (Paragon) -->
   <section id="view-order-status" class="view-section">
       <div class="menu-header">
           <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-home"></i></button>
@@ -430,7 +423,6 @@
       </div>
   </section>
 
-  <!-- PŁYWAJĄCY PRZYCISK ZAMÓWIENIA -->
   <div id="floating-checkout-btn" class="floating-checkout-btn" onclick="openCartView()">
     <div class="fcb-left">
       <div class="fcb-icon"><i class="fas fa-shopping-basket"></i></div>
@@ -512,6 +504,30 @@ function addToCart(event, id, name, price) {
     
     updateCartBadge();
     showToast(`Dodano: ${name}`);
+}
+
+function addVariantToCart(event, itemId, baseName) {
+    event.stopPropagation();
+    
+    const selectEl = document.getElementById(`variant-${itemId}`);
+    const selectedIndex = selectEl.value;
+
+    if (selectedIndex === "") {
+        return showToast('Musisz wybrać rozmiar przed dodaniem do koszyka!');
+    }
+
+    // Odnalezienie produktu i wariantu ze stanu globalnego
+    const categoryArray = Object.values(menuData.items).flat();
+    const product = categoryArray.find(p => p.id === itemId);
+    const variant = product.variants[selectedIndex];
+
+    // Zmieniamy ID i Nazwę, by traktować rozmiar jako unikalny przedmiot w koszyku
+    const uniqueCartId = `${itemId}-var-${selectedIndex}`;
+    const cartName = `${baseName} (${variant.name})`;
+
+    addToCart(event, uniqueCartId, cartName, variant.price);
+    
+    selectEl.value = ""; 
 }
 
 function updateCartBadge() {
@@ -733,6 +749,27 @@ function openItems(id, name, cameFromSubcategories) {
     } else {
 
         items.forEach(item => {
+            let priceOrSelectHtml = '';
+            let actionButtonHtml = '';
+
+            if (item.hasVariants && item.variants.length > 0) {
+                // Dropdown dla wielu rozmiarów
+                let options = '<option value="" disabled selected>Wybierz rozmiar</option>';
+                item.variants.forEach((v, index) => {
+                    options += `<option value="${index}">${v.name} - ${v.price.toFixed(2)} zł</option>`;
+                });
+                
+                priceOrSelectHtml = `
+                    <select id="variant-${item.id}" class="variant-select">
+                        ${options}
+                    </select>
+                `;
+                actionButtonHtml = `<button class="item-add" onclick="addVariantToCart(event, '${item.id}', '${item.name}')"><i class="fas fa-plus"></i></button>`;
+            } else {
+                // Standardowa pojedyncza cena
+                priceOrSelectHtml = `<div class="item-price">${(item.price || 0).toFixed(2)} zł</div>`;
+                actionButtonHtml = `<button class="item-add" onclick="addToCart(event, '${item.id}', '${item.name}', ${item.price})"><i class="fas fa-plus"></i></button>`;
+            }
 
             container.innerHTML += `
                 <div class="item-card">
@@ -744,13 +781,11 @@ function openItems(id, name, cameFromSubcategories) {
                         <div class="item-name">${item.name}</div>
                         <div class="item-desc">${item.desc}</div>
 
-                        <div class="item-bottom">
-                            <div class="item-price">${item.price.toFixed(2)} zł</div>
-
-                            <button class="item-add"
-                                onclick="addToCart(event, '${item.id}', '${item.name}', ${item.price})">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                        <div style="margin-top: auto;">
+                            ${priceOrSelectHtml}
+                            <div style="display: flex; justify-content: flex-end;">
+                                ${actionButtonHtml}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -864,7 +899,7 @@ function renderCart() {
 }
 
 // ==========================================
-// CHECKOUT
+// CHECKOUT & WYKONYWANIE ZAMÓWIENIA
 // ==========================================
 function openCheckoutView() {
 
@@ -885,6 +920,99 @@ function openCheckoutView() {
     switchView('view-checkout');
 }
 
+async function submitOrder(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('checkout-name').value;
+    const phone = document.getElementById('checkout-phone').value;
+    const time = document.getElementById('pickup-time').value;
+    const notes = document.getElementById('checkout-notes').value;
+    const deliveryMethod = document.getElementById('checkout-delivery-method').value;
+    const paymentMethod = document.getElementById('checkout-payment-method').value;
+
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 2;
+
+    const orderData = {
+        customerName: name,
+        customerPhone: phone,
+        pickupTime: time,
+        notes: notes,
+        deliveryMethod: deliveryMethod,
+        paymentMethod: paymentMethod,
+        items: cart,
+        totalAmount: totalPrice
+    };
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Przetwarzanie...';
+
+    try {
+        const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            cart = []; 
+            updateCartBadge();
+            renderReceipt(data.orderNumber, orderData);
+            switchView('view-order-status');
+        } else {
+            showToast('Błąd składania zamówienia.', 'error');
+        }
+    } catch(err) {
+        showToast('Błąd połączenia z serwerem.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Złóż zamówienie';
+    }
+}
+
+function renderReceipt(orderNum, orderData) {
+    const container = document.getElementById('receipt-container');
+    
+    let itemsHtml = '';
+    orderData.items.forEach(item => {
+        itemsHtml += `
+            <div class="receipt-item-row">
+                <span>${item.quantity}x ${item.name}</span>
+                <span>${(item.price * item.quantity).toFixed(2)} zł</span>
+            </div>
+        `;
+    });
+
+    container.innerHTML = `
+        <h3 style="color:var(--text-sub); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;">Numer zamówienia</h3>
+        <div class="receipt-num">${orderNum}</div>
+        
+        <div class="status-badge-lg status-pending">
+            <i class="fas fa-clock"></i> Oczekuje na akceptację
+        </div>
+        
+        <div class="receipt-items">
+            ${itemsHtml}
+            <div class="receipt-item-row" style="color:var(--text-sub); margin-top:10px;">
+                <span>Opakowania</span>
+                <span>2.00 zł</span>
+            </div>
+        </div>
+        
+        <div class="receipt-total">
+            <span>Do zapłaty:</span>
+            <span>${orderData.totalAmount.toFixed(2)} zł</span>
+        </div>
+        
+        <p style="margin-top:20px; font-size:0.85rem; color:var(--text-sub);">
+            Odbiór o: <strong>${orderData.pickupTime}</strong><br>
+            Metoda płatności: <strong>${orderData.paymentMethod.toUpperCase()}</strong>
+        </p>
+    `;
+}
+
 // ==========================================
 // UI
 // ==========================================
@@ -892,12 +1020,11 @@ function toggleTheme() {
     document.body.classList.toggle('dark-mode');
 }
 
-function showToast(msg) {
-
+function showToast(msg, type = 'info') {
     const t = document.getElementById('toast');
-
-    document.getElementById('toast-msg').innerText = msg;
-
+    const msgEl = document.getElementById('toast-msg');
+    
+    msgEl.innerText = msg;
     t.classList.add('visible');
 
     setTimeout(() => {
@@ -931,7 +1058,9 @@ async function fetchProductsFromDB() {
                     name: prod.name,
                     desc: prod.description,
                     price: prod.price,
-                    img: prod.imageUrl
+                    img: prod.imageUrl,
+                    hasVariants: prod.hasVariants,
+                    variants: prod.variants || []
                 });
             });
         }
@@ -945,11 +1074,8 @@ async function fetchProductsFromDB() {
 // START
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-
     await fetchProductsFromDB();
-
     renderCategories();
-
 });
 </script>
 </body>
