@@ -329,7 +329,6 @@
 </head>
 <body>
 
-  <!-- MODAL: ZMIANA LOKALIZACJI -->
   <div id="location-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999999; display: none; justify-content: center; align-items: center;">
     <div class="card" style="width: 90%; max-width: 400px; text-align: center; margin: 0; animation: fadeIn 0.3s ease;">
       <h2 style="margin-bottom: 10px; font-weight: 800;">Zmiana lokalizacji</h2>
@@ -343,14 +342,12 @@
     </div>
   </div>
 
-  <!-- MIGAWKA: REZERWACJA -->
   <div id="reservation-alarm">
     <h1>🚨 NOWA REZERWACJA! 🚨</h1>
     <p id="alarm-details">Ładowanie danych...</p>
     <button id="btn-accept-alarm" onclick="acceptReservationFromAlarm()">PRZYJMIJ REZERWACJĘ</button>
   </div>
 
-  <!-- MIGAWKA: ZAMÓWIENIE -->
   <div id="order-alarm" style="position: fixed; inset: 0; z-index: 9999999; display: none; flex-direction: column; justify-content: center; align-items: center; background-color: #EF4444; color: #FFFFFF; animation: flashOrderAlert 0.4s infinite; text-align: center; padding: 20px;">
     <h1 style="font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">🚨 NOWE ZAMÓWIENIE! 🚨</h1>
     <p id="order-alarm-details" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 40px;">Ładowanie danych...</p>
@@ -378,7 +375,6 @@
       <button id="close-menu-btn" class="btn btn-outline" style="display:none; padding:5px 10px;" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
     </div>
 
-    <!-- PRZYCISK ZMIANY LOKALIZACJI -->
     <div style="margin-bottom: 25px; padding: 0 10px;">
       <button id="location-switch-btn" class="btn btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; border-color: var(--primary); color: var(--primary);" onclick="promptLocationSwitch()">
         <i class="fas fa-map-marker-alt"></i> Przełącz na Rowy
@@ -674,7 +670,6 @@
       </div>
     </section>
 
-    <!-- ZAKŁADKA ZAMÓWIEŃ -->
     <section id="view-orders" class="view-section">
       <div class="stats-grid" style="margin-bottom:20px;">
         <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-new">0</div><div class="stat-label">Oczekujących</div></div>
@@ -712,7 +707,6 @@
       </div>
     </section>
 
-    <!-- ZAKŁADKA: BANER APP -->
     <section id="view-app-bar" class="view-section slupsk-only">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Baner w Aplikacji</div>
@@ -748,7 +742,6 @@
       </div>
     </section>
 
-    <!-- ZAKŁADKA: BANER WEB -->
     <section id="view-web-bar" class="view-section">
       <div class="card" style="max-width: 600px;">
         <div class="section-header">Pasek na stronie WWW</div>
@@ -784,7 +777,6 @@
       </div>
     </section>
 
-    <!-- ZAKŁADKA: GODZINY OTWARCIA -->
     <section id="view-hours" class="view-section">
       <div class="card" style="max-width: 650px;">
         <div class="section-header">Godziny otwarcia lokalu</div>
@@ -885,12 +877,35 @@
               <label>Nazwa produktu</label>
               <input type="text" id="prod-name" class="form-control" required placeholder="np. Shake Oreo">
             </div>
-            <div class="form-group">
+            <div class="form-group" id="regular-price-group">
               <label>Cena (PLN)</label>
-              <input type="number" step="0.01" id="prod-price" class="form-control" required placeholder="np. 19.99">
+              <input type="number" step="0.01" id="prod-price" class="form-control" placeholder="np. 19.99">
             </div>
           </div>
           
+          <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m);">
+            <label class="toggle-switch" style="margin: 0;">
+              <input type="checkbox" id="prod-has-variants" onchange="toggleVariantUI()">
+              <span class="slider"></span>
+            </label>
+            <strong>Produkt posiada różne wielkości/rozmiary</strong>
+          </div>
+
+          <div id="variants-container" style="display: none; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; padding-left: 15px; border-left: 3px solid var(--primary);">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+              <input type="text" id="var-name-1" class="form-control" placeholder="Nazwa (np. Mały)">
+              <input type="number" step="0.01" id="var-price-1" class="form-control" placeholder="Cena">
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+              <input type="text" id="var-name-2" class="form-control" placeholder="Nazwa (np. Średni)">
+              <input type="number" step="0.01" id="var-price-2" class="form-control" placeholder="Cena">
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+              <input type="text" id="var-name-3" class="form-control" placeholder="Nazwa (np. Duży)">
+              <input type="number" step="0.01" id="var-price-3" class="form-control" placeholder="Cena">
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Kategoria docelowa</label>
             <select id="prod-category" class="form-control" required>
@@ -951,7 +966,7 @@
                 <th>Miniatura</th>
                 <th>Nazwa</th>
                 <th>ID Kategorii</th>
-                <th>Cena</th>
+                <th>Cena / Rozmiary</th>
                 <th>Akcja</th>
               </tr>
             </thead>
@@ -2177,6 +2192,14 @@
     let allProducts = [];
     let editingProductId = null;
 
+    // Przełączanie widoczności logiki z wariantami
+    function toggleVariantUI() {
+      const hasVariants = document.getElementById('prod-has-variants').checked;
+      document.getElementById('variants-container').style.display = hasVariants ? 'grid' : 'none';
+      document.getElementById('regular-price-group').style.display = hasVariants ? 'none' : 'block';
+      document.getElementById('prod-price').required = !hasVariants;
+    }
+
     async function loadMenuProducts() {
       const tbody = document.getElementById('menu-products-body');
       try {
@@ -2192,12 +2215,22 @@
           }
           
           json.data.forEach(prod => {
+            let priceDisplay = '';
+            
+            // Formatowanie wyświetlania ceny, jeśli są warianty
+            if (prod.hasVariants && prod.variants && prod.variants.length > 0) {
+                const minPrice = Math.min(...prod.variants.map(v => v.price));
+                priceDisplay = `<strong style="color:var(--primary);">od ${minPrice.toFixed(2)} PLN</strong><br><small style="color:var(--text-sub); font-size:0.75rem;">(${prod.variants.length} warianty)</small>`;
+            } else {
+                priceDisplay = `<strong style="color:var(--primary);">${(prod.price || 0).toFixed(2)} PLN</strong>`;
+            }
+
             tbody.innerHTML += `
               <tr>
                 <td><img src="${prod.imageUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;"></td>
                 <td><strong>${prod.name}</strong><br><small style="color:var(--text-sub);">${prod.description}</small></td>
                 <td><span class="badge blue">${prod.categoryId}</span></td>
-                <td><strong style="color:var(--primary);">${prod.price.toFixed(2)} PLN</strong></td>
+                <td>${priceDisplay}</td>
                 <td>
                   <button class="btn btn-sm" style="background:var(--status-warn); color:white; width:auto; margin-right:5px;" onclick="startEditProduct('${prod._id}')">
                     <i class="fas fa-pen"></i>
@@ -2221,10 +2254,32 @@
 
       editingProductId = id;
       document.getElementById('prod-name').value = prod.name;
-      document.getElementById('prod-price').value = prod.price;
       document.getElementById('prod-category').value = prod.categoryId;
       document.getElementById('prod-desc').value = prod.description || '';
       document.getElementById('prod-img').value = prod.imageUrl;
+
+      const hasVariants = prod.hasVariants || false;
+      document.getElementById('prod-has-variants').checked = hasVariants;
+      toggleVariantUI();
+
+      if (hasVariants) {
+         document.getElementById('prod-price').value = '';
+         for(let i=1; i<=3; i++) {
+            if (prod.variants && prod.variants[i-1]) {
+               document.getElementById(`var-name-${i}`).value = prod.variants[i-1].name;
+               document.getElementById(`var-price-${i}`).value = prod.variants[i-1].price;
+            } else {
+               document.getElementById(`var-name-${i}`).value = '';
+               document.getElementById(`var-price-${i}`).value = '';
+            }
+         }
+      } else {
+         document.getElementById('prod-price').value = prod.price || '';
+         for(let i=1; i<=3; i++) {
+            document.getElementById(`var-name-${i}`).value = '';
+            document.getElementById(`var-price-${i}`).value = '';
+         }
+      }
 
       document.getElementById('product-form-header').innerText = 'Edytuj pozycję w Menu';
       document.getElementById('product-submit-btn').innerHTML = '<i class="fas fa-save"></i> Zapisz zmiany';
@@ -2236,6 +2291,15 @@
     function cancelEdit() {
       editingProductId = null;
       document.getElementById('add-product-form').reset();
+      
+      // Reset wariantów
+      document.getElementById('prod-has-variants').checked = false;
+      toggleVariantUI();
+      for(let i=1; i<=3; i++) {
+          document.getElementById(`var-name-${i}`).value = '';
+          document.getElementById(`var-price-${i}`).value = '';
+      }
+
       document.getElementById('product-form-header').innerText = 'Dodaj nowy produkt do Menu';
       document.getElementById('product-submit-btn').innerHTML = '<i class="fas fa-plus"></i> Dodaj do menu';
       document.getElementById('product-cancel-btn').style.display = 'none';
@@ -2244,13 +2308,32 @@
     async function handleProductSubmit(e) {
       e.preventDefault();
       
+      const hasVariants = document.getElementById('prod-has-variants').checked;
+      let variants = [];
+      
+      if (hasVariants) {
+        for(let i=1; i<=3; i++) {
+          const vName = document.getElementById(`var-name-${i}`).value;
+          const vPrice = document.getElementById(`var-price-${i}`).value;
+          if (vName && vPrice) {
+            variants.push({ name: vName, price: parseFloat(vPrice) });
+          }
+        }
+        if (variants.length === 0) {
+            showToast('Dodaj co najmniej jeden wariant!', 'error');
+            return;
+        }
+      }
+
       const payload = {
         name: document.getElementById('prod-name').value,
-        price: document.getElementById('prod-price').value,
+        price: hasVariants ? null : parseFloat(document.getElementById('prod-price').value),
         categoryId: document.getElementById('prod-category').value,
         description: document.getElementById('prod-desc').value,
         imageUrl: document.getElementById('prod-img').value,
-        location: currentLocation // dodane przesyłanie lokacji
+        location: currentLocation,
+        hasVariants: hasVariants,
+        variants: variants
       };
 
       const url = editingProductId ? `/api/admin/menu/${editingProductId}` : '/api/admin/menu';
