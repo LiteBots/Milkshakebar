@@ -180,9 +180,17 @@ const Banner = mongoose.model('Banner', bannerSchema);
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, default: '' },
-  price: { type: Number, required: true },
+  price: { type: Number }, // Usunięto required: true dla kompatybilności z wariantami
   imageUrl: { type: String, required: true },
   categoryId: { type: String, required: true }, // Np. 'shakes_klasyczne', 'burgery'
+  
+  // NOWE POLA: Warianty wielkości
+  hasVariants: { type: Boolean, default: false },
+  variants: [{
+    name: { type: String },
+    price: { type: Number }
+  }],
+
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -678,13 +686,18 @@ app.get('/api/menu', async (req, res) => {
 // DODAWANIE NOWEGO PRODUKTU (Tylko Admin)
 app.post('/api/admin/menu', async (req, res) => {
   try {
-    const { name, description, price, imageUrl, categoryId } = req.body;
+    // Dodano hasVariants oraz variants
+    const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
     
-    if (!name || !price || !imageUrl || !categoryId) {
+    if (!name || !imageUrl || !categoryId) {
       return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
     }
 
-    const newProduct = new Product({ name, description, price, imageUrl, categoryId });
+    if (!hasVariants && (price === undefined || price === null || price === '')) {
+      return res.status(400).json({ success: false, message: 'Wypełnij cenę dla produktu bez wariantów.' });
+    }
+
+    const newProduct = new Product({ name, description, price, imageUrl, categoryId, hasVariants, variants });
     await newProduct.save();
     
     res.json({ success: true, product: newProduct, message: 'Produkt dodany do menu!' });
@@ -696,15 +709,20 @@ app.post('/api/admin/menu', async (req, res) => {
 // AKTUALIZACJA PRODUKTU (EDYTKOWANIE - Tylko Admin)
 app.put('/api/admin/menu/:id', async (req, res) => {
   try {
-    const { name, description, price, imageUrl, categoryId } = req.body;
+    // Dodano hasVariants oraz variants
+    const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
     
-    if (!name || !price || !imageUrl || !categoryId) {
+    if (!name || !imageUrl || !categoryId) {
       return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
+    }
+
+    if (!hasVariants && (price === undefined || price === null || price === '')) {
+      return res.status(400).json({ success: false, message: 'Wypełnij cenę dla produktu bez wariantów.' });
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, description, price, imageUrl, categoryId },
+      { name, description, price, imageUrl, categoryId, hasVariants, variants },
       { new: true } // Zwraca zaktualizowany dokument
     );
     
