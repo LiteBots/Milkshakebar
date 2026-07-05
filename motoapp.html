@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MotoCore OS - Premium PWA</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons (Nowoczesne, ostre ikony idealne dla UI premium) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mc-bg': '#030305',        // OLED Black
+                        'mc-panel': '#0c0c10',     // Dark Titanium
+                        'mc-panel-light': '#14141a',
+                        'mc-red': '#FA0026',       // Ducati/Racing Red
+                        'mc-red-glow': 'rgba(250, 0, 38, 0.4)',
+                        'mc-text': '#e2e2e5',
+                        'mc-muted': '#6b6b75'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'glow-red': '0 0 30px -5px rgba(250, 0, 38, 0.5)',
+                        'glow-panel': '0 10px 40px -10px rgba(0, 0, 0, 0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --safe-bottom: env(safe-area-inset-bottom, 24px);
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden; /* Prevent body scroll, handle inside app container */
+            overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glass-panel {
+            background: rgba(12, 12, 16, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .screen-transition {
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .screen-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+        }
+        
+        .screen-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Lean Angle Visualizer Animation */
+        #lean-indicator {
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Animated Grid Background */
+        .bg-grid-cyber {
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px; width: 20px;
+            border-radius: 50%;
+            background: #FA0026;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 15px #FA0026;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            cursor: pointer;
+            background: #2a2a35;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="flex justify-center h-[100dvh] w-full bg-black font-sans antialiased text-mc-text selection:bg-mc-red/30">
+
+    <div class="w-full max-w-[430px] h-[100dvh] bg-mc-bg relative flex flex-col overflow-hidden shadow-2xl border-x border-white/[0.02]">
+        
+        <!-- Fake Status Bar -->
+        <div class="h-12 w-full flex justify-between items-center px-6 z-50 pointer-events-none">
+            <span class="text-[13px] font-bold text-white tracking-wide" id="clock">12:00</span>
+            <div class="flex gap-1.5 items-center text-white">
+                <i class="ph-fill ph-cell-signal-full text-sm"></i>
+                <i class="ph-fill ph-wifi-high text-sm"></i>
+                <i class="ph-fill ph-battery-full text-lg"></i>
+            </div>
+        </div>
+
+        <main class="flex-1 overflow-y-auto hide-scrollbar relative z-10 px-5 pb-32 pt-2" id="main-content">
+            
+            <!-- ========================================== -->
+            <!-- 1. HUB SCREEN (EKRAN STARTOWY)             -->
+            <!-- ========================================== -->
+            <div id="screen-hub" class="screen-transition screen-active">
+                <header class="flex justify-between items-center mb-6">
+                    <div>
+                        <p class="text-[10px] font-bold text-mc-red uppercase tracking-widest mb-1 flex items-center gap-1">
+                            <i class="ph-fill ph-bluetooth"></i> V4 Pikes Peak
+                        </p>
+                        <h1 class="text-3xl font-black tracking-tighter text-white">Witaj, Alex</h1>
+                    </div>
+                    <div class="w-12 h-12 rounded-full glass-panel flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="w-full h-full rounded-full opacity-80">
+                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-mc-red rounded-full border-[3px] border-mc-bg flex items-center justify-center">
+                            <span class="text-[8px] font-bold">2</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Główny Kafel - AI Planer -->
+                <div onclick="switchScreen('nav')" class="relative w-full rounded-[32px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform shadow-glow-panel group mb-4 border border-white/10 h-64">
+                    <!-- Tło fotorealistyczne -->
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-700"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-mc-bg via-mc-bg/60 to-transparent"></div>
+                    
+                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                        <div class="flex justify-between items-start">
+                            <div class="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2">
+                                <i class="ph-fill ph-sparkle text-mc-red text-sm"></i>
+                                <span class="text-[10px] font-bold text-white uppercase tracking-widest">AI Route Generator</span>
+                            </div>
+                            <!-- Przycisk Start (Glove friendly) -->
+                            <div class="w-14 h-14 bg-mc-red rounded-[20px] flex items-center justify-center shadow-glow-red hover:bg-[#ff1a3d] transition-colors">
+                                <i class="ph-fill ph-play text-white text-2xl ml-1"></i>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-3xl font-black text-white leading-tight mb-2 tracking-tighter">Pętla<br>Bieszczadzka</h2>
+                            <div class="flex gap-4">
+                                <span class="text-xs font-bold text-mc-text flex items-center gap-1.5 glass-panel px-3 py-1 rounded-lg"><i class="ph-bold ph-path text-mc-red"></i> 284 km</span>
+                                <span class="text-xs font-bold text-mc-text flex items-center gap-1.5 glass-panel px-3 py-1 rounded-lg"><i class="ph-bold ph-trend-up text-orange-500"></i> Hard</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Grid (Data Live) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Pogoda & Radar -->
+                    <div class="glass-panel rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between h-36">
+                        <div class="absolute -right-4 -top-4 opacity-10">
+                            <i class="ph-fill ph-cloud-rain text-8xl"></i>
+                        </div>
+                        <div class="flex justify-between items-center z-10">
+                            <span class="text-[10px] font-bold text-mc-muted uppercase tracking-widest">Warunki</span>
+                            <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_#3b82f6]"></div>
+                        </div>
+                        <div class="z-10">
+                            <span class="text-4xl font-light text-white block tracking-tighter">18°</span>
+                            <span class="text-[10px] text-blue-400 font-bold uppercase mt-1 block flex items-center gap-1">
+                                <i class="ph-bold ph-drop"></i> Asfalt: Dobre
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- TPMS Telemetry -->
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between h-36">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-mc-muted uppercase tracking-widest">TPMS Live</span>
+                            <i class="ph-bold ph-radio-waves text-mc-red text-lg"></i>
+                        </div>
+                        <div class="flex justify-between items-end relative">
+                            <!-- Motorbike Top View Mockup -->
+                            <div class="absolute inset-0 flex justify-center items-center opacity-20 pointer-events-none">
+                                <div class="w-2 h-16 border border-white rounded-full"></div>
+                            </div>
+                            
+                            <div class="text-center z-10">
+                                <span class="block text-[9px] text-mc-muted uppercase font-bold mb-1">Przód</span>
+                                <span class="font-mono text-xl font-bold text-white">2.5<span class="text-[10px] ml-0.5 text-mc-muted">b</span></span>
+                            </div>
+                            <div class="text-center z-10">
+                                <span class="block text-[9px] text-mc-muted uppercase font-bold mb-1">Tył</span>
+                                <span class="font-mono text-xl font-bold text-white">2.9<span class="text-[10px] ml-0.5 text-mc-muted">b</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Garaż Quick View -->
+                    <div class="col-span-2 glass-panel rounded-3xl p-1 relative overflow-hidden group border-white/5 cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-r from-mc-panel to-transparent z-10 pointer-events-none"></div>
+                        <div class="h-24 w-full relative rounded-[28px] overflow-hidden">
+                             <img src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover mix-blend-lighten opacity-50 grayscale group-hover:grayscale-0 transition-all duration-500">
+                             <div class="absolute inset-0 flex items-center px-5 z-20">
+                                <div>
+                                    <h3 class="text-xl font-black text-white">Panigale V4 S</h3>
+                                    <p class="text-xs font-bold text-mc-red uppercase tracking-widest mt-1">Status: Gotowy do jazdy</p>
+                                </div>
+                             </div>
+                             <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+                                 <i class="ph-bold ph-caret-right text-white/50 text-xl"></i>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-nav" class="screen-hidden">
+                
+                <!-- Widok Planera (Zanim włączymy jazdę) -->
+                <div id="planner-view" class="block">
+                    <header class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-black tracking-tighter text-white">Trasa</h1>
+                        <button class="glass-panel px-4 py-2 rounded-xl text-xs font-bold text-mc-text flex items-center gap-2 border-white/10 active:bg-white/10">
+                            <i class="ph-bold ph-map-trifold"></i> Mapy Offline
+                        </button>
+                    </header>
+
+                    <div class="glass-panel rounded-[32px] p-6 mb-6">
+                        <h3 class="text-[10px] font-bold text-mc-red uppercase tracking-widest mb-6">Współczynniki AI</h3>
+                        
+                        <!-- Sliders -->
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-mc-text mb-2">
+                                    <span>Krętość (Curviness)</span> <span class="text-mc-red">Max</span>
+                                </div>
+                                <input type="range" min="1" max="100" value="90">
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-mc-text mb-2">
+                                    <span>Przewyższenia</span> <span class="text-white">Alpejskie</span>
+                                </div>
+                                <input type="range" min="1" max="100" value="75">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-mc-text mb-2">
+                                    <span>Jakość Asfaltu</span> <span class="text-white">Tylko Premium</span>
+                                </div>
+                                <input type="range" min="1" max="100" value="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mb-3 px-2">Unikaj</h3>
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <button class="glass-panel py-4 rounded-2xl border-mc-red/50 bg-mc-red/10 text-mc-red font-bold text-xs flex items-center justify-center gap-2">
+                            <i class="ph-fill ph-x-circle"></i> Autostrad
+                        </button>
+                        <button class="glass-panel py-4 rounded-2xl border-white/5 text-mc-muted font-bold text-xs flex items-center justify-center gap-2 active:bg-white/5">
+                            <i class="ph-regular ph-circle"></i> Miast
+                        </button>
+                        <button class="glass-panel py-4 rounded-2xl border-mc-red/50 bg-mc-red/10 text-mc-red font-bold text-xs flex items-center justify-center gap-2">
+                            <i class="ph-fill ph-x-circle"></i> Szutru
+                        </button>
+                        <button class="glass-panel py-4 rounded-2xl border-white/5 text-mc-muted font-bold text-xs flex items-center justify-center gap-2 active:bg-white/5">
+                            <i class="ph-regular ph-circle"></i> Promów
+                        </button>
+                    </div>
+
+                    <button onclick="toggleRideMode(true)" class="w-full py-6 bg-mc-red rounded-[28px] font-black text-xl text-white shadow-glow-red hover:bg-[#ff1a3d] transition-all active:scale-95 flex items-center justify-center gap-3">
+                        <i class="ph-fill ph-crosshair text-2xl"></i> ROZPOCZNIJ JAZDĘ
+                    </button>
+                </div>
+
+                <!-- Widok HUD (W Trakcie Jazdy) - Absolutny pełny ekran wewnątrz kontenera -->
+                <div id="hud-view" class="hidden absolute inset-0 bg-mc-bg z-50 flex flex-col justify-between bg-grid-cyber pt-10 pb-6 px-4">
+                    <!-- Mapa 3D Symulacja (Tło) -->
+                    <div class="absolute bottom-0 left-0 w-full h-[60%] perspective-[1000px] pointer-events-none -z-10">
+                        <div class="w-full h-full bg-gradient-to-t from-mc-red/20 to-transparent blur-3xl opacity-50"></div>
+                        <svg class="absolute bottom-0 w-full h-full transform rotateX-60" preserveAspectRatio="none">
+                            <path d="M 50% 100% C 50% 50%, 30% 40%, 70% 0%" stroke="#FA0026" stroke-width="8" fill="none" class="drop-shadow-[0_0_15px_#FA0026]"/>
+                        </svg>
+                    </div>
+
+                    <!-- Top Bar HUD -->
+                    <div class="flex justify-between items-start">
+                        <div class="glass-panel rounded-3xl p-4 text-center border-white/10 shadow-glow-panel min-w-[120px]">
+                            <i class="ph-bold ph-arrow-u-up-right text-white text-4xl mb-1 drop-shadow-[0_0_10px_#fff]"></i>
+                            <div class="text-3xl font-black text-white">450<span class="text-sm font-bold text-mc-muted">m</span></div>
+                        </div>
+                        
+                        <div class="glass-panel rounded-2xl px-5 py-3 text-right">
+                            <div class="text-[10px] font-bold text-mc-muted uppercase">ETA</div>
+                            <div class="text-xl font-mono text-white font-bold">16:45</div>
+                        </div>
+                    </div>
+
+                    <!-- Główny Zegar (Prędkość & Telemetria) -->
+                    <div class="w-full flex flex-col items-center justify-center mt-10">
+                        
+                        <!-- Wskaźnik Biegu -->
+                        <div class="text-center mb-4">
+                            <span class="text-[10px] font-bold text-mc-red uppercase tracking-widest">Bieg</span>
+                            <div class="text-5xl font-black text-white font-mono leading-none">4</div>
+                        </div>
+
+                        <!-- Prędkościomierz Cyfrowy -->
+                        <div class="relative flex items-center justify-center">
+                            <span id="hud-speed" class="text-[8rem] font-black text-white leading-none tracking-tighter font-mono" style="text-shadow: 0 0 40px rgba(255,255,255,0.3);">
+                                124
+                            </span>
+                            <span class="absolute -right-8 bottom-4 text-sm font-bold text-mc-muted uppercase rotate-90 origin-left">km/h</span>
+                        </div>
+
+                        <!-- Pochylenie (Lean Angle) -->
+                        <div class="mt-8 relative w-48 h-24 flex justify-center items-end border-b border-white/20 pb-2">
+                            <div class="absolute top-0 text-[10px] font-bold text-mc-muted uppercase tracking-widest">Pochylenie</div>
+                            
+                            <!-- Motocykl IKONA animowana -->
+                            <div id="lean-indicator" class="relative">
+                                <i class="ph-fill ph-motorcycle text-white text-5xl origin-bottom"></i>
+                            </div>
+                            
+                            <div class="absolute bottom-2 left-0 text-xl font-mono text-white font-bold" id="lean-left">0°</div>
+                            <div class="absolute bottom-2 right-0 text-xl font-mono text-white font-bold" id="lean-right">0°</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Bottom -->
+                    <div class="flex justify-center gap-6 mt-auto">
+                        <button class="w-16 h-16 rounded-full glass-panel flex items-center justify-center text-white active:bg-white/10">
+                            <i class="ph-bold ph-microphone-stage text-2xl"></i>
+                        </button>
+                        <button onclick="toggleRideMode(false)" class="w-16 h-16 rounded-full bg-mc-red flex items-center justify-center text-white shadow-glow-red hover:bg-[#ff1a3d] active:scale-95 transition-transform">
+                            <i class="ph-fill ph-stop text-2xl"></i>
+                        </button>
+                        <button class="w-16 h-16 rounded-full glass-panel flex items-center justify-center text-white active:bg-white/10">
+                            <i class="ph-bold ph-video-camera text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-social" class="screen-hidden">
+                <header class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-black tracking-tighter text-white">Społeczność</h1>
+                    <button class="glass-panel w-10 h-10 rounded-full flex items-center justify-center text-white">
+                        <i class="ph-bold ph-magnifying-glass"></i>
+                    </button>
+                </header>
+
+                <!-- Sub-nav -->
+                <div class="flex gap-4 mb-6 border-b border-white/10 pb-2">
+                    <span class="text-mc-red font-bold text-sm uppercase tracking-widest border-b-2 border-mc-red pb-2">Feed</span>
+                    <span class="text-mc-muted font-bold text-sm uppercase tracking-widest pb-2">Rankingi</span>
+                    <span class="text-mc-muted font-bold text-sm uppercase tracking-widest pb-2">Kluby</span>
+                </div>
+
+                <!-- Radar Live (Kto jeździ) -->
+                <div class="mb-8">
+                    <h3 class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        W Trasie (Live Radar)
+                    </h3>
+                    <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+                        <!-- Generowane via JS, tutaj mocki w HTML -->
+                        <div class="flex flex-col items-center gap-2 min-w-[60px]">
+                            <div class="w-14 h-14 rounded-full border-2 border-green-500 p-0.5 relative">
+                                <img src="https://i.pravatar.cc/150?img=33" class="w-full h-full rounded-full object-cover">
+                                <div class="absolute -bottom-1 -right-1 glass-panel p-1 rounded-full text-[8px] font-bold">12km</div>
+                            </div>
+                            <span class="text-[10px] font-bold text-white">Marek</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 min-w-[60px]">
+                            <div class="w-14 h-14 rounded-full border-2 border-green-500 p-0.5 relative">
+                                <img src="https://i.pravatar.cc/150?img=47" class="w-full h-full rounded-full object-cover">
+                            </div>
+                            <span class="text-[10px] font-bold text-white">Tomek</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 min-w-[60px]">
+                            <div class="w-14 h-14 rounded-full border-2 border-white/20 p-0.5 opacity-50">
+                                <img src="https://i.pravatar.cc/150?img=12" class="w-full h-full rounded-full object-cover">
+                            </div>
+                            <span class="text-[10px] font-bold text-mc-muted">Anna</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Posty (Feed) -->
+                <div class="space-y-6" id="social-feed-container">
+                    <!-- Post 1 -->
+                    <div class="glass-panel rounded-[24px] p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <img src="https://i.pravatar.cc/150?img=53" class="w-10 h-10 rounded-full">
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Adam Kowalski</h4>
+                                    <p class="text-[10px] text-mc-muted font-bold uppercase tracking-widest">Wczoraj, 14:30 • R1250GS</p>
+                                </div>
+                            </div>
+                            <i class="ph-bold ph-dots-three text-mc-muted text-xl"></i>
+                        </div>
+                        <p class="text-sm text-mc-text mb-3">Zaliczona pętla w Tatrach. Asfalt miejscami brudny, ale widoki nadrabiają wszystko! 🏔️🏍️</p>
+                        
+                        <!-- Map/Image Mockup -->
+                        <div class="w-full h-40 rounded-xl overflow-hidden relative mb-4">
+                             <img src="https://images.unsplash.com/photo-1542382156909-92381944e999?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover">
+                             <!-- Telemetry Overlay on Photo -->
+                             <div class="absolute bottom-2 left-2 glass-panel px-3 py-1.5 rounded-lg flex gap-3">
+                                 <div class="text-[10px] font-bold text-white"><span class="text-mc-red">MAX</span> 145 km/h</div>
+                                 <div class="text-[10px] font-bold text-white"><span class="text-mc-red">DST</span> 320 km</div>
+                             </div>
+                        </div>
+
+                        <!-- Akcje (Like/Comment) -->
+                        <div class="flex gap-4 border-t border-white/10 pt-3">
+                            <button class="flex items-center gap-1.5 text-mc-red text-sm font-bold">
+                                <i class="ph-fill ph-hand-waving text-lg"></i> LwG (24)
+                            </button>
+                            <button class="flex items-center gap-1.5 text-mc-muted text-sm font-bold hover:text-white">
+                                <i class="ph-bold ph-chat-circle text-lg"></i> Komentarze (5)
+                            </button>
+                            <button class="flex items-center gap-1.5 text-mc-muted text-sm font-bold ml-auto hover:text-white">
+                                <i class="ph-bold ph-share-network text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                     <!-- Post 2 -->
+                     <div class="glass-panel rounded-[24px] p-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-mc-red flex items-center justify-center text-white font-bold"><i class="ph-fill ph-trophy"></i></div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">System (Osiągnięcie)</h4>
+                                <p class="text-[10px] text-mc-red font-bold uppercase tracking-widest">Nowy Rekord</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-mc-text font-bold text-center py-4">
+                            Piotr W. osiągnął maksymalne pochylenie <span class="text-mc-red text-xl">52°</span> na Torze Poznań!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-system" class="screen-hidden">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-black tracking-tighter text-white">Aplikacje</h1>
+                    <p class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mt-1">Ekosystem MotoCore PRO</p>
+                </header>
+
+                <div class="space-y-8">
+                    <!-- Kategoria: Bezpieczeństwo -->
+                    <div>
+                        <h3 class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mb-3 px-2 border-b border-white/10 pb-2">Bezpieczeństwo & Wideo</h3>
+                        <div class="grid grid-cols-4 gap-4 mt-4">
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/30 text-mc-red flex items-center justify-center text-2xl shadow-glow-red group-active:scale-95 transition-transform"><i class="ph-fill ph-lifebuoy"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Crash SOS</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-white flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-video-camera"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Dashcam</span>
+                            </div>
+                             <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-white flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-radar"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Fotoradary</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategoria: Pojazd -->
+                    <div>
+                        <h3 class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mb-3 px-2 border-b border-white/10 pb-2">Digital Twin (Pojazd)</h3>
+                        <div class="grid grid-cols-4 gap-4 mt-4">
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-yellow-400 flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-cpu"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">OBD2</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-blue-400 flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-wrench"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Serwis</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-green-400 flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-file-text"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">e-Polisa</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-emerald-400 flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-gas-pump"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Koszty</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kategoria: Integracje -->
+                    <div>
+                        <h3 class="text-[10px] font-bold text-mc-muted uppercase tracking-widest mb-3 px-2 border-b border-white/10 pb-2">Integracje</h3>
+                        <div class="grid grid-cols-4 gap-4 mt-4">
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-purple-400 flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-headset"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Sena/Cardo</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                <div class="w-14 h-14 rounded-2xl glass-panel text-white flex items-center justify-center text-2xl group-active:scale-95 transition-transform"><i class="ph-bold ph-watch"></i></div>
+                                <span class="text-[9px] font-bold text-mc-text uppercase text-center">Wear OS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <div class="absolute bottom-0 w-full z-50 px-5 pb-[var(--safe-bottom)] pt-4 bg-gradient-to-t from-mc-bg via-mc-bg/90 to-transparent pointer-events-none">
+            
+            <div class="glass-panel w-full rounded-[28px] p-2 flex justify-between items-center pointer-events-auto border-white/[0.08]">
+                
+                <!-- Tab: Hub -->
+                <button onclick="switchScreen('hub')" id="tab-hub" class="nav-tab relative w-16 h-14 flex flex-col items-center justify-center text-white transition-all duration-300">
+                    <i class="ph-fill ph-squares-four text-2xl mb-1 icon-element drop-shadow-glow-red"></i>
+                    <div class="absolute bottom-1 w-1 h-1 bg-mc-red rounded-full shadow-glow-red dot-indicator"></div>
+                </button>
+                
+                <!-- Tab: Navigation -->
+                <button onclick="switchScreen('nav')" id="tab-nav" class="nav-tab relative w-16 h-14 flex flex-col items-center justify-center text-mc-muted transition-all duration-300">
+                    <i class="ph-bold ph-map-trifold text-2xl mb-1 icon-element"></i>
+                    <div class="absolute bottom-1 w-1 h-1 bg-mc-red rounded-full shadow-glow-red dot-indicator opacity-0 scale-0 transition-all"></div>
+                </button>
+
+                <!-- Center Main Action (Voice AI Assistant) -->
+                <button class="relative -top-6 w-16 h-16 rounded-[22px] glass-panel bg-mc-panel border border-white/10 flex items-center justify-center text-white shadow-glow-panel active:scale-95 transition-transform hover:border-mc-red/50">
+                    <!-- Animated AI Core -->
+                    <div class="absolute inset-0 rounded-[22px] border border-mc-red/30 animate-pulse"></div>
+                    <i class="ph-fill ph-microphone-stage text-2xl text-mc-red"></i>
+                </button>
+
+                <!-- Tab: Social -->
+                <button onclick="switchScreen('social')" id="tab-social" class="nav-tab relative w-16 h-14 flex flex-col items-center justify-center text-mc-muted transition-all duration-300">
+                    <i class="ph-bold ph-users text-2xl mb-1 icon-element"></i>
+                    <div class="absolute bottom-1 w-1 h-1 bg-mc-red rounded-full shadow-glow-red dot-indicator opacity-0 scale-0 transition-all"></div>
+                </button>
+
+                <!-- Tab: System Apps -->
+                <button onclick="switchScreen('system')" id="tab-system" class="nav-tab relative w-16 h-14 flex flex-col items-center justify-center text-mc-muted transition-all duration-300">
+                    <i class="ph-bold ph-app-window text-2xl mb-1 icon-element"></i>
+                    <div class="absolute bottom-1 w-1 h-1 bg-mc-red rounded-full shadow-glow-red dot-indicator opacity-0 scale-0 transition-all"></div>
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Zegar Systemowy ---
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
+
+        // --- Nawigacja pomiędzy widokami ---
+        const screens = ['hub', 'nav', 'social', 'system'];
+        
+        function switchScreen(targetId) {
+            // Zamknij Tryb Jazdy jeśli uciekamy z nawigacji
+            if (targetId !== 'nav') toggleRideMode(false);
+
+            // Aktualizacja HTML klas (Widoki)
+            screens.forEach(id => {
+                const el = document.getElementById(`screen-${id}`);
+                if (id === targetId) {
+                    el.classList.remove('screen-hidden');
+                    el.classList.add('screen-active');
+                } else {
+                    el.classList.add('screen-hidden');
+                    el.classList.remove('screen-active');
+                }
+            });
+
+            // Aktualizacja Dolnego Paska (Tabs)
+            screens.forEach(id => {
+                const tab = document.getElementById(`tab-${id}`);
+                const icon = tab.querySelector('.icon-element');
+                const dot = tab.querySelector('.dot-indicator');
+                
+                if (id === targetId) {
+                    tab.classList.add('text-white');
+                    tab.classList.remove('text-mc-muted');
+                    
+                    // Zmiana ikony na pełną (ph-fill)
+                    icon.classList.replace('ph-bold', 'ph-fill');
+                    icon.classList.add('drop-shadow-glow-red');
+                    
+                    dot.classList.remove('opacity-0', 'scale-0');
+                } else {
+                    tab.classList.remove('text-white');
+                    tab.classList.add('text-mc-muted');
+                    
+                    // Zmiana ikony na zarys (ph-bold)
+                    icon.classList.replace('ph-fill', 'ph-bold');
+                    icon.classList.remove('drop-shadow-glow-red');
+                    
+                    dot.classList.add('opacity-0', 'scale-0');
+                }
+            });
+        }
+
+        // --- Logika Trybu Jazdy (HUD Telemetria) ---
+        let rideInterval = null;
+        let speed = 0;
+        let leanAngle = 0;
+
+        function toggleRideMode(start) {
+            const plannerView = document.getElementById('planner-view');
+            const hudView = document.getElementById('hud-view');
+            const mainContainer = document.getElementById('main-content');
+
+            if (start) {
+                // Pokazujemy HUD
+                plannerView.classList.add('hidden');
+                hudView.classList.remove('hidden');
+                // Ukrywamy paddingi glownego kontenera by mapa 3D wyplenila ekran
+                mainContainer.classList.remove('px-5', 'pt-2');
+                
+                // Symulacja Danych
+                speed = 40;
+                rideInterval = setInterval(() => {
+                    // Prędkość (Losowe skoki z fizyką bezwładności)
+                    speed += (Math.random() * 8) - 3; 
+                    if(speed < 0) speed = 0;
+                    if(speed > 299) speed = 299;
+                    document.getElementById('hud-speed').innerText = Math.floor(speed);
+
+                    // Kąt Pochylenia (Lean)
+                    leanAngle = Math.sin(Date.now() / 1500) * 45; // Od -45 do 45
+                    const leanAbs = Math.abs(Math.floor(leanAngle));
+                    
+                    const motoIcon = document.getElementById('lean-indicator');
+                    motoIcon.style.transform = `rotate(${leanAngle}deg)`;
+
+                    // Aktualizacja tekstowych wartości (lewo/prawo)
+                    if(leanAngle < 0) {
+                        document.getElementById('lean-left').innerText = `${leanAbs}°`;
+                        document.getElementById('lean-right').innerText = `0°`;
+                        document.getElementById('lean-left').classList.add('text-mc-red');
+                        document.getElementById('lean-right').classList.remove('text-mc-red');
+                    } else {
+                        document.getElementById('lean-right').innerText = `${leanAbs}°`;
+                        document.getElementById('lean-left').innerText = `0°`;
+                        document.getElementById('lean-right').classList.add('text-mc-red');
+                        document.getElementById('lean-left').classList.remove('text-mc-red');
+                    }
+
+                }, 100); // 10 klatek na sekunde dla płynności
+            } else {
+                // Zatrzymujemy
+                clearInterval(rideInterval);
+                plannerView.classList.remove('hidden');
+                hudView.classList.add('hidden');
+                mainContainer.classList.add('px-5', 'pt-2');
+            }
+        }
+    </script>
+</body>
+</html>
