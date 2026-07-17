@@ -329,7 +329,7 @@
                   </div>
                   <div class="method-card" onclick="selectPayment('online')" id="pay-online">
                       <i class="fas fa-bolt method-icon"></i>
-                      <div class="method-title">Szybki Przelew</div>
+                      <div class="method-title">Płatność Internetowa</div>
                   </div>
                   <div class="method-card" onclick="selectPayment('prepaid')" id="pay-prepaid">
                       <i class="fas fa-wallet method-icon"></i>
@@ -735,7 +735,7 @@ function renderCart() {
 
     const upsellHtml = `
         <div class="upsell-section">
-            <div class="upsell-title">Dostawić coś do picia?</div>
+            <div class="upsell-title">Dobierz dodatek</div>
             <div class="upsell-scroll">
                 ${upsellItems.map(u => `
                     <div class="upsell-card">
