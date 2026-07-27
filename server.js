@@ -190,9 +190,9 @@ const Banner = mongoose.model('Banner', bannerSchema);
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, default: '' },
-  price: { type: Number }, // Usunięto required: true dla kompatybilności z wariantami
+  price: { type: Number }, 
   imageUrl: { type: String, required: true },
-  categoryId: { type: String, required: true }, // Np. 'shakes_klasyczne', 'burgery'
+  categoryId: { type: String, required: true },
   
   // NOWE POLA: Warianty wielkości
   hasVariants: { type: Boolean, default: false },
@@ -536,20 +536,17 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
 // KLIENCI - Złożenie nowego zamówienia z poziomu aplikacji
 app.post('/api/orders', async (req, res) => {
   try {
-    // Generowanie numeru MI-XXXX
     let counter = await Counter.findOneAndUpdate(
       { id: 'orderNum' },
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );
     
-    // Reset licznika po 9999
     if (counter.seq > 9999) {
         counter.seq = 1;
         await counter.save();
     }
     
-    // Formatowanie z zerami z przodu np. MI-0004
     const orderNumber = `MI-${String(counter.seq).padStart(4, '0')}`;
     
     const isOnlinePayment = req.body.paymentMethod === 'online';
@@ -593,25 +590,40 @@ app.post('/api/orders', async (req, res) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(payuOrderData)
+        body: JSON.stringify(payuOrderData),
+        redirect: 'manual' // <--- BLOKADA AUTOMATYCZNEGO PRZEKIEROWANIA DO HTML
       });
       
+      // PayU standardowo zwraca status 302 i link w nagłówku Location
+      const locationHeader = payuRes.headers.get('location');
+      
+      if (payuRes.status === 302 && locationHeader) {
+          return res.json({ 
+            success: true, 
+            redirectUrl: locationHeader, 
+            orderId: newOrder._id, 
+            orderNumber,
+            message: 'Przekierowanie do płatności...'
+          });
+      }
+
+      // Jeśli status to nie 302, sprawdzamy co dostaliśmy
       const textResponse = await payuRes.text();
       let payuData;
       
       try {
           payuData = JSON.parse(textResponse);
       } catch (err) {
-          console.error(`❌ Błąd tworzenia płatności PayU (Status HTTP: ${payuRes.status}). Otrzymano HTML:`, textResponse.substring(0, 800));
-          throw new Error('PayU zwróciło nieprawidłową odpowiedź (HTML).');
+          console.error(`❌ Błąd PayU. Zwrócono HTML mimo blokady redirectu (Status: ${payuRes.status}). HTML:`, textResponse.substring(0, 500));
+          throw new Error('PayU zwróciło nieprawidłową odpowiedź.');
       }
 
-      // Jeśli status to np. 401 Unauthorized lub 400 Bad Request
-      if (!payuRes.ok) {
+      if (!payuRes.ok && payuRes.status !== 200 && payuRes.status !== 201) {
           console.error(`❌ PayU odrzuciło zamówienie. Szczegóły:`, payuData);
           throw new Error(`Błąd bramki PayU: ${payuRes.status}`);
       }
 
+      // Jeśli PayU zwróciło link w body JSON
       return res.json({ 
         success: true, 
         redirectUrl: payuData.redirectUri, 
