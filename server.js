@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
+const multer = require('multer'); // Dodane: do obsługi plików (zdjęć)
+const fs = require('fs'); // Dodane: do obsługi systemu plików
 
 const app = express();
 
@@ -14,6 +16,29 @@ app.use(cors());
 
 // Serwowanie plików statycznych z folderu głównego (CSS, obrazy, JS frontendu)
 app.use(express.static(__dirname));
+
+// --- OBSŁUGA ZDJĘĆ (MULTER) ---
+// Tworzymy folder 'uploads', jeśli nie istnieje
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
+// Konfiguracja nazw plików i miejsca zapisu
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'menu-' + uniqueSuffix + ext);
+  }
+});
+const upload = multer({ storage: storage });
+
+// Udostępniamy folder 'uploads' publicznie, aby aplikacja mogła czytać zdjęcia
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // --- TRASY FRONTENDU (WIDOKI) ---
 
@@ -883,6 +908,16 @@ app.delete('/api/admin/menu/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd usuwania produktu.' });
   }
+});
+
+// UPLOAD ZDJĘCIA DLA PRODUKTU
+app.post('/api/admin/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'Brak pliku' });
+  }
+  // Zwracamy ścieżkę do zapisanego pliku
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.json({ success: true, imageUrl: imageUrl });
 });
 
 // ==========================================
