@@ -17,7 +17,7 @@ app.use(express.static(__dirname));
 
 // --- TRASY FRONTENDU (WIDOKI) ---
 
-// Trasa główna - serwuje aplikację kliencką
+// Trasa główna - serwuje aplikację kliencką (np. app.html)
 app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
@@ -25,6 +25,15 @@ app.get('/app', (req, res) => {
 // Trasa panelu admina - serwuje admin.html
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// NOWE: Trasa pod /zamów (oraz alternatywna /zamow bez polskich znaków)
+app.get('/zamów', (req, res) => {
+  res.sendFile(path.join(__dirname, 'zamow.html'));
+});
+
+app.get('/zamow', (req, res) => {
+  res.sendFile(path.join(__dirname, 'zamow.html'));
 });
 
 // --- BAZA DANYCH MONGO DB ---
@@ -581,6 +590,13 @@ app.post('/api/orders', async (req, res) => {
         },
         body: JSON.stringify(payuOrderData)
       });
+      
+      // --- NOWE ZABEZPIECZENIE I LOGOWANIE BŁĘDU ---
+      if (!payuRes.ok) {
+          const errorText = await payuRes.text();
+          console.error(`❌ Błąd PayU - Status HTTP ${payuRes.status}:`, errorText);
+          throw new Error(`Bramka PayU zwróciła błąd ${payuRes.status}`);
+      }
       
       const payuData = await payuRes.json();
 
