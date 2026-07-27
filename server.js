@@ -17,7 +17,7 @@ app.use(express.static(__dirname));
 
 // --- TRASY FRONTENDU (WIDOKI) ---
 
-// Trasa główna - serwuje aplikację kliencką (np. app.html)
+// Trasa główna - serwuje aplikację kliencką
 app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
@@ -27,7 +27,7 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// NOWE: Trasa pod /zamów (oraz alternatywna /zamow bez polskich znaków)
+// Trasa pod /zamów (oraz alternatywna /zamow bez polskich znaków)
 app.get('/zamów', (req, res) => {
   res.sendFile(path.join(__dirname, 'zamow.html'));
 });
@@ -240,8 +240,8 @@ const APP_URL = process.env.APP_URL || 'https://twoja-domena.railway.app'; // Us
 async function getPayUToken() {
   const params = new URLSearchParams();
   params.append('grant_type', 'client_credentials');
-  params.append('client_id', PAYU_CLIENT_ID);
-  params.append('client_secret', PAYU_CLIENT_SECRET);
+  params.append('client_id', PAYU_CLIENT_ID || '');
+  params.append('client_secret', PAYU_CLIENT_SECRET || '');
 
   const response = await fetch(`${PAYU_BASE_URL}/pl/standard/user/oauth/authorize`, {
     method: 'POST',
@@ -249,12 +249,17 @@ async function getPayUToken() {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
   
-  if (!response.ok) {
-      throw new Error(`PayU Auth Error: ${response.statusText}`);
-  }
+  // Zamiast od razu parsując jako JSON, czytamy to jako tekst
+  const text = await response.text(); 
   
-  const data = await response.json();
-  return data.access_token;
+  try {
+      const data = JSON.parse(text);
+      if (!response.ok) throw new Error(`PayU Auth Error: ${data.error_description || response.statusText}`);
+      return data.access_token;
+  } catch (err) {
+      console.error('❌ Błąd pobierania tokena PayU (HTML zamiast JSON). Odpowiedź serwera:', text.substring(0, 800));
+      throw new Error('Nieudana autoryzacja z PayU.');
+  }
 }
 
 // ==========================================
@@ -591,14 +596,21 @@ app.post('/api/orders', async (req, res) => {
         body: JSON.stringify(payuOrderData)
       });
       
-      // --- NOWE ZABEZPIECZENIE I LOGOWANIE BŁĘDU ---
-      if (!payuRes.ok) {
-          const errorText = await payuRes.text();
-          console.error(`❌ Błąd PayU - Status HTTP ${payuRes.status}:`, errorText);
-          throw new Error(`Bramka PayU zwróciła błąd ${payuRes.status}`);
-      }
+      const textResponse = await payuRes.text();
+      let payuData;
       
-      const payuData = await payuRes.json();
+      try {
+          payuData = JSON.parse(textResponse);
+      } catch (err) {
+          console.error(`❌ Błąd tworzenia płatności PayU (Status HTTP: ${payuRes.status}). Otrzymano HTML:`, textResponse.substring(0, 800));
+          throw new Error('PayU zwróciło nieprawidłową odpowiedź (HTML).');
+      }
+
+      // Jeśli status to np. 401 Unauthorized lub 400 Bad Request
+      if (!payuRes.ok) {
+          console.error(`❌ PayU odrzuciło zamówienie. Szczegóły:`, payuData);
+          throw new Error(`Błąd bramki PayU: ${payuRes.status}`);
+      }
 
       return res.json({ 
         success: true, 
