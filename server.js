@@ -159,7 +159,8 @@ const orderSchema = new mongoose.Schema({
   notes: String,
   items: Array, // Tablica z produktami (id, nazwa, cena, ilosc)
   totalAmount: Number,
-  status: { type: String, default: 'pending' }, // 'pending', 'preparing', 'completed', 'cancelled'
+  paymentMethod: String,
+  status: { type: String, default: 'pending' }, // 'pending', 'awaiting_payment', 'preparing', 'completed', 'cancelled'
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -216,6 +217,36 @@ const LocationHours = mongoose.model('LocationHours', hoursSchema);
 // --- ZMIENNE ŚRODOWISKOWE ---
 const JWT_SECRET = process.env.JWT_SECRET || 'super_tajny_klucz_zmien_go_w_produkcji';
 const ADMIN_PIN = process.env.ADMIN_PIN || '12345'; 
+
+// --- KONFIGURACJA PAYU ---
+const PAYU_POS_ID = process.env.PAYU_POS_ID;
+const PAYU_CLIENT_ID = process.env.PAYU_CLIENT_ID;
+const PAYU_CLIENT_SECRET = process.env.PAYU_CLIENT_SECRET;
+const PAYU_BASE_URL = process.env.PAYU_ENV === 'secure' 
+  ? 'https://secure.payu.com' 
+  : 'https://secure.snd.payu.com';
+const APP_URL = process.env.APP_URL || 'https://twoja-domena.railway.app'; // Ustaw to w Railway
+
+// Funkcja do pobierania tokena dostępowego PayU
+async function getPayUToken() {
+  const params = new URLSearchParams();
+  params.append('grant_type', 'client_credentials');
+  params.append('client_id', PAYU_CLIENT_ID);
+  params.append('client_secret', PAYU_CLIENT_SECRET);
+
+  const response = await fetch(`${PAYU_BASE_URL}/pl/standard/user/oauth/authorize`, {
+    method: 'POST',
+    body: params,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  });
+  
+  if (!response.ok) {
+      throw new Error(`PayU Auth Error: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return data.access_token;
+}
 
 // ==========================================
 // --- API ADMINA ---
@@ -506,18 +537,88 @@ app.post('/api/orders', async (req, res) => {
     
     // Formatowanie z zerami z przodu np. MI-0004
     const orderNumber = `MI-${String(counter.seq).padStart(4, '0')}`;
+    
+    const isOnlinePayment = req.body.paymentMethod === 'online';
+    const initialStatus = isOnlinePayment ? 'awaiting_payment' : 'pending';
 
     const newOrder = new Order({
         ...req.body,
-        orderNumber: orderNumber
+        orderNumber: orderNumber,
+        status: initialStatus
     });
     
     await newOrder.save();
+    
+    // Integracja PayU
+    if (isOnlinePayment) {
+      const token = await getPayUToken();
+      
+      const payuOrderData = {
+        notifyUrl: `${APP_URL}/api/payu/notify`, 
+        customerIp: req.ip || "127.0.0.1",
+        merchantPosId: PAYU_POS_ID,
+        description: `Zamówienie ${orderNumber}`,
+        currencyCode: "PLN",
+        totalAmount: Math.round(newOrder.totalAmount * 100), // PayU wymaga kwoty w groszach
+        extOrderId: newOrder._id.toString(),
+        buyer: {
+          email: req.body.customerEmail || "brak@email.pl",
+          phone: req.body.customerPhone,
+          firstName: req.body.customerName
+        },
+        products: newOrder.items.map(item => ({
+          name: item.name,
+          unitPrice: Math.round(item.price * 100),
+          quantity: item.quantity
+        }))
+      };
+
+      const payuRes = await fetch(`${PAYU_BASE_URL}/api/v2_1/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payuOrderData)
+      });
+      
+      const payuData = await payuRes.json();
+
+      return res.json({ 
+        success: true, 
+        redirectUrl: payuData.redirectUri, 
+        orderId: newOrder._id, 
+        orderNumber,
+        message: 'Przekierowanie do płatności...'
+      });
+    }
     
     res.json({ success: true, orderId: newOrder._id, orderNumber: orderNumber, message: 'Zamówienie zostało przyjęte!' });
   } catch (err) {
     console.error('Błąd zapisu zamówienia:', err);
     res.status(500).json({ success: false, message: 'Błąd serwera przy składaniu zamówienia.' });
+  }
+});
+
+// PayU Webhook - Odbieranie powiadomień o płatności
+app.post('/api/payu/notify', async (req, res) => {
+  try {
+    const order = req.body.order;
+    
+    if (order && order.status === 'COMPLETED') {
+      const dbOrderId = order.extOrderId;
+      
+      await Order.findByIdAndUpdate(dbOrderId, { 
+        status: 'pending' // Wrzucamy z powrotem na pending, żeby wyzwolić alarm w lokalu
+      });
+      
+      console.log(`💰 Zamówienie PayU ${dbOrderId} zostało opłacone! Wysłano alarm.`);
+    }
+    
+    res.status(200).send('OK');
+  } catch (err) {
+    console.error('Błąd webhooka PayU:', err);
+    res.status(500).send('Error');
   }
 });
 
@@ -686,7 +787,6 @@ app.get('/api/menu', async (req, res) => {
 // DODAWANIE NOWEGO PRODUKTU (Tylko Admin)
 app.post('/api/admin/menu', async (req, res) => {
   try {
-    // Dodano hasVariants oraz variants
     const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
     
     if (!name || !imageUrl || !categoryId) {
@@ -709,7 +809,6 @@ app.post('/api/admin/menu', async (req, res) => {
 // AKTUALIZACJA PRODUKTU (EDYTKOWANIE - Tylko Admin)
 app.put('/api/admin/menu/:id', async (req, res) => {
   try {
-    // Dodano hasVariants oraz variants
     const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
     
     if (!name || !imageUrl || !categoryId) {
