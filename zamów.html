@@ -778,6 +778,7 @@ function openCheckoutView() {
     switchView('view-checkout');
 }
 
+// ZMODYFIKOWANA FUNKCJA SUBMIT ORDER - OBSŁUGA PAYU
 async function submitOrder(e) {
     e.preventDefault();
     
@@ -790,7 +791,16 @@ async function submitOrder(e) {
 
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 2;
 
-    const orderData = { customerName: name, customerPhone: phone, pickupTime: time, notes: notes, deliveryMethod: deliveryMethod, paymentMethod: paymentMethod, items: cart, totalAmount: totalPrice };
+    const orderData = { 
+        customerName: name, 
+        customerPhone: phone, 
+        pickupTime: time, 
+        notes: notes, 
+        deliveryMethod: deliveryMethod, 
+        paymentMethod: paymentMethod, 
+        items: cart, 
+        totalAmount: totalPrice 
+    };
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
@@ -805,13 +815,27 @@ async function submitOrder(e) {
         const data = await res.json();
         
         if (data.success) {
-            cart = []; updateCartBadge(); renderReceipt(data.orderNumber, orderData); switchView('view-order-status');
+            cart = []; 
+            updateCartBadge(); 
+            
+            // JEŚLI SERWER ZWRÓCIŁ LINK DO PAYU, PRZEKIERUJ KLIENTA
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else {
+                // JEŚLI GOTÓWKA LUB PORTFEL, POKAŻ PARAGON
+                renderReceipt(data.orderNumber, orderData); 
+                switchView('view-order-status');
+            }
         } else {
             showToast('Błąd składania zamówienia.');
         }
     } catch(err) {
+        // Fallback dla trybu offline / błędów
         setTimeout(() => {
-            cart = []; updateCartBadge(); renderReceipt('MK-' + Math.floor(Math.random() * 90000 + 10000), orderData); switchView('view-order-status');
+            cart = []; 
+            updateCartBadge(); 
+            renderReceipt('MK-' + Math.floor(Math.random() * 90000 + 10000), orderData); 
+            switchView('view-order-status');
         }, 800);
     } finally {
         submitBtn.disabled = false;
