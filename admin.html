@@ -946,8 +946,18 @@
           </div>
 
           <div class="form-group">
-            <label>Link do zdjęcia (np. Imgur)</label>
-            <input type="url" id="prod-img" class="form-control" required placeholder="https://i.imgur.com/...">
+            <label>Zdjęcie produktu (Kamera / Plik)</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <label for="prod-img-file" class="btn btn-outline" style="cursor: pointer; width: 100%; justify-content: center; background: var(--bg-body); border-style: dashed; padding: 20px;">
+                <i class="fas fa-camera" style="font-size: 1.5rem; margin-right: 10px;"></i> 
+                <span id="prod-img-label">Zrób zdjęcie lub wybierz plik</span>
+              </label>
+              <input type="file" id="prod-img-file" accept="image/*" style="display: none;" onchange="handleImagePreview(event)">
+              <input type="hidden" id="prod-img-url">
+            </div>
+            <div id="img-preview-container" style="margin-top: 15px; display: none; text-align: center;">
+              <img id="img-preview" src="" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-m); border: 2px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            </div>
           </div>
 
           <div style="display: flex; gap: 10px;">
@@ -1263,7 +1273,6 @@
         locBadge.innerText = 'Słupsk (Główna)';
         switchBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Przełącz na Rowy';
         
-        // ZAMIAST WYMUSZAĆ FLEX/BLOCK, CZYŚCIMY INLINE STYLE
         slupskOnlyElements.forEach(el => {
           el.style.display = ''; 
         });
@@ -1273,7 +1282,7 @@
       
       switchView('dashboard');
       showToast(`Zmieniono lokalizację na: ${currentLocation === 'rowy' ? 'Rowy' : 'Słupsk'}`, 'success');
-      loadDashboardStats(); // Wywołanie ponownego ładowania danych, żeby np. odświeżyć liczniki po zmianie lokacji
+      loadDashboardStats(); 
     }
 
 
@@ -1439,7 +1448,6 @@
         'dev': 'Kontakt z Developerem'
       };
       
-      // Jeżeli jesteśmy w widoku innej lokalizacji, chcemy dopisek
       const locationSuffix = currentLocation === 'rowy' ? ' - Rowy' : ' - Słupsk';
       document.getElementById('page-title').innerText = (titles[viewId] || 'Panel') + locationSuffix;
 
@@ -1552,7 +1560,6 @@
         if (e.key === 'Enter') verifyAdmin();
     });
 
-
     // =====================================
     // NADAWANIE PUNKTÓW Z KASY 
     // =====================================
@@ -1627,7 +1634,6 @@
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--status-err);">Błąd ładowania historii.</td></tr>';
         }
     }
-
 
     // =====================================
     // SYSTEM REZERWACJI I ALARM
@@ -1925,7 +1931,6 @@
 
     setInterval(checkNewOrders, 3000);
 
-
     // =====================================
     // PORTFEL PRE-PAID (WYSZUKIWANIE / ZARZĄDZANIE)
     // =====================================
@@ -2036,7 +2041,7 @@
     let currentSelectedUserId = null;
 
     async function loadUsers() {
-      if (currentLocation === 'rowy') return; // Funkcjonalność zablokowana dla Rowów
+      if (currentLocation === 'rowy') return; 
       const tbody = document.getElementById('users-table-body');
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie danych...</td></tr>';
       
@@ -2191,6 +2196,7 @@
     // =====================================
     let allProducts = [];
     let editingProductId = null;
+    let selectedImageFile = null;
 
     // Przełączanie widoczności logiki z wariantami
     function toggleVariantUI() {
@@ -2198,6 +2204,21 @@
       document.getElementById('variants-container').style.display = hasVariants ? 'grid' : 'none';
       document.getElementById('regular-price-group').style.display = hasVariants ? 'none' : 'block';
       document.getElementById('prod-price').required = !hasVariants;
+    }
+
+    function handleImagePreview(event) {
+      const file = event.target.files[0];
+      if (file) {
+        selectedImageFile = file;
+        document.getElementById('prod-img-label').innerText = "Wybrano: " + file.name.substring(0, 15) + "...";
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('img-preview').src = e.target.result;
+          document.getElementById('img-preview-container').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      }
     }
 
     async function loadMenuProducts() {
@@ -2256,7 +2277,13 @@
       document.getElementById('prod-name').value = prod.name;
       document.getElementById('prod-category').value = prod.categoryId;
       document.getElementById('prod-desc').value = prod.description || '';
-      document.getElementById('prod-img').value = prod.imageUrl;
+      
+      // Wczytywanie istniejącego zdjęcia
+      document.getElementById('prod-img-url').value = prod.imageUrl;
+      document.getElementById('img-preview').src = prod.imageUrl;
+      document.getElementById('img-preview-container').style.display = 'block';
+      document.getElementById('prod-img-label').innerText = "Zmień istniejące zdjęcie";
+      selectedImageFile = null;
 
       const hasVariants = prod.hasVariants || false;
       document.getElementById('prod-has-variants').checked = hasVariants;
@@ -2292,6 +2319,13 @@
       editingProductId = null;
       document.getElementById('add-product-form').reset();
       
+      // Reset zdjęć
+      selectedImageFile = null;
+      document.getElementById('img-preview-container').style.display = 'none';
+      document.getElementById('img-preview').src = '';
+      document.getElementById('prod-img-url').value = '';
+      document.getElementById('prod-img-label').innerText = "Zrób zdjęcie lub wybierz plik";
+      
       // Reset wariantów
       document.getElementById('prod-has-variants').checked = false;
       toggleVariantUI();
@@ -2308,6 +2342,46 @@
     async function handleProductSubmit(e) {
       e.preventDefault();
       
+      const submitBtn = document.getElementById('product-submit-btn');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zapisywanie...';
+      
+      let finalImageUrl = document.getElementById('prod-img-url').value;
+
+      if (selectedImageFile) {
+          const formData = new FormData();
+          formData.append('image', selectedImageFile);
+
+          try {
+              const uploadRes = await fetch('/api/admin/upload', {
+                  method: 'POST',
+                  body: formData
+              });
+              const uploadData = await uploadRes.json();
+              if (uploadData.success) {
+                  finalImageUrl = uploadData.imageUrl;
+              } else {
+                  showToast('Błąd wysyłania zdjęcia.', 'error');
+                  submitBtn.disabled = false;
+                  submitBtn.innerHTML = originalBtnText;
+                  return;
+              }
+          } catch (err) {
+              showToast('Błąd serwera przy wysyłaniu zdjęcia.', 'error');
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnText;
+              return;
+          }
+      }
+
+      if (!finalImageUrl) {
+          showToast('Wybierz lub zrób zdjęcie produktu!', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+          return;
+      }
+
       const hasVariants = document.getElementById('prod-has-variants').checked;
       let variants = [];
       
@@ -2321,6 +2395,8 @@
         }
         if (variants.length === 0) {
             showToast('Dodaj co najmniej jeden wariant!', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
             return;
         }
       }
@@ -2330,7 +2406,7 @@
         price: hasVariants ? null : parseFloat(document.getElementById('prod-price').value),
         categoryId: document.getElementById('prod-category').value,
         description: document.getElementById('prod-desc').value,
-        imageUrl: document.getElementById('prod-img').value,
+        imageUrl: finalImageUrl,
         location: currentLocation,
         hasVariants: hasVariants,
         variants: variants
@@ -2354,7 +2430,12 @@
         } else {
           showToast(json.message, 'error');
         }
-      } catch(err) { showToast('Błąd połączenia', 'error'); }
+      } catch(err) { 
+          showToast('Błąd połączenia', 'error'); 
+      } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+      }
     }
 
     async function deleteMenuProduct(id) {
@@ -2371,7 +2452,7 @@
 
     // --- WORKMI TEAM LOGIC ---
     async function fetchTeam() {
-      if (currentLocation === 'rowy') return; // Tylko Słupsk
+      if (currentLocation === 'rowy') return; 
       try {
         const response = await fetch('/api/team');
         const result = await response.json();
