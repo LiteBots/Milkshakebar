@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DANMET | Konstrukcje Stalowe i Hale Przemysłowe</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="DANMET (Daniel Mamrot PPHU) - Kompleksowe realizacje budowlane B2B, hale przemysłowe, zaawansowane konstrukcje stalowe i spawalnictwo. Włynkówko k. Słupska.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        black: '#000000',
+                        zinc: {
+                            950: '#09090b',
+                            900: '#18181b',
+                            800: '#27272a',
+                            500: '#71717a',
+                            400: '#a1a1aa',
+                            100: '#f4f4f5',
+                        },
+                        laser: '#ea0000',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        tightest: '-.075em',
+                        widest: '.25em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        body {
+            background-color: #000000; color: #a1a1aa; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection { background-color: #ea0000; color: #ffffff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #27272a; }
+        ::-webkit-scrollbar-thumb:hover { background: #ea0000; }
+
+        h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Space Grotesk', sans-serif; color: #ffffff; }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000000; z-index: 10000; display: flex;
+            justify-content: center; align-items: center; transition: opacity 0.8s ease;
+        }
+        .loader-text {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            letter-spacing: 0.2em; color: #ffffff; animation: pulse 2s infinite;
+        }
+
+        .nav-scrolled {
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid #18181b; padding-top: 1rem !important; padding-bottom: 1rem !important;
+        }
+
+        /* Buttons */
+        .btn-outline {
+            border: 1px solid #27272a; background: transparent; color: #ffffff;
+            transition: all 0.4s ease; position: relative; overflow: hidden;
+        }
+        .btn-outline:hover {
+            border-color: #ea0000; background: #ea0000; color: #ffffff;
+            box-shadow: 0 0 20px rgba(234, 0, 0, 0.2);
+        }
+
+        .btn-solid-laser {
+            background: #ea0000; color: #ffffff; border: 1px solid #ea0000;
+            transition: all 0.4s ease; box-shadow: 0 0 15px rgba(234, 0, 0, 0.15);
+        }
+        .btn-solid-laser:hover {
+            background: transparent; color: #ea0000; box-shadow: 0 0 25px rgba(234, 0, 0, 0.3);
+        }
+
+        /* Inputs */
+        .input-minimal {
+            background: transparent; border: none; border-bottom: 1px solid #27272a;
+            color: #ffffff; padding: 1rem 0; transition: all 0.3s ease; width: 100%;
+        }
+        .input-minimal:focus { outline: none; border-bottom-color: #ea0000; }
+        .input-minimal::placeholder { color: #71717a; }
+
+        /* Range Sliders */
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; background: transparent; margin: 15px 0;
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 2px; cursor: pointer; background: #27272a;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 16px; width: 16px; border-radius: 50%; background: #ea0000;
+            cursor: pointer; -webkit-appearance: none; margin-top: -7px;
+            box-shadow: 0 0 10px rgba(234,0,0,0.5); transition: transform 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+        /* Backgrounds */
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, #09090b 1px, transparent 1px),
+                              linear-gradient(to bottom, #09090b 1px, transparent 1px);
+        }
+        
+        /* Configurator */
+        .config-step { display: none; }
+        .config-step.active { display: block; animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .selectable-card {
+            border: 1px solid #27272a; background: #050505; cursor: pointer; transition: all 0.3s;
+        }
+        .selectable-card:hover { border-color: #3f3f46; }
+        .selectable-card.selected {
+            border-color: #ea0000; background: rgba(234,0,0,0.05);
+        }
+        .selectable-card.selected .check-icon { opacity: 1; color: #ea0000; }
+        .check-icon { opacity: 0; transition: opacity 0.3s; }
+
+        /* Marquee Ticker */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        /* Gallery Filter Transitions */
+        .gallery-item {
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+        .filter-btn.active {
+            border-color: #ea0000;
+            color: #ffffff;
+            background: rgba(234, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="preloader">
+        <div class="loader-text">INICJALIZACJA SYSTEMU DANMET...</div>
+    </div>
+
+    <nav class="fixed w-full z-50 transition-all duration-500 py-5" id="navbar">
+        <div class="container mx-auto px-6 md:px-12 flex justify-between items-center">
+            <!-- LOGO W ROGU -->
+            <a href="#" class="flex items-center group">
+                <img src="https://i.imgur.com/dIeUcmT.png" alt="DANMET Logo" class="h-9 md:h-11 w-auto transition-transform group-hover:scale-105 duration-300">
+            </a>
+            
+            <div class="hidden lg:flex items-center gap-8 font-mono text-xs tracking-widest text-zinc-500">
+                <a href="#firma" class="hover:text-white transition-colors">O FIRMIE</a>
+                <a href="#katalog" class="hover:text-white transition-colors">USŁUGI</a>
+                <a href="#galeria" class="hover:text-white transition-colors">GALERIA</a>
+                <a href="#nowosci" class="hover:text-white transition-colors">NOWOŚCI</a>
+                <a href="#proces" class="hover:text-white transition-colors">WSPÓŁPRACA</a>
+                <a href="#konfigurator" class="hover:text-laser transition-colors">WYCEŃ PROJEKT</a>
+            </div>
+
+            <div class="hidden lg:block">
+                <a href="#kontakt" class="btn-solid-laser inline-flex h-10 items-center justify-center px-6 font-mono text-xs tracking-widest uppercase font-bold">
+                    Kontakt
+                </a>
+            </div>
+
+            <button class="lg:hidden text-white" id="mobile-menu-btn">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="hidden absolute top-full left-0 w-full bg-black flex-col py-6 px-6 gap-6 border-b border-zinc-900" id="mobile-menu">
+            <a href="#firma" class="text-white font-mono text-xs tracking-widest uppercase">O firmie</a>
+            <a href="#katalog" class="text-white font-mono text-xs tracking-widest uppercase">Usługi</a>
+            <a href="#galeria" class="text-white font-mono text-xs tracking-widest uppercase">Galeria</a>
+            <a href="#nowosci" class="text-white font-mono text-xs tracking-widest uppercase">Nowości</a>
+            <a href="#proces" class="text-white font-mono text-xs tracking-widest uppercase">Współpraca</a>
+            <a href="#konfigurator" class="text-white font-mono text-xs tracking-widest uppercase text-laser">Wyceń projekt</a>
+            <a href="#kontakt" class="text-white font-mono text-xs tracking-widest uppercase border border-zinc-800 p-4 text-center mt-4">Kontakt</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden bg-black pt-20">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1565439399249-1667b36f1839?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                 class="absolute inset-0 w-full h-full object-cover opacity-40 parallax-bg" alt="Hala stalowa Danmet">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/40"></div>
+            <div class="absolute inset-0 bg-grid opacity-20"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-laser opacity-[0.03] blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+        </div>
+
+        <canvas id="sparks" class="absolute inset-0 z-10 w-full h-full pointer-events-none opacity-60"></canvas>
+
+        <div class="container mx-auto px-6 md:px-12 relative z-20 flex flex-col items-center text-center mt-10">
+            <div class="mb-6 font-mono text-xs tracking-[0.3em] text-zinc-500 uppercase flex items-center gap-4">
+                <span class="w-12 h-[1px] bg-zinc-800"></span>
+                Daniel Mamrot PPHU
+                <span class="w-12 h-[1px] bg-zinc-800"></span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-display font-light text-white leading-[1.05] mb-8 tracking-tight max-w-5xl">
+                KOMPLEKSOWE WYKONAWSTWO<br>
+                <span class="font-bold">OBIEKTÓW PRZEMYSŁOWYCH<span class="text-laser">.</span></span>
+            </h1>
+            
+            <p class="text-zinc-400 text-lg md:text-xl max-w-3xl font-light leading-relaxed mb-12">
+                Projektujemy, produkujemy i montujemy potężne konstrukcje stalowe. Specjalizujemy się w zaawansowanych realizacjach B2B, dostarczając bezkompromisową jakość opartą na inżynieryjnej precyzji.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6">
+                <a href="#konfigurator" class="btn-solid-laser px-10 py-4 font-mono text-xs font-bold tracking-widest uppercase">
+                    Skonfiguruj Zapytanie
+                </a>
+                <a href="#galeria" class="btn-outline px-10 py-4 font-mono text-xs tracking-widest uppercase bg-black/40 backdrop-blur-sm">
+                    Zobacz Realizacje
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20 opacity-40">
+            <div class="w-[1px] h-16 bg-zinc-800 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1/2 bg-laser animate-[scrollAnim_2s_infinite]"></div>
+            </div>
+        </div>
+        <style>@keyframes scrollAnim { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }</style>
+    </header>
+
+    <!-- INDUSTRIAL TICKER / MARQUEE -->
+    <div class="bg-[#050505] border-y border-zinc-900 overflow-hidden py-4">
+        <div class="animate-marquee whitespace-nowrap font-mono text-xs tracking-[0.25em] text-zinc-500 uppercase flex items-center">
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> PREFABRYKACJA WŁYNKÓWKO</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CERTYFIKOWANA STAL ATEST 3.1</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CIĘCIE I SPAWANIE MIG/MAG</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> ZABEZPIECZENIA ANTYKOROZYJNE</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> MONTAŻ W MIEJSCU INWESTYCJI</span>
+            <!-- Duplikat dla płynnej pętli -->
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> PREFABRYKACJA WŁYNKÓWKO</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CERTYFIKOWANA STAL ATEST 3.1</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CIĘCIE I SPAWANIE MIG/MAG</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> ZABEZPIECZENIA ANTYKOROZYJNE</span>
+            <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> MONTAŻ W MIEJSCU INWESTYCJI</span>
+        </div>
+    </div>
+
+    <!-- O FIRMIE -->
+    <section id="firma" class="py-32 bg-[#050505] relative border-b border-zinc-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="grid lg:grid-cols-2 gap-16 items-start">
+                
+                <div class="gsap-fade-up">
+                    <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Gwarancja Jakości</div>
+                    <h2 class="text-4xl md:text-5xl font-display font-light text-white mb-8 leading-tight">
+                        Twój partner w <br><span class="font-bold text-white">biznesie przemysłowym.</span>
+                    </h2>
+                    <div class="space-y-6 font-light text-zinc-400 leading-relaxed text-sm md:text-base">
+                        <p>
+                            <strong>DANMET</strong> to firma z ugruntowaną pozycją, zlokalizowana we Włynkówku k. Słupska. Zbudowaliśmy nasz potencjał na setkach ton przetworzonej stali i zaufaniu kluczowych partnerów z sektora produkcyjnego, logistycznego i rolniczego.
+                        </p>
+                        <p>
+                            Nie jesteśmy pośrednikiem. Posiadamy własny, rozbudowany park technologiczny oraz wyspecjalizowaną kadrę inżynierską i spawalniczą. Od wstępnej koncepcji, przez precyzyjne cięcie i spawanie, aż po montaż w miejscu inwestycji – kontrolujemy każdy etap procesu.
+                        </p>
+                        <p>
+                            Działamy w sektorze B2B. Rozumiemy, że w przemyśle liczy się terminowość, rygorystyczne normy wytrzymałościowe i bezpieczeństwo inwestycji.
+                        </p>
+                    </div>
+                    
+                    <!-- ANIMOWANE LICZNIKI -->
+                    <div class="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-900" id="counter-section">
+                        <div>
+                            <div class="text-3xl font-display font-bold text-white mb-1"><span class="counter-val" data-target="100">0</span><span class="text-laser">%</span></div>
+                            <div class="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">Własna Produkcja</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-display font-bold text-white mb-1"><span class="counter-val" data-target="500">0</span><span class="text-laser">+</span></div>
+                            <div class="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">Ton Stali / Rok</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-display font-bold text-white mb-1">B2B</div>
+                            <div class="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">Dedykowane Hale</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative gsap-fade-up h-[700px] hidden lg:block">
+                    <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Zakład Produkcyjny Danmet" class="w-full h-full object-cover opacity-90 border border-zinc-900">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-black via-transparent to-transparent"></div>
+                    <div class="absolute -bottom-6 -left-6 w-32 h-32 border-l-2 border-b-2 border-laser z-[-1]"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- KATALOG PRAC -->
+    <section id="katalog" class="py-32 bg-black relative border-b border-zinc-900">
+        <div class="container mx-auto px-6 md:px-12">
+            
+            <div class="mb-16 gsap-fade-up">
+                <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Kompetencje</div>
+                <h2 class="text-4xl md:text-5xl font-display font-light text-white">Zakres <span class="font-bold">Działalności</span></h2>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Usługa 1 -->
+                <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1541888087618-202bc9242d50?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Hale" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="p-8 flex-1 flex flex-col">
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-3">01 // Architektura Przemysłowa</div>
+                        <h3 class="text-2xl font-display font-bold text-white mb-4">Hale Przemysłowe i Magazynowe</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6 flex-1">
+                            Budujemy wielkopowierzchniowe hale stalowe "pod klucz". Projektujemy konstrukcje zoptymalizowane pod suwnice, wysokie składowanie oraz specyficzne procesy produkcyjne. Zapewniamy pełne pokrycie z płyt warstwowych (obudowa dachu i ścian).
+                        </p>
+                        <ul class="space-y-2 font-mono text-xs text-zinc-500 mb-6 border-t border-zinc-900 pt-6">
+                            <li><span class="text-laser mr-2">+</span> Hale Produkcyjne</li>
+                            <li><span class="text-laser mr-2">+</span> Centra Logistyczne</li>
+                            <li><span class="text-laser mr-2">+</span> Obiekty Rolnicze (Wiaty)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Usługa 2 -->
+                <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors" style="transition-delay: 100ms;">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1621699931853-2bf530f269a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Konstrukcje" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="p-8 flex-1 flex flex-col">
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-3">02 // Prefabrykacja</div>
+                        <h3 class="text-2xl font-display font-bold text-white mb-4">Ciężkie Konstrukcje Stalowe</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6 flex-1">
+                            Wytwarzamy wielkogabarytowe elementy nośne dla budownictwa. Nasz zakład pozwala na produkcję dźwigarów, podciągów, słupów i ram o wysokim tonażu. Pracujemy na certyfikowanej stali z pełną dokumentacją (atesty 3.1).
+                        </p>
+                        <ul class="space-y-2 font-mono text-xs text-zinc-500 mb-6 border-t border-zinc-900 pt-6">
+                            <li><span class="text-laser mr-2">+</span> Słupy i Dźwigary kratowe</li>
+                            <li><span class="text-laser mr-2">+</span> Konstrukcje wsporcze urządzeń</li>
+                            <li><span class="text-laser mr-2">+</span> Ramy wielonawowe</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Usługa 3 -->
+                <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors" style="transition-delay: 200ms;">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1574689049597-7e6d4c0620fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Spawalnictwo" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="p-8 flex-1 flex flex-col">
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-3">03 // Technologia Łączenia</div>
+                        <h3 class="text-2xl font-display font-bold text-white mb-4">Usługi Spawalnicze B2B</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6 flex-1">
+                            Specjalistyczne spawanie konstrukcyjne metodami MIG/MAG. Posiadamy kadrę certyfikowanych spawaczy zdolnych do realizacji spoin o najwyższych wymaganiach wytrzymałościowych, poddawanych badaniom NDT (wiza, ultradźwięki).
+                        </p>
+                        <ul class="space-y-2 font-mono text-xs text-zinc-500 mb-6 border-t border-zinc-900 pt-6">
+                            <li><span class="text-laser mr-2">+</span> Spawanie grubych przekrojów</li>
+                            <li><span class="text-laser mr-2">+</span> Regeneracja maszyn przem.</li>
+                            <li><span class="text-laser mr-2">+</span> Seryjna produkcja detali</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERIA REALIZACJI I DETALI -->
+    <section id="galeria" class="py-32 bg-[#050505] border-b border-zinc-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gsap-fade-up">
+                <div>
+                    <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Wizualny Dowód Jakości</div>
+                    <h2 class="text-4xl md:text-5xl font-display font-light text-white">Galeria <span class="font-bold">Realizacji</span></h2>
+                </div>
+                
+                <!-- Przyciski filtrów -->
+                <div class="flex flex-wrap gap-2 mt-6 md:mt-0 font-mono text-xs">
+                    <button onclick="filterGallery('all', this)" class="filter-btn active px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Wszystkie</button>
+                    <button onclick="filterGallery('hale', this)" class="filter-btn px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Hale i Magazyny</button>
+                    <button onclick="filterGallery('stal', this)" class="filter-btn px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Konstrukcje Ciężkie</button>
+                    <button onclick="filterGallery('spawanie', this)" class="filter-btn px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Spawalnictwo</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid">
+                <!-- Karta 1 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="hale">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">HALE I MAGAZYNY</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Szkielet Hali Magazynowej 2400 m²</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">Konstrukcja ramy blachownicowej z podtorzem suwnicowym.</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 2 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="stal">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">KONSTRUKCJE CIĘŻKIE</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Prefabrykacja Dźwigarów Kratowych</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">Rozpiętość 32 metry, stal o podwyższonej wytrzymałości S355.</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 3 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="spawanie">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">SPAWALNICTWO B2B</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Wielowarstwowe Spawanie MIG/MAG</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">100% spoin kontrolowanych badaniami nieniszczącymi (NDT).</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 4 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="hale">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">HALE I MAGAZYNY</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Obudowa Płytą Warstwową</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">Wysokie parametry termoizolacyjne i estetyka elewacji.</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 5 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="stal">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">KONSTRUKCJE CIĘŻKIE</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Estakady i Podesty Przemysłowe</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">Konstrukcje wsporcze dla linii technologicznych i rurociągów.</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 6 -->
+                <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="spawanie">
+                    <div>
+                        <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">SPAWALNICTWO B2B</div>
+                        <h4 class="text-xl font-display font-bold text-white group-hover:text-laser transition-colors">Seryjna Prefabrykacja Podzespołów</h4>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-400 font-light mt-2 mb-4 leading-relaxed">Wysoka powtarzalność dzięki oprzyrządowaniu spawalniczemu.</p>
+                        <div class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors flex items-center gap-2">
+                            <span>ZOBACZ SPECYFIKACJĘ</span>
+                            <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOWOŚCI / AKTUALNOŚCI TECHNOLOGICZNE -->
+    <section id="nowosci" class="py-32 bg-black border-b border-zinc-900 relative">
+        <div class="container mx-auto px-6 md:px-12">
+            
+            <div class="mb-16 gsap-fade-up">
+                <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Rozwój i Inwestycje</div>
+                <h2 class="text-4xl md:text-5xl font-display font-light text-white">Nowości <span class="font-bold">Technologiczne</span></h2>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Nowość 1 -->
+                <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-mono text-[10px] tracking-widest text-laser uppercase bg-laser/10 px-3 py-1 border border-laser/20">PARK MASZYNOWY</span>
+                            <span class="font-mono text-xs text-zinc-600">Q3 2026</span>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white mb-4 group-hover:text-laser transition-colors">Rozbudowa suwnic na hali we Włynkówku</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
+                            Zwiększyliśmy udźwig na stanowiskach prefabrykacji konstrukcji ciężkich. Nowy układ suwnicowy pozwala nam operować elementami o wyższym tonażu bez konieczności podwykonawstwa transportu wewnątrzzakładowego.
+                        </p>
+                    </div>
+                    <div class="pt-6 border-t border-zinc-900 flex items-center gap-2 font-mono text-xs text-zinc-500 group-hover:text-white transition-colors">
+                        <span>DOWIEDZ SIĘ WIĘCEJ</span>
+                        <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                    </div>
+                </article>
+
+                <!-- Nowość 2 -->
+                <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group" style="transition-delay: 100ms;">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-mono text-[10px] tracking-widest text-laser uppercase bg-laser/10 px-3 py-1 border border-laser/20">REALIZACJA</span>
+                            <span class="font-mono text-xs text-zinc-600">Q2 2026</span>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white mb-4 group-hover:text-laser transition-colors">Ukończenie hali logistycznej pod Słupskiem</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
+                            Przekazaliśmy inwestorowi z branży TSL gotową konstrukcję o powierzchni ponad 3500 m². Cały proces – od wytworzenia elementów po montaż na placu budowy – zamknął się w zakładanym harmonogramie 8 tygodni.
+                        </p>
+                    </div>
+                    <div class="pt-6 border-t border-zinc-900 flex items-center gap-2 font-mono text-xs text-zinc-500 group-hover:text-white transition-colors">
+                        <span>DOWIEDZ SIĘ WIĘCEJ</span>
+                        <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                    </div>
+                </article>
+
+                <!-- Nowość 3 -->
+                <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group" style="transition-delay: 200ms;">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-mono text-[10px] tracking-widest text-laser uppercase bg-laser/10 px-3 py-1 border border-laser/20">JAKOŚĆ & NORMY</span>
+                            <span class="font-mono text-xs text-zinc-600">Q1 2026</span>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white mb-4 group-hover:text-laser transition-colors">Audyt spawalniczy i certyfikacje EN 1090</h3>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
+                            Z powodzeniem przeszliśmy okresową weryfikację uprawnień do spawalniczego wytwarzania stalowych konstrukcji budowlanych. Gwarantujemy pełną zgodność z normami europejskimi i wymogami CE.
+                        </p>
+                    </div>
+                    <div class="pt-6 border-t border-zinc-900 flex items-center gap-2 font-mono text-xs text-zinc-500 group-hover:text-white transition-colors">
+                        <span>DOWIEDZ SIĘ WIĘCEJ</span>
+                        <i class="fa-solid fa-arrow-right text-laser transition-transform group-hover:translate-x-2"></i>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCES WSPÓŁPRACY -->
+    <section id="proces" class="py-32 bg-[#050505] border-b border-zinc-900 overflow-hidden">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-20 gsap-fade-up">
+                <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Metodologia</div>
+                <h2 class="text-3xl md:text-5xl font-display font-light text-white">Etapy <span class="font-bold">Realizacji</span></h2>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8 relative">
+                <div class="hidden md:block absolute top-8 left-0 w-full h-[1px] bg-zinc-900 z-0"></div>
+
+                <div class="relative z-10 gsap-fade-up">
+                    <div class="w-16 h-16 bg-black border border-zinc-800 flex items-center justify-center text-laser font-mono text-xl mb-6 mx-auto md:mx-0">01</div>
+                    <h4 class="text-white font-display text-lg mb-3 text-center md:text-left">Konsultacje & Audyt</h4>
+                    <p class="text-zinc-500 text-sm font-light leading-relaxed text-center md:text-left">Spotkanie z Prezesem (Daniel Mamrot). Analiza potrzeb, warunków terenowych i wymagań technologicznych obiektu.</p>
+                </div>
+                
+                <div class="relative z-10 gsap-fade-up" style="transition-delay: 100ms;">
+                    <div class="w-16 h-16 bg-black border border-zinc-800 flex items-center justify-center text-laser font-mono text-xl mb-6 mx-auto md:mx-0">02</div>
+                    <h4 class="text-white font-display text-lg mb-3 text-center md:text-left">Projektowanie</h4>
+                    <p class="text-zinc-500 text-sm font-light leading-relaxed text-center md:text-left">Dobór optymalnych przekrojów stali, przygotowanie dokumentacji technicznej i szczegółowa wycena inwestycji.</p>
+                </div>
+                
+                <div class="relative z-10 gsap-fade-up" style="transition-delay: 200ms;">
+                    <div class="w-16 h-16 bg-black border border-laser shadow-[0_0_15px_rgba(234,0,0,0.2)] flex items-center justify-center text-laser font-mono text-xl mb-6 mx-auto md:mx-0">03</div>
+                    <h4 class="text-white font-display text-lg mb-3 text-center md:text-left">Prefabrykacja</h4>
+                    <p class="text-zinc-500 text-sm font-light leading-relaxed text-center md:text-left">Produkcja w zakładzie we Włynkówku. Cięcie, spawanie i zabezpieczenia antykorozyjne pod rygorystyczną kontrolą.</p>
+                </div>
+
+                <div class="relative z-10 gsap-fade-up" style="transition-delay: 300ms;">
+                    <div class="w-16 h-16 bg-black border border-zinc-800 flex items-center justify-center text-laser font-mono text-xl mb-6 mx-auto md:mx-0">04</div>
+                    <h4 class="text-white font-display text-lg mb-3 text-center md:text-left">Montaż & Odbiór</h4>
+                    <p class="text-zinc-500 text-sm font-light leading-relaxed text-center md:text-left">Transport elementów na plac budowy i sprawny montaż prowadzony przez nasze certyfikowane ekipy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERAKTYWNY KONFIGURATOR -->
+    <section id="konfigurator" class="py-32 bg-black border-y border-zinc-900 relative">
+        <div class="absolute inset-0 bg-grid opacity-10 pointer-events-none"></div>
+        <div class="container mx-auto px-6 md:px-12 max-w-5xl relative z-10">
+            
+            <div class="text-center mb-16 gsap-fade-up">
+                <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Interaktywny Wywiad</div>
+                <h2 class="text-3xl md:text-5xl font-display font-light text-white mb-6">Zbuduj <span class="font-bold">Zapytanie</span></h2>
+                <p class="text-zinc-400 font-light text-sm max-w-2xl mx-auto">
+                    Skorzystaj z poniższego panelu, aby przekazać nam parametry techniczne. Precyzyjne dane pozwolą Prezesowi firmy przygotować optymalne warianty technologiczne na nasze bezpośrednie spotkanie.
+                </p>
+            </div>
+
+            <div class="bg-[#050505] border border-zinc-900 shadow-2xl p-6 md:p-12 relative gsap-fade-up">
+                
+                <div class="absolute top-0 left-0 w-full h-1 bg-zinc-900">
+                    <div class="h-full bg-laser w-1/4 transition-all duration-500" id="config-progress"></div>
+                </div>
+
+                <form id="config-form" onsubmit="event.preventDefault(); nextConfigStep('success');">
+                    
+                    <!-- KROK 1 -->
+                    <div class="config-step active" id="step-1">
+                        <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
+                            <h3 class="text-xl font-display text-white">Wybierz profil inwestycji</h3>
+                            <span class="font-mono text-zinc-500 text-xs">KROK 1/4</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="selectable-card p-6" onclick="selectCard(this, 'type')">
+                                <div class="flex justify-between items-start mb-4">
+                                    <i class="fa-solid fa-warehouse text-2xl text-zinc-400"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                                <div class="font-display font-bold text-white text-lg mb-1">Hala Przemysłowa</div>
+                                <div class="text-zinc-500 text-xs font-light">Obiekty produkcyjne, magazynowe, rolnicze z pełną obudową.</div>
+                            </div>
+                            
+                            <div class="selectable-card p-6" onclick="selectCard(this, 'type')">
+                                <div class="flex justify-between items-start mb-4">
+                                    <i class="fa-solid fa-cubes text-2xl text-zinc-400"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                                <div class="font-display font-bold text-white text-lg mb-1">Szkielet Stalowy</div>
+                                <div class="text-zinc-500 text-xs font-light">Ciężkie konstrukcje nośne, ramy, słupy, podciągi.</div>
+                            </div>
+                            
+                            <div class="selectable-card p-6" onclick="selectCard(this, 'type')">
+                                <div class="flex justify-between items-start mb-4">
+                                    <i class="fa-solid fa-fire-burner text-2xl text-zinc-400"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                                <div class="font-display font-bold text-white text-lg mb-1">Usługi Spawalnicze</div>
+                                <div class="text-zinc-500 text-xs font-light">Precyzyjne spawanie MIG/MAG, seryjna produkcja.</div>
+                            </div>
+                            
+                            <div class="selectable-card p-6" onclick="selectCard(this, 'type')">
+                                <div class="flex justify-between items-start mb-4">
+                                    <i class="fa-solid fa-pen-ruler text-2xl text-zinc-400"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                                <div class="font-display font-bold text-white text-lg mb-1">Projekt Indywidualny</div>
+                                <div class="text-zinc-500 text-xs font-light">Inne nietypowe realizacje konstrukcyjne B2B.</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-end">
+                            <button type="button" onclick="nextConfigStep(2)" class="btn-solid-laser px-8 py-3 font-mono text-xs uppercase tracking-widest font-bold">Zatwierdź i Dalej</button>
+                        </div>
+                    </div>
+
+                    <!-- KROK 2 -->
+                    <div class="config-step" id="step-2">
+                        <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
+                            <h3 class="text-xl font-display text-white">Gabaryty i Opis</h3>
+                            <span class="font-mono text-zinc-500 text-xs">KROK 2/4</span>
+                        </div>
+                        
+                        <div class="space-y-12">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-zinc-400 font-mono text-[10px] tracking-widest uppercase block">Szacowana Powierzchnia (m²)</label>
+                                    <span class="text-laser font-mono font-bold" id="area-val">1000 m²</span>
+                                </div>
+                                <input type="range" id="area-slider" min="100" max="10000" step="50" value="1000" 
+                                       oninput="document.getElementById('area-val').innerText = this.value + ' m²'">
+                                <div class="flex justify-between text-[9px] font-mono text-zinc-600 mt-1">
+                                    <span>100 m²</span><span>10 000+ m²</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-zinc-400 font-mono text-[10px] tracking-widest uppercase block">Wysokość robocza / w okapie (m)</label>
+                                    <span class="text-laser font-mono font-bold" id="height-val">6 m</span>
+                                </div>
+                                <input type="range" id="height-slider" min="3" max="15" step="0.5" value="6" 
+                                       oninput="document.getElementById('height-val').innerText = this.value + ' m'">
+                                <div class="flex justify-between text-[9px] font-mono text-zinc-600 mt-1">
+                                    <span>3 m</span><span>15 m</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-zinc-400 font-mono text-[10px] tracking-widest uppercase block mb-3">Wpisz specyfikację lub uwagi (opcjonalnie)</label>
+                                <textarea rows="3" class="input-minimal resize-none bg-black/50 p-4 border border-zinc-800" placeholder="Lokalizacja działki, wymagania dot. ocieplenia, ilość bram roboczych, tonaż suwnicy..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-between">
+                            <button type="button" onclick="nextConfigStep(1)" class="btn-outline px-8 py-3 font-mono text-xs uppercase tracking-widest">Wstecz</button>
+                            <button type="button" onclick="nextConfigStep(3)" class="btn-solid-laser px-8 py-3 font-mono text-xs uppercase tracking-widest font-bold">Zatwierdź i Dalej</button>
+                        </div>
+                    </div>
+
+                    <!-- KROK 3 -->
+                    <div class="config-step" id="step-3">
+                         <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
+                            <h3 class="text-xl font-display text-white">Wymagania Logistyczne</h3>
+                            <span class="font-mono text-zinc-500 text-xs">KROK 3/4</span>
+                        </div>
+
+                        <p class="text-sm text-zinc-400 mb-6 font-light">Zaznacz moduły, które mają być ujęte w ofercie przygotowywanej na spotkanie:</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="selectable-card p-5 flex items-center justify-between" onclick="toggleCard(this)">
+                                <div class="font-display text-white">Projekt Budowlany i Wykonawczy</div>
+                                <div class="w-5 h-5 border border-zinc-700 rounded-sm flex items-center justify-center">
+                                    <i class="fa-solid fa-check text-xs check-icon"></i>
+                                </div>
+                            </div>
+                            <div class="selectable-card p-5 flex items-center justify-between" onclick="toggleCard(this)">
+                                <div class="font-display text-white">Zabezpieczenie: Cynkowanie Ogniowe</div>
+                                <div class="w-5 h-5 border border-zinc-700 rounded-sm flex items-center justify-center">
+                                    <i class="fa-solid fa-check text-xs check-icon"></i>
+                                </div>
+                            </div>
+                            <div class="selectable-card p-5 flex items-center justify-between" onclick="toggleCard(this)">
+                                <div class="font-display text-white">Zabezpieczenie: Malowanie (Zestaw Epoksyd/Poliuretan)</div>
+                                <div class="w-5 h-5 border border-zinc-700 rounded-sm flex items-center justify-center">
+                                    <i class="fa-solid fa-check text-xs check-icon"></i>
+                                </div>
+                            </div>
+                            <div class="selectable-card p-5 flex items-center justify-between" onclick="toggleCard(this)">
+                                <div class="font-display text-white">Montaż konstrukcji na placu budowy</div>
+                                <div class="w-5 h-5 border border-zinc-700 rounded-sm flex items-center justify-center">
+                                    <i class="fa-solid fa-check text-xs check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-between">
+                            <button type="button" onclick="nextConfigStep(2)" class="btn-outline px-8 py-3 font-mono text-xs uppercase tracking-widest">Wstecz</button>
+                            <button type="button" onclick="nextConfigStep(4)" class="btn-solid-laser px-8 py-3 font-mono text-xs uppercase tracking-widest font-bold">Przejdź do Finału</button>
+                        </div>
+                    </div>
+
+                    <!-- KROK 4 -->
+                    <div class="config-step" id="step-4">
+                        <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
+                            <h3 class="text-xl font-display text-white">Autoryzacja Zapytania</h3>
+                            <span class="font-mono text-zinc-500 text-xs">KROK 4/4</span>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <input type="text" class="input-minimal" placeholder="Nazwa Firmy (Inwestor)" required>
+                                <input type="text" class="input-minimal" placeholder="NIP">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <input type="text" class="input-minimal" placeholder="Imię i Nazwisko Osoby Decyzyjnej" required>
+                                <input type="tel" class="input-minimal" placeholder="Numer Telefonu" required>
+                            </div>
+                            <input type="email" class="input-minimal" placeholder="Firmowy Adres E-mail" required>
+                            
+                            <div class="mt-4 p-4 border border-zinc-800 bg-black flex items-start gap-4">
+                                <i class="fa-solid fa-circle-info text-laser mt-1"></i>
+                                <p class="text-[11px] text-zinc-500 font-mono uppercase leading-relaxed">
+                                    Wysłanie formularza to krok inicjujący. System nie generuje automatycznych wycen. Otrzymane dane posłużą Prezesowi (Daniel Mamrot) do weryfikacji możliwości produkcyjnych i kontaktu w celu omówienia dedykowanej oferty handlowej.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-between">
+                            <button type="button" onclick="nextConfigStep(3)" class="btn-outline px-8 py-3 font-mono text-xs uppercase tracking-widest">Wstecz</button>
+                            <button type="submit" class="btn-solid-laser px-8 py-3 font-mono text-xs uppercase tracking-widest font-bold">Przekaż do Analizy</button>
+                        </div>
+                    </div>
+
+                    <!-- SUKCES -->
+                    <div class="config-step text-center py-16" id="step-success">
+                        <div class="w-20 h-20 bg-laser/10 border border-laser rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-check text-3xl text-laser"></i>
+                        </div>
+                        <h3 class="text-3xl font-display text-white mb-4">Dane zostały zaszyfrowane i wysłane.</h3>
+                        <p class="text-zinc-400 font-light mb-10 max-w-md mx-auto">
+                            Zarząd DANMET otrzymał powiadomienie o nowym projekcie. Skontaktujemy się pod podanym numerem telefonu w celu ustalenia terminu spotkania.
+                        </p>
+                        <button type="button" onclick="resetConfig()" class="btn-outline px-8 py-3 font-mono text-xs uppercase tracking-widest">Rozpocznij Nową Konfigurację</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAKT -->
+    <section id="kontakt" class="py-32 bg-[#050505] relative border-t border-zinc-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                
+                <div class="gsap-fade-up">
+                    <div class="font-mono text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">Relacje Biznesowe</div>
+                    <h2 class="text-4xl md:text-5xl font-display font-light text-white mb-8">Zbudujmy <br><span class="font-bold">Potencjał.</span></h2>
+                    <p class="text-zinc-400 font-light mb-12 leading-relaxed max-w-md">
+                        Preferujemy konkret. Zadzwoń, by umówić inspekcję terenu lub wizytę w naszym zakładzie produkcyjnym. Konstrukcje stalowe wymagają dialogu technicznego.
+                    </p>
+                    
+                    <div class="space-y-10">
+                        <div class="border-l-2 border-laser pl-6">
+                            <div class="text-zinc-600 font-mono text-[10px] tracking-widest uppercase mb-2">Bezpośredni Kontakt Handlowy</div>
+                            <div class="text-white font-display text-3xl mb-1">+48 730 890 701</div>
+                            <div class="text-zinc-400 font-light text-lg">danmetwidzino37@wp.pl</div>
+                        </div>
+                        
+                        <div class="pl-6">
+                            <div class="text-zinc-600 font-mono text-[10px] tracking-widest uppercase mb-2">Dane Rejestrowe & Zakład</div>
+                            <div class="text-white font-bold text-lg mb-1">DANMET (Daniel Mamrot PPHU)</div>
+                            <div class="text-zinc-400 font-light leading-relaxed">
+                                ul. Główna 1<br>
+                                76-200 Włynkówko (k. Słupska)<br>
+                                NIP: <span class="text-white font-mono">8393121790</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gsap-fade-up relative h-[500px] border border-zinc-900 bg-black overflow-hidden flex items-center justify-center group">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center opacity-35 group-hover:scale-105 transition-transform duration-1000"></div>
+                    <div class="relative z-10 text-center p-8 bg-black/80 backdrop-blur-md border border-zinc-800">
+                        <i class="fa-solid fa-map-location-dot text-4xl text-laser mb-4"></i>
+                        <h4 class="text-white font-display text-xl mb-2">Włynkówko k. Słupska</h4>
+                        <p class="text-zinc-400 font-mono text-xs tracking-widest uppercase">Główny Zakład Produkcyjny</p>
+                        <a href="https://maps.google.com/?q=Włynkówko+Główna+1" target="_blank" class="inline-block mt-8 btn-outline px-6 py-2 text-xs font-mono tracking-widest uppercase">Pokaż na mapie</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black pt-16 pb-8 border-t border-zinc-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end border-b border-zinc-900 pb-12 mb-8">
+                
+                <div class="mb-8 md:mb-0">
+                    <a href="#" class="flex items-center">
+                        <img src="https://i.imgur.com/dIeUcmT.png" alt="DANMET Logo" class="h-8 md:h-10 w-auto">
+                    </a>
+                </div>
+
+                <div class="flex gap-6 text-xl text-zinc-500">
+                    <a href="#" class="hover:text-white hover:-translate-y-1 transition-all" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="hover:text-white hover:-translate-y-1 transition-all" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white hover:-translate-y-1 transition-all" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-600 gap-4 text-center md:text-left">
+                <p>&copy; 2026 DANMET (Daniel Mamrot PPHU). Wszelkie prawa zastrzeżone.</p>
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
+                    <span>NIP: 8393121790</span>
+                    
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Preloader & Initialization ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    initSparks(); 
+                    initGSAP(); 
+                }, 800);
+            }, 1000);
+        });
+
+        // --- Navbar Scroll ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+                navbar.classList.remove('py-5');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+                navbar.classList.add('py-5');
+            }
+        });
+
+        // --- Mobile Menu ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            const icon = mobileMenuBtn.querySelector('i');
+            if(mobileMenu.classList.contains('flex')) {
+                icon.classList.replace('fa-bars', 'fa-xmark');
+            } else {
+                icon.classList.replace('fa-xmark', 'fa-bars');
+            }
+        });
+        
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+                mobileMenuBtn.querySelector('i').classList.replace('fa-xmark', 'fa-bars');
+            });
+        });
+
+        // --- Galeria Filtr ---
+        function filterGallery(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach(item => {
+                if(category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'scale(1)';
+                    }, 10);
+                } else {
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 400);
+                }
+            });
+        }
+
+        // --- GSAP & Animowane Liczniki ---
+        function initGSAP() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const fadeUpElements = document.querySelectorAll('.gsap-fade-up');
+            fadeUpElements.forEach((el) => {
+                gsap.fromTo(el, 
+                    { y: 30, opacity: 0 },
+                    { 
+                        y: 0, opacity: 1, duration: 1, ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 85%",
+                            toggleActions: "play none none none"
+                        }
+                    }
+                );
+            });
+
+            gsap.to('.parallax-bg', {
+                yPercent: 15,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "header",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+
+            // Animacja odliczania statystyk
+            const counters = document.querySelectorAll('.counter-val');
+            ScrollTrigger.create({
+                trigger: "#counter-section",
+                start: "top 85%",
+                onEnter: () => {
+                    counters.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        gsap.to(counter, {
+                            innerText: target,
+                            duration: 2,
+                            snap: { innerText: 1 },
+                            ease: "power2.out"
+                        });
+                    });
+                },
+                once: true
+            });
+        }
+
+        // --- Configurator Logic ---
+        function nextConfigStep(step) {
+            document.querySelectorAll('.config-step').forEach(el => el.classList.remove('active'));
+            
+            if(step === 'success') {
+                document.getElementById('step-success').classList.add('active');
+                document.getElementById('config-progress').style.width = '100%';
+                document.getElementById('config-progress').classList.replace('bg-laser', 'bg-green-500');
+            } else {
+                document.getElementById('step-' + step).classList.add('active');
+                const progress = document.getElementById('config-progress');
+                if(step === 1) progress.style.width = '25%';
+                if(step === 2) progress.style.width = '50%';
+                if(step === 3) progress.style.width = '75%';
+                if(step === 4) progress.style.width = '100%';
+            }
+        }
+        
+        function selectCard(el, groupName) {
+            const cards = el.parentElement.querySelectorAll('.selectable-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function toggleCard(el) {
+            el.classList.toggle('selected');
+        }
+
+        function resetConfig() {
+            document.getElementById('config-form').reset();
+            document.querySelectorAll('.selectable-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('area-val').innerText = '1000 m²';
+            document.getElementById('height-val').innerText = '6 m';
+            
+            document.getElementById('config-progress').classList.replace('bg-green-500', 'bg-laser');
+            nextConfigStep(1);
+        }
+
+        // --- Sparks Particle System ---
+        function initSparks() {
+            const canvas = document.getElementById('sparks');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const particlesArray = [];
+            const numberOfParticles = 40; 
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height + Math.random() * 300;
+                    this.size = Math.random() * 1.2 + 0.3;
+                    this.speedY = Math.random() * -1.5 - 0.5;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    const colors = ['#ea0000', '#ff4d4d', '#ff8c00', '#ffffff'];
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.opacity = Math.random() * 0.6 + 0.1;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    if (this.size > 0.1) this.size -= 0.005;
+                    if (this.y < 0 - this.size || this.size <= 0.1) {
+                        this.y = canvas.height + 10;
+                        this.x = Math.random() * canvas.width;
+                        this.size = Math.random() * 1.2 + 0.3;
+                    }
+                }
+                draw() {
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+
+            function animateSparks() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                }
+                requestAnimationFrame(animateSparks);
+            }
+            animateSparks();
+        }
+    </script>
+</body>
+</html>
