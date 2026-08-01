@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DANMET | Konstrukcje Stalowe i Hale Przemysłowe</title>
     
-    <!-- SEO Meta Tags -->
     <meta name="description" content="DANMET (Daniel Mamrot PPHU) - Kompleksowe realizacje budowlane B2B, hale przemysłowe, zaawansowane konstrukcje stalowe i spawalnictwo. Włynkówko k. Słupska.">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -41,15 +39,12 @@
         }
     </script>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
@@ -82,7 +77,6 @@
             border-bottom: 1px solid #18181b; padding-top: 1rem !important; padding-bottom: 1rem !important;
         }
 
-        /* Buttons */
         .btn-outline {
             border: 1px solid #27272a; background: transparent; color: #ffffff;
             transition: all 0.4s ease; position: relative; overflow: hidden;
@@ -100,7 +94,6 @@
             background: transparent; color: #ea0000; box-shadow: 0 0 25px rgba(234, 0, 0, 0.3);
         }
 
-        /* Inputs */
         .input-minimal {
             background: transparent; border: none; border-bottom: 1px solid #27272a;
             color: #ffffff; padding: 1rem 0; transition: all 0.3s ease; width: 100%;
@@ -108,7 +101,6 @@
         .input-minimal:focus { outline: none; border-bottom-color: #ea0000; }
         .input-minimal::placeholder { color: #71717a; }
 
-        /* Range Sliders */
         input[type=range] {
             -webkit-appearance: none; width: 100%; background: transparent; margin: 15px 0;
         }
@@ -123,14 +115,12 @@
         }
         input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); }
 
-        /* Backgrounds */
         .bg-grid {
             background-size: 50px 50px;
             background-image: linear-gradient(to right, #09090b 1px, transparent 1px),
                               linear-gradient(to bottom, #09090b 1px, transparent 1px);
         }
         
-        /* Configurator */
         .config-step { display: none; }
         .config-step.active { display: block; animation: fadeIn 0.5s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -145,7 +135,6 @@
         .selectable-card.selected .check-icon { opacity: 1; color: #ea0000; }
         .check-icon { opacity: 0; transition: opacity 0.3s; }
 
-        /* Marquee Ticker */
         @keyframes marquee {
             0% { transform: translateX(0%); }
             100% { transform: translateX(-50%); }
@@ -159,7 +148,6 @@
             animation-play-state: paused;
         }
 
-        /* Gallery Filter Transitions */
         .gallery-item {
             transition: transform 0.4s ease, opacity 0.4s ease;
         }
@@ -178,7 +166,6 @@
 
     <nav class="fixed w-full z-50 transition-all duration-500 py-5" id="navbar">
         <div class="container mx-auto px-6 md:px-12 flex justify-between items-center">
-            <!-- LOGO W ROGU -->
             <a href="#" class="flex items-center group">
                 <img src="https://i.imgur.com/dIeUcmT.png" alt="DANMET Logo" class="h-9 md:h-11 w-auto transition-transform group-hover:scale-105 duration-300">
             </a>
@@ -214,7 +201,6 @@
         </div>
     </nav>
 
-    <!-- HERO -->
     <header class="relative min-h-screen flex items-center justify-center overflow-hidden bg-black pt-20">
         <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1565439399249-1667b36f1839?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
@@ -260,7 +246,6 @@
         <style>@keyframes scrollAnim { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }</style>
     </header>
 
-    <!-- INDUSTRIAL TICKER / MARQUEE -->
     <div class="bg-[#050505] border-y border-zinc-900 overflow-hidden py-4">
         <div class="animate-marquee whitespace-nowrap font-mono text-xs tracking-[0.25em] text-zinc-500 uppercase flex items-center">
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> PREFABRYKACJA WŁYNKÓWKO</span>
@@ -268,7 +253,6 @@
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CIĘCIE I SPAWANIE MIG/MAG</span>
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> ZABEZPIECZENIA ANTYKOROZYJNE</span>
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> MONTAŻ W MIEJSCU INWESTYCJI</span>
-            <!-- Duplikat dla płynnej pętli -->
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> PREFABRYKACJA WŁYNKÓWKO</span>
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CERTYFIKOWANA STAL ATEST 3.1</span>
             <span class="mx-8 flex items-center gap-3"><span class="w-1.5 h-1.5 bg-laser rounded-full"></span> CIĘCIE I SPAWANIE MIG/MAG</span>
@@ -277,7 +261,6 @@
         </div>
     </div>
 
-    <!-- O FIRMIE -->
     <section id="firma" class="py-32 bg-[#050505] relative border-b border-zinc-900">
         <div class="container mx-auto px-6 md:px-12">
             <div class="grid lg:grid-cols-2 gap-16 items-start">
@@ -299,7 +282,6 @@
                         </p>
                     </div>
                     
-                    <!-- ANIMOWANE LICZNIKI -->
                     <div class="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-900" id="counter-section">
                         <div>
                             <div class="text-3xl font-display font-bold text-white mb-1"><span class="counter-val" data-target="100">0</span><span class="text-laser">%</span></div>
@@ -326,7 +308,6 @@
         </div>
     </section>
 
-    <!-- KATALOG PRAC -->
     <section id="katalog" class="py-32 bg-black relative border-b border-zinc-900">
         <div class="container mx-auto px-6 md:px-12">
             
@@ -336,7 +317,6 @@
             </div>
 
             <div class="grid lg:grid-cols-3 gap-6">
-                <!-- Usługa 1 -->
                 <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors">
                     <div class="h-64 overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1541888087618-202bc9242d50?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Hale" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
@@ -355,7 +335,6 @@
                     </div>
                 </div>
 
-                <!-- Usługa 2 -->
                 <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors" style="transition-delay: 100ms;">
                     <div class="h-64 overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1621699931853-2bf530f269a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Konstrukcje" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
@@ -374,7 +353,6 @@
                     </div>
                 </div>
 
-                <!-- Usługa 3 -->
                 <div class="group border border-zinc-900 bg-[#050505] flex flex-col gsap-fade-up hover:border-zinc-700 transition-colors" style="transition-delay: 200ms;">
                     <div class="h-64 overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1574689049597-7e6d4c0620fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Spawalnictwo" class="w-full h-full object-cover brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700">
@@ -396,7 +374,6 @@
         </div>
     </section>
 
-    <!-- GALERIA REALIZACJI I DETALI -->
     <section id="galeria" class="py-32 bg-[#050505] border-b border-zinc-900">
         <div class="container mx-auto px-6 md:px-12">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gsap-fade-up">
@@ -405,7 +382,6 @@
                     <h2 class="text-4xl md:text-5xl font-display font-light text-white">Galeria <span class="font-bold">Realizacji</span></h2>
                 </div>
                 
-                <!-- Przyciski filtrów -->
                 <div class="flex flex-wrap gap-2 mt-6 md:mt-0 font-mono text-xs">
                     <button onclick="filterGallery('all', this)" class="filter-btn active px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Wszystkie</button>
                     <button onclick="filterGallery('hale', this)" class="filter-btn px-5 py-2 border border-zinc-800 text-zinc-400 uppercase tracking-wider transition-all">Hale i Magazyny</button>
@@ -415,7 +391,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid">
-                <!-- Karta 1 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="hale">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">HALE I MAGAZYNY</div>
@@ -430,7 +405,6 @@
                     </div>
                 </div>
 
-                <!-- Karta 2 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="stal">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">KONSTRUKCJE CIĘŻKIE</div>
@@ -445,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- Karta 3 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="spawanie">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">SPAWALNICTWO B2B</div>
@@ -460,7 +433,6 @@
                     </div>
                 </div>
 
-                <!-- Karta 4 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="hale">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">HALE I MAGAZYNY</div>
@@ -475,7 +447,6 @@
                     </div>
                 </div>
 
-                <!-- Karta 5 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="stal">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">KONSTRUKCJE CIĘŻKIE</div>
@@ -490,7 +461,6 @@
                     </div>
                 </div>
 
-                <!-- Karta 6 -->
                 <div class="gallery-item group relative overflow-hidden border border-zinc-900 bg-black p-8 flex flex-col justify-between h-64 cursor-pointer hover:border-laser transition-all duration-500" data-category="spawanie">
                     <div>
                         <div class="font-mono text-[10px] text-laser tracking-widest uppercase mb-2">SPAWALNICTWO B2B</div>
@@ -508,7 +478,6 @@
         </div>
     </section>
 
-    <!-- NOWOŚCI / AKTUALNOŚCI TECHNOLOGICZNE -->
     <section id="nowosci" class="py-32 bg-black border-b border-zinc-900 relative">
         <div class="container mx-auto px-6 md:px-12">
             
@@ -518,7 +487,6 @@
             </div>
 
             <div class="grid lg:grid-cols-3 gap-8">
-                <!-- Nowość 1 -->
                 <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group">
                     <div>
                         <div class="flex justify-between items-center mb-6">
@@ -536,7 +504,6 @@
                     </div>
                 </article>
 
-                <!-- Nowość 2 -->
                 <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group" style="transition-delay: 100ms;">
                     <div>
                         <div class="flex justify-between items-center mb-6">
@@ -554,7 +521,6 @@
                     </div>
                 </article>
 
-                <!-- Nowość 3 -->
                 <article class="border border-zinc-900 bg-[#050505] p-8 flex flex-col justify-between gsap-fade-up hover:border-laser hover:shadow-[0_0_30px_rgba(234,0,0,0.15)] transition-all duration-500 group" style="transition-delay: 200ms;">
                     <div>
                         <div class="flex justify-between items-center mb-6">
@@ -575,7 +541,6 @@
         </div>
     </section>
 
-    <!-- PROCES WSPÓŁPRACY -->
     <section id="proces" class="py-32 bg-[#050505] border-b border-zinc-900 overflow-hidden">
         <div class="container mx-auto px-6 md:px-12">
             <div class="text-center mb-20 gsap-fade-up">
@@ -613,7 +578,6 @@
         </div>
     </section>
 
-    <!-- INTERAKTYWNY KONFIGURATOR -->
     <section id="konfigurator" class="py-32 bg-black border-y border-zinc-900 relative">
         <div class="absolute inset-0 bg-grid opacity-10 pointer-events-none"></div>
         <div class="container mx-auto px-6 md:px-12 max-w-5xl relative z-10">
@@ -634,7 +598,6 @@
 
                 <form id="config-form" onsubmit="event.preventDefault(); nextConfigStep('success');">
                     
-                    <!-- KROK 1 -->
                     <div class="config-step active" id="step-1">
                         <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
                             <h3 class="text-xl font-display text-white">Wybierz profil inwestycji</h3>
@@ -684,7 +647,6 @@
                         </div>
                     </div>
 
-                    <!-- KROK 2 -->
                     <div class="config-step" id="step-2">
                         <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
                             <h3 class="text-xl font-display text-white">Gabaryty i Opis</h3>
@@ -728,7 +690,6 @@
                         </div>
                     </div>
 
-                    <!-- KROK 3 -->
                     <div class="config-step" id="step-3">
                          <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
                             <h3 class="text-xl font-display text-white">Wymagania Logistyczne</h3>
@@ -770,7 +731,6 @@
                         </div>
                     </div>
 
-                    <!-- KROK 4 -->
                     <div class="config-step" id="step-4">
                         <div class="flex justify-between items-end mb-8 border-b border-zinc-900 pb-4">
                             <h3 class="text-xl font-display text-white">Autoryzacja Zapytania</h3>
@@ -802,7 +762,6 @@
                         </div>
                     </div>
 
-                    <!-- SUKCES -->
                     <div class="config-step text-center py-16" id="step-success">
                         <div class="w-20 h-20 bg-laser/10 border border-laser rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fa-solid fa-check text-3xl text-laser"></i>
@@ -819,7 +778,6 @@
         </div>
     </section>
 
-    <!-- KONTAKT -->
     <section id="kontakt" class="py-32 bg-[#050505] relative border-t border-zinc-900">
         <div class="container mx-auto px-6 md:px-12">
             <div class="grid lg:grid-cols-2 gap-20 items-center">
@@ -863,7 +821,6 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="bg-black pt-16 pb-8 border-t border-zinc-900">
         <div class="container mx-auto px-6 md:px-12">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-end border-b border-zinc-900 pb-12 mb-8">
@@ -885,14 +842,12 @@
                 <p>&copy; 2026 DANMET (Daniel Mamrot PPHU). Wszelkie prawa zastrzeżone.</p>
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
                     <span>NIP: 8393121790</span>
-                    
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // --- Preloader & Initialization ---
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
             setTimeout(() => {
@@ -905,7 +860,6 @@
             }, 1000);
         });
 
-        // --- Navbar Scroll ---
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -917,7 +871,6 @@
             }
         });
 
-        // --- Mobile Menu ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', () => {
@@ -939,7 +892,6 @@
             });
         });
 
-        // --- Galeria Filtr ---
         function filterGallery(category, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -962,7 +914,6 @@
             });
         }
 
-        // --- GSAP & Animowane Liczniki ---
         function initGSAP() {
             gsap.registerPlugin(ScrollTrigger);
 
@@ -992,7 +943,6 @@
                 }
             });
 
-            // Animacja odliczania statystyk
             const counters = document.querySelectorAll('.counter-val');
             ScrollTrigger.create({
                 trigger: "#counter-section",
@@ -1012,7 +962,6 @@
             });
         }
 
-        // --- Configurator Logic ---
         function nextConfigStep(step) {
             document.querySelectorAll('.config-step').forEach(el => el.classList.remove('active'));
             
@@ -1050,7 +999,6 @@
             nextConfigStep(1);
         }
 
-        // --- Sparks Particle System ---
         function initSparks() {
             const canvas = document.getElementById('sparks');
             if(!canvas) return;
