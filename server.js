@@ -237,7 +237,8 @@ const productSchema = new mongoose.Schema({
     price: { type: Number }
   }],
 
-  allowSet: { type: Boolean, default: true },
+  // POPRAWKA: domyślnie wyłączona opcja zestawów, włączana celowo tylko dla burgerów/dań
+  allowSet: { type: Boolean, default: false },
   addons: [{
     id: { type: String },
     name: { type: String },
