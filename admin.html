@@ -12,7 +12,6 @@
 
   <style>
     :root {
-      /* Palette - Premium Flat */
       --primary: #FF6600;
       --primary-glow: rgba(255, 102, 0, 0.3);
       --bg-body: #F2F4F6;
@@ -41,7 +40,6 @@
       --primary-glow: rgba(255, 102, 0, 0.5);
     }
 
-    /* Morski motyw dla lokalizacji ROWY */
     body.rowy-mode {
       --primary: #0EA5E9; 
       --primary-glow: rgba(14, 165, 233, 0.3);
@@ -137,13 +135,11 @@
       background: var(--primary); border-radius: 4px;
     }
 
-    /* Cards */
     .card {
       background: var(--bg-surface); border: 1px solid var(--border);
       border-radius: var(--radius-l); padding: 24px; margin-bottom: 20px; width: 100%;
     }
 
-    /* Tables */
     .table-container { overflow-x: auto; width: 100%; }
     .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
     .data-table th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
@@ -153,14 +149,12 @@
     .user-info { display: flex; align-items: center; gap: 10px; }
     .avatar { width: 36px; height: 36px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); flex-shrink: 0;}
     
-    /* Badges */
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap;}
     .badge.green { background: rgba(16, 185, 129, 0.1); color: var(--status-ok); }
     .badge.orange { background: rgba(245, 158, 11, 0.1); color: var(--status-warn); }
     .badge.red { background: rgba(239, 68, 68, 0.1); color: var(--status-err); }
     .badge.blue { background: rgba(59, 130, 246, 0.1); color: var(--status-info); }
 
-    /* Forms */
     .form-group { margin-bottom: 20px; width: 100%; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
     .form-control {
@@ -180,7 +174,6 @@
     .btn-outline { border: 1px solid var(--border); background: transparent; color: var(--text-main); }
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-s); }
 
-    /* Toggle Switch */
     .toggle-switch { position: relative; width: 50px; height: 26px; display: inline-block; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -188,7 +181,6 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
     
-    /* Grid for Menu/Stats */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
     .stat-card {
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-l);
@@ -200,23 +192,19 @@
     .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 5px; }
     .stat-label { color: var(--text-sub); font-size: 0.85rem; font-weight: 600; }
 
-    /* Colors for icons */
     .bg-orange { background: rgba(255, 102, 0, 0.1); color: #FF6600; }
     .bg-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
     .bg-green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
     .bg-purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
     .bg-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
 
-    /* View Management */
     .view-section { display: none; animation: fadeIn 0.3s ease; width: 100%; }
     .view-section.active { display: block; }
 
-    /* Godziny otwarcia grid */
     .hours-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
     .hours-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .hours-row .day-label { width: 120px; font-weight: 700; font-size: 1rem; }
 
-    /* Theme Toggle */
     .theme-toggle { 
       position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; 
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; 
@@ -265,7 +253,7 @@
     #btn-accept-alarm:active { transform: scale(0.9); }
 
     /* =========================================
-       RESPONSYWNOŚĆ (TABLETY I TELEFONY)
+       RESPONSYWNOŚĆ
        ========================================= */
     #sidebar-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
@@ -300,7 +288,6 @@
 
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: 1fr; }
-      
       form[onsubmit="awardPoints(event)"] { grid-template-columns: 1fr; gap: 15px; }
       .btn { width: 100%; justify-content: center; margin-top: 5px;}
       
@@ -389,7 +376,7 @@
     <div class="nav-item slupsk-only" onclick="switchView('users', this)"><i class="fas fa-users"></i><span>Baza Klientów</span></div>
     <div class="nav-item" onclick="switchView('reservations', this)"><i class="fas fa-calendar-check"></i><span>Rezerwacje</span></div>
     
-    <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia</span></div>
+    <div class="nav-item" onclick="switchView('orders', this)"><i class="fas fa-shopping-bag"></i><span>Zamówienia & Sklep</span></div>
     
     <div class="nav-item slupsk-only" onclick="switchView('push', this)"><i class="fas fa-bell"></i><span>Powiadomienia Push</span></div>
     <div class="nav-item slupsk-only" onclick="switchView('app-bar', this)"><i class="fas fa-window-maximize"></i><span>Pasek w Aplikacji</span></div>
@@ -670,7 +657,35 @@
       </div>
     </section>
 
+    <!-- ZARZĄDZANIE ZAMÓWIENIAMI I USTAWIENIAMI SKLEPU (ZAMAWIARKI) -->
     <section id="view-orders" class="view-section">
+      <div class="card" style="border: 2px solid var(--primary); background: var(--primary-glow); margin-bottom: 25px;">
+        <div class="section-header" style="margin-bottom: 15px;">Ustawienia Sklepu (Status i Opcje)</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+          <div style="display:flex; align-items:center; gap: 10px; background:var(--bg-surface); padding: 15px; border-radius: var(--radius-m); border:1px solid var(--border);">
+            <label class="toggle-switch" style="margin:0;">
+              <input type="checkbox" id="setting-orders-enabled" checked onchange="saveStoreSettings()">
+              <span class="slider"></span>
+            </label>
+            <strong>Przyjmuj Zamówienia</strong>
+          </div>
+          <div style="display:flex; align-items:center; gap: 10px; background:var(--bg-surface); padding: 15px; border-radius: var(--radius-m); border:1px solid var(--border);">
+            <label class="toggle-switch" style="margin:0;">
+              <input type="checkbox" id="setting-pickup-enabled" checked onchange="saveStoreSettings()">
+              <span class="slider"></span>
+            </label>
+            <strong>Odbiór Osobisty</strong>
+          </div>
+          <div style="display:flex; align-items:center; gap: 10px; background:var(--bg-surface); padding: 15px; border-radius: var(--radius-m); border:1px solid var(--border);">
+            <label class="toggle-switch" style="margin:0;">
+              <input type="checkbox" id="setting-delivery-enabled" onchange="saveStoreSettings()">
+              <span class="slider"></span>
+            </label>
+            <strong>Dostawa pod Adres</strong>
+          </div>
+        </div>
+      </div>
+
       <div class="stats-grid" style="margin-bottom:20px;">
         <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-new">0</div><div class="stat-label">Oczekujących</div></div>
         <div class="stat-card" style="padding:15px; background:var(--bg-body); border:none;"><div class="stat-value" id="orders-stat-prep">0</div><div class="stat-label">W realizacji</div></div>
@@ -868,6 +883,7 @@
       </div>
     </section>
 
+    <!-- ZARZĄDZANIE MENU (PRODUKTY, WARIANTY, ZESTAWY I DODATKI) -->
     <section id="view-menu" class="view-section">
       <div class="card" id="product-form-card">
         <div class="section-header" id="product-form-header">Dodaj nowy produkt do Menu</div>
@@ -875,7 +891,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="form-group">
               <label>Nazwa produktu</label>
-              <input type="text" id="prod-name" class="form-control" required placeholder="np. Shake Oreo">
+              <input type="text" id="prod-name" class="form-control" required placeholder="np. Shake Oreo / Burger Drwal">
             </div>
             <div class="form-group" id="regular-price-group">
               <label>Cena (PLN)</label>
@@ -883,21 +899,31 @@
             </div>
           </div>
           
-          <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m);">
-            <label class="toggle-switch" style="margin: 0;">
-              <input type="checkbox" id="prod-has-variants" onchange="toggleVariantUI()">
-              <span class="slider"></span>
-            </label>
-            <strong>Produkt posiada różne wielkości/rozmiary</strong>
+          <!-- OPCJE KIOSKOWE (MCDONALD STYLE) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m); margin:0;">
+              <label class="toggle-switch" style="margin: 0;">
+                <input type="checkbox" id="prod-has-variants" onchange="toggleVariantUI()">
+                <span class="slider"></span>
+              </label>
+              <strong>Wiele rozmiarów / wariantów</strong>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m); margin:0;">
+              <label class="toggle-switch" style="margin: 0;">
+                <input type="checkbox" id="prod-allow-set" checked>
+                <span class="slider"></span>
+              </label>
+              <strong>Opcja powiększenia do ZESTAWU (+10 zł)</strong>
+            </div>
           </div>
 
           <div id="variants-container" style="display: none; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; padding-left: 15px; border-left: 3px solid var(--primary);">
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-              <input type="text" id="var-name-1" class="form-control" placeholder="Nazwa (np. Mały)">
+              <input type="text" id="var-name-1" class="form-control" placeholder="Nazwa (np. Mały / Standard)">
               <input type="number" step="0.01" id="var-price-1" class="form-control" placeholder="Cena">
             </div>
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-              <input type="text" id="var-name-2" class="form-control" placeholder="Nazwa (np. Średni)">
+              <input type="text" id="var-name-2" class="form-control" placeholder="Nazwa (np. Średni / Podwójny)">
               <input type="number" step="0.01" id="var-price-2" class="form-control" placeholder="Cena">
             </div>
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
@@ -906,10 +932,31 @@
             </div>
           </div>
 
+          <!-- POLECANE DODATKI I SOSY (CHECKBOXY W MODALU) -->
+          <div class="form-group" style="padding: 15px; background: var(--bg-body); border-radius: var(--radius-m);">
+            <label style="margin-bottom: 10px;">Dodatki i sosy (opcjonalne, do doklikania dla klienta):</label>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 8px;">
+              <input type="text" id="addon-name-1" class="form-control" placeholder="Dodatek #1 (np. Sos Czosnkowy / Ser Cheddar)">
+              <input type="number" step="0.01" id="addon-price-1" class="form-control" placeholder="Cena">
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 8px;">
+              <input type="text" id="addon-name-2" class="form-control" placeholder="Dodatek #2 (np. Jalapeno)">
+              <input type="number" step="0.01" id="addon-price-2" class="form-control" placeholder="Cena">
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+              <input type="text" id="addon-name-3" class="form-control" placeholder="Dodatek #3 (np. Bekon prażony)">
+              <input type="number" step="0.01" id="addon-price-3" class="form-control" placeholder="Cena">
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Kategoria docelowa</label>
             <select id="prod-category" class="form-control" required>
               <option value="" disabled selected>Wybierz kategorię...</option>
+              <option value="burgery" style="font-weight:bold;">🍔 Burgery</option>
+              <option value="startery" style="font-weight:bold;">🍟 Startery</option>
+              <option value="kanapki" style="font-weight:bold;">🥪 Kanapki</option>
+              <option value="dania_glowne" style="font-weight:bold;">🍽️ Dania główne</option>
               <optgroup label="Shakes">
                 <option value="shakes_klasyczne">Klasyczne</option>
                 <option value="shakes_owocowe">Owocowe</option>
@@ -922,13 +969,7 @@
                 <option value="desery_gofry">Gofry amerykańskie</option>
                 <option value="desery_pancakes">Pancakes</option>
               </optgroup>
-              <option value="burgery" style="font-weight:bold;">🍔 Burgery (Brak podkategorii)</option>
-              <optgroup label="Lunch">
-                <option value="lunch_startery">Startery</option>
-                <option value="lunch_kanapki">Kanapki</option>
-                <option value="lunch_dania">Dania główne</option>
-              </optgroup>
-              <option value="sniadania" style="font-weight:bold;">🍳 Śniadania (Brak podkategorii)</option>
+              <option value="sniadania" style="font-weight:bold;">🍳 Śniadania</option>
               <optgroup label="Mexico">
                 <option value="mexico_quesadillas">Tex-mex quesadias</option>
                 <option value="mexico_fajita">Fajita</option>
@@ -936,13 +977,13 @@
                 <option value="mexico_salaty">Sałaty</option>
                 <option value="mexico_churros">Churros</option>
               </optgroup>
-              <option value="napoje" style="font-weight:bold;">☕ Kawa i napoje (Brak podkategorii)</option>
+              <option value="napoje" style="font-weight:bold;">☕ Kawa i napoje</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>Krótki opis</label>
-            <input type="text" id="prod-desc" class="form-control" placeholder="np. Lody waniliowe, ciasteczka oreo, bita śmietana...">
+            <input type="text" id="prod-desc" class="form-control" placeholder="np. 100% wołowiny, ser panierowany, sos autorski...">
           </div>
 
           <div class="form-group">
@@ -974,8 +1015,8 @@
             <thead>
               <tr>
                 <th>Miniatura</th>
-                <th>Nazwa</th>
-                <th>ID Kategorii</th>
+                <th>Nazwa i Opis</th>
+                <th>Kategoria</th>
                 <th>Cena / Rozmiary</th>
                 <th>Akcja</th>
               </tr>
@@ -1135,7 +1176,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="section-header">Raport kosztowy (Luty 2026)</div>
+        <div class="section-header">Raport kosztowy</div>
         <div class="table-container">
           <table class="data-table">
             <thead><tr><th>Pracownik</th><th>Stawka/h</th><th>Godziny</th><th>Premie</th><th>Suma do wypłaty</th></tr></thead>
@@ -1285,7 +1326,6 @@
       loadDashboardStats(); 
     }
 
-
     // --- ZARZĄDZANIE BANERAMI (APP & WEB) ---
     function updateBannerPreview(target) {
       const isActive = document.getElementById(`${target}-bar-active`).checked;
@@ -1311,7 +1351,7 @@
         
         if (data.success && data.data) {
           data.data.forEach(banner => {
-            const target = banner.target; // 'app' lub 'web'
+            const target = banner.target;
             const activeCheckbox = document.getElementById(`${target}-bar-active`);
             const textInput = document.getElementById(`${target}-bar-text`);
             const colorInput = document.getElementById(`${target}-bar-color`);
@@ -1355,7 +1395,7 @@
       }
     }
 
-    // --- ZARZĄDZANIE GODZINAMI OTWARCIA (NOWE) ---
+    // --- ZARZĄDZANIE GODZINAMI OTWARCIA ---
     function toggleDayHours(day) {
       const isActive = document.getElementById(`hours-${day}-active`).checked;
       document.getElementById(`hours-${day}-from`).disabled = !isActive;
@@ -1433,7 +1473,7 @@
         'prepaid': 'Portfel Pre-paid',
         'users': 'Baza Klientów',
         'reservations': 'Rezerwacje',
-        'orders': 'Zamówienia',
+        'orders': 'Zamówienia & Ustawienia Sklepu',
         'push': 'Powiadomienia Push',
         'app-bar': 'Pasek w Aplikacji',
         'web-bar': 'Pasek na WWW',
@@ -1468,13 +1508,13 @@
       } else if (viewId === 'menu') {
         loadMenuProducts();
       } else if (viewId === 'orders') {
-        loadAllOrders(); 
+        loadAllOrders();
+        loadStoreSettings();
       } else if (viewId === 'hours') {
         loadHoursSettings();
       }
     }
 
-    // --- THEME & LOGOUT ---
     function toggleAdminTheme() {
       document.body.classList.toggle('dark-mode');
     }
@@ -1677,7 +1717,7 @@
       beepInterval = setInterval(() => {
         const osc = audioCtx.createOscillator();
         osc.connect(audioCtx.destination);
-        osc.type = 'square';
+        osc.type = 'square'; 
         osc.frequency.value = 880; 
         osc.start();
         osc.stop(audioCtx.currentTime + 0.15); 
@@ -1814,7 +1854,7 @@
       const itemsText = order.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
       
       document.getElementById('order-alarm-details').innerHTML = 
-        `${order.customerName} • ${order.totalAmount.toFixed(2)} PLN<br>Na godzinę: <strong>${order.pickupTime}</strong><br><br><span style="font-size: 1.2rem;">${itemsText}</span>`;
+        `${order.customerName} • ${order.totalAmount.toFixed(2)} PLN<br>Realizacja na: <strong>${order.pickupTime}</strong><br><br><span style="font-size: 1.2rem;">${itemsText}</span>`;
       
       document.getElementById('order-alarm').style.display = 'flex';
       
@@ -1886,12 +1926,12 @@
                       <td>
                         <div style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:5px;">${order.orderNumber}</div>
                         <span style="color:var(--text-sub); font-size: 0.8rem;">${dateStr}</span><br>
-                        <strong>Odbiór: ${order.pickupTime}</strong>
+                        <strong>Czas: ${order.pickupTime}</strong>
                       </td>
                       <td><strong>${order.customerName}</strong><br><span style="font-size:0.8rem; color:var(--text-sub);">${order.customerPhone}</span></td>
                       <td><span style="font-size: 0.85rem;">${itemsList}</span><br><em style="font-size:0.75rem; color:var(--status-warn);">${order.notes || ''}</em></td>
                       <td><strong style="color:var(--primary);">${order.totalAmount.toFixed(2)} zł</strong></td>
-                      <td><i class="fas fa-store"></i> Odbiór</td>
+                      <td><i class="fas fa-${order.deliveryMethod === 'delivery' ? 'motorcycle' : 'store'}"></i> ${order.deliveryMethod === 'delivery' ? 'Dostawa' : 'Odbiór'}</td>
                       <td>
                         <select class="form-control" style="width: auto; padding: 5px; font-weight: bold; font-size: 0.8rem;" onchange="changeOrderStatus('${order._id}', this.value)">
                           <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ Oczekuje</option>
@@ -1929,10 +1969,47 @@
         }
     }
 
+    // --- USTAWIENIA SKLEPU (ZAMAWIARKI) ---
+    async function loadStoreSettings() {
+      try {
+        const res = await fetch(`/api/admin/settings?location=${currentLocation}`);
+        const data = await res.json();
+        if (data.success && data.settings) {
+          document.getElementById('setting-orders-enabled').checked = data.settings.ordersEnabled;
+          document.getElementById('setting-pickup-enabled').checked = data.settings.pickupEnabled;
+          document.getElementById('setting-delivery-enabled').checked = data.settings.deliveryEnabled;
+        }
+      } catch (err) {
+        console.log('Brak ustawień sklepu pod adresem /api/admin/settings');
+      }
+    }
+
+    async function saveStoreSettings() {
+      const payload = {
+        location: currentLocation,
+        ordersEnabled: document.getElementById('setting-orders-enabled').checked,
+        pickupEnabled: document.getElementById('setting-pickup-enabled').checked,
+        deliveryEnabled: document.getElementById('setting-delivery-enabled').checked
+      };
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if(res.ok) {
+          showToast('Ustawienia sklepu zapisane!', 'success');
+        }
+      } catch (err) {
+        showToast('Błąd przy zapisywaniu ustawień sklepu.', 'error');
+      }
+    }
+
     setInterval(checkNewOrders, 3000);
 
     // =====================================
-    // PORTFEL PRE-PAID (WYSZUKIWANIE / ZARZĄDZANIE)
+    // PORTFEL PRE-PAID
     // =====================================
     let currentWalletUserId = null;
 
@@ -1992,7 +2069,6 @@
         }
     }
 
-    // --- ŁADOWANIE HISTORII PRE-PAID ---
     async function loadWalletTransactions() {
         const tbody = document.getElementById('wallet-transactions-body');
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Ładowanie historii...</td></tr>';
@@ -2035,7 +2111,7 @@
     }
 
     // =====================================
-    // ZARZĄDZANIE BAZĄ KLIENTÓW (USERS)
+    // BAZA KLIENTÓW (USERS)
     // =====================================
     let allUsersData = [];
     let currentSelectedUserId = null;
@@ -2198,7 +2274,6 @@
     let editingProductId = null;
     let selectedImageFile = null;
 
-    // Przełączanie widoczności logiki z wariantami
     function toggleVariantUI() {
       const hasVariants = document.getElementById('prod-has-variants').checked;
       document.getElementById('variants-container').style.display = hasVariants ? 'grid' : 'none';
@@ -2238,7 +2313,6 @@
           json.data.forEach(prod => {
             let priceDisplay = '';
             
-            // Formatowanie wyświetlania ceny, jeśli są warianty
             if (prod.hasVariants && prod.variants && prod.variants.length > 0) {
                 const minPrice = Math.min(...prod.variants.map(v => v.price));
                 priceDisplay = `<strong style="color:var(--primary);">od ${minPrice.toFixed(2)} PLN</strong><br><small style="color:var(--text-sub); font-size:0.75rem;">(${prod.variants.length} warianty)</small>`;
@@ -2277,8 +2351,8 @@
       document.getElementById('prod-name').value = prod.name;
       document.getElementById('prod-category').value = prod.categoryId;
       document.getElementById('prod-desc').value = prod.description || '';
+      document.getElementById('prod-allow-set').checked = prod.allowSet !== false;
       
-      // Wczytywanie istniejącego zdjęcia
       document.getElementById('prod-img-url').value = prod.imageUrl;
       document.getElementById('img-preview').src = prod.imageUrl;
       document.getElementById('img-preview-container').style.display = 'block';
@@ -2308,6 +2382,17 @@
          }
       }
 
+      // Wczytanie dodatków do pól
+      for(let i=1; i<=3; i++) {
+         if (prod.addons && prod.addons[i-1]) {
+            document.getElementById(`addon-name-${i}`).value = prod.addons[i-1].name;
+            document.getElementById(`addon-price-${i}`).value = prod.addons[i-1].price;
+         } else {
+            document.getElementById(`addon-name-${i}`).value = '';
+            document.getElementById(`addon-price-${i}`).value = '';
+         }
+      }
+
       document.getElementById('product-form-header').innerText = 'Edytuj pozycję w Menu';
       document.getElementById('product-submit-btn').innerHTML = '<i class="fas fa-save"></i> Zapisz zmiany';
       document.getElementById('product-cancel-btn').style.display = 'inline-flex';
@@ -2319,19 +2404,19 @@
       editingProductId = null;
       document.getElementById('add-product-form').reset();
       
-      // Reset zdjęć
       selectedImageFile = null;
       document.getElementById('img-preview-container').style.display = 'none';
       document.getElementById('img-preview').src = '';
       document.getElementById('prod-img-url').value = '';
       document.getElementById('prod-img-label').innerText = "Zrób zdjęcie lub wybierz plik";
       
-      // Reset wariantów
       document.getElementById('prod-has-variants').checked = false;
       toggleVariantUI();
       for(let i=1; i<=3; i++) {
           document.getElementById(`var-name-${i}`).value = '';
           document.getElementById(`var-price-${i}`).value = '';
+          document.getElementById(`addon-name-${i}`).value = '';
+          document.getElementById(`addon-price-${i}`).value = '';
       }
 
       document.getElementById('product-form-header').innerText = 'Dodaj nowy produkt do Menu';
@@ -2401,6 +2486,16 @@
         }
       }
 
+      // Pakowanie płatnych dodatków
+      let addons = [];
+      for(let i=1; i<=3; i++) {
+        const adName = document.getElementById(`addon-name-${i}`).value;
+        const adPrice = document.getElementById(`addon-price-${i}`).value;
+        if (adName && adPrice) {
+          addons.push({ id: `addon-${Date.now()}-${i}`, name: adName, price: parseFloat(adPrice) });
+        }
+      }
+
       const payload = {
         name: document.getElementById('prod-name').value,
         price: hasVariants ? null : parseFloat(document.getElementById('prod-price').value),
@@ -2409,7 +2504,9 @@
         imageUrl: finalImageUrl,
         location: currentLocation,
         hasVariants: hasVariants,
-        variants: variants
+        variants: variants,
+        allowSet: document.getElementById('prod-allow-set').checked,
+        addons: addons
       };
 
       const url = editingProductId ? `/api/admin/menu/${editingProductId}` : '/api/admin/menu';
@@ -2448,7 +2545,6 @@
         }
       } catch(err) {}
     }
-
 
     // --- WORKMI TEAM LOGIC ---
     async function fetchTeam() {
