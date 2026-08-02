@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
-const multer = require('multer'); // Dodane: do obsługi plików (zdjęć)
-const fs = require('fs'); // Dodane: do obsługi systemu plików
+const multer = require('multer'); // do obsługi plików (zdjęć)
+const fs = require('fs'); // do obsługi systemu plików
 
 const app = express();
 
@@ -194,6 +194,9 @@ const orderSchema = new mongoose.Schema({
   items: Array, // Tablica z produktami (id, nazwa, cena, ilosc)
   totalAmount: Number,
   paymentMethod: String,
+  deliveryMethod: { type: String, default: 'pickup' }, // 'pickup' lub 'delivery'
+  deliveryAddress: { type: String, default: '' },
+  location: { type: String, default: 'slupsk' },
   status: { type: String, default: 'pending' }, // 'pending', 'awaiting_payment', 'preparing', 'completed', 'cancelled'
   createdAt: { type: Date, default: Date.now }
 });
@@ -211,21 +214,42 @@ const bannerSchema = new mongoose.Schema({
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
-// --- SCHEMAT PRODUKTU (MENU) ---
+// --- SCHEMAT USTAWIEN LOKALU (ZAMAWIARKI - DOSTAWA, ODBIÓR, BLOKADA) ---
+const storeSettingsSchema = new mongoose.Schema({
+  location: { type: String, required: true, unique: true }, // 'slupsk' lub 'rowy'
+  ordersEnabled: { type: Boolean, default: true },
+  pickupEnabled: { type: Boolean, default: true },
+  deliveryEnabled: { type: Boolean, default: false },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const StoreSettings = mongoose.model('StoreSettings', storeSettingsSchema);
+
+// --- SCHEMAT PRODUKTU (MENU Z OPCJAMI KIOSKOWYMI MCDONALD STYLE) ---
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, default: '' },
   price: { type: Number }, 
   imageUrl: { type: String, required: true },
   categoryId: { type: String, required: true },
+  location: { type: String, default: 'slupsk' },
   
-  // NOWE POLA: Warianty wielkości
+  // Opcje wariantów wielkości
   hasVariants: { type: Boolean, default: false },
   variants: [{
     name: { type: String },
     price: { type: Number }
   }],
 
+  // Opcje dodatkowe z McDonald's (Zestawy + Dodatki)
+  allowSet: { type: Boolean, default: true }, // czy proponować ZESTAW (+10 zł)
+  addons: [{
+    id: { type: String },
+    name: { type: String },
+    price: { type: Number }
+  }],
+
+  isBestseller: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -274,7 +298,6 @@ async function getPayUToken() {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
   
-  // Zamiast od razu parsując jako JSON, czytamy to jako tekst
   const text = await response.text(); 
   
   try {
@@ -307,13 +330,13 @@ app.post('/api/admin/login', (req, res) => {
 // 2. Pobieranie statystyk do Dashboardu
 app.get('/api/admin/stats', async (req, res) => {
     try {
+        const location = req.query.location || 'slupsk';
         const totalUsers = await User.countDocuments();
         const totalReservations = await Reservation.countDocuments();
-        const totalOrders = await Order.countDocuments();
+        const totalOrders = await Order.countDocuments({ location: location });
         const usersWithPoints = await User.countDocuments({ points: { $gte: 1 } });
         const activePrepaidCards = await User.countDocuments({ walletBalance: { $gte: 1 } });
 
-        // OPTYMALIZACJA: Jedna agregacja zamiast trzech osobnych
         const statsAgg = await User.aggregate([
             { 
                 $group: { 
@@ -351,7 +374,6 @@ app.get('/api/admin/stats', async (req, res) => {
 // 3. Pobierz wszystkich użytkowników (Baza Klientów)
 app.get('/api/admin/users', async (req, res) => {
     try {
-        // Zwracamy wszystkie dane z wyjątkiem hasła
         const users = await User.find({}, '-password').sort({ createdAt: -1 });
         res.json({ success: true, data: users });
     } catch (err) {
@@ -384,7 +406,6 @@ app.post('/api/admin/users/:id/points', async (req, res) => {
             user.history.unshift({ text: `- ${numAmount} pkt • ${reason || 'Odjęte przez admina'}` });
         }
 
-        // Ograniczamy historię na koncie klienta do 20 wpisów
         if(user.history.length > 20) {
             user.history.pop();
         }
@@ -418,21 +439,18 @@ app.post('/api/admin/award-points', async (req, res) => {
 
         const cleanId = identifier.trim().toLowerCase();
         
-        // Szukamy po mailu LUB telefonie
         const user = await User.findOne({ $or: [{ email: cleanId }, { phone: cleanId }] });
         
         if (!user) {
             return res.status(404).json({ success: false, message: 'Nie znaleziono klienta w bazie.' });
         }
 
-        // Algorytm 10 zł = 1 punkt (zaokrąglanie w dół)
         const points = Math.floor(Number(amountSpent) / 10);
         
         if (points <= 0) {
             return res.status(400).json({ success: false, message: 'Kwota jest za mała (min. 10 PLN).' });
         }
 
-        // Aktualizacja użytkownika
         user.points += points;
         user.history.unshift({ text: `+ ${points} pkt • Zakupy w lokalu` });
         
@@ -442,7 +460,6 @@ app.post('/api/admin/award-points', async (req, res) => {
         
         await user.save();
 
-        // Zapis transakcji do globalnej historii panelu admina
         const tx = new PointTransaction({
             userDisplay: `${user.username} (${user.phone})`,
             amountSpent: Number(amountSpent),
@@ -530,7 +547,6 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
         }
         await user.save();
 
-        // Zapis transakcji do globalnej historii panelu admina
         const tx = new WalletTransaction({
             userDisplay: `${user.username} (${user.phone})`,
             amount: numAmount,
@@ -555,12 +571,84 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
 });
 
 // ==========================================
+// --- API USTAWIEN LOKALU (ZAMAWIARKI) ---
+// ==========================================
+
+// POBIERANIE USTAWIEŃ (Dla aplikacji klienta i panelu admina)
+app.get('/api/settings', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    const settings = await StoreSettings.findOne({ location: location });
+
+    if (settings) {
+      res.json({ success: true, data: settings });
+    } else {
+      res.json({
+        success: true,
+        data: {
+          location: location,
+          ordersEnabled: true,
+          pickupEnabled: true,
+          deliveryEnabled: false
+        }
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania ustawień sklepu.' });
+  }
+});
+
+// ALIAS DLA PANELU ADMINA
+app.get('/api/admin/settings', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    let settings = await StoreSettings.findOne({ location: location });
+    if (!settings) {
+      settings = { location: location, ordersEnabled: true, pickupEnabled: true, deliveryEnabled: false };
+    }
+    res.json({ success: true, settings: settings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania ustawień admina.' });
+  }
+});
+
+// ZAPIS/AKTUALIZACJA USTAWIEŃ LOKALU (Tylko Admin)
+app.post('/api/admin/settings', async (req, res) => {
+  try {
+    const { location = 'slupsk', ordersEnabled, pickupEnabled, deliveryEnabled } = req.body;
+    
+    const updated = await StoreSettings.findOneAndUpdate(
+      { location: location },
+      {
+        ordersEnabled: Boolean(ordersEnabled),
+        pickupEnabled: Boolean(pickupEnabled),
+        deliveryEnabled: Boolean(deliveryEnabled),
+        updatedAt: Date.now()
+      },
+      { new: true, upsert: true }
+    );
+
+    res.json({ success: true, message: 'Ustawienia lokalu zaktualizowane', data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd przy zapisywaniu ustawień.' });
+  }
+});
+
+// ==========================================
 // --- API ZAMÓWIEŃ (ORDERS) ---
 // ==========================================
 
 // KLIENCI - Złożenie nowego zamówienia z poziomu aplikacji
 app.post('/api/orders', async (req, res) => {
   try {
+    const { location = 'slupsk' } = req.body;
+
+    // Sprawdzamy czy lokal nie jest zamknięty przez admina
+    const storeSettings = await StoreSettings.findOne({ location: location });
+    if (storeSettings && !storeSettings.ordersEnabled) {
+      return res.status(403).json({ success: false, message: 'Lokal jest w tej chwili zamknięty na zamówienia online.' });
+    }
+
     let counter = await Counter.findOneAndUpdate(
       { id: 'orderNum' },
       { $inc: { seq: 1 } },
@@ -579,6 +667,7 @@ app.post('/api/orders', async (req, res) => {
 
     const newOrder = new Order({
         ...req.body,
+        location: location,
         orderNumber: orderNumber,
         status: initialStatus
     });
@@ -616,10 +705,9 @@ app.post('/api/orders', async (req, res) => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payuOrderData),
-        redirect: 'manual' // <--- BLOKADA AUTOMATYCZNEGO PRZEKIEROWANIA DO HTML
+        redirect: 'manual'
       });
       
-      // PayU standardowo zwraca status 302 i link w nagłówku Location
       const locationHeader = payuRes.headers.get('location');
       
       if (payuRes.status === 302 && locationHeader) {
@@ -632,7 +720,6 @@ app.post('/api/orders', async (req, res) => {
           });
       }
 
-      // Jeśli status to nie 302, sprawdzamy co dostaliśmy
       const textResponse = await payuRes.text();
       let payuData;
       
@@ -648,7 +735,6 @@ app.post('/api/orders', async (req, res) => {
           throw new Error(`Błąd bramki PayU: ${payuRes.status}`);
       }
 
-      // Jeśli PayU zwróciło link w body JSON
       return res.json({ 
         success: true, 
         redirectUrl: payuData.redirectUri, 
@@ -698,10 +784,11 @@ app.get('/api/orders/:id', async (req, res) => {
     }
 });
 
-// ADMIN - Pobranie nowych zamówień do ALARMU (Tylko oczekujące)
+// ADMIN - Pobranie nowych zamówień do ALARMU (Tylko oczekujące z wybranej lokalizacji)
 app.get('/api/admin/orders/pending', async (req, res) => {
   try {
-    const pendingOrders = await Order.find({ status: 'pending' }).sort({ createdAt: 1 });
+    const location = req.query.location || 'slupsk';
+    const pendingOrders = await Order.find({ status: 'pending', location: location }).sort({ createdAt: 1 });
     res.json({ success: true, data: pendingOrders });
   } catch (err) {
     res.status(500).json({ success: false });
@@ -711,7 +798,8 @@ app.get('/api/admin/orders/pending', async (req, res) => {
 // ADMIN - Pobranie wszystkich zamówień do tabeli
 app.get('/api/admin/orders', async (req, res) => {
   try {
-    const allOrders = await Order.find().sort({ createdAt: -1 });
+    const location = req.query.location || 'slupsk';
+    const allOrders = await Order.find({ location: location }).sort({ createdAt: -1 });
     res.json({ success: true, data: allOrders });
   } catch (err) {
     res.status(500).json({ success: false });
@@ -749,7 +837,7 @@ app.post('/api/reservations', async (req, res) => {
       guests,
       zone,
       notes,
-      status: 'pending' // to wyzwoli alarm w panelu admina
+      status: 'pending'
     });
 
     await newReservation.save();
@@ -782,7 +870,7 @@ app.get('/api/admin/reservations', async (req, res) => {
   }
 });
 
-// 3. PANEL ADMINA - Zmiana statusu rezerwacji (np. akceptacja z alarmu lub z tabeli)
+// 3. PANEL ADMINA - Zmiana statusu rezerwacji
 app.post('/api/admin/reservations/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -793,7 +881,7 @@ app.post('/api/admin/reservations/:id/status', async (req, res) => {
   }
 });
 
-// 4. PANEL ADMINA - Trwałe usuwanie rezerwacji (z tabeli)
+// 4. PANEL ADMINA - Trwałe usuwanie rezerwacji
 app.delete('/api/admin/reservations/:id', async (req, res) => {
   try {
     await Reservation.findByIdAndDelete(req.params.id);
@@ -807,13 +895,12 @@ app.delete('/api/admin/reservations/:id', async (req, res) => {
 // --- API BANERÓW (PASKÓW INFORMACYJNYCH) ---
 // ==========================================
 
-// ZAPISYWANIE/AKTUALIZACJA BANERÓW PRZEZ ADMINA
 app.post('/api/admin/banners', async (req, res) => {
   try {
     const { target, isActive, text, backgroundColor } = req.body;
     
     const banner = await Banner.findOneAndUpdate(
-      { target: target }, // Szukamy po polu 'target' ('app' lub 'web')
+      { target: target },
       { isActive, text, backgroundColor, updatedAt: Date.now() },
       { new: true, upsert: true }
     );
@@ -825,7 +912,6 @@ app.post('/api/admin/banners', async (req, res) => {
   }
 });
 
-// POBIERANIE BANERÓW (Dla aplikacji i WWW)
 app.get('/api/banners', async (req, res) => {
   try {
     const banners = await Banner.find({});
@@ -836,13 +922,14 @@ app.get('/api/banners', async (req, res) => {
 });
 
 // ==========================================
-// --- API MENU (PRODUKTY) ---
+// --- API MENU (PRODUKTY - MCDONALD STYLE) ---
 // ==========================================
 
 // POBIERANIE CAŁEGO MENU (Dla aplikacji klienckiej i admina)
 app.get('/api/menu', async (req, res) => {
   try {
-    const products = await Product.find().sort({ categoryId: 1, name: 1 });
+    const location = req.query.location || 'slupsk';
+    const products = await Product.find({ location: location }).sort({ categoryId: 1, name: 1 });
     res.json({ success: true, data: products });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd pobierania menu.' });
@@ -852,7 +939,10 @@ app.get('/api/menu', async (req, res) => {
 // DODAWANIE NOWEGO PRODUKTU (Tylko Admin)
 app.post('/api/admin/menu', async (req, res) => {
   try {
-    const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
+    const { 
+      name, description, price, imageUrl, categoryId, 
+      location = 'slupsk', hasVariants, variants, allowSet, addons 
+    } = req.body;
     
     if (!name || !imageUrl || !categoryId) {
       return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
@@ -862,7 +952,11 @@ app.post('/api/admin/menu', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Wypełnij cenę dla produktu bez wariantów.' });
     }
 
-    const newProduct = new Product({ name, description, price, imageUrl, categoryId, hasVariants, variants });
+    const newProduct = new Product({ 
+      name, description, price, imageUrl, categoryId, 
+      location, hasVariants, variants, allowSet, addons 
+    });
+    
     await newProduct.save();
     
     res.json({ success: true, product: newProduct, message: 'Produkt dodany do menu!' });
@@ -874,7 +968,10 @@ app.post('/api/admin/menu', async (req, res) => {
 // AKTUALIZACJA PRODUKTU (EDYTKOWANIE - Tylko Admin)
 app.put('/api/admin/menu/:id', async (req, res) => {
   try {
-    const { name, description, price, imageUrl, categoryId, hasVariants, variants } = req.body;
+    const { 
+      name, description, price, imageUrl, categoryId, 
+      location = 'slupsk', hasVariants, variants, allowSet, addons 
+    } = req.body;
     
     if (!name || !imageUrl || !categoryId) {
       return res.status(400).json({ success: false, message: 'Wypełnij wymagane pola.' });
@@ -886,8 +983,8 @@ app.put('/api/admin/menu/:id', async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, description, price, imageUrl, categoryId, hasVariants, variants },
-      { new: true } // Zwraca zaktualizowany dokument
+      { name, description, price, imageUrl, categoryId, location, hasVariants, variants, allowSet, addons },
+      { new: true }
     );
     
     if (!updatedProduct) {
@@ -915,7 +1012,6 @@ app.post('/api/admin/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'Brak pliku' });
   }
-  // Zwracamy ścieżkę do zapisanego pliku
   const imageUrl = `/uploads/${req.file.filename}`;
   res.json({ success: true, imageUrl: imageUrl });
 });
@@ -928,9 +1024,8 @@ app.post('/api/admin/upload', upload.single('image'), (req, res) => {
 app.post('/api/admin/hours', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
-    const scheduleData = req.body; // Zawiera obiekt z dniami: mon, tue, wed...
+    const scheduleData = req.body;
 
-    // Zapisujemy lub aktualizujemy (upsert) godziny dla danej lokalizacji
     const updatedHours = await LocationHours.findOneAndUpdate(
       { location: location },
       { schedule: scheduleData, updatedAt: Date.now() },
@@ -944,7 +1039,7 @@ app.post('/api/admin/hours', async (req, res) => {
   }
 });
 
-// 2. POBIERANIE GODZIN (Strona główna WWW oraz Panel Admina)
+// 2. POBIERANIE GODZIN
 app.get('/api/hours', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -953,7 +1048,6 @@ app.get('/api/hours', async (req, res) => {
     if (hoursDoc && hoursDoc.schedule) {
       res.json({ success: true, data: hoursDoc.schedule });
     } else {
-      // Jeśli jeszcze nie zapisano żadnych godzin dla lokalizacji
       res.json({ success: false, message: 'Brak ustawionych godzin dla tej lokalizacji.' });
     }
   } catch (err) {
@@ -962,7 +1056,7 @@ app.get('/api/hours', async (req, res) => {
 });
 
 // ==========================================
-// --- API APLIKACJI (KLIENCI) ---
+// --- API APLIKACJI (KLIENCI - PROGRAM LOJALNOŚCIOWY) ---
 // ==========================================
 
 // --- API: WYMIANA PUNKTÓW NA DOŁADOWANIE PORTFELA (vPLN) ---
@@ -975,16 +1069,10 @@ app.post('/api/rewards/exchange', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Niewystarczająca liczba punktów.' });
         }
 
-        // 1. Odjęcie punktów
         user.points -= pointsCost;
-        
-        // 2. Dodanie punktów do statystyk wydanych
         user.redeemedPoints = (user.redeemedPoints || 0) + pointsCost; 
-
-        // 3. Automatyczne dodanie środków do portfela vPLN
         user.walletBalance = (user.walletBalance || 0) + vplnAmount;
         
-        // 4. Wpisy do historii klienta
         user.history.unshift({ text: `- ${pointsCost} pkt • Kupiono bon do portfela` });
         user.history.unshift({ text: `+ ${vplnAmount} PLN • Zasilenie z punktów lojalnościowych` });
         
@@ -994,7 +1082,6 @@ app.post('/api/rewards/exchange', async (req, res) => {
 
         await user.save();
 
-        // 5. Zapis transakcji do panelu admina (Zaksięgowane w Pre-paid)
         const tx = new WalletTransaction({
             userDisplay: `${user.username} (${user.phone})`,
             amount: vplnAmount,
@@ -1091,7 +1178,6 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({
       message: 'Zalogowano pomyślnie.',
       token,
-      // Zwracamy dane do aplikacji frontowej
       user: {
         id: user._id,
         username: user.username,
@@ -1109,7 +1195,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- POBIERANIE DANYCH UŻYTKOWNIKA (odświeżanie po stronie klienta) ---
+// --- POBIERANIE DANYCH UŻYTKOWNIKA ---
 app.get('/api/milkpoints/my', async (req, res) => {
   try {
       const email = req.query.email;
