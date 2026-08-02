@@ -896,7 +896,6 @@ function selectInitialDelivery(method) {
 
     document.getElementById('checkout-delivery-method').value = method;
     
-    // Pokaż/ukryj pole adresu w formularzu checkoutu w zależności od metody
     const addrGroup = document.getElementById('address-group');
     const addrInput = document.getElementById('checkout-address');
     const timeLabel = document.getElementById('time-label');
@@ -1243,7 +1242,6 @@ async function fetchStoreSettings() {
 }
 
 function applyStoreSettings() {
-    // 1. Sprawdź czy sklep jest w ogóle otwarty
     const overlay = document.getElementById('store-closed-overlay');
     if (!storeSettings.ordersEnabled) {
         overlay.classList.add('active');
@@ -1252,7 +1250,6 @@ function applyStoreSettings() {
         overlay.classList.remove('active');
     }
 
-    // 2. Karta odbioru osobistego
     const cardPickup = document.getElementById('card-pickup');
     if (!storeSettings.pickupEnabled) {
         cardPickup.classList.add('disabled-choice');
@@ -1260,7 +1257,6 @@ function applyStoreSettings() {
         cardPickup.classList.remove('disabled-choice');
     }
 
-    // 3. Karta dostawy
     const cardDelivery = document.getElementById('card-delivery');
     const deliveryDesc = document.getElementById('delivery-desc');
     if (storeSettings.deliveryEnabled) {
@@ -1289,6 +1285,9 @@ async function fetchProductsFromDB() {
                     menuData.items[catId] = [];
                 }
 
+                // Zestaw (+10 zł) pojawi się TYLKO dla burgerów, starterów, kanapek i dań głównych
+                const isFoodCategory = ['burgery', 'startery', 'kanapki', 'dania_glowne'].includes(catId);
+
                 menuData.items[catId].push({
                     id: prod._id || prod.id,
                     name: prod.name || 'Brak nazwy',
@@ -1296,7 +1295,8 @@ async function fetchProductsFromDB() {
                     price: Number(prod.price) || 0,
                     img: prod.imageUrl || prod.img || 'https://via.placeholder.com/400x300?text=Brak+Zdj%C4%99cia',
                     isBestseller: Boolean(prod.isBestseller),
-                    allowSet: Boolean(prod.allowSet || ['burgery', 'kanapki', 'dania_glowne'].includes(catId)),
+                    // Opcja zestawu działa wyłącznie w kategoriach jedzeniowych:
+                    allowSet: isFoodCategory && Boolean(prod.allowSet !== false),
                     variants: Array.isArray(prod.variants) ? prod.variants : [],
                     addons: Array.isArray(prod.addons) ? prod.addons : []
                 });
