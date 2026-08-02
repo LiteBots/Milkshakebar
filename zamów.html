@@ -22,6 +22,7 @@
       --text-sub: #8792A2;
       --border: #F0F2F5;
       --success: #10B981;
+      --danger: #EF4444;
         
       --radius-l: 32px;
       --radius-m: 24px;
@@ -66,6 +67,17 @@
       position: relative;
     }
 
+    /* --- GLOBALNA BLOKADA SKLEPU (GDY WYŁĄCZONY W PANELU ADMINA) --- */
+    .store-closed-overlay {
+      position: fixed; inset: 0; background: var(--bg-body); z-index: 5000;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+    }
+    .store-closed-overlay.active { display: flex; }
+    .store-closed-icon { font-size: 4rem; color: var(--primary); margin-bottom: 24px; }
+    .store-closed-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
+    .store-closed-desc { font-size: 1rem; color: var(--text-sub); line-height: 1.6; max-width: 320px; }
+
     /* --- HEADER (Minimalistyczny) --- */
     .app-header-wrapper {
       position: sticky; 
@@ -91,7 +103,6 @@
     }
     .icon-btn:active { transform: scale(0.92); }
     
-    /* ANIMACJA KOSZYKA */
     @keyframes pulseCart { 0% { transform: scale(1); } 50% { transform: scale(1.2); color: var(--primary); } 100% { transform: scale(1); } }
     .cart-animating { animation: pulseCart 0.3s ease; }
 
@@ -189,7 +200,6 @@
     .config-section { margin-bottom: 22px; }
     .config-label { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--text-sub); margin-bottom: 10px; display: block; letter-spacing: 0.5px; }
 
-    /* Wybór rozmiarów - Kafelki (Pills) */
     .variants-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
     .variant-pill {
       border: 2px solid var(--border); background: var(--bg-surface); border-radius: var(--radius-s);
@@ -200,7 +210,6 @@
     .variant-pill-price { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; }
     .variant-pill.selected .variant-pill-price { color: var(--primary); }
 
-    /* Zestaw z frytkami i piciem (+10 zł) */
     .set-toggle-card {
       border: 2px solid var(--border); border-radius: var(--radius-m); padding: 14px;
       display: flex; align-items: center; justify-content: space-between; cursor: pointer;
@@ -225,7 +234,6 @@
       margin-bottom: 10px; outline: none; font-family: inherit;
     }
 
-    /* Dodatki i sosy (Checkboxy) */
     .addons-list { display: flex; flex-direction: column; gap: 8px; }
     .addon-item {
       display: flex; align-items: center; justify-content: space-between; padding: 12px;
@@ -263,7 +271,6 @@
     .cart-qty-controls { display: flex; align-items: center; gap: 10px; background: var(--bg-body); padding: 4px; border-radius: 50px; }
     .qty-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--bg-surface); color: var(--text-main); font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-soft); }
 
-    /* UPSELL */
     .upsell-section { margin: 32px 0; }
     .upsell-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
     .upsell-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -329,6 +336,13 @@
 </head>
 <body>
 
+<!-- GLOBALNA BLOKADA (GDY ZAMÓWIENIA CAŁKOWICIE WYŁĄCZONE W PANELU) -->
+<div id="store-closed-overlay" class="store-closed-overlay">
+  <div class="store-closed-icon"><i class="fas fa-lock"></i></div>
+  <h1 class="store-closed-title">Lokal jest obecnie zamknięty</h1>
+  <p class="store-closed-desc">Przepraszamy, ale w tej chwili nie przyjmujemy nowych zamówień online. Zapraszamy ponownie wkrótce!</p>
+</div>
+
 <div class="app-container">
 
   <div class="app-header-wrapper" id="main-header">
@@ -346,7 +360,7 @@
 
   <section id="view-delivery-choice" class="view-section active">
       <div class="delivery-split-container">
-          <div class="delivery-split-card active-choice" onclick="selectInitialDelivery('pickup')">
+          <div class="delivery-split-card active-choice" id="card-pickup" onclick="selectInitialDelivery('pickup')">
               <div class="delivery-split-icon"><i class="fas fa-store"></i></div>
               <div class="delivery-split-info">
                   <div class="delivery-split-title">Odbiór własny</div>
@@ -354,11 +368,11 @@
               </div>
           </div>
           
-          <div class="delivery-split-card disabled-choice" onclick="showToast('Dostawa jest chwilowo niedostępna.')">
+          <div class="delivery-split-card disabled-choice" id="card-delivery" onclick="handleDeliveryClick()">
               <div class="delivery-split-icon"><i class="fas fa-motorcycle"></i></div>
               <div class="delivery-split-info">
                   <div class="delivery-split-title">Dostawa</div>
-                  <div class="delivery-split-desc">Chwilowo niedostępna</div>
+                  <div class="delivery-split-desc" id="delivery-desc">Chwilowo niedostępna</div>
               </div>
           </div>
       </div>
@@ -434,8 +448,13 @@
               <input type="tel" id="checkout-phone" class="form-control" required placeholder="Np. 123 456 789">
           </div>
 
+          <div class="form-group" id="address-group" style="display: none;">
+              <label>Adres dostawy</label>
+              <input type="text" id="checkout-address" class="form-control" placeholder="Ulica, numer domu/mieszkania">
+          </div>
+
           <div class="form-group">
-              <label>Odbiór (min. 60 min)</label>
+              <label id="time-label">Odbiór (min. 60 min)</label>
               <input type="time" class="form-control" id="pickup-time" required>
           </div>
 
@@ -537,6 +556,15 @@
 
 <script>
 // ==========================================
+// USTAWIENIA GLOBALNE LOKALU (Z PANELU ADMINA)
+// ==========================================
+let storeSettings = {
+    ordersEnabled: true,
+    pickupEnabled: true,
+    deliveryEnabled: false
+};
+
+// ==========================================
 // BAZA DANYCH MENU
 // ==========================================
 const menuData = {
@@ -589,6 +617,9 @@ const FREE_DELIVERY_THRESHOLD = 80.00;
 const MEAL_SET_PRICE = 10.00;
 
 function addToCartDirect(id, name, price, desc = '') {
+  if (!storeSettings.ordersEnabled) {
+    return showToast('Zamówienia są aktualnie wyłączone.');
+  }
   const existingIndex = cart.findIndex(item => item.id === id);
   if (existingIndex > -1) {
     cart[existingIndex].quantity += 1;
@@ -646,6 +677,9 @@ let isSetSelected = false;
 let selectedAddons = [];
 
 function openProductModal(categoryId, itemId) {
+  if (!storeSettings.ordersEnabled) {
+    return showToast('Zamówienia są aktualnie wyłączone.');
+  }
   const product = (menuData.items[categoryId] || []).find(i => i.id === itemId);
   if (!product) return;
 
@@ -658,7 +692,6 @@ function openProductModal(categoryId, itemId) {
   document.getElementById('modal-title').innerText = product.name;
   document.getElementById('modal-desc').innerText = product.desc;
 
-  // Warianty / Rozmiary
   const variantsGrid = document.getElementById('modal-variants-grid');
   variantsGrid.innerHTML = '';
   if (product.variants && product.variants.length > 0) {
@@ -676,7 +709,6 @@ function openProductModal(categoryId, itemId) {
     document.getElementById('section-variants').style.display = 'none';
   }
 
-  // Opcja Zestawu (Burgery, Kanapki, Dania Główne)
   const setSection = document.getElementById('section-meal-set');
   if (product.allowSet) {
     setSection.style.display = 'block';
@@ -687,7 +719,6 @@ function openProductModal(categoryId, itemId) {
     setSection.style.display = 'none';
   }
 
-  // Dodatki / Sosy
   const addonsList = document.getElementById('modal-addons-list');
   addonsList.innerHTML = '';
   if (product.addons && product.addons.length > 0) {
@@ -856,10 +887,40 @@ function updateFloatingButtonVisibility(activeViewId) {
 // WYBÓR STARTOWY I PŁATNOŚĆ
 // ==========================================
 function selectInitialDelivery(method) {
+    if (method === 'pickup' && !storeSettings.pickupEnabled) {
+        return showToast('Odbiór osobisty jest tymczasowo wyłączony.');
+    }
+    if (method === 'delivery' && !storeSettings.deliveryEnabled) {
+        return showToast('Dostawa jest tymczasowo niedostępna.');
+    }
+
     document.getElementById('checkout-delivery-method').value = method;
+    
+    // Pokaż/ukryj pole adresu w formularzu checkoutu w zależności od metody
+    const addrGroup = document.getElementById('address-group');
+    const addrInput = document.getElementById('checkout-address');
+    const timeLabel = document.getElementById('time-label');
+    if (method === 'delivery') {
+        addrGroup.style.display = 'flex';
+        addrInput.required = true;
+        timeLabel.innerText = 'Godzina dostawy (min. 60 min)';
+    } else {
+        addrGroup.style.display = 'none';
+        addrInput.required = false;
+        timeLabel.innerText = 'Odbiór (min. 60 min)';
+    }
+
     document.getElementById('view-delivery-choice').style.display = 'none';
     document.getElementById('main-header').style.display = 'none';
     showMainCategories();
+}
+
+function handleDeliveryClick() {
+    if (storeSettings.deliveryEnabled) {
+        selectInitialDelivery('delivery');
+    } else {
+        showToast('Dostawa jest chwilowo niedostępna.');
+    }
 }
 
 function selectPayment(method) {
@@ -1068,12 +1129,15 @@ function openCheckoutView() {
     switchView('view-checkout');
 }
 
-// OBSŁUGA PAYU / ZAMÓWIENIA
 async function submitOrder(e) {
     e.preventDefault();
+    if (!storeSettings.ordersEnabled) {
+        return showToast('Zamówienia są aktualnie wyłączone.');
+    }
     
     const name = document.getElementById('checkout-name').value;
     const phone = document.getElementById('checkout-phone').value;
+    const address = document.getElementById('checkout-address').value;
     const time = document.getElementById('pickup-time').value;
     const notes = document.getElementById('checkout-notes').value;
     const deliveryMethod = document.getElementById('checkout-delivery-method').value;
@@ -1084,6 +1148,7 @@ async function submitOrder(e) {
     const orderData = { 
         customerName: name, 
         customerPhone: phone, 
+        deliveryAddress: address,
         pickupTime: time, 
         notes: notes, 
         deliveryMethod: deliveryMethod, 
@@ -1146,7 +1211,7 @@ function renderReceipt(orderNum, orderData) {
             <div class="receipt-item-row" style="color:var(--text-sub); margin-top:12px;"><span>Opakowania</span><span>2.00 zł</span></div>
         </div>
         <div class="receipt-total"><span>Do zapłaty:</span><span>${orderData.totalAmount.toFixed(2)} zł</span></div>
-        <div style="margin-top:24px; font-size:0.9rem; color:var(--text-sub); line-height:1.6;">Odbiór: <strong style="color:var(--text-main);">${orderData.pickupTime}</strong><br>Płatność: <strong style="color:var(--text-main);">${orderData.paymentMethod.toUpperCase()}</strong></div>
+        <div style="margin-top:24px; font-size:0.9rem; color:var(--text-sub); line-height:1.6;">Realizacja: <strong style="color:var(--text-main);">${orderData.pickupTime} (${orderData.deliveryMethod === 'delivery' ? 'Dostawa' : 'Odbiór'})</strong><br>Płatność: <strong style="color:var(--text-main);">${orderData.paymentMethod.toUpperCase()}</strong></div>
     `;
 }
 
@@ -1159,6 +1224,52 @@ function showToast(msg) {
     document.getElementById('toast-msg').innerText = msg;
     t.classList.add('visible');
     setTimeout(() => { t.classList.remove('visible'); }, 2500);
+}
+
+// ==========================================
+// POBIERANIE USTAWIEN LOKALU Z API (/api/settings)
+// ==========================================
+async function fetchStoreSettings() {
+    try {
+        const res = await fetch('/api/settings');
+        const json = await res.json();
+        if (json.success && json.data) {
+            storeSettings = { ...storeSettings, ...json.data };
+        }
+    } catch (err) {
+        console.warn("Praca na domyślnych ustawieniach lokalu.");
+    }
+    applyStoreSettings();
+}
+
+function applyStoreSettings() {
+    // 1. Sprawdź czy sklep jest w ogóle otwarty
+    const overlay = document.getElementById('store-closed-overlay');
+    if (!storeSettings.ordersEnabled) {
+        overlay.classList.add('active');
+        return;
+    } else {
+        overlay.classList.remove('active');
+    }
+
+    // 2. Karta odbioru osobistego
+    const cardPickup = document.getElementById('card-pickup');
+    if (!storeSettings.pickupEnabled) {
+        cardPickup.classList.add('disabled-choice');
+    } else {
+        cardPickup.classList.remove('disabled-choice');
+    }
+
+    // 3. Karta dostawy
+    const cardDelivery = document.getElementById('card-delivery');
+    const deliveryDesc = document.getElementById('delivery-desc');
+    if (storeSettings.deliveryEnabled) {
+        cardDelivery.classList.remove('disabled-choice');
+        deliveryDesc.innerText = 'Dostarczenie pod wskazany adres';
+    } else {
+        cardDelivery.classList.add('disabled-choice');
+        deliveryDesc.innerText = 'Chwilowo niedostępna';
+    }
 }
 
 // ==========================================
@@ -1198,6 +1309,7 @@ async function fetchProductsFromDB() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await fetchStoreSettings();
     await fetchProductsFromDB();
     renderCategories();
 });
