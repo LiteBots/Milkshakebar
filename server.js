@@ -108,17 +108,14 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  // Środki wirtualnego portfela klienta
   walletBalance: { 
     type: Number, 
     default: 0 
   },
-  // Śledzenie wydanych punktów na nagrody (Bony vPLN)
   redeemedPoints: { 
     type: Number, 
     default: 0 
   },
-  // Zostawiamy dla kompatybilności wstecznej bazy
   activeRewards: [{
     rewardId: String,
     name: String,
@@ -186,24 +183,24 @@ const Counter = mongoose.model('Counter', counterSchema);
 
 // --- SCHEMAT ZAMÓWIENIA ---
 const orderSchema = new mongoose.Schema({
-  orderNumber: String, // Np. MI-0004
+  orderNumber: String,
   customerName: String,
   customerPhone: String,
   pickupTime: String,
   notes: String,
-  items: Array, // Tablica z produktami (id, nazwa, cena, ilosc)
+  items: Array,
   totalAmount: Number,
   paymentMethod: String,
-  deliveryMethod: { type: String, default: 'pickup' }, // 'pickup' lub 'delivery'
+  deliveryMethod: { type: String, default: 'pickup' },
   deliveryAddress: { type: String, default: '' },
   location: { type: String, default: 'slupsk' },
-  status: { type: String, default: 'pending' }, // 'pending', 'awaiting_payment', 'preparing', 'completed', 'cancelled'
+  status: { type: String, default: 'pending' },
   createdAt: { type: Date, default: Date.now }
 });
 
 const Order = mongoose.model('Order', orderSchema);
 
-// --- SCHEMAT USTAWIEŃ BANERÓW (Pasek w aplikacji i na stronie) ---
+// --- SCHEMAT USTAWIEŃ BANERÓW ---
 const bannerSchema = new mongoose.Schema({
   target: { type: String, required: true, unique: true }, // 'app' lub 'web'
   isActive: { type: Boolean, default: false },
@@ -214,9 +211,9 @@ const bannerSchema = new mongoose.Schema({
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
-// --- SCHEMAT USTAWIEN LOKALU (ZAMAWIARKI - DOSTAWA, ODBIÓR, BLOKADA) ---
+// --- SCHEMAT USTAWIEŃ LOKALU ---
 const storeSettingsSchema = new mongoose.Schema({
-  location: { type: String, required: true, unique: true }, // 'slupsk' lub 'rowy'
+  location: { type: String, required: true, unique: true },
   ordersEnabled: { type: Boolean, default: true },
   pickupEnabled: { type: Boolean, default: true },
   deliveryEnabled: { type: Boolean, default: false },
@@ -225,7 +222,7 @@ const storeSettingsSchema = new mongoose.Schema({
 
 const StoreSettings = mongoose.model('StoreSettings', storeSettingsSchema);
 
-// --- SCHEMAT PRODUKTU (MENU Z OPCJAMI KIOSKOWYMI MCDONALD STYLE) ---
+// --- SCHEMAT PRODUKTU (MENU) ---
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, default: '' },
@@ -234,15 +231,13 @@ const productSchema = new mongoose.Schema({
   categoryId: { type: String, required: true },
   location: { type: String, default: 'slupsk' },
   
-  // Opcje wariantów wielkości
   hasVariants: { type: Boolean, default: false },
   variants: [{
     name: { type: String },
     price: { type: Number }
   }],
 
-  // Opcje dodatkowe z McDonald's (Zestawy + Dodatki)
-  allowSet: { type: Boolean, default: true }, // czy proponować ZESTAW (+10 zł)
+  allowSet: { type: Boolean, default: true },
   addons: [{
     id: { type: String },
     name: { type: String },
@@ -255,9 +250,9 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
-// --- SCHEMAT GODZIN OTWARCIA LOKALI ---
+// --- SCHEMAT GODZIN OTWARCIA ---
 const hoursSchema = new mongoose.Schema({
-  location: { type: String, required: true, unique: true }, // 'slupsk' lub 'rowy'
+  location: { type: String, required: true, unique: true },
   schedule: {
     mon: { isOpen: Boolean, from: String, to: String },
     tue: { isOpen: Boolean, from: String, to: String },
@@ -283,7 +278,7 @@ const PAYU_CLIENT_SECRET = process.env.PAYU_CLIENT_SECRET;
 const PAYU_BASE_URL = process.env.PAYU_ENV === 'secure' 
   ? 'https://secure.payu.com' 
   : 'https://secure.snd.payu.com';
-const APP_URL = process.env.APP_URL || 'https://twoja-domena.railway.app'; // Ustaw to w Railway
+const APP_URL = process.env.APP_URL || 'https://twoja-domena.railway.app';
 
 // Funkcja do pobierania tokena dostępowego PayU
 async function getPayUToken() {
@@ -371,7 +366,7 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// 3. Pobierz wszystkich użytkowników (Baza Klientów)
+// 3. Pobierz wszystkich użytkowników
 app.get('/api/admin/users', async (req, res) => {
     try {
         const users = await User.find({}, '-password').sort({ createdAt: -1 });
@@ -381,7 +376,7 @@ app.get('/api/admin/users', async (req, res) => {
     }
 });
 
-// 4. Modyfikuj punkty użytkownika ręcznie (Modal Użytkownika)
+// 4. Modyfikuj punkty użytkownika
 app.post('/api/admin/users/:id/points', async (req, res) => {
     try {
         const { id } = req.params;
@@ -428,7 +423,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
     }
 });
 
-// 6. Nabijanie punktów za zakupy z kasy
+// 6. Nabijanie punktów z kasy
 app.post('/api/admin/award-points', async (req, res) => {
     try {
         const { identifier, amountSpent } = req.body;
@@ -438,7 +433,6 @@ app.post('/api/admin/award-points', async (req, res) => {
         }
 
         const cleanId = identifier.trim().toLowerCase();
-        
         const user = await User.findOne({ $or: [{ email: cleanId }, { phone: cleanId }] });
         
         if (!user) {
@@ -474,7 +468,7 @@ app.post('/api/admin/award-points', async (req, res) => {
     }
 });
 
-// 7. Pobieranie historii globalnej punktów do panelu
+// 7. Pobieranie historii punktów
 app.get('/api/admin/point-transactions', async (req, res) => {
     try {
         const txs = await PointTransaction.find().sort({ date: -1 }).limit(50);
@@ -488,7 +482,6 @@ app.get('/api/admin/point-transactions', async (req, res) => {
 // --- API ADMINA (PORTFEL / PRE-PAID) ---
 // ==========================================
 
-// 1. Wyszukiwanie klienta do modyfikacji portfela
 app.post('/api/admin/wallet/search', async (req, res) => {
     try {
         const { identifier } = req.body;
@@ -515,7 +508,6 @@ app.post('/api/admin/wallet/search', async (req, res) => {
     }
 });
 
-// 2. Modyfikacja środków w portfelu (Wpłata/Pobranie zapłaty)
 app.post('/api/admin/wallet/modify', async (req, res) => {
     try {
         const { userId, amount, action } = req.body;
@@ -560,7 +552,6 @@ app.post('/api/admin/wallet/modify', async (req, res) => {
     }
 });
 
-// 3. Pobieranie historii globalnej operacji na portfelu (Pre-paid)
 app.get('/api/admin/wallet-transactions', async (req, res) => {
     try {
         const txs = await WalletTransaction.find().sort({ date: -1 }).limit(50);
@@ -571,10 +562,9 @@ app.get('/api/admin/wallet-transactions', async (req, res) => {
 });
 
 // ==========================================
-// --- API USTAWIEN LOKALU (ZAMAWIARKI) ---
+// --- API USTAWIEŃ LOKALU (ZAMAWIARKI) ---
 // ==========================================
 
-// POBIERANIE USTAWIEŃ (Dla aplikacji klienta i panelu admina)
 app.get('/api/settings', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -598,7 +588,6 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-// ALIAS DLA PANELU ADMINA
 app.get('/api/admin/settings', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -612,7 +601,6 @@ app.get('/api/admin/settings', async (req, res) => {
   }
 });
 
-// ZAPIS/AKTUALIZACJA USTAWIEŃ LOKALU (Tylko Admin)
 app.post('/api/admin/settings', async (req, res) => {
   try {
     const { location = 'slupsk', ordersEnabled, pickupEnabled, deliveryEnabled } = req.body;
@@ -638,12 +626,10 @@ app.post('/api/admin/settings', async (req, res) => {
 // --- API ZAMÓWIEŃ (ORDERS) ---
 // ==========================================
 
-// KLIENCI - Złożenie nowego zamówienia z poziomu aplikacji
 app.post('/api/orders', async (req, res) => {
   try {
     const { location = 'slupsk' } = req.body;
 
-    // Sprawdzamy czy lokal nie jest zamknięty przez admina
     const storeSettings = await StoreSettings.findOne({ location: location });
     if (storeSettings && !storeSettings.ordersEnabled) {
       return res.status(403).json({ success: false, message: 'Lokal jest w tej chwili zamknięty na zamówienia online.' });
@@ -674,7 +660,6 @@ app.post('/api/orders', async (req, res) => {
     
     await newOrder.save();
     
-    // Integracja PayU
     if (isOnlinePayment) {
       const token = await getPayUToken();
       
@@ -684,7 +669,7 @@ app.post('/api/orders', async (req, res) => {
         merchantPosId: PAYU_POS_ID,
         description: `Zamówienie ${orderNumber}`,
         currencyCode: "PLN",
-        totalAmount: Math.round(newOrder.totalAmount * 100), // PayU wymaga kwoty w groszach
+        totalAmount: Math.round(newOrder.totalAmount * 100),
         extOrderId: newOrder._id.toString(),
         buyer: {
           email: req.body.customerEmail || "brak@email.pl",
@@ -751,7 +736,6 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-// PayU Webhook - Odbieranie powiadomień o płatności
 app.post('/api/payu/notify', async (req, res) => {
   try {
     const order = req.body.order;
@@ -760,7 +744,7 @@ app.post('/api/payu/notify', async (req, res) => {
       const dbOrderId = order.extOrderId;
       
       await Order.findByIdAndUpdate(dbOrderId, { 
-        status: 'pending' // Wrzucamy z powrotem na pending, żeby wyzwolić alarm w lokalu
+        status: 'pending'
       });
       
       console.log(`💰 Zamówienie PayU ${dbOrderId} zostało opłacone! Wysłano alarm.`);
@@ -773,7 +757,6 @@ app.post('/api/payu/notify', async (req, res) => {
   }
 });
 
-// KLIENCI - Sprawdzanie statusu zamówienia (na ekranie paragonu)
 app.get('/api/orders/:id', async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -784,7 +767,6 @@ app.get('/api/orders/:id', async (req, res) => {
     }
 });
 
-// ADMIN - Pobranie nowych zamówień do ALARMU (Tylko oczekujące z wybranej lokalizacji)
 app.get('/api/admin/orders/pending', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -795,7 +777,6 @@ app.get('/api/admin/orders/pending', async (req, res) => {
   }
 });
 
-// ADMIN - Pobranie wszystkich zamówień do tabeli
 app.get('/api/admin/orders', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -806,7 +787,6 @@ app.get('/api/admin/orders', async (req, res) => {
   }
 });
 
-// ADMIN - Zmiana statusu zamówienia
 app.post('/api/admin/orders/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -821,7 +801,6 @@ app.post('/api/admin/orders/:id/status', async (req, res) => {
 // --- API REZERWACJE ---
 // ==========================================
 
-// --- KLIENCI: Złożenie nowej rezerwacji ze strony WWW ---
 app.post('/api/reservations', async (req, res) => {
   try {
     const { name, phone, datetime, guests, zone, notes } = req.body;
@@ -850,7 +829,6 @@ app.post('/api/reservations', async (req, res) => {
   }
 });
 
-// 1. PANEL ADMINA - Pobieranie nowych (pending) TYLKO dla mechanizmu alarmu
 app.get('/api/admin/reservations/pending', async (req, res) => {
   try {
     const pending = await Reservation.find({ status: 'pending' }).sort({ createdAt: 1 });
@@ -860,7 +838,6 @@ app.get('/api/admin/reservations/pending', async (req, res) => {
   }
 });
 
-// 2. PANEL ADMINA - Pobieranie WSZYSTKICH rezerwacji (do widoku w tabeli)
 app.get('/api/admin/reservations', async (req, res) => {
   try {
     const allReservations = await Reservation.find({}).sort({ datetime: -1 });
@@ -870,7 +847,6 @@ app.get('/api/admin/reservations', async (req, res) => {
   }
 });
 
-// 3. PANEL ADMINA - Zmiana statusu rezerwacji
 app.post('/api/admin/reservations/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -881,7 +857,6 @@ app.post('/api/admin/reservations/:id/status', async (req, res) => {
   }
 });
 
-// 4. PANEL ADMINA - Trwałe usuwanie rezerwacji
 app.delete('/api/admin/reservations/:id', async (req, res) => {
   try {
     await Reservation.findByIdAndDelete(req.params.id);
@@ -892,7 +867,7 @@ app.delete('/api/admin/reservations/:id', async (req, res) => {
 });
 
 // ==========================================
-// --- API BANERÓW (PASKÓW INFORMACYJNYCH) ---
+// --- API BANERÓW ---
 // ==========================================
 
 app.post('/api/admin/banners', async (req, res) => {
@@ -929,14 +904,24 @@ app.get('/api/banners', async (req, res) => {
 app.get('/api/menu', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
-    const products = await Product.find({ location: location }).sort({ categoryId: 1, name: 1 });
+    
+    // Szukamy produktów z danej lokalizacji ORAZ starych produktów z MongoDB bez pola location
+    const products = await Product.find({
+      $or: [
+        { location: location },
+        { location: { $exists: false } },
+        { location: null },
+        { location: '' }
+      ]
+    }).sort({ categoryId: 1, name: 1 });
+
     res.json({ success: true, data: products });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd pobierania menu.' });
   }
 });
 
-// DODAWANIE NOWEGO PRODUKTU (Tylko Admin)
+// DODAWANIE NOWEGO PRODUKTU
 app.post('/api/admin/menu', async (req, res) => {
   try {
     const { 
@@ -965,7 +950,7 @@ app.post('/api/admin/menu', async (req, res) => {
   }
 });
 
-// AKTUALIZACJA PRODUKTU (EDYTKOWANIE - Tylko Admin)
+// AKTUALIZACJA PRODUKTU
 app.put('/api/admin/menu/:id', async (req, res) => {
   try {
     const { 
@@ -997,7 +982,7 @@ app.put('/api/admin/menu/:id', async (req, res) => {
   }
 });
 
-// USUWANIE PRODUKTU (Tylko Admin)
+// USUWANIE PRODUKTU
 app.delete('/api/admin/menu/:id', async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -1020,7 +1005,6 @@ app.post('/api/admin/upload', upload.single('image'), (req, res) => {
 // --- API GODZIN OTWARCIA (HOURS) ---
 // ==========================================
 
-// 1. ZAPISYWANIE GODZIN (Tylko Admin)
 app.post('/api/admin/hours', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -1039,7 +1023,6 @@ app.post('/api/admin/hours', async (req, res) => {
   }
 });
 
-// 2. POBIERANIE GODZIN
 app.get('/api/hours', async (req, res) => {
   try {
     const location = req.query.location || 'slupsk';
@@ -1056,10 +1039,9 @@ app.get('/api/hours', async (req, res) => {
 });
 
 // ==========================================
-// --- API APLIKACJI (KLIENCI - PROGRAM LOJALNOŚCIOWY) ---
+// --- API APLIKACJI (KLIENCI - LOJALNOŚĆ) ---
 // ==========================================
 
-// --- API: WYMIANA PUNKTÓW NA DOŁADOWANIE PORTFELA (vPLN) ---
 app.post('/api/rewards/exchange', async (req, res) => {
     try {
         const { userId, pointsCost, vplnAmount } = req.body;
@@ -1101,7 +1083,6 @@ app.post('/api/rewards/exchange', async (req, res) => {
     }
 });
 
-// --- API: REJESTRACJA ---
 app.post('/api/register', async (req, res) => {
   try {
     const { username, email, phone, password } = req.body;
@@ -1140,7 +1121,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// --- API: LOGOWANIE ---
 app.post('/api/login', async (req, res) => {
   try {
     const { loginOrEmail, password } = req.body;
@@ -1195,7 +1175,6 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- POBIERANIE DANYCH UŻYTKOWNIKA ---
 app.get('/api/milkpoints/my', async (req, res) => {
   try {
       const email = req.query.email;
