@@ -67,7 +67,7 @@
       position: relative;
     }
 
-    /* --- GLOBALNA BLOKADA SKLEPU (GDY WYŁĄCZONY W PANELU ADMINA) --- */
+    /* --- GLOBALNA BLOKADA SKLEPU --- */
     .store-closed-overlay {
       position: fixed; inset: 0; background: var(--bg-body); z-index: 5000;
       display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -147,7 +147,7 @@
     .category-overlay { position: absolute; inset: 0; padding: 20px; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%); display: flex; align-items: flex-end; }
     .category-title { color: #fff; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
 
-    /* --- SIATKA PRODUKTÓW (Clean Card Style) --- */
+    /* --- SIATKA PRODUKTÓW --- */
     .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
     .item-card { background: var(--bg-surface); border-radius: var(--radius-m); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.2s ease; box-shadow: var(--shadow-soft); padding: 8px; cursor: pointer; }
     .item-card:active { transform: scale(0.96); }
@@ -168,7 +168,7 @@
     .item-add-pill { background: var(--bg-body); color: var(--text-main); font-weight: 800; font-size: 0.75rem; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 4px; }
     .item-card:hover .item-add-pill { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* --- MODAL KONFIGURATORA (MC DONALD STYLE) --- */
+    /* --- MODAL KONFIGURATORA --- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000;
       display: none; align-items: flex-end; justify-content: center;
@@ -336,7 +336,7 @@
 </head>
 <body>
 
-<!-- GLOBALNA BLOKADA (GDY ZAMÓWIENIA CAŁKOWICIE WYŁĄCZONE W PANELU) -->
+<!-- GLOBALNA BLOKADA -->
 <div id="store-closed-overlay" class="store-closed-overlay">
   <div class="store-closed-icon"><i class="fas fa-lock"></i></div>
   <h1 class="store-closed-title">Lokal jest obecnie zamknięty</h1>
@@ -501,7 +501,7 @@
       <h3 class="sheet-title" id="modal-title">Nazwa Produktu</h3>
       <p class="sheet-desc" id="modal-desc">Opis produktu...</p>
 
-      <!-- Sekcja wyboru rozmiaru (Pills) -->
+      <!-- Sekcja wyboru rozmiaru -->
       <div class="config-section" id="section-variants">
         <span class="config-label">Wybierz rozmiar / wariant:</span>
         <div class="variants-grid" id="modal-variants-grid"></div>
@@ -533,7 +533,7 @@
         </div>
       </div>
 
-      <!-- Sekcja dodatków (Sosy itp.) -->
+      <!-- Sekcja dodatków -->
       <div class="config-section" id="section-addons">
         <span class="config-label">Polecane dodatki:</span>
         <div class="addons-list" id="modal-addons-list"></div>
@@ -603,7 +603,8 @@ const menuData = {
     items: {} 
 };
 
-const upsellItems = [
+// Domyślne szybkie dodatki w koszyku (nadpisywane z API panelu admina)
+let upsellItems = [
     { id: 'u1', name: 'Coca-Cola 0.5l', price: 7.00, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80' },
     { id: 'u2', name: 'Frytki Duże', price: 10.00, img: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80' },
     { id: 'u3', name: 'Sos Czosnkowy', price: 3.00, img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80' }
@@ -1226,7 +1227,7 @@ function showToast(msg) {
 }
 
 // ==========================================
-// POBIERANIE USTAWIEN LOKALU Z API (/api/settings)
+// POBIERANIE USTAWIEN LOKALU I GRAFIK Z API
 // ==========================================
 async function fetchStoreSettings() {
     try {
@@ -1265,6 +1266,47 @@ function applyStoreSettings() {
     } else {
         cardDelivery.classList.add('disabled-choice');
         deliveryDesc.innerText = 'Chwilowo niedostępna';
+    }
+}
+
+// POBIERANIE SZYBKICH DODATKÓW W KOSZYKU
+async function fetchUpsellItems() {
+    try {
+        const res = await fetch('/api/upsell');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            upsellItems = json.data;
+        }
+    } catch (err) {
+        console.warn("Praca na domyślnych dodatkach koszyka.");
+    }
+}
+
+// POBIERANIE GRAFIK KATEGORII Z PANELU ADMINA
+async function fetchCategoryBanners() {
+    try {
+        const res = await fetch('/api/category-banners');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+            json.data.forEach(item => {
+                const targetId = item.categoryId;
+                const newImgUrl = item.imageUrl;
+                
+                if (targetId.startsWith('cat_')) {
+                    const id = targetId.replace('cat_', '');
+                    const category = menuData.categories.find(c => c.id === id);
+                    if (category) category.image = newImgUrl;
+                } else if (targetId.startsWith('sub_')) {
+                    const subId = targetId.replace('sub_', '');
+                    for (const catKey in menuData.subcategories) {
+                        const sub = menuData.subcategories[catKey].find(s => s.id === subId);
+                        if (sub) sub.image = newImgUrl;
+                    }
+                }
+            });
+        }
+    } catch (err) {
+        console.warn("Praca na domyślnych grafikach kategorii.");
     }
 }
 
@@ -1310,6 +1352,8 @@ async function fetchProductsFromDB() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await fetchStoreSettings();
+    await fetchUpsellItems();
+    await fetchCategoryBanners();
     await fetchProductsFromDB();
     renderCategories();
 });
