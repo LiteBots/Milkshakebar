@@ -236,7 +236,7 @@
     @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-    /* --- ALARM REZERWACJI I ZAMÓWIEŃ (MIGAWKA) --- */
+    /* --- ALARM REZERWACJI I ZAMÓWIEŃ --- */
     @keyframes flashAlert { 0% { background-color: #FFFFFF; color: #FF6600; } 50% { background-color: #FF6600; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #FF6600; } }
     @keyframes flashOrderAlert { 0% { background-color: #FFFFFF; color: #EF4444; } 50% { background-color: #EF4444; color: #FFFFFF; } 100% { background-color: #FFFFFF; color: #EF4444; } }
     
@@ -686,28 +686,62 @@
         </div>
       </div>
 
-      <!-- NOWE: ZARZĄDZANIE SZYBKIMI DODATKAMI (UPSELL W KOSZYKU) -->
+      <!-- ZARZĄDZANIE SZYBKIMI DODATKAMI (UPSELL W KOSZYKU Z OPCJĄ ZDJĘĆ) -->
       <div class="card" style="margin-bottom: 25px;">
         <div class="section-header">Zarządzaj szybkimi dodatkami (Upsell / Koszyk)</div>
-        <p style="color:var(--text-sub); margin-bottom: 20px;">Produkty wyświetlane klientowi w poziomym pasku przed podsumowaniem koszyka.</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Produkty i zdjęcia wyświetlane klientowi w poziomym pasku przed podsumowaniem koszyka.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
+          
           <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
             <strong style="display:block; margin-bottom:8px;">Dodatek #1</strong>
             <input type="text" id="upsell-name-1" class="form-control" value="Coca-Cola 0.5l" style="margin-bottom:8px;" placeholder="Nazwa">
-            <input type="number" step="0.01" id="upsell-price-1" class="form-control" value="7.00" placeholder="Cena PLN">
+            <input type="number" step="0.01" id="upsell-price-1" class="form-control" value="7.00" style="margin-bottom:10px;" placeholder="Cena PLN">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+              <label for="upsell-file-1" class="btn btn-outline btn-sm" style="cursor: pointer; width: 100%; justify-content: center; background: var(--bg-surface);">
+                <i class="fas fa-camera"></i> <span id="upsell-label-1">Zdjęcie</span>
+              </label>
+              <input type="file" id="upsell-file-1" accept="image/*" style="display: none;" onchange="handleUpsellImagePreview(event, 1)">
+              <input type="hidden" id="upsell-img-url-1" value="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80">
+            </div>
+            <div style="text-align: center;">
+              <img id="upsell-preview-1" src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80" style="width: 60px; height: 60px; object-fit: contain; border-radius: var(--radius-s); background: var(--bg-surface); border: 1px solid var(--border);">
+            </div>
           </div>
+
           <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
             <strong style="display:block; margin-bottom:8px;">Dodatek #2</strong>
             <input type="text" id="upsell-name-2" class="form-control" value="Frytki Duże" style="margin-bottom:8px;" placeholder="Nazwa">
-            <input type="number" step="0.01" id="upsell-price-2" class="form-control" value="10.00" placeholder="Cena PLN">
+            <input type="number" step="0.01" id="upsell-price-2" class="form-control" value="10.00" style="margin-bottom:10px;" placeholder="Cena PLN">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+              <label for="upsell-file-2" class="btn btn-outline btn-sm" style="cursor: pointer; width: 100%; justify-content: center; background: var(--bg-surface);">
+                <i class="fas fa-camera"></i> <span id="upsell-label-2">Zdjęcie</span>
+              </label>
+              <input type="file" id="upsell-file-2" accept="image/*" style="display: none;" onchange="handleUpsellImagePreview(event, 2)">
+              <input type="hidden" id="upsell-img-url-2" value="https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80">
+            </div>
+            <div style="text-align: center;">
+              <img id="upsell-preview-2" src="https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80" style="width: 60px; height: 60px; object-fit: contain; border-radius: var(--radius-s); background: var(--bg-surface); border: 1px solid var(--border);">
+            </div>
           </div>
+
           <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
             <strong style="display:block; margin-bottom:8px;">Dodatek #3</strong>
             <input type="text" id="upsell-name-3" class="form-control" value="Sos Czosnkowy" style="margin-bottom:8px;" placeholder="Nazwa">
-            <input type="number" step="0.01" id="upsell-price-3" class="form-control" value="3.00" placeholder="Cena PLN">
+            <input type="number" step="0.01" id="upsell-price-3" class="form-control" value="3.00" style="margin-bottom:10px;" placeholder="Cena PLN">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+              <label for="upsell-file-3" class="btn btn-outline btn-sm" style="cursor: pointer; width: 100%; justify-content: center; background: var(--bg-surface);">
+                <i class="fas fa-camera"></i> <span id="upsell-label-3">Zdjęcie</span>
+              </label>
+              <input type="file" id="upsell-file-3" accept="image/*" style="display: none;" onchange="handleUpsellImagePreview(event, 3)">
+              <input type="hidden" id="upsell-img-url-3" value="https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80">
+            </div>
+            <div style="text-align: center;">
+              <img id="upsell-preview-3" src="https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80" style="width: 60px; height: 60px; object-fit: contain; border-radius: var(--radius-s); background: var(--bg-surface); border: 1px solid var(--border);">
+            </div>
           </div>
+
         </div>
-        <button class="btn btn-primary" style="margin-top:15px;" onclick="saveUpsellSettings()"><i class="fas fa-save"></i> Zapisz dodatki w koszyku</button>
+        <button id="upsell-submit-btn" class="btn btn-primary" style="margin-top:15px;" onclick="saveUpsellSettings()"><i class="fas fa-save"></i> Zapisz dodatki w koszyku</button>
       </div>
 
       <div class="stats-grid" style="margin-bottom:20px;">
@@ -910,7 +944,7 @@
     <!-- ZARZĄDZANIE MENU (PRODUKTY, WARIANTY, ZESTAWY, DODATKI I GRAFIKI KATEGORII) -->
     <section id="view-menu" class="view-section">
 
-      <!-- NOWE: ZARZĄDZANIE GRAFIKAMI KATEGORII I PODKATEGORII (PLIK / KAMERA) -->
+      <!-- ZARZĄDZANIE GRAFIKAMI KATEGORII I PODKATEGORII -->
       <div class="card" style="margin-bottom: 25px;">
         <div class="section-header">Grafiki Kategorii i Podkategorii</div>
         <p style="color:var(--text-sub); margin-bottom: 20px;">Zmień zdjęcie dowolnego kafelka kategorii na ekranie głównym aplikacji zamawiarki.</p>
@@ -1019,7 +1053,7 @@
               <input type="text" id="addon-name-1" class="form-control" placeholder="Dodatek #1 (np. Sos Czosnkowy / Ser Cheddar)">
               <input type="number" step="0.01" id="addon-price-1" class="form-control" placeholder="Cena">
             </div>
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 8px;">
               <input type="text" id="addon-name-2" class="form-control" placeholder="Dodatek #2 (np. Jalapeno)">
               <input type="number" step="0.01" id="addon-price-2" class="form-control" placeholder="Cena">
             </div>
@@ -2087,7 +2121,22 @@
       }
     }
 
-    // --- SZYBKIE DODATKI (UPSELL W KOSZYKU) ---
+    // --- SZYBKIE DODATKI W KOSZYKU (UPSELL - ZDJĘCIA I TEKST) ---
+    let selectedUpsellFiles = { 1: null, 2: null, 3: null };
+
+    function handleUpsellImagePreview(event, num) {
+      const file = event.target.files[0];
+      if (file) {
+        selectedUpsellFiles[num] = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(`upsell-preview-${num}`).src = e.target.result;
+          document.getElementById(`upsell-label-${num}`).innerText = "Zmieniono";
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
     async function loadUpsellSettings() {
       try {
         const res = await fetch(`/api/admin/upsell?location=${currentLocation}`);
@@ -2098,9 +2147,16 @@
             if (num <= 3) {
               const nameInput = document.getElementById(`upsell-name-${num}`);
               const priceInput = document.getElementById(`upsell-price-${num}`);
-              if (nameInput && priceInput) {
+              const imgUrlInput = document.getElementById(`upsell-img-url-${num}`);
+              const previewImg = document.getElementById(`upsell-preview-${num}`);
+              const labelEl = document.getElementById(`upsell-label-${num}`);
+              
+              if (nameInput && priceInput && imgUrlInput && previewImg) {
                 nameInput.value = item.name || '';
                 priceInput.value = item.price || '';
+                imgUrlInput.value = item.img || '';
+                if (item.img) previewImg.src = item.img;
+                if (labelEl) labelEl.innerText = "Zdjęcie";
               }
             }
           });
@@ -2111,15 +2167,51 @@
     }
 
     async function saveUpsellSettings() {
+      const submitBtn = document.getElementById('upsell-submit-btn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zapisywanie...';
+
       const items = [];
       for (let i = 1; i <= 3; i++) {
         const name = document.getElementById(`upsell-name-${i}`).value;
         const price = document.getElementById(`upsell-price-${i}`).value;
+        let imgUrl = document.getElementById(`upsell-img-url-${i}`).value;
+
+        if (selectedUpsellFiles[i]) {
+          const formData = new FormData();
+          formData.append('image', selectedUpsellFiles[i]);
+          try {
+            const uploadRes = await fetch('/api/admin/upload', {
+              method: 'POST',
+              body: formData
+            });
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) {
+              imgUrl = uploadData.imageUrl;
+              document.getElementById(`upsell-img-url-${i}`).value = imgUrl;
+              selectedUpsellFiles[i] = null;
+              document.getElementById(`upsell-label-${i}`).innerText = "Zdjęcie";
+            } else {
+              showToast(`Błąd wysyłania zdjęcia dodatku #${i}.`, 'error');
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalText;
+              return;
+            }
+          } catch (err) {
+            showToast(`Błąd serwera podczas uploadu zdjęcia #${i}.`, 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+          }
+        }
+
         if (name && price) {
           items.push({
             id: `u${i}`,
             name: name.trim(),
-            price: parseFloat(price)
+            price: parseFloat(price),
+            img: imgUrl
           });
         }
       }
@@ -2131,12 +2223,15 @@
           body: JSON.stringify({ location: currentLocation, items: items })
         });
         if (res.ok) {
-          showToast('Szybkie dodatki w koszyku zaktualizowane!', 'success');
+          showToast('Szybkie dodatki i zdjęcia w koszyku zapisane!', 'success');
         } else {
           showToast('Błąd zapisu szybkich dodatków.', 'error');
         }
       } catch (err) {
         showToast('Błąd połączenia z serwerem.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
       }
     }
 
@@ -2409,7 +2504,7 @@
     let selectedImageFile = null;
     let selectedCatImageFile = null;
 
-    // --- ZARZĄDZANIE BANERAMI KATEGORII (PLIK / KAMERA) ---
+    // --- ZARZĄDZANIE BANERAMI KATEGORII ---
     function handleCatImagePreview(event) {
       const file = event.target.files[0];
       if (file) {
