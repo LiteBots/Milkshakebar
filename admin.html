@@ -657,7 +657,7 @@
       </div>
     </section>
 
-    <!-- ZARZĄDZANIE ZAMÓWIENIAMI I USTAWIENIAMI SKLEPU (ZAMAWIARKI) -->
+    <!-- ZARZĄDZANIE ZAMÓWIENIAMI, USTAWIENIAMI I DODATKAMI W KOSZYKU -->
     <section id="view-orders" class="view-section">
       <div class="card" style="border: 2px solid var(--primary); background: var(--primary-glow); margin-bottom: 25px;">
         <div class="section-header" style="margin-bottom: 15px;">Ustawienia Sklepu (Status i Opcje)</div>
@@ -684,6 +684,30 @@
             <strong>Dostawa pod Adres</strong>
           </div>
         </div>
+      </div>
+
+      <!-- NOWE: ZARZĄDZANIE SZYBKIMI DODATKAMI (UPSELL W KOSZYKU) -->
+      <div class="card" style="margin-bottom: 25px;">
+        <div class="section-header">Zarządzaj szybkimi dodatkami (Upsell / Koszyk)</div>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Produkty wyświetlane klientowi w poziomym pasku przed podsumowaniem koszyka.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+          <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
+            <strong style="display:block; margin-bottom:8px;">Dodatek #1</strong>
+            <input type="text" id="upsell-name-1" class="form-control" value="Coca-Cola 0.5l" style="margin-bottom:8px;" placeholder="Nazwa">
+            <input type="number" step="0.01" id="upsell-price-1" class="form-control" value="7.00" placeholder="Cena PLN">
+          </div>
+          <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
+            <strong style="display:block; margin-bottom:8px;">Dodatek #2</strong>
+            <input type="text" id="upsell-name-2" class="form-control" value="Frytki Duże" style="margin-bottom:8px;" placeholder="Nazwa">
+            <input type="number" step="0.01" id="upsell-price-2" class="form-control" value="10.00" placeholder="Cena PLN">
+          </div>
+          <div style="background:var(--bg-body); padding:15px; border-radius:var(--radius-m); border:1px solid var(--border);">
+            <strong style="display:block; margin-bottom:8px;">Dodatek #3</strong>
+            <input type="text" id="upsell-name-3" class="form-control" value="Sos Czosnkowy" style="margin-bottom:8px;" placeholder="Nazwa">
+            <input type="number" step="0.01" id="upsell-price-3" class="form-control" value="3.00" placeholder="Cena PLN">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:15px;" onclick="saveUpsellSettings()"><i class="fas fa-save"></i> Zapisz dodatki w koszyku</button>
       </div>
 
       <div class="stats-grid" style="margin-bottom:20px;">
@@ -883,8 +907,66 @@
       </div>
     </section>
 
-    <!-- ZARZĄDZANIE MENU (PRODUKTY, WARIANTY, ZESTAWY I DODATKI) -->
+    <!-- ZARZĄDZANIE MENU (PRODUKTY, WARIANTY, ZESTAWY, DODATKI I GRAFIKI KATEGORII) -->
     <section id="view-menu" class="view-section">
+
+      <!-- NOWE: ZARZĄDZANIE GRAFIKAMI KATEGORII I PODKATEGORII (PLIK / KAMERA) -->
+      <div class="card" style="margin-bottom: 25px;">
+        <div class="section-header">Grafiki Kategorii i Podkategorii</div>
+        <p style="color:var(--text-sub); margin-bottom: 20px;">Zmień zdjęcie dowolnego kafelka kategorii na ekranie głównym aplikacji zamawiarki.</p>
+        
+        <form onsubmit="handleCategoryBannerSubmit(event)" style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 15px; align-items: end;">
+          <div class="form-group" style="margin:0;">
+            <label>Wybierz kafelek kategorii</label>
+            <select id="cat-banner-select" class="form-control" required>
+              <option value="" disabled selected>Wybierz z listy...</option>
+              <option value="cat_burgery">Kategoria Główna: 🍔 Burgery</option>
+              <option value="cat_shakes">Kategoria Główna: 🥤 Shakes</option>
+              <option value="cat_startery">Kategoria Główna: 🍟 Startery</option>
+              <option value="cat_kanapki">Kategoria Główna: 🥪 Kanapki</option>
+              <option value="cat_dania_glowne">Kategoria Główna: 🍽️ Dania główne</option>
+              <option value="cat_desery">Kategoria Główna: 🍨 Desery</option>
+              <option value="cat_sniadania">Kategoria Główna: 🍳 Śniadania</option>
+              <option value="cat_mexico">Kategoria Główna: 🌮 Mexico</option>
+              <option value="cat_napoje">Kategoria Główna: ☕ Kawa i napoje</option>
+              <optgroup label="Podkategorie - Shakes">
+                <option value="sub_shakes_klasyczne">Shakes: Klasyczne</option>
+                <option value="sub_shakes_owocowe">Shakes: Owocowe</option>
+                <option value="sub_shakes_vip">Shakes: Tylko dla Vip</option>
+                <option value="sub_shakes_best">Shakes: Best of</option>
+              </optgroup>
+              <optgroup label="Podkategorie - Desery">
+                <option value="sub_desery_wloskie">Desery: Lody włoskie</option>
+                <option value="sub_desery_lodowe">Desery: Desery lodowe</option>
+                <option value="sub_desery_gofry">Desery: Gofry amerykańskie</option>
+                <option value="sub_desery_pancakes">Desery: Pancakes</option>
+              </optgroup>
+              <optgroup label="Podkategorie - Mexico">
+                <option value="sub_mexico_quesadillas">Mexico: Quesadillas</option>
+                <option value="sub_mexico_fajita">Mexico: Fajita</option>
+                <option value="sub_mexico_pasta">Mexico: Pasta</option>
+                <option value="sub_mexico_salaty">Mexico: Sałaty</option>
+                <option value="sub_mexico_churros">Mexico: Churros</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label>Nowe zdjęcie kafelka (Plik / Kamera)</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <label for="cat-img-file" class="btn btn-outline" style="cursor: pointer; width: 100%; justify-content: center; background: var(--bg-body); border-style: dashed; padding: 11px;">
+                <i class="fas fa-camera" style="margin-right: 8px;"></i> 
+                <span id="cat-img-label">Wybierz plik lub zrób zdjęcie</span>
+              </label>
+              <input type="file" id="cat-img-file" accept="image/*" style="display: none;" onchange="handleCatImagePreview(event)">
+              <input type="hidden" id="cat-img-url">
+            </div>
+          </div>
+
+          <button type="submit" id="cat-banner-submit-btn" class="btn btn-primary" style="height: 46px;"><i class="fas fa-upload"></i> Zapisz kafelek</button>
+        </form>
+      </div>
+
       <div class="card" id="product-form-card">
         <div class="section-header" id="product-form-header">Dodaj nowy produkt do Menu</div>
         <form id="add-product-form" onsubmit="handleProductSubmit(event)">
@@ -899,7 +981,6 @@
             </div>
           </div>
           
-          <!-- OPCJE KIOSKOWE (MCDONALD STYLE) -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
             <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m); margin:0;">
               <label class="toggle-switch" style="margin: 0;">
@@ -910,7 +991,7 @@
             </div>
             <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-body); border-radius: var(--radius-m); margin:0;">
               <label class="toggle-switch" style="margin: 0;">
-                <input type="checkbox" id="prod-allow-set" checked>
+                <input type="checkbox" id="prod-allow-set">
                 <span class="slider"></span>
               </label>
               <strong>Opcja powiększenia do ZESTAWU (+10 zł)</strong>
@@ -932,14 +1013,13 @@
             </div>
           </div>
 
-          <!-- POLECANE DODATKI I SOSY (CHECKBOXY W MODALU) -->
           <div class="form-group" style="padding: 15px; background: var(--bg-body); border-radius: var(--radius-m);">
             <label style="margin-bottom: 10px;">Dodatki i sosy (opcjonalne, do doklikania dla klienta):</label>
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 8px;">
               <input type="text" id="addon-name-1" class="form-control" placeholder="Dodatek #1 (np. Sos Czosnkowy / Ser Cheddar)">
               <input type="number" step="0.01" id="addon-price-1" class="form-control" placeholder="Cena">
             </div>
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 8px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
               <input type="text" id="addon-name-2" class="form-control" placeholder="Dodatek #2 (np. Jalapeno)">
               <input type="number" step="0.01" id="addon-price-2" class="form-control" placeholder="Cena">
             </div>
@@ -1473,7 +1553,7 @@
         'prepaid': 'Portfel Pre-paid',
         'users': 'Baza Klientów',
         'reservations': 'Rezerwacje',
-        'orders': 'Zamówienia & Ustawienia Sklepu',
+        'orders': 'Zamówienia & Sklep',
         'push': 'Powiadomienia Push',
         'app-bar': 'Pasek w Aplikacji',
         'web-bar': 'Pasek na WWW',
@@ -1510,6 +1590,7 @@
       } else if (viewId === 'orders') {
         loadAllOrders();
         loadStoreSettings();
+        loadUpsellSettings();
       } else if (viewId === 'hours') {
         loadHoursSettings();
       }
@@ -2006,6 +2087,59 @@
       }
     }
 
+    // --- SZYBKIE DODATKI (UPSELL W KOSZYKU) ---
+    async function loadUpsellSettings() {
+      try {
+        const res = await fetch(`/api/admin/upsell?location=${currentLocation}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.items)) {
+          data.items.forEach((item, index) => {
+            const num = index + 1;
+            if (num <= 3) {
+              const nameInput = document.getElementById(`upsell-name-${num}`);
+              const priceInput = document.getElementById(`upsell-price-${num}`);
+              if (nameInput && priceInput) {
+                nameInput.value = item.name || '';
+                priceInput.value = item.price || '';
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.log('Brak zapisanych ustawień szybkiego dobierania (upsell).');
+      }
+    }
+
+    async function saveUpsellSettings() {
+      const items = [];
+      for (let i = 1; i <= 3; i++) {
+        const name = document.getElementById(`upsell-name-${i}`).value;
+        const price = document.getElementById(`upsell-price-${i}`).value;
+        if (name && price) {
+          items.push({
+            id: `u${i}`,
+            name: name.trim(),
+            price: parseFloat(price)
+          });
+        }
+      }
+
+      try {
+        const res = await fetch('/api/admin/upsell', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ location: currentLocation, items: items })
+        });
+        if (res.ok) {
+          showToast('Szybkie dodatki w koszyku zaktualizowane!', 'success');
+        } else {
+          showToast('Błąd zapisu szybkich dodatków.', 'error');
+        }
+      } catch (err) {
+        showToast('Błąd połączenia z serwerem.', 'error');
+      }
+    }
+
     setInterval(checkNewOrders, 3000);
 
     // =====================================
@@ -2268,12 +2402,92 @@
     }
 
     // =====================================
-    // ZARZĄDZANIE MENU (PRODUKTY)
+    // ZARZĄDZANIE MENU (PRODUKTY & KATEGORIE)
     // =====================================
     let allProducts = [];
     let editingProductId = null;
     let selectedImageFile = null;
+    let selectedCatImageFile = null;
 
+    // --- ZARZĄDZANIE BANERAMI KATEGORII (PLIK / KAMERA) ---
+    function handleCatImagePreview(event) {
+      const file = event.target.files[0];
+      if (file) {
+        selectedCatImageFile = file;
+        document.getElementById('cat-img-label').innerText = "Wybrano: " + file.name.substring(0, 15) + "...";
+      }
+    }
+
+    async function handleCategoryBannerSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('cat-banner-submit-btn');
+      const originalText = submitBtn.innerHTML;
+      
+      const targetId = document.getElementById('cat-banner-select').value;
+      if (!targetId) {
+        return showToast('Wybierz kafelek kategorii!', 'error');
+      }
+
+      let finalImageUrl = document.getElementById('cat-img-url').value;
+
+      if (selectedCatImageFile) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Przesyłanie...';
+        
+        const formData = new FormData();
+        formData.append('image', selectedCatImageFile);
+
+        try {
+          const uploadRes = await fetch('/api/admin/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const uploadData = await uploadRes.json();
+          if (uploadData.success) {
+            finalImageUrl = uploadData.imageUrl;
+          } else {
+            showToast('Błąd wysyłania zdjęcia kategorii.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+          }
+        } catch (err) {
+          showToast('Błąd połączenia podczas wysyłania grafiki.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+          return;
+        }
+      }
+
+      if (!finalImageUrl) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return showToast('Wybierz plik ze zdjęciem!', 'error');
+      }
+
+      try {
+        const res = await fetch('/api/admin/category-banners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categoryId: targetId, imageUrl: finalImageUrl, location: currentLocation })
+        });
+        if (res.ok) {
+          showToast('Grafika kafelka zaktualizowana!', 'success');
+          selectedCatImageFile = null;
+          document.getElementById('cat-img-label').innerText = "Wybierz plik lub zrób zdjęcie";
+          document.getElementById('cat-banner-select').value = '';
+        } else {
+          showToast('Błąd przy zapisywaniu grafiki w bazie.', 'error');
+        }
+      } catch (err) {
+        showToast('Błąd połączenia z serwerem.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    }
+
+    // --- ZARZĄDZANIE PRODUKTAMI MENU ---
     function toggleVariantUI() {
       const hasVariants = document.getElementById('prod-has-variants').checked;
       document.getElementById('variants-container').style.display = hasVariants ? 'grid' : 'none';
@@ -2382,7 +2596,6 @@
          }
       }
 
-      // Wczytanie dodatków do pól
       for(let i=1; i<=3; i++) {
          if (prod.addons && prod.addons[i-1]) {
             document.getElementById(`addon-name-${i}`).value = prod.addons[i-1].name;
@@ -2486,7 +2699,6 @@
         }
       }
 
-      // Pakowanie płatnych dodatków
       let addons = [];
       for(let i=1; i<=3; i++) {
         const adName = document.getElementById(`addon-name-${i}`).value;
