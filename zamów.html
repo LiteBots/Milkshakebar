@@ -147,7 +147,7 @@
     .category-overlay { position: absolute; inset: 0; padding: 20px; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%); display: flex; align-items: flex-end; }
     .category-title { color: #fff; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
 
-    /* --- SIATKA PRODUKTÓW --- */
+    /* --- SIATKA PRODUKTÓW (Clean Card Style) --- */
     .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
     .item-card { background: var(--bg-surface); border-radius: var(--radius-m); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.2s ease; box-shadow: var(--shadow-soft); padding: 8px; cursor: pointer; }
     .item-card:active { transform: scale(0.96); }
@@ -168,7 +168,7 @@
     .item-add-pill { background: var(--bg-body); color: var(--text-main); font-weight: 800; font-size: 0.75rem; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 4px; }
     .item-card:hover .item-add-pill { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* --- MODAL KONFIGURATORA --- */
+    /* --- MODAL KONFIGURATORA (MC DONALD STYLE) --- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000;
       display: none; align-items: flex-end; justify-content: center;
@@ -276,7 +276,7 @@
     .upsell-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .upsell-scroll::-webkit-scrollbar { display: none; }
     .upsell-card { flex: 0 0 120px; background: var(--bg-surface); border-radius: var(--radius-s); padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; scroll-snap-align: start; box-shadow: var(--shadow-soft); }
-    .upsell-img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 12px; }
+    .upsell-img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 12px; border-radius: var(--radius-s); }
     .upsell-name { font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; line-height: 1.2; height: 28px; overflow: hidden; color: var(--text-main); }
     .upsell-price { font-size: 0.85rem; font-weight: 800; color: var(--text-sub); margin-bottom: 12px; }
     .upsell-add-btn { width: 100%; padding: 6px; background: var(--bg-body); color: var(--text-main); border: none; border-radius: 20px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
@@ -336,7 +336,7 @@
 </head>
 <body>
 
-<!-- GLOBALNA BLOKADA -->
+<!-- GLOBALNA BLOKADA (GDY ZAMÓWIENIA CAŁKOWICIE WYŁĄCZONE W PANELU) -->
 <div id="store-closed-overlay" class="store-closed-overlay">
   <div class="store-closed-icon"><i class="fas fa-lock"></i></div>
   <h1 class="store-closed-title">Lokal jest obecnie zamknięty</h1>
@@ -490,7 +490,7 @@
 
 </div>
 
-<!-- MODAL KONFIGURACJI PRODUKTU (MCDONALD STYLE) -->
+<!-- MODAL KONFIGURACJI PRODUKTU -->
 <div class="modal-overlay" id="product-modal-overlay" onclick="closeProductModal(event)">
   <div class="bottom-sheet" id="product-bottom-sheet" onclick="event.stopPropagation()">
     <div class="sheet-header">
