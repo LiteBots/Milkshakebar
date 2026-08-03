@@ -78,7 +78,7 @@
     .store-closed-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
     .store-closed-desc { font-size: 1rem; color: var(--text-sub); line-height: 1.6; max-width: 320px; }
 
-    /* --- HEADER (Minimalistyczny) --- */
+    /* --- HEADER --- */
     .app-header-wrapper {
       position: sticky; 
       top: 0; 
@@ -147,7 +147,7 @@
     .category-overlay { position: absolute; inset: 0; padding: 20px; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%); display: flex; align-items: flex-end; }
     .category-title { color: #fff; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
 
-    /* --- SIATKA PRODUKTÓW (Clean Card Style) --- */
+    /* --- SIATKA PRODUKTÓW --- */
     .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
     .item-card { background: var(--bg-surface); border-radius: var(--radius-m); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.2s ease; box-shadow: var(--shadow-soft); padding: 8px; cursor: pointer; }
     .item-card:active { transform: scale(0.96); }
@@ -168,7 +168,7 @@
     .item-add-pill { background: var(--bg-body); color: var(--text-main); font-weight: 800; font-size: 0.75rem; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 4px; }
     .item-card:hover .item-add-pill { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* --- MODAL KONFIGURATORA (MC DONALD STYLE) --- */
+    /* --- MODAL KONFIGURATORA --- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000;
       display: none; align-items: flex-end; justify-content: center;
@@ -317,20 +317,70 @@
     .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150px); background: var(--text-main); color: var(--bg-surface); padding: 14px 24px; border-radius: 50px; box-shadow: var(--shadow-float); display: flex; align-items: center; gap: 10px; z-index: 3000; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-weight: 700; font-size: 0.9rem; }
     .toast.visible { transform: translateX(-50%) translateY(0); }
 
-    /* --- PŁYWAJĄCY PRZYCISK --- */
-    .floating-checkout-btn { position: fixed; bottom: max(24px, env(safe-area-inset-bottom)); left: 24px; right: 24px; background: var(--primary); color: white; padding: 16px 24px; border-radius: var(--radius-l); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-float); z-index: 1000; transform: translateY(150px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
-    .floating-checkout-btn.visible { transform: translateY(0); }
-    .floating-checkout-btn:active { transform: translateY(2px) scale(0.98); }
-    .fcb-left { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1rem; }
+    /* --- DOLNE PRZYCISKI PŁYWAJĄCE (KOSZYK I WRÓĆ) --- */
+    .floating-back-btn {
+      position: fixed;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      left: 24px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      border-radius: var(--radius-l);
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-float);
+      z-index: 1001;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .floating-back-btn.visible {
+      display: inline-flex;
+    }
+    .floating-back-btn:active {
+      transform: scale(0.95);
+    }
+
+    .floating-checkout-btn {
+      position: fixed;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      right: 24px;
+      left: auto;
+      width: calc(100% - 150px);
+      max-width: 320px;
+      background: var(--primary);
+      color: white;
+      padding: 16px 24px;
+      border-radius: var(--radius-l);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-float);
+      z-index: 1000;
+      transform: translateY(150px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .floating-checkout-btn.visible {
+      transform: translateY(0);
+    }
+    .floating-checkout-btn:active {
+      transform: translateY(2px) scale(0.98);
+    }
+    .fcb-left { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 0.95rem; }
     .fcb-icon { background: rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-    .fcb-right { font-weight: 800; font-size: 1.1rem; }
+    .fcb-right { font-weight: 800; font-size: 1.05rem; }
 
     @media (min-width: 768px) {
       .app-container { max-width: 100%; margin: 0; }
       .categories-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding: 24px 5%; }
       .items-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding: 0 5%; }
       .cart-container, .checkout-form { max-width: 800px; margin: 0 auto; padding: 0; }
-      .floating-checkout-btn { max-width: 400px; left: 50%; right: auto; margin-left: -200px; }
+      .floating-back-btn { left: 40px; }
+      .floating-checkout-btn { max-width: 340px; right: 40px; }
     }
   </style>
 </head>
@@ -379,12 +429,16 @@
   </section>
 
   <section id="view-categories" class="view-section">
-      <div class="categories-list" id="categories-container" style="padding-top: 16px;"></div>
+      <div class="menu-header">
+          <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
+          <h2 style="font-size: 1.4rem; font-weight: 800;">Wybierz Kategorię</h2>
+      </div>
+      <div class="categories-list" id="categories-container"></div>
   </section>
 
   <section id="view-subcategories" class="view-section">
       <div class="menu-header">
-          <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-arrow-left"></i></button>
+          <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
           <h2 id="current-main-category-title" style="font-size: 1.4rem; font-weight: 800;">Podkategorie</h2>
       </div>
       <div class="categories-list" id="subcategories-container"></div>
@@ -392,7 +446,7 @@
 
   <section id="view-items" class="view-section">
       <div class="menu-header">
-          <button class="back-btn" id="items-back-btn"><i class="fas fa-arrow-left"></i></button>
+          <button class="back-btn" id="items-back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
           <h2 id="current-category-title" style="font-size: 1.4rem; font-weight: 800;">Kategoria</h2>
       </div>
       <div class="items-grid" id="items-container"></div>
@@ -400,7 +454,7 @@
 
   <section id="view-cart" class="view-section">
       <div class="menu-header">
-          <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-arrow-left"></i></button>
+          <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
           <h2 style="font-size: 1.4rem; font-weight: 800;">Twój Koszyk</h2>
       </div>
       <div class="cart-container" id="cart-content"></div>
@@ -408,7 +462,7 @@
 
   <section id="view-checkout" class="view-section">
       <div class="menu-header">
-          <button class="back-btn" onclick="openCartView()"><i class="fas fa-arrow-left"></i></button>
+          <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
           <h2 style="font-size: 1.4rem; font-weight: 800;">Dane i Płatność</h2>
       </div>
       
@@ -440,27 +494,27 @@
 
           <div class="form-group">
               <label>Imię i Nazwisko</label>
-              <input type="text" id="checkout-name" class="form-control" required placeholder="Wpisz swoje dane">
+              <input type="text" id="checkout-name" class="form-control" required placeholder="Wpisz swoje dane" oninput="saveLocalState()">
           </div>
           
           <div class="form-group">
               <label>Numer telefonu</label>
-              <input type="tel" id="checkout-phone" class="form-control" required placeholder="Np. 123 456 789">
+              <input type="tel" id="checkout-phone" class="form-control" required placeholder="Np. 123 456 789" oninput="saveLocalState()">
           </div>
 
           <div class="form-group" id="address-group" style="display: none;">
               <label>Adres dostawy</label>
-              <input type="text" id="checkout-address" class="form-control" placeholder="Ulica, numer domu/mieszkania">
+              <input type="text" id="checkout-address" class="form-control" placeholder="Ulica, numer domu/mieszkania" oninput="saveLocalState()">
           </div>
 
           <div class="form-group">
               <label id="time-label">Odbiór (min. 60 min)</label>
-              <input type="time" class="form-control" id="pickup-time" required>
+              <input type="time" class="form-control" id="pickup-time" required onchange="saveLocalState()">
           </div>
 
           <div class="form-group">
               <label>Uwagi do zamówienia</label>
-              <textarea class="form-control" id="checkout-notes" rows="2" placeholder="Opcjonalne prośby do kuchni..."></textarea>
+              <textarea class="form-control" id="checkout-notes" rows="2" placeholder="Opcjonalne prośby do kuchni..." oninput="saveLocalState()"></textarea>
           </div>
 
           <button type="submit" class="primary-btn">Złóż zamówienie</button>
@@ -469,17 +523,23 @@
 
   <section id="view-order-status" class="view-section">
       <div class="menu-header">
-          <button class="back-btn" onclick="showMainCategories()"><i class="fas fa-times"></i></button>
+          <button class="back-btn" onclick="clearReceiptAndGoMenu()"><i class="fas fa-times"></i></button>
           <h2 style="font-size: 1.4rem; font-weight: 800;">Status zamówienia</h2>
       </div>
       
       <div class="receipt-card" id="receipt-container"></div>
       
       <div style="padding: 0 24px;">
-        <button class="primary-btn" style="background: var(--bg-surface); color: var(--text-main); box-shadow: var(--shadow-soft);" onclick="showMainCategories()">Wróć do Menu</button>
+        <button class="primary-btn" style="background: var(--bg-surface); color: var(--text-main); box-shadow: var(--shadow-soft);" onclick="clearReceiptAndGoMenu()">Wróć do Menu</button>
       </div>
   </section>
 
+  <!-- PŁYWAJĄCY PRZYCISK „WRÓĆ” W LEWYM DOLNYM ROGU -->
+  <button id="floating-back-btn" class="floating-back-btn" onclick="goBack()">
+    <i class="fas fa-arrow-left"></i> Wróć
+  </button>
+
+  <!-- PŁYWAJĄCY PRZYCISK KOSZYKA W PRAWYM DOLNYM ROGU -->
   <div id="floating-checkout-btn" class="floating-checkout-btn" onclick="openCartView()">
     <div class="fcb-left">
       <div class="fcb-icon"><i class="fas fa-shopping-bag"></i></div>
@@ -490,7 +550,7 @@
 
 </div>
 
-<!-- MODAL KONFIGURACJI PRODUKTU -->
+<!-- MODAL KONFIGURACJI PRODUKTU (MCDONALD STYLE) -->
 <div class="modal-overlay" id="product-modal-overlay" onclick="closeProductModal(event)">
   <div class="bottom-sheet" id="product-bottom-sheet" onclick="event.stopPropagation()">
     <div class="sheet-header">
@@ -565,6 +625,130 @@ let storeSettings = {
 };
 
 // ==========================================
+// HISTORIA WIDOKÓW I PAMIĘĆ LOCALSTORAGE
+// ==========================================
+let viewHistory = [];
+
+function saveLocalState() {
+    try {
+        localStorage.setItem('milkmi_cart', JSON.stringify(cart));
+        const activeView = document.querySelector('.view-section.active')?.id || 'view-delivery-choice';
+        localStorage.setItem('milkmi_active_view', activeView);
+        localStorage.setItem('milkmi_history', JSON.stringify(viewHistory));
+        localStorage.setItem('milkmi_delivery_method', document.getElementById('checkout-delivery-method').value);
+        localStorage.setItem('milkmi_payment_method', document.getElementById('checkout-payment-method').value);
+        
+        localStorage.setItem('milkmi_form_name', document.getElementById('checkout-name').value || '');
+        localStorage.setItem('milkmi_form_phone', document.getElementById('checkout-phone').value || '');
+        localStorage.setItem('milkmi_form_address', document.getElementById('checkout-address').value || '');
+        localStorage.setItem('milkmi_form_notes', document.getElementById('checkout-notes').value || '');
+    } catch (err) {
+        console.warn('Nie można zapisać do localStorage:', err);
+    }
+}
+
+function restoreLocalState() {
+    try {
+        // 1. Odtwórz koszyk
+        const savedCart = localStorage.getItem('milkmi_cart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart) || [];
+        }
+        updateCartBadge();
+
+        // 2. Odtwórz metodę dostawy i płatności
+        const savedDelivery = localStorage.getItem('milkmi_delivery_method');
+        if (savedDelivery === 'pickup' || savedDelivery === 'delivery') {
+            document.getElementById('checkout-delivery-method').value = savedDelivery;
+            const addrGroup = document.getElementById('address-group');
+            const addrInput = document.getElementById('checkout-address');
+            const timeLabel = document.getElementById('time-label');
+            if (savedDelivery === 'delivery') {
+                addrGroup.style.display = 'flex';
+                addrInput.required = true;
+                timeLabel.innerText = 'Godzina dostawy (min. 60 min)';
+            } else {
+                addrGroup.style.display = 'none';
+                addrInput.required = false;
+                timeLabel.innerText = 'Odbiór (min. 60 min)';
+            }
+        }
+
+        const savedPay = localStorage.getItem('milkmi_payment_method');
+        if (savedPay) {
+            selectPayment(savedPay);
+        }
+
+        // 3. Odtwórz pola formularza
+        document.getElementById('checkout-name').value = localStorage.getItem('milkmi_form_name') || '';
+        document.getElementById('checkout-phone').value = localStorage.getItem('milkmi_form_phone') || '';
+        document.getElementById('checkout-address').value = localStorage.getItem('milkmi_form_address') || '';
+        document.getElementById('checkout-notes').value = localStorage.getItem('milkmi_form_notes') || '';
+
+        // 4. Odtwórz historię widoków
+        const savedHistory = localStorage.getItem('milkmi_history');
+        if (savedHistory) {
+            viewHistory = JSON.parse(savedHistory) || [];
+        }
+
+        // 5. Odtwórz aktywny widok
+        const activeViewId = localStorage.getItem('milkmi_active_view');
+
+        // Jeśli klient odświeżył po potwierdzeniu zamówienia (widok paragonu)
+        if (activeViewId === 'view-order-status') {
+            const savedReceipt = localStorage.getItem('milkmi_order_receipt');
+            if (savedReceipt) {
+                const receiptObj = JSON.parse(savedReceipt);
+                renderReceipt(receiptObj.orderNum, receiptObj.orderData);
+                switchView('view-order-status', false);
+                return;
+            }
+        }
+
+        if (activeViewId === 'view-cart') {
+            renderCart();
+            switchView('view-cart', false);
+            return;
+        }
+
+        if (activeViewId === 'view-checkout') {
+            renderCart();
+            openCheckoutView(false);
+            return;
+        }
+
+        if (activeViewId === 'view-items') {
+            const savedCat = localStorage.getItem('milkmi_current_category');
+            if (savedCat) {
+                const catObj = JSON.parse(savedCat);
+                openItems(catObj.id, catObj.name, catObj.cameFromSub, false);
+                return;
+            }
+        }
+
+        if (activeViewId === 'view-subcategories') {
+            const savedSub = localStorage.getItem('milkmi_current_sub');
+            if (savedSub) {
+                const subObj = JSON.parse(savedSub);
+                openCategoryOrSub(subObj.id, subObj.name, false);
+                return;
+            }
+        }
+
+        if (activeViewId === 'view-categories') {
+            showMainCategories(false);
+            return;
+        }
+
+        switchView('view-delivery-choice', false);
+
+    } catch (err) {
+        console.warn('Błąd przy odtwarzaniu stanu z localStorage:', err);
+        switchView('view-delivery-choice', false);
+    }
+}
+
+// ==========================================
 // BAZA DANYCH MENU
 // ==========================================
 const menuData = {
@@ -603,7 +787,7 @@ const menuData = {
     items: {} 
 };
 
-// Domyślne szybkie dodatki w koszyku (nadpisywane z API panelu admina)
+// Szybkie dodatki w koszyku (nadpisywane z API panelu admina)
 let upsellItems = [
     { id: 'u1', name: 'Coca-Cola 0.5l', price: 7.00, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80' },
     { id: 'u2', name: 'Frytki Duże', price: 10.00, img: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80' },
@@ -630,6 +814,7 @@ function addToCartDirect(id, name, price, desc = '') {
   triggerCartAnimation();
   updateCartBadge();
   showToast('Dodano do koszyka');
+  saveLocalState();
   if(document.getElementById('view-cart').classList.contains('active')) renderCart();
 }
 
@@ -655,7 +840,7 @@ function updateCartBadge() {
         badge.style.display = 'none';
     }
     
-    const currentView = document.querySelector('.view-section.active').id;
+    const currentView = document.querySelector('.view-section.active')?.id || 'view-delivery-choice';
     updateFloatingButtonVisibility(currentView);
 }
 
@@ -666,6 +851,7 @@ function changeQuantity(id, delta) {
         if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
     }
     updateCartBadge();
+    saveLocalState();
     renderCart();
 }
 
@@ -848,11 +1034,18 @@ function closeProductModal(e) {
 }
 
 // ==========================================
-// WIDOKI I NAWIGACJA
+// WIDOKI, HISTORIA I POWRÓT („WRÓĆ”)
 // ==========================================
 const views = ['view-delivery-choice', 'view-categories', 'view-subcategories', 'view-items', 'view-cart', 'view-checkout', 'view-order-status'];
 
-function switchView(targetViewId) {
+function switchView(targetViewId, pushToHistory = true) {
+    const currentView = document.querySelector('.view-section.active')?.id || 'view-delivery-choice';
+    if (pushToHistory && currentView && currentView !== targetViewId && currentView !== 'view-delivery-choice') {
+        if (viewHistory[viewHistory.length - 1] !== currentView) {
+            viewHistory.push(currentView);
+        }
+    }
+
     views.forEach(viewId => document.getElementById(viewId).classList.remove('active'));
     document.getElementById(targetViewId).classList.add('active');
 
@@ -868,19 +1061,39 @@ function switchView(targetViewId) {
     }
 
     updateFloatingButtonVisibility(targetViewId);
+    saveLocalState();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goBack() {
+    if (viewHistory.length > 0) {
+        const prev = viewHistory.pop();
+        switchView(prev, false);
+    } else {
+        switchView('view-delivery-choice', false);
+    }
 }
 
 function updateFloatingButtonVisibility(activeViewId) {
     const floatingBtn = document.getElementById('floating-checkout-btn');
-    if (!floatingBtn) return;
+    const floatingBackBtn = document.getElementById('floating-back-btn');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const viewsWithoutFloatingBtn = ['view-cart', 'view-checkout', 'view-order-status', 'view-delivery-choice'];
+    const viewsWithoutFloatingCart = ['view-cart', 'view-checkout', 'view-order-status', 'view-delivery-choice'];
     
-    if (totalItems > 0 && !viewsWithoutFloatingBtn.includes(activeViewId)) {
-        floatingBtn.classList.add('visible');
+    // Pływający przycisk „Wróć” widoczny na każdym widoku oprócz ekranu startowego
+    if (activeViewId && activeViewId !== 'view-delivery-choice') {
+        floatingBackBtn?.classList.add('visible');
     } else {
-        floatingBtn.classList.remove('visible');
+        floatingBackBtn?.classList.remove('visible');
+    }
+
+    // Pływający przycisk koszyka
+    if (floatingBtn) {
+        if (totalItems > 0 && !viewsWithoutFloatingCart.includes(activeViewId)) {
+            floatingBtn.classList.add('visible');
+        } else {
+            floatingBtn.classList.remove('visible');
+        }
     }
 }
 
@@ -912,7 +1125,7 @@ function selectInitialDelivery(method) {
 
     document.getElementById('view-delivery-choice').style.display = 'none';
     document.getElementById('main-header').style.display = 'none';
-    showMainCategories();
+    showMainCategories(true);
 }
 
 function handleDeliveryClick() {
@@ -931,12 +1144,15 @@ function selectPayment(method) {
     document.querySelectorAll('.payment-methods .method-card').forEach(card => card.classList.remove('active'));
     document.getElementById(`pay-${method}`).classList.add('active');
     document.getElementById('checkout-payment-method').value = method;
+    saveLocalState();
 }
 
 // ==========================================
 // RENDEROWANIE: KATEGORIE I PRODUKTY
 // ==========================================
-function showMainCategories() { switchView('view-categories'); }
+function showMainCategories(pushToHistory = true) { 
+    switchView('view-categories', pushToHistory); 
+}
 
 function renderCategories() {
     const container = document.getElementById('categories-container');
@@ -953,7 +1169,8 @@ function renderCategories() {
     });
 }
 
-function openCategoryOrSub(categoryId, categoryName) {
+function openCategoryOrSub(categoryId, categoryName, pushToHistory = true) {
+    localStorage.setItem('milkmi_current_sub', JSON.stringify({ id: categoryId, name: categoryName }));
     if (menuData.subcategories && menuData.subcategories[categoryId]) {
         document.getElementById('current-main-category-title').innerText = categoryName;
         const container = document.getElementById('subcategories-container');
@@ -969,16 +1186,15 @@ function openCategoryOrSub(categoryId, categoryName) {
                 </div>
             `;
         });
-        switchView('view-subcategories');
+        switchView('view-subcategories', pushToHistory);
     } else {
-        openItems(categoryId, categoryName, false);
+        openItems(categoryId, categoryName, false, pushToHistory);
     }
 }
 
-function openItems(id, name, cameFromSubcategories) {
+function openItems(id, name, cameFromSubcategories, pushToHistory = true) {
+    localStorage.setItem('milkmi_current_category', JSON.stringify({ id: id, name: name, cameFromSub: cameFromSubcategories }));
     document.getElementById('current-category-title').innerText = name;
-    const backBtn = document.getElementById('items-back-btn');
-    backBtn.onclick = cameFromSubcategories ? () => switchView('view-subcategories') : () => showMainCategories();
     
     const container = document.getElementById('items-container');
     container.innerHTML = '';
@@ -1013,15 +1229,15 @@ function openItems(id, name, cameFromSubcategories) {
             `;
         });
     }
-    switchView('view-items');
+    switchView('view-items', pushToHistory);
 }
 
 // ==========================================
 // RENDEROWANIE: KOSZYK I MARKETING
 // ==========================================
-function openCartView() {
+function openCartView(pushToHistory = true) {
     renderCart();
-    switchView('view-cart');
+    switchView('view-cart', pushToHistory);
 }
 
 function renderCart() {
@@ -1116,17 +1332,17 @@ function renderCart() {
 // ==========================================
 // CHECKOUT & WYKONYWANIE ZAMÓWIENIA
 // ==========================================
-function openCheckoutView() {
+function openCheckoutView(pushToHistory = true) {
     const timeInput = document.getElementById('pickup-time');
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 60);
-    
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    timeInput.min = `${h}:${m}`;
-    timeInput.value = `${h}:${m}`;
-
-    switchView('view-checkout');
+    if (!timeInput.value) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 60);
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        timeInput.min = `${h}:${m}`;
+        timeInput.value = `${h}:${m}`;
+    }
+    switchView('view-checkout', pushToHistory);
 }
 
 async function submitOrder(e) {
@@ -1176,8 +1392,9 @@ async function submitOrder(e) {
             if (data.redirectUrl) {
                 window.location.href = data.redirectUrl;
             } else {
+                localStorage.setItem('milkmi_order_receipt', JSON.stringify({ orderNum: data.orderNumber, orderData: orderData }));
                 renderReceipt(data.orderNumber, orderData); 
-                switchView('view-order-status');
+                switchView('view-order-status', true);
             }
         } else {
             showToast('Błąd składania zamówienia.');
@@ -1186,8 +1403,10 @@ async function submitOrder(e) {
         setTimeout(() => {
             cart = []; 
             updateCartBadge(); 
-            renderReceipt('MK-' + Math.floor(Math.random() * 90000 + 10000), orderData); 
-            switchView('view-order-status');
+            const fakeNum = 'MK-' + Math.floor(Math.random() * 90000 + 10000);
+            localStorage.setItem('milkmi_order_receipt', JSON.stringify({ orderNum: fakeNum, orderData: orderData }));
+            renderReceipt(fakeNum, orderData); 
+            switchView('view-order-status', true);
         }, 800);
     } finally {
         submitBtn.disabled = false;
@@ -1213,6 +1432,14 @@ function renderReceipt(orderNum, orderData) {
         <div class="receipt-total"><span>Do zapłaty:</span><span>${orderData.totalAmount.toFixed(2)} zł</span></div>
         <div style="margin-top:24px; font-size:0.9rem; color:var(--text-sub); line-height:1.6;">Realizacja: <strong style="color:var(--text-main);">${orderData.pickupTime} (${orderData.deliveryMethod === 'delivery' ? 'Dostawa' : 'Odbiór'})</strong><br>Płatność: <strong style="color:var(--text-main);">${orderData.paymentMethod.toUpperCase()}</strong></div>
     `;
+}
+
+function clearReceiptAndGoMenu() {
+    localStorage.removeItem('milkmi_order_receipt');
+    localStorage.removeItem('milkmi_cart');
+    cart = [];
+    updateCartBadge();
+    showMainCategories(false);
 }
 
 // ==========================================
@@ -1356,6 +1583,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchCategoryBanners();
     await fetchProductsFromDB();
     renderCategories();
+    restoreLocalState();
 });
 </script>
 </body>
