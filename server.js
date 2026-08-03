@@ -211,6 +211,28 @@ const bannerSchema = new mongoose.Schema({
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
+// --- NOWE: SCHEMAT GRAFIK KATEGORII I PODKATEGORII ---
+const categoryBannerSchema = new mongoose.Schema({
+  categoryId: { type: String, required: true, unique: true }, // np. 'cat_burgery', 'sub_desery_wloskie'
+  imageUrl: { type: String, required: true },
+  location: { type: String, default: 'slupsk' },
+  updatedAt: { type: Date, default: Date.now }
+});
+const CategoryBanner = mongoose.model('CategoryBanner', categoryBannerSchema);
+
+// --- NOWE: SCHEMAT SZYBKICH DODATKÓW W KOSZYKU (UPSELL) ---
+const upsellSchema = new mongoose.Schema({
+  location: { type: String, required: true, unique: true },
+  items: [{
+    id: String,
+    name: String,
+    price: Number,
+    img: String
+  }],
+  updatedAt: { type: Date, default: Date.now }
+});
+const UpsellConfig = mongoose.model('UpsellConfig', upsellSchema);
+
 // --- SCHEMAT USTAWIEŃ LOKALU ---
 const storeSettingsSchema = new mongoose.Schema({
   location: { type: String, required: true, unique: true },
@@ -237,7 +259,7 @@ const productSchema = new mongoose.Schema({
     price: { type: Number }
   }],
 
-  // POPRAWKA: domyślnie wyłączona opcja zestawów, włączana celowo tylko dla burgerów/dań
+  // Domyślnie wyłączona opcja zestawów, włączana celowo tylko dla burgerów/dań
   allowSet: { type: Boolean, default: false },
   addons: [{
     id: { type: String },
@@ -620,6 +642,117 @@ app.post('/api/admin/settings', async (req, res) => {
     res.json({ success: true, message: 'Ustawienia lokalu zaktualizowane', data: updated });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Błąd przy zapisywaniu ustawień.' });
+  }
+});
+
+// ==========================================
+// --- API GRAFIK KATEGORII (/api/category-banners) ---
+// ==========================================
+app.get('/api/category-banners', async (req, res) => {
+  try {
+    const banners = await CategoryBanner.find({});
+    res.json({ success: true, data: banners });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania grafik kategorii.' });
+  }
+});
+
+app.post('/api/admin/category-banners', async (req, res) => {
+  try {
+    const { categoryId, imageUrl, location = 'slupsk' } = req.body;
+    if (!categoryId || !imageUrl) {
+      return res.status(400).json({ success: false, message: 'Brakujące parametry (categoryId lub imageUrl).' });
+    }
+
+    const updated = await CategoryBanner.findOneAndUpdate(
+      { categoryId: categoryId },
+      { imageUrl: imageUrl, location: location, updatedAt: Date.now() },
+      { new: true, upsert: true }
+    );
+
+    res.json({ success: true, data: updated, message: 'Grafika kafelka zapisana.' });
+  } catch (err) {
+    console.error('Błąd zapisu grafiki kategorii:', err);
+    res.status(500).json({ success: false, message: 'Błąd po stronie serwera.' });
+  }
+});
+
+// ==========================================
+// --- API SZYBKICH DODATKÓW KOSZYKA (/api/upsell) ---
+// ==========================================
+app.get('/api/upsell', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    const config = await UpsellConfig.findOne({ location: location });
+    if (config && config.items) {
+      res.json({ success: true, data: config.items });
+    } else {
+      res.json({
+        success: true,
+        data: [
+          { id: 'u1', name: 'Coca-Cola 0.5l', price: 7.00, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80' },
+          { id: 'u2', name: 'Frytki Duże', price: 10.00, img: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80' },
+          { id: 'u3', name: 'Sos Czosnkowy', price: 3.00, img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80' }
+        ]
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania szybkiego dobierania (upsell).' });
+  }
+});
+
+app.get('/api/admin/upsell', async (req, res) => {
+  try {
+    const location = req.query.location || 'slupsk';
+    const config = await UpsellConfig.findOne({ location: location });
+    if (config && config.items) {
+      res.json({ success: true, items: config.items });
+    } else {
+      res.json({
+        success: true,
+        items: [
+          { id: 'u1', name: 'Coca-Cola 0.5l', price: 7.00, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80' },
+          { id: 'u2', name: 'Frytki Duże', price: 10.00, img: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80' },
+          { id: 'u3', name: 'Sos Czosnkowy', price: 3.00, img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80' }
+        ]
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Błąd pobierania dodatków w adminie.' });
+  }
+});
+
+app.post('/api/admin/upsell', async (req, res) => {
+  try {
+    const { location = 'slupsk', items } = req.body;
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ success: false, message: 'Nieprawidłowe dane pozycji.' });
+    }
+
+    // Uzupełnienie lub zachowanie domyślnego zdjęcia dla paska upsell
+    const defaultImages = [
+      'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80'
+    ];
+
+    const mappedItems = items.map((it, idx) => ({
+      id: it.id || `u${idx + 1}`,
+      name: it.name || 'Dodatek',
+      price: Number(it.price) || 0,
+      img: it.img || defaultImages[idx] || defaultImages[0]
+    }));
+
+    const updated = await UpsellConfig.findOneAndUpdate(
+      { location: location },
+      { items: mappedItems, updatedAt: Date.now() },
+      { new: true, upsert: true }
+    );
+
+    res.json({ success: true, data: updated, message: 'Lista szybkiego dobierania zapisana.' });
+  } catch (err) {
+    console.error('Błąd zapisu upsell:', err);
+    res.status(500).json({ success: false, message: 'Błąd po stronie serwera.' });
   }
 });
 
