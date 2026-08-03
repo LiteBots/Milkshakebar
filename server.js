@@ -211,7 +211,7 @@ const bannerSchema = new mongoose.Schema({
 
 const Banner = mongoose.model('Banner', bannerSchema);
 
-// --- NOWE: SCHEMAT GRAFIK KATEGORII I PODKATEGORII ---
+// --- SCHEMAT GRAFIK KATEGORII I PODKATEGORII ---
 const categoryBannerSchema = new mongoose.Schema({
   categoryId: { type: String, required: true, unique: true }, // np. 'cat_burgery', 'sub_desery_wloskie'
   imageUrl: { type: String, required: true },
@@ -220,7 +220,7 @@ const categoryBannerSchema = new mongoose.Schema({
 });
 const CategoryBanner = mongoose.model('CategoryBanner', categoryBannerSchema);
 
-// --- NOWE: SCHEMAT SZYBKICH DODATKÓW W KOSZYKU (UPSELL) ---
+// --- SCHEMAT SZYBKICH DODATKÓW W KOSZYKU (UPSELL Z OPCJĄ ZDJĘĆ) ---
 const upsellSchema = new mongoose.Schema({
   location: { type: String, required: true, unique: true },
   items: [{
@@ -1126,7 +1126,7 @@ app.delete('/api/admin/menu/:id', async (req, res) => {
   }
 });
 
-// UPLOAD ZDJĘCIA DLA PRODUKTU
+// UPLOAD ZDJĘCIA DLA PRODUKTU / KATEGORII / UPSELL
 app.post('/api/admin/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'Brak pliku' });
