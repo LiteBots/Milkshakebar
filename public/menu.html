@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nasze Menu | MilkShake Bar Słupsk</title>
+
+  <meta name="description" content="Sprawdź nasze pełne menu. Kremowe milkshake’i, desery, burgery i śniadania w MilkShake Bar w Słupsku.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* BAZOWE ZMIENNE Z GŁÓWNEJ STRONY */
+    :root {
+      --primary-color: #FF6A00;
+      --secondary-color: #FF9100;
+      --background-light: #FFF6EC;
+      --background-dark: #22110A;
+      --text-color-dark: #2B1300;
+      --text-color-light: #FFFFFF;
+      --gradient-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      --shadow: 0px 10px 30px rgba(0, 0, 0, 0.12);
+      --border-radius: 20px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-color-dark);
+      background-color: var(--background-light);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 25px; width: 100%; }
+    h1, h2, h3 { font-weight: 700; }
+
+    /* NAWIGACJA */
+    .header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      padding: 15px 0; z-index: 1000; 
+      background: rgba(255, 246, 236, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .navbar { display: flex; justify-content: space-between; align-items: center; }
+    .logo {
+      display: flex; align-items: center; text-decoration: none;
+      font-weight: 700; font-size: 1.5rem; color: var(--primary-color);
+    }
+    .logo img {
+      width: 50px; height: 50px; border-radius: 50%;
+      margin-right: 15px; transition: transform 0.4s ease;
+    }
+    .logo:hover img { transform: rotate(360deg) scale(1.1); }
+
+    .nav-menu { list-style: none; display: flex; align-items: center; }
+    .nav-item { margin: 0 20px; }
+    .nav-link {
+      color: var(--text-color-dark); text-decoration: none; font-weight: 600;
+      position: relative; padding: 5px 0;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -5px; left: 0;
+      width: 100%; height: 3px; background: var(--gradient-bg);
+      border-radius: 2px; transform: scaleX(0); transform-origin: right;
+      transition: transform 0.4s ease;
+    }
+    .nav-link:hover::after, .nav-link.active::after {
+      transform: scaleX(1); transform-origin: left;
+    }
+
+    /* PRZYCISKI */
+    .btn {
+      padding: 14px 30px; border-radius: 50px; font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: all 0.3s ease;
+      border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-primary {
+      background: var(--gradient-bg); color: white;
+      box-shadow: 0 4px 20px rgba(255, 106, 0, 0.5);
+    }
+    .btn-primary:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 106, 0, 0.7);
+    }
+
+    .hamburger { display: none; }
+
+    /* SEKCJA MENU PDF */
+    .menu-section {
+      padding-top: 130px; /* Miejsce na przyklejony header */
+      padding-bottom: 60px;
+      flex: 1; /* Pozwala sekcji zająć resztę miejsca i wypchnąć stopkę na dół */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 30px;
+      text-align: center;
+      background: var(--gradient-bg);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pdf-wrapper {
+      width: 100%;
+      max-width: 1000px; /* Maksymalna szerokość dla dobrej proporcji A4 */
+      height: 80vh; /* Prawie pełny ekran */
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .pdf-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .download-action {
+      text-align: center;
+    }
+    .download-action p {
+      margin-bottom: 15px;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    /* STOPKA */
+    .footer { background-color: var(--background-dark); color: #ccc; padding: 40px 0 20px; margin-top: auto; }
+    .footer-bottom { text-align: center; font-size: 0.9rem; opacity: 0.8; }
+
+    /* RESPONSATYWNOŚĆ */
+    @media(max-width: 992px) {
+      .nav-menu {
+        position: fixed; top: 0; right: -100%; width: 70%; height: 100vh;
+        background: white; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        flex-direction: column; justify-content: center; gap: 40px;
+        transition: right 0.5s ease;
+      }
+      .nav-menu.active { right: 0; }
+      .nav-link { font-size: 1.5rem; }
+      .hamburger { display: block; z-index: 1001; cursor: pointer; color: var(--primary-color); }
+      .btn-primary.nav-btn { display: none; }
+    }
+    
+    @media(max-width: 768px) {
+      .pdf-wrapper {
+        height: 65vh; /* Nieco niższy na telefonach */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="logo">
+          <img src="https://i.imgur.com/Twr2Rms.jpeg" alt="Logo MilkShake Bar">
+          <span>MilkShake Bar</span>
+        </a>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="index.html#about" class="nav-link">O nas</a></li>
+          <li class="nav-item"><a href="menu.html" class="nav-link active">Menu</a></li>
+          <li class="nav-item"><a href="index.html#location" class="nav-link">Lokal</a></li>
+          <li class="nav-item"><a href="index.html#reservation" class="nav-link">Rezerwacje</a></li>
+        </ul>
+        <a href="index.html#reservation" class="btn btn-primary nav-btn">Rezerwacja <i class="fas fa-arrow-right"></i></a>
+        <div class="hamburger"><i class="fas fa-bars fa-2x"></i></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="menu-section">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+      
+      <h1 class="section-title fade-in">Nasze Menu</h1>
+      
+      <div class="pdf-wrapper fade-in">
+        <iframe src="https://docs.google.com/viewer?url=https://www.milkshakebar.pl/menu.pdf&embedded=true" title="Menu MilkShake Bar"></iframe>
+      </div>
+
+      <div class="download-action fade-in">
+        <p>Menu nie wyświetla się poprawnie na Twoim urządzeniu?</p>
+        <a href="menu.pdf" download="MilkShake_Bar_Menu.pdf" class="btn btn-primary">
+          <i class="fas fa-download"></i> Pobierz Menu (PDF)
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2025 MilkShake Bar. Wszystkie prawa zastrzeżone.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Prosta logika do obsługi menu mobilnego (hamburger)
+    document.addEventListener('DOMContentLoaded', () => {
+      const hamburger = document.querySelector('.hamburger');
+      const navMenu = document.querySelector('.nav-menu');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      const toggleMenu = () => navMenu.classList.toggle('active');
+      const closeMenu = () => navMenu.classList.remove('active');
+      
+      if (hamburger) hamburger.addEventListener('click', toggleMenu);
+      navLinks.forEach(link => link.addEventListener('click', closeMenu));
+    });
+  </script>
+
+</body>
+</html>
