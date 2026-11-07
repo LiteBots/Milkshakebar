@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Regulamin i Polityka Prywatności | Milkshakebar</title>
+  
+  <meta name="theme-color" content="#FF6600">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      /* Palette - Premium Light */
+      --primary: #FF6600;
+      --primary-hover: #E65C00;
+      --primary-glow: rgba(255, 102, 0, 0.25);
+      --gradient-brand: linear-gradient(135deg, #FF6600 0%, #FF9900 100%);
+      
+      --bg-body: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-surface-elevated: #FFFFFF;
+      
+      --text-main: #0F172A;
+      --text-sub: #475569;
+      --border: #E2E8F0;
+        
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.6);
+        
+      --radius-xl: 32px;
+      --radius-l: 24px;
+      --radius-m: 16px;
+        
+      --nav-height: 90px;
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+      
+    html, body {
+      overflow-x: hidden !important;
+      width: 100%;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      padding-top: calc(var(--nav-height) + var(--safe-top));
+    }
+
+    .site-wrapper { width: 100%; overflow-x: hidden; position: relative; display: flex; flex-direction: column; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; width: 100%; box-sizing: border-box; }
+
+    /* KOMPONENTY WIZUALNE */
+    .text-gradient {
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    /* HEADER */
+    header { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border); z-index: 1000; display: flex; align-items: center; transition: background 0.4s, box-shadow 0.4s; }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .brand { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; text-decoration: none; color: var(--text-main); }
+    .brand span { color: var(--primary); }
+    .btn-outline { display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all 0.3s; background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+    /* BEZPIECZNE TŁO BLOBÓW */
+    .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; z-index: -1; pointer-events: none; }
+    @keyframes floatOrb { 0% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0, 0) scale(1); } }
+    .blob { position: absolute; filter: blur(120px); border-radius: 50%; animation: floatOrb 10s infinite alternate ease-in-out; opacity: 0.15; }
+    .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #FF6600; }
+    .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #FF9900; animation-delay: -5s; }
+
+    /* SEKCJA LEGAL (DOKUMENTY) */
+    .legal-hero { padding: 80px 0 40px; text-align: center; }
+    .legal-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
+    .legal-desc { color: var(--text-sub); font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    .legal-content-wrapper {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+      margin-bottom: 100px;
+      align-items: start;
+    }
+
+    /* Boczna nawigacja */
+    .legal-nav {
+      position: sticky;
+      top: calc(var(--nav-height) + 40px);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-l);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+    .legal-nav h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub); margin-bottom: 16px; font-weight: 700; }
+    .legal-nav ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .legal-nav a { display: block; padding: 10px 16px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem; border-radius: 8px; transition: 0.2s; }
+    .legal-nav a:hover, .legal-nav a.active { background: rgba(255, 102, 0, 0.08); color: var(--primary); }
+
+    /* Główny kontener tekstu */
+    .legal-document {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: clamp(30px, 5vw, 60px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+    }
+
+    .legal-document section { margin-bottom: 50px; }
+    .legal-document section:last-child { margin-bottom: 0; }
+    
+    .legal-document h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .legal-document h3 { font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin: 32px 0 16px; }
+    .legal-document p { font-size: 1.05rem; color: var(--text-sub); line-height: 1.7; margin-bottom: 16px; }
+    
+    .legal-document ul, .legal-document ol { margin-bottom: 24px; padding-left: 24px; color: var(--text-sub); font-size: 1.05rem; line-height: 1.7; }
+    .legal-document li { margin-bottom: 8px; }
+    .legal-document li strong { color: var(--text-main); }
+
+    /* Karta z danymi firmy */
+    .company-card {
+      background: var(--bg-body);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .company-card p { margin-bottom: 8px; font-size: 0.95rem; }
+    .company-card p:last-child { margin-bottom: 0; }
+    .company-card strong { color: var(--text-main); font-weight: 700; display: inline-block; width: 140px; }
+
+    /* FOOTER (Uproszczony) */
+    footer { background: var(--bg-surface-elevated); border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
+    .footer-bottom { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; }
+
+    /* RWD */
+    @media(max-width: 992px) {
+      .legal-content-wrapper { grid-template-columns: 1fr; }
+      .legal-nav { position: static; margin-bottom: 32px; }
+    }
+    @media(max-width: 600px) {
+      .brand { font-size: 1.3rem; }
+      .btn-outline { padding: 10px 16px; font-size: 0.85rem; }
+      .legal-document { padding: 24px; }
+      .company-card strong { display: block; width: auto; margin-bottom: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="site-wrapper">
+    <div class="background-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header id="header">
+      <div class="container nav-container">
+        <a href="index.html" class="brand">Milkshakebar<span>.</span></a>
+        <a href="index.html" class="btn-outline"><i class="fas fa-arrow-left"></i> Wróć do sklepu</a>
+      </div>
+    </header>
+
+    <!-- TYTUŁ SEKCJI -->
+    <section class="legal-hero container">
+      <h1 class="legal-title">Informacje <span class="text-gradient">Prawne</span></h1>
+      <p class="legal-desc">Transparentne zasady to podstawa. Poniżej znajdziesz regulamin naszych usług online oraz politykę prywatności.</p>
+    </section>
+
+    <!-- GŁÓWNA ZAWARTOŚĆ -->
+    <main class="container legal-content-wrapper">
+      
+      <!-- MENU BOCZNE -->
+      <aside class="legal-nav">
+        <h4>Spis treści</h4>
+        <ul>
+          <li><a href="#regulamin" class="active">Regulamin Sklepu i Zamówień</a></li>
+          <li><a href="#dostawy">Zasady Dostaw i Odbioru</a></li>
+          <li><a href="#zwroty">Zwroty i Reklamacje</a></li>
+          <li><a href="#prywatnosc">Polityka Prywatności (RODO)</a></li>
+        </ul>
+      </aside>
+
+      <!-- DOKUMENTY -->
+      <div class="legal-document">
+        
+        <!-- REGULAMIN -->
+        <section id="regulamin">
+          <h2>Regulamin Sklepu Internetowego</h2>
+          
+          <h3>§1 Postanowienia Ogólne i Dane Przedsiębiorcy</h3>
+          <p>Właścicielem oraz administratorem serwisu (w tym systemu zamówień online z opcją dostawy i odbioru osobistego) pod marką "Milkshakebar" jest:</p>
+          
+          <div class="company-card">
+            <p><strong>Firma:</strong> MARCIN CHOJNACKI MILKSHAKE BAR</p>
+            <p><strong>Imię i Nazwisko:</strong> Marcin Chojnacki</p>
+            <p><strong>NIP:</strong> 8271982077</p>
+            <p><strong>REGON:</strong> 100473965</p>
+            <p><strong>Adres działalności:</strong> ul. Szczecińska 17, 76-200 Słupsk</p>
+            <p><strong>Województwo:</strong> POMORSKIE, Polska</p>
+          </div>
+          
+          <p>Regulamin określa zasady korzystania ze sklepu internetowego, składania zamówień na produkty gastronomiczne (posiłki, napoje, desery), dostarczania zamówionych produktów do Klienta oraz uiszczania przez Klienta ceny za zamówienie.</p>
+
+          <h3>§2 Zasady składania zamówień online</h3>
+          <ol>
+            <li>Zamówienia można składać 24 godziny na dobę poprzez aplikację lub stronę internetową, jednak ich realizacja (przygotowanie i dostawa/odbiór) odbywa się wyłącznie w godzinach otwarcia lokalu.</li>
+            <li>Do złożenia zamówienia konieczne jest wybranie produktów z menu, określenie formy realizacji (dostawa pod wskazany adres lub odbiór osobisty w lokalu) oraz podanie danych kontaktowych (imię, numer telefonu, adres e-mail).</li>
+            <li>Złożenie zamówienia stanowi ofertę zawarcia umowy sprzedaży produktów gastronomicznych. Umowa zostaje zawarta w momencie potwierdzenia przyjęcia zamówienia do realizacji przez lokal.</li>
+            <li>W przypadku braku możliwości realizacji zamówienia (np. braki w asortymencie lub problemy logistyczne), obsługa skontaktuje się z Klientem w celu modyfikacji zamówienia lub zwrotu środków.</li>
+          </ol>
+        </section>
+
+        <!-- DOSTAWY -->
+        <section id="dostawy">
+          <h3>§3 Płatności, Dostawa i Odbiór</h3>
+          <p>Dbamy o to, aby zamówienia dotarły do Ciebie świeże i w jak najkrótszym czasie.</p>
+          <ul>
+            <li><strong>Formy płatności:</strong> Akceptujemy płatności online (Przelewy24, BLIK, karty płatnicze) oraz płatności wirtualnym portfelem vPLN w aplikacji MilkMi. Zastrzegamy sobie prawo do wymagania przedpłaty online dla zamówień z dostawą.</li>
+            <li><strong>Dostawa:</strong> Realizowana jest przez naszych kurierów w obrębie wyznaczonych stref (m.in. na terenie Słupska). Koszt dostawy oraz minimalna kwota zamówienia są podawane w podsumowaniu koszyka i zależą od odległości od lokalu.</li>
+            <li><strong>Odbiór osobisty:</strong> Klient może odebrać zamówienie osobiście w lokalu przy ul. Szczecińskiej 17 w Słupsku o wyznaczonej w systemie godzinie.</li>
+            <li>Czas realizacji podany w systemie jest orientacyjny i może ulec wydłużeniu w godzinach szczytu.</li>
+          </ul>
+        </section>
+
+        <!-- ZWROTY I REKLAMACJE -->
+        <section id="zwroty">
+          <h3>§4 Brak prawa do odstąpienia od umowy (Produkty łatwo psujące się)</h3>
+          <p>Zgodnie z art. 38 pkt 4 Ustawy z dnia 30 maja 2014 r. o prawach konsumenta, <strong>prawo odstąpienia od umowy zawartej na odległość nie przysługuje</strong> w odniesieniu do umów, w których przedmiotem świadczenia jest rzecz ulegająca szybkiemu zepsuciu lub mająca krótki termin przydatności do spożycia. <strong>Dotyczy to wszystkich gotowych produktów gastronomicznych, napojów oraz milkshake'ów oferowanych w naszym menu.</strong></p>
+
+          <h3>§5 Reklamacje</h3>
+          <ol>
+            <li>Jeżeli dostarczone zamówienie jest niezgodne z umową (np. brakuje elementu zamówienia, produkt jest uszkodzony lub drastycznie odbiega od opisu), Klient ma prawo do złożenia reklamacji.</li>
+            <li>Zaleca się zgłoszenie reklamacji natychmiast po odbiorze zamówienia ze względu na specyfikę produktów żywnościowych (najlepiej do 2 godzin od otrzymania).</li>
+            <li>Reklamacje można zgłaszać bezpośrednio obsłudze w lokalu, telefonicznie na numer kontaktowy lokalu lub drogą mailową.</li>
+            <li>Do rozpatrzenia reklamacji prosimy o zachowanie dowodu zakupu oraz, jeśli to możliwe, przesłanie zdjęcia wadliwego produktu. Zobowiązujemy się do rozpatrzenia reklamacji w trybie pilnym.</li>
+          </ol>
+        </section>
+
+        <!-- POLITYKA PRYWATNOŚCI -->
+        <section id="prywatnosc">
+          <h2>Polityka Prywatności (RODO)</h2>
+          
+          <h3>1. Kto jest administratorem Twoich danych?</h3>
+          <p>Administratorem Twoich danych osobowych jest <strong>Marcin Chojnacki</strong> prowadzący działalność pod firmą <strong>MARCIN CHOJNACKI MILKSHAKE BAR</strong> (NIP: 8271982077, REGON: 100473965), z siedzibą przy ul. Szczecińskiej 17, 76-200 Słupsk.</p>
+
+          <h3>2. Cele i podstawy przetwarzania danych</h3>
+          <p>Twoje dane przetwarzamy głównie w celu zrealizowania zamówienia na pyszne jedzenie. Szczegóły:</p>
+          <ul>
+            <li><strong>Zawarcie i realizacja umowy (art. 6 ust. 1 lit. b RODO):</strong> Przetwarzamy Twoje imię, adres dostawy, numer telefonu oraz adres e-mail, aby przygotować i dostarczyć Twoje zamówienie.</li>
+            <li><strong>Obsługa rezerwacji i płatności:</strong> Dane są używane w celu identyfikacji Twojego stolika lub procesowania transakcji online za pośrednictwem operatorów płatności.</li>
+            <li><strong>Program Lojalnościowy MilkMi:</strong> Jeśli korzystasz z aplikacji, przetwarzamy dane w celu naliczania punktów lojalnościowych i obsługi portfela vPLN (na podstawie Twojej zgody - art. 6 ust. 1 lit. a RODO).</li>
+            <li><strong>Wypełnienie obowiązków prawnych (art. 6 ust. 1 lit. c RODO):</strong> W celach księgowych i podatkowych (np. wystawianie faktur).</li>
+          </ul>
+
+          <h3>3. Twoje Prawa</h3>
+          <p>W związku z przetwarzaniem Twoich danych masz szereg praw:</p>
+          <ul>
+            <li>Prawo dostępu do swoich danych oraz otrzymania ich kopii.</li>
+            <li>Prawo do sprostowania (poprawiania) swoich danych.</li>
+            <li>Prawo do usunięcia danych ("prawo do bycia zapomnianym") - o ile nie narusza to naszych obowiązków prawnych (np. konieczności przechowywania faktur).</li>
+            <li>Prawo do wycofania zgody (np. na marketing), co nie wpływa na zgodność z prawem przetwarzania przed jej wycofaniem.</li>
+          </ul>
+
+          <h3>4. Pliki Cookies (Ciasteczka)</h3>
+          <p>Nasz serwis oraz system zamówień wykorzystują pliki cookies. Używamy ich do:</p>
+          <ul>
+            <li><strong>Cookies niezbędnych:</strong> Utrzymania sesji koszyka zakupowego, procesu logowania i wyboru preferencji językowych. Bez nich sklep nie będzie działał poprawnie.</li>
+            <li><strong>Cookies analitycznych:</strong> Anonimowego analizowania ruchu na stronie, abyśmy wiedzieli, co w naszym menu podoba Wam się najbardziej.</li>
+          </ul>
+          <p>Możesz zarządzać plikami cookies z poziomu ustawień swojej przeglądarki internetowej.</p>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container footer-bottom">
+        <div>&copy; 2026 Marcin Chojnacki Milkshake Bar. Wszelkie prawa zastrzeżone.</div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Prosty skrypt do podświetlania menu bocznego w zależności od scrolla
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('header');
+      window.addEventListener('scroll', () => {
+        if(window.scrollY > 50) { 
+          header.style.background = 'var(--glass-bg)'; 
+          header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)'; 
+        } else { 
+          header.style.background = 'transparent'; 
+          header.style.boxShadow = 'none'; 
+        }
+      });
+
+      const sections = document.querySelectorAll('.legal-document section');
+      const navLinks = document.querySelectorAll('.legal-nav a');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (pageYOffset >= sectionTop - 150) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current)) {
+            link.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
