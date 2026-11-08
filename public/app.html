@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MilkMi</title>
+  <meta name="theme-color" content="#F4F4F0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MilkMi">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script>try { if (localStorage.getItem('milkmi_theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}</script>
+  <style>
+    :root {
+      --orange: #FF4500; --orange-deep: #C83600; --orange-soft: #FFE8DC;
+      --bg: #F4F4F0; --surface: #FFFFFF; --ink: #121212; --text: #121212; --sub: #5C5C5C;
+      --line: #E3E3DE; --muted: #ECEBE6; --green: #0F8A5F; --green-soft: #E3F5EC; --red: #C62828; --red-soft: #FDECEC;
+      --card: #121212; --card-text: #FFFFFF; --card-sub: #B0B0B0;
+      --r-l: 24px; --r-m: 18px; --r-s: 14px;
+      --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
+      color-scheme: light;
+    }
+    html.dark {
+      --bg: #0D0D0D; --surface: #181818; --text: #F4F4F0; --sub: #A3A3A3; --line: #2A2A2A; --muted: #222;
+      --orange-soft: #2A140A; --green-soft: #0E2A20; --red-soft: #331414; --card: #222222; color-scheme: dark;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font: 500 16px/1.45 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+    .brand { font-weight: 900; letter-spacing: -.04em; font-size: 1.5rem; }
+    .brand b { color: var(--orange); }
+    .shell { max-width: 520px; margin: 0 auto; min-height: 100dvh; padding: calc(var(--safe-top) + 10px) 18px calc(var(--safe-bottom) + 110px); }
+
+    .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 54px; padding: 14px 18px; border: 0; border-radius: var(--r-m); background: var(--orange); color: #fff; font-weight: 800; font-size: 1rem; text-decoration: none; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-dark { background: var(--ink); color: #fff; }
+    html.dark .btn-dark { background: var(--surface); }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+    .icon-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; flex: none; }
+
+    /* Logowanie */
+    .auth { max-width: 460px; margin: 0 auto; min-height: 100dvh; padding: calc(var(--safe-top) + 28px) 22px 40px; display: flex; flex-direction: column; }
+    .auth h1 { font-size: 2.4rem; font-weight: 900; letter-spacing: -.045em; line-height: 1.02; margin: 34px 0 10px; }
+    .auth h1 span { color: var(--orange); }
+    .auth .lead { color: var(--sub); margin-bottom: 26px; }
+    .tabs2 { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--muted); border-radius: 99px; margin-bottom: 20px; }
+    .tabs2 button { border: 0; background: none; padding: 11px; border-radius: 99px; font-weight: 800; color: var(--sub); }
+    .tabs2 button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+    .field { display: block; margin-bottom: 14px; }
+    .field > span { display: block; font-size: .86rem; font-weight: 700; margin-bottom: 6px; }
+    .input { width: 100%; min-height: 52px; padding: 13px 15px; border-radius: var(--r-s); border: 1px solid var(--line); background: var(--surface); font-size: 1rem; }
+    .input:focus { outline: 2px solid var(--orange); border-color: transparent; }
+    .pw { position: relative; }
+    .pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border: 0; background: none; color: var(--sub); }
+    .consent { font-size: .82rem; color: var(--sub); margin: 4px 0 16px; }
+    .consent a { font-weight: 700; }
+    .input-big { min-height: 64px; font-size: 1.6rem; font-weight: 800; letter-spacing: .02em; text-align: center; }
+    .link-btn { border: 0; background: none; color: var(--orange-deep); font-weight: 800; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
+    html.dark .link-btn { color: #FF9A6A; }
+    #step-phone .link-btn, #step-email .link-btn { display: block; margin: 6px auto 0; }
+    .phone-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 8px 6px 16px; margin-bottom: 16px; }
+    .phone-chip i { color: var(--orange); }
+    .phone-chip b { flex: 1; font-size: 1.05rem; }
+    .phone-chip .link-btn { padding: 4px 10px; }
+    .step-title { font-size: 1.35rem; font-weight: 900; letter-spacing: -.03em; margin-bottom: 14px; }
+    .check { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; color: var(--sub); margin: 4px 0 16px; cursor: pointer; }
+    .check input { width: 22px; height: 22px; accent-color: var(--orange); flex: none; margin-top: 1px; }
+    .check a { font-weight: 700; color: var(--text); }
+    .onb { text-align: center; }
+    .onb .big-ic { width: 76px; height: 76px; border-radius: 24px; background: var(--orange); color: #fff; display: grid; place-items: center; font-size: 2rem; margin: 6px auto 14px; }
+    .onb h3 { font-size: 1.45rem; font-weight: 900; letter-spacing: -.03em; }
+    .onb p { color: var(--sub); margin: 8px 0 18px; }
+    .ios-steps { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 14px 16px; margin-bottom: 14px; display: grid; gap: 10px; font-weight: 600; font-size: .92rem; }
+    .ios-steps i { color: var(--orange); width: 22px; text-align: center; }
+    .status-pill { font-size: .78rem; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: var(--muted); color: var(--sub); white-space: nowrap; }
+    .status-pill.on { background: var(--green-soft); color: var(--green); }
+    .form-error { background: var(--red-soft); color: var(--red); border-radius: var(--r-s); padding: 11px 14px; font-weight: 700; font-size: .9rem; margin-bottom: 14px; }
+
+    /* Nagłówek i banery */
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0 14px; }
+    .loc { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--sub); font-weight: 700; font-size: .84rem; padding: 4px 0; }
+    .loc i { color: var(--orange); }
+    .app-bar { border-radius: var(--r-s); padding: 11px 14px; color: #fff; font-weight: 700; font-size: .9rem; margin-bottom: 14px; }
+    .hello small { display: block; color: var(--sub); font-weight: 600; font-size: .9rem; }
+    .hello h2 { font-size: 1.7rem; font-weight: 900; letter-spacing: -.04em; line-height: 1.1; }
+
+    /* Karta punktów */
+    .card { position: relative; overflow: hidden; background: var(--card); color: var(--card-text); border-radius: var(--r-l); padding: 22px; }
+    .card .circle { position: absolute; right: -70px; top: -70px; width: 190px; height: 190px; border-radius: 50%; background: var(--orange); }
+    .card small { color: var(--card-sub); font-weight: 600; font-size: .82rem; position: relative; }
+    .card .big { position: relative; font-size: 3rem; font-weight: 900; letter-spacing: -.05em; line-height: 1; margin-top: 4px; }
+    .card .row { position: relative; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; gap: 12px; }
+    .card .bal { font-size: 1.35rem; font-weight: 900; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 99px; background: var(--orange); color: #fff; font-size: .74rem; font-weight: 800; white-space: nowrap; }
+    .chip.soft { background: var(--orange-soft); color: var(--orange-deep); }
+    html.dark .chip.soft { color: #FF9A6A; }
+    .chip.green { background: var(--green-soft); color: var(--green); }
+    .chip.grey { background: var(--muted); color: var(--sub); }
+    .chip.red { background: var(--red-soft); color: var(--red); }
+    .prog { position: relative; height: 8px; border-radius: 99px; background: rgba(255,255,255,.18); margin-top: 14px; overflow: hidden; }
+    .prog i { display: block; height: 100%; background: var(--orange); border-radius: 99px; transition: width .6s cubic-bezier(.2,.8,.2,1); }
+    .card .hint { display: block; margin-top: 8px; }
+
+    .phone-btn { margin-top: 12px; }
+    .quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .quick button, .quick a { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 14px 4px 12px; text-align: center; font-size: .76rem; font-weight: 800; text-decoration: none; }
+    .quick i { display: block; color: var(--orange); font-size: 1.25rem; margin-bottom: 7px; }
+
+    .h3 { display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; font-weight: 800; margin: 24px 0 10px; }
+    .h3 button { border: 0; background: none; color: var(--orange); font-weight: 800; font-size: .86rem; }
+    .list { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); overflow: hidden; }
+    .li { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border-top: 1px solid var(--line); }
+    .li:first-child { border-top: 0; }
+    .li .ico { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--orange-soft); color: var(--orange-deep); }
+    html.dark .li .ico { color: #FF9A6A; }
+    .li .ico.g { background: var(--green-soft); color: var(--green); }
+    .li .t { flex: 1; min-width: 0; font-weight: 700; font-size: .92rem; line-height: 1.25; }
+    .li .t small { display: block; color: var(--sub); font-weight: 600; font-size: .8rem; margin-top: 2px; }
+    .li .v { font-weight: 800; white-space: nowrap; font-size: .92rem; }
+    .plus { color: var(--green); } .minus { color: var(--red); }
+    .empty { padding: 22px; text-align: center; color: var(--sub); font-size: .92rem; }
+    button.li { width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: none; text-align: left; }
+
+    .page-title { font-size: 1.7rem; font-weight: 900; letter-spacing: -.04em; margin: 4px 0 14px; }
+    .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px; }
+    .info { background: var(--orange-soft); color: var(--orange-deep); border-radius: var(--r-m); padding: 13px 15px; font-size: .88rem; font-weight: 700; margin-top: 12px; display: flex; gap: 10px; }
+    html.dark .info { color: #FF9A6A; }
+
+    /* Nagrody */
+    .stat { text-align: center; padding: 20px; }
+    .stat .big { font-size: 2.8rem; font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
+    .stat small { color: var(--sub); font-weight: 700; }
+    .vouchers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .voucher { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; }
+    .voucher b { font-size: 1.5rem; font-weight: 900; letter-spacing: -.03em; color: var(--orange); }
+    .voucher span { color: var(--sub); font-weight: 700; font-size: .82rem; }
+    .voucher.off { opacity: .45; cursor: not-allowed; }
+    .voucher.ok { border: 2px solid var(--orange); }
+
+    /* Rezerwacja */
+    .zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .zone { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-s); padding: 12px 6px; font-weight: 700; font-size: .8rem; text-align: center; }
+    .zone i { display: block; color: var(--orange); font-size: 1.1rem; margin-bottom: 6px; }
+    .zone[aria-pressed="true"] { border: 2px solid var(--orange); background: var(--orange-soft); }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* Dolna nawigacja */
+    .tabs { position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 520px; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 8px 6px calc(var(--safe-bottom) + 8px); z-index: 20; }
+    .tabs button { border: 0; background: none; color: var(--sub); font-size: .68rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0; }
+    .tabs button i { font-size: 1.15rem; }
+    .tabs button[aria-current="page"] { color: var(--orange); }
+    .tabs .center i { width: 52px; height: 52px; margin-top: -26px; border-radius: 50%; background: var(--orange); color: #fff; display: grid; place-items: center; font-size: 1.2rem; box-shadow: 0 8px 18px rgba(255,69,0,.4); }
+    .tabs .center { color: var(--text); }
+
+    /* Okna */
+    .sheet-bg { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
+    .sheet-bg.open { opacity: 1; pointer-events: auto; }
+    .sheet { width: 100%; max-width: 520px; max-height: 92dvh; overflow-y: auto; background: var(--bg); border-radius: var(--r-l) var(--r-l) 0 0; padding: 20px 18px calc(var(--safe-bottom) + 20px); transform: translateY(30px); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+    .sheet-bg.open .sheet { transform: none; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; }
+    .sheet-head h3 { font-size: 1.3rem; font-weight: 900; letter-spacing: -.03em; }
+    .number-card { background: var(--card); color: #fff; border-radius: var(--r-l); padding: 26px 20px; text-align: center; }
+    .number-card small { color: var(--card-sub); font-weight: 700; }
+    .number-card .num { font-size: 2.6rem; font-weight: 900; letter-spacing: .02em; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+    .number-card .who { font-weight: 800; color: var(--orange); }
+    .steps { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .steps li { display: flex; gap: 12px; align-items: flex-start; font-weight: 600; font-size: .92rem; }
+    .steps li b { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--orange); color: #fff; display: grid; place-items: center; font-size: .8rem; }
+    .settings .li { cursor: pointer; }
+    .switch { position: relative; width: 48px; height: 28px; flex: none; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .switch i { position: absolute; inset: 0; border-radius: 99px; background: var(--line); transition: background .2s; }
+    .switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .2s; }
+    .switch input:checked + i { background: var(--orange); }
+    .switch input:checked + i::after { left: 23px; }
+
+    .toast { position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 96px); transform: translate(-50%, 14px); opacity: 0; pointer-events: none; z-index: 80; background: var(--ink); color: #fff; border-radius: 99px; padding: 11px 18px; font-weight: 700; font-size: .9rem; max-width: calc(100vw - 32px); text-align: center; transition: opacity .2s, transform .25s; }
+    html.dark .toast { background: #fff; color: #111; }
+    .toast.on { opacity: 1; transform: translate(-50%, 0); }
+    .toast.err { background: var(--red); color: #fff; }
+    .loading { min-height: 100dvh; display: grid; place-items: center; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+    /* Program: poziom, happy hour, misje, odznaki, polecenia, urodziny, karta podarunkowa */
+    .card-top { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .tier-chip { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 99px; background: rgba(255,255,255,.14); color: #fff; font-size: .74rem; font-weight: 800; }
+    .hh-banner { margin-top: 12px; border-radius: var(--r-m); padding: 13px 15px; background: linear-gradient(90deg, #FF4500, #FF8A00); color: #fff; font-weight: 800; display: flex; gap: 10px; align-items: center; }
+    .hh-banner i { font-size: 1.1rem; }
+    .info.warn { background: #FFF4D6; color: #8A5A00; }
+    html.dark .info.warn { background: #2E2408; color: #FFC94D; }
+    .missions { display: grid; gap: 10px; }
+    .mission { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 14px 15px; display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; }
+    .mission .mi-ic { width: 44px; height: 44px; border-radius: 14px; background: var(--orange-soft); display: grid; place-items: center; font-size: 1.4rem; }
+    .mission b { display: block; font-size: .95rem; }
+    .mission small { display: block; color: var(--sub); font-weight: 600; font-size: .8rem; margin-top: 2px; }
+    .mission .mbar { height: 8px; background: var(--muted); border-radius: 99px; overflow: hidden; margin: 10px 0 6px; }
+    .mission .mbar i { display: block; height: 100%; background: var(--orange); border-radius: 99px; }
+    .mission .mrow { display: flex; justify-content: space-between; gap: 8px; font-size: .78rem; font-weight: 800; color: var(--sub); }
+    .mission .mrow .rw { color: var(--orange-deep); }
+    html.dark .mission .mrow .rw { color: #FF9A6A; }
+    .mission.done { border-color: var(--green); }
+    .mission.done .mi-ic { background: var(--green-soft); }
+    .mission.done .mbar i { background: var(--green); }
+    .badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .badge-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 14px 8px; text-align: center; }
+    .badge-tile span { font-size: 1.8rem; display: block; }
+    .badge-tile b { display: block; font-size: .78rem; margin-top: 6px; line-height: 1.2; }
+    .tier-tile .tname { font-size: 1.6rem; font-weight: 900; letter-spacing: -.03em; }
+    .tier-tile .tbar { height: 10px; background: var(--muted); border-radius: 99px; overflow: hidden; margin: 12px 0 8px; }
+    .tier-tile .tbar i { display: block; height: 100%; background: var(--orange); }
+    .tier-levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; margin-top: 12px; }
+    .tier-levels div { border: 1px solid var(--line); border-radius: 12px; padding: 8px; text-align: center; font-size: .75rem; font-weight: 700; color: var(--sub); }
+    .tier-levels div b { display: block; color: var(--text); font-size: .9rem; }
+    .tier-levels div.cur { border: 2px solid var(--orange); }
+    .ref-code { font-size: 1.8rem; font-weight: 900; letter-spacing: .06em; text-align: center; padding: 12px; border: 2px dashed var(--orange); border-radius: var(--r-m); margin: 10px 0; }
+    .row-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+    .btn-sm { min-height: 44px; padding: 10px 14px; font-size: .9rem; }
+    .inline-form { display: flex; gap: 8px; margin-top: 10px; }
+    .inline-form .input { flex: 1; min-width: 0; text-transform: uppercase; }
+    .inline-form .btn { width: auto; flex: none; }
+    .ref-tile-home { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 14px 15px; text-align: left; }
+    .ref-tile-home i { width: 40px; height: 40px; border-radius: 12px; background: var(--orange-soft); color: var(--orange-deep); display: grid; place-items: center; flex: none; }
+    .ref-tile-home span { flex: 1; font-weight: 800; font-size: .92rem; }
+    .ref-tile-home small { display: block; color: var(--sub); font-weight: 600; font-size: .8rem; }
+    /* ===== Nowy wygląd 2026: karta „z mlekiem”, kółka, promocja, dok ===== */
+    .top { padding: 4px 0 12px; }
+    .top .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .top .av { width: 46px; height: 46px; border-radius: 50%; padding: 2px; border: 0; background: var(--orange); flex: none; }
+    .top .av span { width: 100%; height: 100%; border-radius: 50%; background: var(--ink); color: #fff; border: 2px solid var(--bg); display: grid; place-items: center; font-weight: 800; }
+    html.dark .top .av span { background: var(--surface); }
+    .top .loc { padding: 0; font-size: .8rem; }
+    .hi-name { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top .icon-btn { border-radius: 15px; }
+
+    .stories { display: flex; gap: 14px; margin: 0 -18px 14px; padding: 2px 18px 4px; overflow-x: auto; scrollbar-width: none; }
+    .stories::-webkit-scrollbar { display: none; }
+    .story { flex: none; width: 68px; text-align: center; text-decoration: none; color: var(--text); font-size: .72rem; font-weight: 700; border: 0; background: none; padding: 0; }
+    .story .ring { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: var(--orange); }
+    .story .ring.seen { background: var(--line); }
+    .story .ring span { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg); overflow: hidden; display: grid; place-items: center; background: var(--ink); color: var(--orange); font-size: 1.3rem; }
+    .story .ring img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .story em { display: block; font-style: normal; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .mcard { position: relative; background: var(--orange); color: #fff; border-radius: 28px; padding: 42px 20px 18px; overflow: hidden; }
+    .mcard .drip { position: absolute; left: 0; top: 0; width: 100%; height: 52px; display: block; }
+    .mcard > *:not(.drip) { position: relative; }
+    .mcard .mtop { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .84rem; font-weight: 700; color: #FFE2D4; }
+    .mcard .tier-chip { background: var(--ink); color: #fff; font-size: .76rem; font-weight: 800; border-radius: 99px; padding: 5px 11px; display: inline-flex; gap: 6px; align-items: center; }
+    .mcard .tier-chip i { color: var(--orange); }
+    .mpts { font-size: 4.1rem; font-weight: 800; letter-spacing: -.07em; line-height: 1; margin-top: 2px; }
+    .mpts small { font-size: 1rem; font-weight: 700; letter-spacing: 0; margin-left: 4px; }
+    .mbar { position: relative; height: 10px; background: rgba(255,255,255,.3); border-radius: 99px; margin-top: 10px; }
+    .mbar i { position: absolute; left: 0; top: 0; bottom: 0; background: #fff; border-radius: 99px; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+    .mbar em { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; background: var(--orange); border-radius: 2px; }
+    .mfoot { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; font-size: .8rem; font-weight: 700; color: #FFE2D4; }
+    .mfoot b { color: #fff; }
+    .mbal { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; background: var(--ink); border-radius: 16px; padding: 12px 15px; }
+    html.dark .mbal { background: #121212; }
+    .mbal span { font-size: .84rem; font-weight: 700; color: #B0B0AB; }
+    .mbal b { font-size: 1.2rem; font-weight: 800; letter-spacing: -.03em; color: #fff; }
+    .mbal b span { font-size: inherit; color: inherit; font-weight: inherit; }
+    .story { display: block; }
+    .story .ring { display: block; }
+
+    .btns2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; margin-top: 12px; }
+    .btns2 .btn { border-radius: 18px; min-height: 56px; }
+    .btns2 .btn:first-child { box-shadow: 0 12px 24px -12px rgba(255,69,0,.75); }
+    .promo { position: relative; display: block; height: 140px; border-radius: 24px; overflow: hidden; margin-top: 12px; background: var(--ink); color: #fff; text-decoration: none; }
+    .promo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .promo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,18,18,.92), rgba(18,18,18,.5) 60%, rgba(18,18,18,0)); }
+    .promo .ptxt { position: absolute; inset: 0; z-index: 1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; max-width: 74%; }
+    .promo .ptxt b { font-size: 1.2rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; margin-top: auto; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; background: var(--orange); color: #fff; font-weight: 800; font-size: .76rem; border-radius: 99px; padding: 6px 11px; }
+    .mini { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 12px 14px; text-align: left; color: var(--text); }
+    .mini .mic { width: 40px; height: 40px; border-radius: 13px; background: var(--orange-soft); color: var(--orange-deep); display: grid; place-items: center; flex: none; }
+    html.dark .mini .mic { color: #FF9A6A; }
+    .mini .mt { flex: 1; min-width: 0; font-size: .92rem; font-weight: 800; }
+    .mini .mt b { display: block; font-weight: 800; }
+    .mini .mt small { display: block; color: var(--sub); font-size: .78rem; font-weight: 600; margin-top: 1px; }
+    .mini .seg { display: flex; gap: 3px; width: 64px; flex: none; }
+    .mini .seg i { flex: 1; height: 6px; border-radius: 99px; background: var(--line); }
+    .mini .seg i.on { background: var(--orange); }
+    #home-missions .h3 { margin-top: 18px; }
+
+    /* Dok nawigacji */
+    .tabs { left: 50%; bottom: calc(var(--safe-bottom) + 14px); width: calc(100% - 32px); max-width: 488px; border-radius: 26px; background: rgba(18,18,18,.95); border: 0; padding: 8px 6px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.55); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); align-items: center; }
+    .tabs button { color: #9A9A95; font-size: .66rem; }
+    .tabs button[aria-current="page"] { color: #fff; }
+    .tabs button[aria-current="page"] i { color: var(--orange); }
+    .tabs .center i { width: 54px; height: 54px; margin-top: 0; border-radius: 18px; box-shadow: 0 10px 22px -8px rgba(255,69,0,.85); }
+    .shell { padding-bottom: calc(var(--safe-bottom) + 120px); }
+
+    /* Nagrody ze zdjęciami */
+    .rw-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .rw-stats .tile small { display: block; color: var(--sub); font-weight: 700; font-size: .78rem; }
+    .rw-stats .tile b { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; margin-top: 2px; }
+    .rw-stats .tile b em { font-style: normal; font-size: .8rem; letter-spacing: 0; color: var(--sub); font-weight: 700; }
+    .tseg { display: flex; gap: 4px; margin-top: 8px; }
+    .tseg i { flex: 1; height: 5px; border-radius: 99px; background: var(--line); }
+    .tseg i.on { background: var(--orange); }
+    .tseg i.on.k { background: var(--ink); }
+    html.dark .tseg i.on.k { background: #fff; }
+    .vtiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .vtile { position: relative; height: 180px; border-radius: 22px; overflow: hidden; border: 0; padding: 0; text-align: left; background: var(--ink); color: #fff; }
+    .vtile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vtile.noimg { background: linear-gradient(145deg, #FF4500, #C83600); }
+    .vtile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,18,18,0) 30%, rgba(18,18,18,.9)); }
+    .vtile.off img { filter: grayscale(1) brightness(.6); }
+    .vtile .tag { position: absolute; top: 10px; left: 10px; z-index: 1; display: inline-flex; gap: 6px; align-items: center; font-size: .74rem; font-weight: 800; border-radius: 99px; padding: 5px 10px; background: var(--orange); color: #fff; }
+    .vtile.off .tag { background: rgba(18,18,18,.78); }
+    .vtile .in { position: absolute; left: 12px; right: 12px; bottom: 11px; z-index: 1; }
+    .vtile .in b { display: block; font-size: 1.6rem; font-weight: 800; letter-spacing: -.05em; line-height: 1.05; }
+    .vtile .in span { display: block; font-size: .76rem; font-weight: 600; color: #EDEDEA; margin-top: 2px; }
+    .vtile .vb { height: 5px; border-radius: 99px; background: rgba(255,255,255,.25); margin-top: 7px; overflow: hidden; }
+    .vtile .vb i { display: block; height: 100%; background: var(--orange); }
+
+    /* Numer do kasy na cały ekran */
+    .sheet-full { max-height: 100dvh; height: 100dvh; border-radius: 0; padding-top: calc(var(--safe-top) + 14px); display: flex; flex-direction: column; background: var(--bg); }
+    .sheet-full .sheet-head h3 { font-size: 1rem; color: var(--sub); font-weight: 700; letter-spacing: 0; }
+    .num-card { flex: 1; display: flex; flex-direction: column; padding-top: 64px; padding-bottom: 22px; border-radius: 32px; min-height: 420px; }
+    .num-card .drip { height: 70px; }
+    .num-card .nbrand { font-size: 1.35rem; font-weight: 800; letter-spacing: -.04em; color: #fff; }
+    .num-card .nlabel { margin-top: auto; font-weight: 700; font-size: .95rem; }
+    .num-card .nphone { font-size: 5.4rem; font-weight: 800; letter-spacing: -.06em; line-height: .96; margin-top: 8px; }
+    .num-card .nphone span { display: block; }
+    .num-card .nfoot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 22px; }
+    .num-card .nfoot small { display: block; font-size: .78rem; color: #FFE2D4; font-weight: 700; }
+    .num-card .nfoot b { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
+    .nbal { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 15px; font-size: .95rem; font-weight: 700; }
+    .nbal i { color: var(--orange); }
+    .nhint { text-align: center; color: var(--sub); font-size: .82rem; margin-top: 10px; }
+    @media (max-height: 700px) { .num-card .nphone { font-size: 4.2rem; } .num-card { padding-top: 56px; } }
+  </style>
+</head>
+<body>
+<div id="boot" class="loading"><span class="brand">MilkMi<b>.</b></span></div>
+
+<!-- Logowanie i rejestracja -->
+<main id="auth" class="auth" hidden>
+  <span class="brand">MilkMi<b>.</b></span>
+  <h1 data-i18n-html="auth_title">Jedz, zbieraj,<br><span>płać punktami.</span></h1>
+  <p class="lead" data-i18n="auth_lead">10 zł wydane w Milkshakebar to 1 Milkos. Każdy Milkos to 1 zł do wydania w lokalu.</p>
+  <div id="auth-error" class="form-error" hidden></div>
+
+  <!-- Krok 1: numer telefonu -->
+  <form id="step-phone" novalidate>
+    <label class="field"><span data-i18n="f_phone_start">Twój numer telefonu</span>
+      <input class="input input-big" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="600 700 800" required></label>
+    <button class="btn" type="submit"><span data-i18n="next">Dalej</span><i class="fas fa-arrow-right"></i></button>
+    <p class="consent" style="margin-top:14px" data-i18n="phone_why">Po numerze telefonu kasa nabija Ci Milkosy. Nie wysyłamy SMS-ów reklamowych.</p>
+    <button type="button" class="link-btn" data-auth-step="email" data-i18n="login_email">Mam konto na e-mail lub login</button>
+  </form>
+
+  <!-- Krok 2a: logowanie -->
+  <form id="step-login" novalidate hidden>
+    <div class="phone-chip"><i class="fas fa-mobile-screen-button"></i><b class="js-phone"></b><button type="button" class="link-btn" data-auth-step="phone" data-i18n="change">zmień</button></div>
+    <h2 class="step-title" id="welcome-back"></h2>
+    <label class="field"><span data-i18n="f_password">Hasło</span><span class="pw"><input class="input" name="password" type="password" autocomplete="current-password" required><button type="button" data-toggle-pw aria-label="Pokaż hasło"><i class="fas fa-eye"></i></button></span></label>
+    <button class="btn" type="submit" data-i18n="auth_login_btn">Zaloguj się</button>
+    <p class="consent" style="margin-top:14px" data-i18n="auth_forgot">Nie pamiętasz hasła? Poproś obsługę przy kasie o hasło tymczasowe.</p>
+  </form>
+
+  <!-- Krok 2b: nowe konto -->
+  <form id="step-register" novalidate hidden>
+    <div class="phone-chip"><i class="fas fa-mobile-screen-button"></i><b class="js-phone"></b><button type="button" class="link-btn" data-auth-step="phone" data-i18n="change">zmień</button></div>
+    <h2 class="step-title" data-i18n="new_account">Załóż konto. To zajmie chwilę.</h2>
+    <label class="field"><span data-i18n="f_first_name">Imię</span><input class="input" name="name" autocomplete="given-name" required></label>
+    <label class="field"><span data-i18n="f_password_new">Hasło (min. 6 znaków)</span><span class="pw"><input class="input" name="password" type="password" autocomplete="new-password" minlength="6" required><button type="button" data-toggle-pw aria-label="Pokaż hasło"><i class="fas fa-eye"></i></button></span></label>
+    <label class="field"><span data-i18n="f_email_opt">E-mail (opcjonalnie)</span><input class="input" name="email" type="email" autocomplete="email" placeholder="nie musisz podawać"></label>
+    <label class="field"><span data-i18n="f_referral">Kod polecenia od znajomego (opcjonalnie)</span><input class="input" name="referral" autocapitalize="characters" autocomplete="off" placeholder="np. ANIA123" style="text-transform:uppercase"></label>
+    <label class="check"><input type="checkbox" name="consent" required><span data-i18n-html="auth_consent">Akceptuję <a href="/privacypolicy.html">regulamin i politykę prywatności</a>.</span></label>
+    <button class="btn" type="submit" data-i18n="auth_register_btn">Załóż konto</button>
+  </form>
+
+  <!-- Logowanie e-mailem lub loginem (starsze konta) -->
+  <form id="step-email" novalidate hidden>
+    <label class="field"><span data-i18n="f_login">E-mail lub login</span><input class="input" name="login" autocomplete="username" required></label>
+    <label class="field"><span data-i18n="f_password">Hasło</span><span class="pw"><input class="input" name="password" type="password" autocomplete="current-password" required><button type="button" data-toggle-pw aria-label="Pokaż hasło"><i class="fas fa-eye"></i></button></span></label>
+    <button class="btn" type="submit" data-i18n="auth_login_btn">Zaloguj się</button>
+    <button type="button" class="link-btn" data-auth-step="phone" data-i18n="login_phone">Wróć do logowania numerem telefonu</button>
+  </form>
+</main>
+
+<!-- Aplikacja -->
+<div id="main" class="shell" hidden>
+  <header class="top">
+    <div class="who">
+      <button class="av" type="button" data-view="profile" aria-label="Profil"><span id="top-avatar">M</span></button>
+      <div>
+        <button class="loc" type="button" data-open="sheet-location"><i class="fas fa-location-dot"></i><span id="loc-name"></span><i class="fas fa-chevron-down" style="font-size:.6rem;color:var(--sub)"></i></button>
+        <h2 class="hi-name"><span data-i18n="hey">Hej,</span> <span id="hello-name"></span></h2>
+      </div>
+    </div>
+    <button class="icon-btn" type="button" data-view="profile" aria-label="Profil i powiadomienia"><i class="fa-regular fa-bell"></i></button>
+  </header>
+  <div id="app-bar" class="app-bar" hidden></div>
+
+  <!-- Start -->
+  <section data-page="home">
+    <div class="stories" id="stories" hidden></div>
+    <div class="mcard">
+      <svg class="drip" viewBox="0 0 350 64" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H350 V18 C340 18 336 22 336 30 C336 44 324 44 324 30 C324 22 318 18 300 18 C280 18 276 24 276 36 C276 54 260 54 260 36 C260 24 252 18 236 18 C214 18 208 22 208 28 C208 38 196 38 196 28 C196 22 188 18 168 18 C146 18 140 26 140 40 C140 60 122 60 122 40 C122 26 114 18 96 18 C78 18 72 22 72 30 C72 42 58 42 58 30 C58 22 50 18 34 18 C20 18 16 24 16 32 C16 44 4 44 4 32 C4 24 2 18 0 18 Z" fill="#FFF6EE"/></svg>
+      <div class="mtop"><span data-i18n="your_points">Twoje Milkosy</span><span class="tier-chip" id="tier-chip" hidden></span></div>
+      <div class="mpts"><span id="points">0</span><small data-i18n="pts">pkt</small></div>
+      <div class="mbar"><i id="progress" style="width:0"></i><em id="progress-mark" hidden></em></div>
+      <div class="mfoot"><span id="prev-text"></span><span id="progress-text"></span></div>
+      <div class="mbal"><span data-i18n="balance">Saldo do wydania</span><b><span id="balance">0,00</span> zł</b></div>
+    </div>
+    <div class="info warn" id="expiry-note" hidden></div>
+    <div class="btns2">
+      <button class="btn" type="button" data-open="sheet-number"><i class="fas fa-mobile-screen-button"></i><span data-i18n="show_number2">Numer do kasy</span></button>
+      <a class="btn btn-ghost" href="/zamow"><i class="fas fa-bag-shopping"></i><span data-i18n="q_order">Zamów</span></a>
+    </div>
+    <a class="promo" id="promo" href="/zamow" hidden><img id="promo-img" alt=""><div class="ptxt"><span class="pill" id="promo-pill" hidden></span><b id="promo-title"></b></div></a>
+    <div class="hh-banner" id="hh-banner" hidden></div>
+    <div id="home-missions" hidden><div class="h3"><span data-i18n="missions">Misje</span><button type="button" data-view="missions" data-i18n="all">Wszystko</button></div><div id="missions-home"></div></div>
+    <button type="button" class="mini" data-view="reservation"><span class="mic"><i class="fas fa-calendar-check"></i></span><span class="mt"><b data-i18n="res_title">Rezerwacja stolika</b><small data-i18n="res_sub">Słupsk i Rowy, potwierdzenie w powiadomieniu</small></span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+    <button type="button" class="mini" id="ref-home" data-view="missions" hidden><span class="mic"><i class="fas fa-user-plus"></i></span><span class="mt" id="ref-home-text"></span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+    <div class="h3"><span data-i18n="recent">Ostatnio</span><button type="button" data-view="wallet" data-i18n="all">Wszystko</button></div>
+    <div class="list" id="history-home"></div>
+  </section>
+
+  <!-- Nagrody -->
+  <section data-page="rewards" hidden>
+    <h1 class="page-title" data-i18n="rewards_title2">Co kupisz za Milkosy</h1>
+    <div class="rw-stats">
+      <div class="tile"><small data-i18n="you_have">Masz</small><b><span id="r-points">0</span> <em data-i18n="milkos_word">Milkosów</em></b><small id="r-worth"></small></div>
+      <div class="tile"><small data-i18n="level">Poziom</small><b id="r-tier">–</b><div class="tseg" id="r-tier-seg"></div></div>
+    </div>
+    <div class="vtiles" id="vouchers"></div>
+    <div class="info"><i class="fas fa-circle-info"></i><span id="r-rules"></span></div>
+    <div id="tier-box" hidden><div class="h3"><span data-i18n="your_tier">Twój poziom</span></div><div class="tile tier-tile" id="tier-tile"></div></div>
+    <p style="text-align:center;margin-top:22px"><a href="/regulamin-milkmi" style="color:var(--sub);font-weight:700;font-size:.85rem" data-i18n="rules_link">Regulamin programu MilkMi</a></p>
+  </section>
+
+  <!-- Misje -->
+  <section data-page="missions" hidden>
+    <h1 class="page-title" data-i18n="missions">Misje</h1>
+    <div class="tile empty" id="missions-empty"><span data-i18n="no_missions">Na razie nie ma aktywnych misji. Zajrzyj wkrótce!</span></div>
+    <div id="missions-box" hidden><div class="missions" id="missions-list"></div></div>
+    <div id="badges-box" hidden><div class="h3"><span data-i18n="badges">Twoje odznaki</span></div><div class="badges" id="badges-list"></div></div>
+    <div id="ref-box" hidden><div class="h3"><span data-i18n="refer">Polecaj znajomym</span></div><div class="tile" id="ref-body"></div></div>
+    <div id="bd-box" hidden><div class="h3"><span data-i18n="birthday">Urodziny</span></div><div class="tile" id="bd-body"></div></div>
+  </section>
+
+  <!-- Portfel -->
+  <section data-page="wallet" hidden>
+    <h1 class="page-title" data-i18n="wallet_title">Portfel</h1>
+    <div class="card"><span class="circle"></span><small data-i18n="wallet_balance">Saldo vPLN</small><div class="big"><span id="w-balance">0,00</span></div><small class="hint" data-i18n="wallet_hint">1 vPLN = 1 zł w lokalach Milkshakebar</small></div>
+    <div class="info"><i class="fas fa-store"></i><span data-i18n="wallet_how2">Saldem zapłacisz przy kasie (podaj numer telefonu) i w zamówieniach online. Doładujesz je, wymieniając Milkosy albo dodając kartę podarunkową.</span></div>
+    <div class="h3"><span data-i18n="gift_title">Karta podarunkowa</span><a href="/karty-podarunkowe" style="color:var(--orange);font-weight:800;font-size:.86rem;text-decoration:none" data-i18n="gift_buy">Kup kartę</a></div>
+    <form id="form-gift" class="tile" novalidate>
+      <small style="color:var(--sub);font-weight:700" data-i18n="gift_hint">Wpisz kod z karty, a kwota trafi na Twoje saldo vPLN.</small>
+      <div class="inline-form"><input class="input" name="code" autocomplete="off" autocapitalize="characters" placeholder="MILK-XXXX-XXXX" aria-label="Kod karty"><button class="btn" type="submit" data-i18n="gift_add">Dodaj</button></div>
+    </form>
+    <div class="h3"><span data-i18n="history">Historia</span></div>
+    <div class="list" id="history-wallet"></div>
+  </section>
+
+  <!-- Rezerwacja -->
+  <section data-page="reservation" hidden>
+    <h1 class="page-title" data-i18n="res_title">Rezerwacja stolika</h1>
+    <form id="form-reservation" novalidate>
+      <div class="zones" role="group" aria-label="Strefa">
+        <button type="button" class="zone" data-zone="Sala frontowa" aria-pressed="true"><i class="fas fa-door-open"></i><span data-i18n="zone_front">Sala frontowa</span></button>
+        <button type="button" class="zone" data-zone="Sala główna" aria-pressed="false"><i class="fas fa-couch"></i><span data-i18n="zone_main">Sala główna</span></button>
+        <button type="button" class="zone" data-zone="Przy kąciku dla dzieci" aria-pressed="false"><i class="fas fa-child-reaching"></i><span data-i18n="zone_kids">Kącik dzieci</span></button>
+      </div>
+      <div class="grid2">
+        <label class="field"><span data-i18n="f_name_res">Imię i nazwisko</span><input class="input" name="name" required></label>
+        <label class="field"><span data-i18n="f_phone_short">Telefon</span><input class="input" name="phone" type="tel" inputmode="tel" required></label>
+      </div>
+      <div class="grid2" style="grid-template-columns:1.25fr 1fr">
+        <label class="field"><span data-i18n="f_datetime">Data i godzina</span><input class="input" name="datetime" type="datetime-local" required></label>
+        <label class="field"><span data-i18n="f_guests">Liczba osób</span><select class="input" name="guests" id="guests"></select></label>
+      </div>
+      <label class="field"><span data-i18n="f_notes">Uwagi (alergie, okazja)</span><textarea class="input" name="notes" rows="2" maxlength="500"></textarea></label>
+      <button class="btn" type="submit" data-i18n="res_btn">Wyślij rezerwację</button>
+    </form>
+    <div class="h3"><span data-i18n="my_res">Moje rezerwacje</span></div>
+    <div class="list" id="my-reservations"></div>
+  </section>
+
+  <!-- Profil -->
+  <section data-page="profile" hidden>
+    <h1 class="page-title" data-i18n="profile">Profil</h1>
+    <div class="tile" style="display:flex;gap:14px;align-items:center">
+      <span id="avatar" style="width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:900;font-size:1.4rem;flex:none"></span>
+      <div style="min-width:0"><b id="p-name" style="font-size:1.15rem"></b><div id="p-email" style="color:var(--sub);font-size:.88rem;overflow-wrap:anywhere"></div></div>
+    </div>
+    <div class="h3"><span data-i18n="account">Konto</span></div>
+    <div class="list settings">
+      <button type="button" class="li" data-open="sheet-personal"><span class="ico"><i class="fas fa-user-pen"></i></span><span class="t" data-i18n="personal">Dane osobowe</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+      <button type="button" class="li" data-open="sheet-password"><span class="ico"><i class="fas fa-lock"></i></span><span class="t" data-i18n="change_pw">Zmień hasło</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+      <button type="button" class="li" data-view="reservation"><span class="ico"><i class="fas fa-calendar-check"></i></span><span class="t" data-i18n="res_title">Rezerwacja stolika</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+      <button type="button" class="li" data-open="sheet-orders"><span class="ico"><i class="fas fa-receipt"></i></span><span class="t" data-i18n="orders">Moje zamówienia</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+    </div>
+    <div class="h3"><span data-i18n="settings">Ustawienia</span></div>
+    <div class="list settings">
+      <button type="button" class="li" id="push-row"><span class="ico"><i class="fas fa-bell"></i></span><span class="t"><span data-i18n="notifications">Powiadomienia</span><small data-i18n="notif_sub">Milkosy, zamówienia, rezerwacje</small></span><span class="status-pill" id="push-status"></span></button>
+      <button type="button" class="li" id="install-row" hidden><span class="ico"><i class="fas fa-download"></i></span><span class="t"><span data-i18n="install">Dodaj MilkMi do ekranu telefonu</span><small data-i18n="install_sub">Otwieraj jak zwykłą aplikację</small></span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+      <label class="li"><span class="ico"><i class="fas fa-moon"></i></span><span class="t" data-i18n="dark">Tryb ciemny</span><span class="switch"><input type="checkbox" id="theme-switch"><i></i></span></label>
+      <button type="button" class="li" data-open="sheet-language"><span class="ico"><i class="fas fa-language"></i></span><span class="t"><span data-i18n="language">Język</span><small id="lang-name"></small></span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></button>
+      <a class="li" href="/privacypolicy.html"><span class="ico"><i class="fas fa-file-shield"></i></span><span class="t" data-i18n="privacy">Regulamin i prywatność</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></a>
+      <a class="li" href="/"><span class="ico"><i class="fas fa-globe"></i></span><span class="t">milkshakebar.pl</span><i class="fas fa-chevron-right" style="color:var(--sub)"></i></a>
+    </div>
+    <button class="btn btn-ghost" type="button" id="logout" style="margin-top:18px;color:var(--red)"><i class="fas fa-right-from-bracket"></i><span data-i18n="logout">Wyloguj się</span></button>
+    <div style="text-align:center;margin-top:22px"><a class="velio" href="https://www.velioagency.pl" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--sub);text-decoration:none;"><svg viewBox="264 359 896 737" width="19" height="16" role="img" aria-label="VELIO" style="flex:none"><path fill="var(--text)" d="M264 359h211l237 500v237z"/><path fill="#755CFF" d="M948 359h212L712 1096V859z"/></svg><span>Designed &amp; Developed by VELIO</span></a></div>
+  </section>
+</div>
+
+<nav class="tabs" id="tabs" hidden aria-label="Nawigacja">
+  <button type="button" data-view="home" aria-current="page"><i class="fas fa-house"></i><span data-i18n="t_home">Start</span></button>
+  <button type="button" data-view="rewards"><i class="fas fa-gift"></i><span data-i18n="t_rewards">Nagrody</span></button>
+  <button type="button" class="center" data-open="sheet-number" aria-label="Numer do kasy"><i class="fas fa-mobile-screen-button"></i></button>
+  <button type="button" data-view="missions"><i class="fas fa-fire"></i><span data-i18n="missions">Misje</span></button>
+  <button type="button" data-view="wallet"><i class="fas fa-wallet"></i><span data-i18n="t_wallet">Portfel</span></button>
+</nav>
+
+
+<!-- Okno: numer do kasy -->
+<div class="sheet-bg" id="sheet-number" aria-hidden="true">
+  <div class="sheet sheet-full" role="dialog" aria-modal="true" aria-labelledby="num-title">
+    <div class="sheet-head"><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-chevron-down"></i></button><h3 id="num-title" data-i18n="number_title">Numer do kasy</h3><span style="width:44px"></span></div>
+    <div class="mcard num-card">
+      <svg class="drip" viewBox="0 0 350 64" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H350 V18 C340 18 336 22 336 30 C336 44 324 44 324 30 C324 22 318 18 300 18 C280 18 276 24 276 36 C276 54 260 54 260 36 C260 24 252 18 236 18 C214 18 208 22 208 28 C208 38 196 38 196 28 C196 22 188 18 168 18 C146 18 140 26 140 40 C140 60 122 60 122 40 C122 26 114 18 96 18 C78 18 72 22 72 30 C72 42 58 42 58 30 C58 22 50 18 34 18 C20 18 16 24 16 32 C16 44 4 44 4 32 C4 24 2 18 0 18 Z" fill="#FFF6EE"/></svg>
+      <div class="mtop"><span class="nbrand">MilkMi</span><span class="tier-chip" id="num-tier" hidden></span></div>
+      <div class="nlabel" data-i18n="number_say">Podaj ten numer przy kasie</div>
+      <div class="nphone" id="num-phone"></div>
+      <div class="nfoot"><div><small data-i18n="owner">Konto</small><b id="num-name"></b></div><div style="text-align:right"><small data-i18n="your_points">Twoje Milkosy</small><b><span id="num-points">0</span> pkt</b></div></div>
+    </div>
+    <div class="nbal"><i class="fas fa-wallet"></i><span><span data-i18n="pay_balance">Saldem zapłacisz przy kasie:</span> <b><span id="num-balance">0,00</span> zł</b></span></div>
+    <p class="nhint" id="step2"></p>
+  </div>
+</div>
+
+
+<div class="sheet-bg" id="sheet-location" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h3 data-i18n="choose_loc">Wybierz lokal</h3><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-xmark"></i></button></div>
+    <div class="list">
+      <button type="button" class="li" data-location="slupsk"><span class="ico"><i class="fas fa-location-dot"></i></span><span class="t">Słupsk<small>ul. Szczecińska 17</small></span></button>
+      <button type="button" class="li" data-location="rowy"><span class="ico"><i class="fas fa-umbrella-beach"></i></span><span class="t">Rowy<small data-i18n="rowy_sub">ul. Wydmowa 2, sezonowo</small></span></button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheet-language" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h3 data-i18n="language">Język</h3><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-xmark"></i></button></div>
+    <div class="list">
+      <button type="button" class="li" data-lang="pl"><span class="t">Polski</span></button>
+      <button type="button" class="li" data-lang="en"><span class="t">English</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheet-personal" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h3 data-i18n="personal">Dane osobowe</h3><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-xmark"></i></button></div>
+    <form id="form-personal" novalidate>
+      <label class="field"><span data-i18n="f_first_name">Imię</span><input class="input" name="name" required></label>
+      <label class="field"><span data-i18n="f_phone">Telefon (po nim nabijamy Milkosy)</span><input class="input" name="phone" type="tel" inputmode="tel" required></label>
+      <label class="field"><span data-i18n="f_email_opt">E-mail (opcjonalnie)</span><input class="input" name="email" type="email"></label>
+      <div class="form-error" id="personal-error" hidden></div>
+      <button class="btn" type="submit" data-i18n="save">Zapisz zmiany</button>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheet-password" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h3 data-i18n="change_pw">Zmień hasło</h3><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-xmark"></i></button></div>
+    <form id="form-password" novalidate>
+      <label class="field"><span data-i18n="pw_current">Obecne hasło</span><input class="input" name="currentPassword" type="password" autocomplete="current-password" required></label>
+      <label class="field"><span data-i18n="f_password_new">Hasło (min. 6 znaków)</span><input class="input" name="newPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+      <div class="form-error" id="password-error" hidden></div>
+      <button class="btn" type="submit" data-i18n="save">Zapisz zmiany</button>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheet-orders" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h3 data-i18n="orders">Moje zamówienia</h3><button class="icon-btn" type="button" data-close aria-label="Zamknij"><i class="fas fa-xmark"></i></button></div>
+    <div class="list" id="my-orders"></div>
+    <a class="btn" href="/zamow" style="margin-top:14px"><i class="fas fa-bag-shopping"></i><span data-i18n="order_now">Zamów online</span></a>
+  </div>
+</div>
+
+<!-- Okno po zalogowaniu: powiadomienia i dodanie do ekranu -->
+<div class="sheet-bg" id="sheet-onboarding" aria-hidden="true">
+  <div class="sheet onb" role="dialog" aria-modal="true" aria-labelledby="onb-title">
+    <div class="big-ic"><i class="fas fa-bell"></i></div>
+    <h3 id="onb-title" data-i18n="onb_title">Nie przegap Milkosów</h3>
+    <p data-i18n="onb_text">Damy znać, gdy nabijemy Milkosy, zamówienie będzie gotowe albo potwierdzimy rezerwację.</p>
+    <div id="onb-ios" class="ios-steps" hidden>
+      <div><i class="fas fa-arrow-up-from-bracket"></i><span data-i18n-html="ios1">Stuknij <b>Udostępnij</b> na dole Safari</span></div>
+      <div><i class="far fa-square-plus"></i><span data-i18n-html="ios2">Wybierz <b>Do ekranu początkowego</b></span></div>
+      <div><i class="fas fa-mobile-screen"></i><span data-i18n-html="ios3">Otwórz <b>MilkMi</b> z ekranu i włącz powiadomienia</span></div>
+    </div>
+    <button class="btn" type="button" id="onb-enable"><i class="fas fa-bell"></i><span data-i18n="enable_notif">Włącz powiadomienia</span></button>
+    <button class="btn btn-ghost" type="button" id="onb-install" style="margin-top:10px" hidden><i class="fas fa-download"></i><span data-i18n="install">Dodaj MilkMi do ekranu telefonu</span></button>
+    <button class="link-btn" type="button" data-close style="margin-top:8px" data-i18n="later">Może później</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+// Klucze localStorage są takie same jak w poprzedniej wersji, żeby zalogowani klienci zostali zalogowani.
+const KEY_USER = 'milkmi_user', KEY_TOKEN = 'milkmi_token', KEY_LANG = 'milkmi_lang', KEY_THEME = 'milkmi_theme', KEY_LOC = 'milkmi_location';
+
+const T = {
+  pl: {
+    f_phone_start: 'Twój numer telefonu', next: 'Dalej', phone_why: 'Po numerze telefonu kasa nabija Ci Milkosy. Nie wysyłamy SMS-ów reklamowych.',
+    login_email: 'Mam konto na e-mail lub login', change: 'zmień', new_account: 'Załóż konto. To zajmie chwilę.', f_first_name: 'Imię',
+    f_email_opt: 'E-mail (opcjonalnie)', login_phone: 'Wróć do logowania numerem telefonu', welcome_back: (h) => `Witaj ponownie${h ? `, ${h}` : ''}!`,
+    notifications: 'Powiadomienia', notif_sub: 'Milkosy, zamówienia, rezerwacje', install: 'Dodaj MilkMi do ekranu telefonu', install_sub: 'Otwieraj jak zwykłą aplikację',
+    onb_title: 'Nie przegap Milkosów', onb_text: 'Damy znać, gdy nabijemy Milkosy, zamówienie będzie gotowe albo potwierdzimy rezerwację.',
+    ios1: 'Stuknij <b>Udostępnij</b> na dole Safari', ios2: 'Wybierz <b>Do ekranu początkowego</b>', ios3: 'Otwórz <b>MilkMi</b> z ekranu i włącz powiadomienia',
+    enable_notif: 'Włącz powiadomienia', later: 'Może później', push_on: 'włączone', push_off: 'wyłączone', push_blocked: 'zablokowane', push_ios: 'dodaj do ekranu',
+    push_enabled: 'Powiadomienia włączone', push_denied: 'Powiadomienia są zablokowane. Włącz je w ustawieniach telefonu dla tej strony.',
+    push_unsupported: 'Ta przeglądarka nie obsługuje powiadomień.', ios_hint: 'Na iPhonie powiadomienia działają po dodaniu MilkMi do ekranu początkowego.',
+    phone_9: 'Podaj numer telefonu z 9 cyframi.', consent_needed: 'Zaznacz akceptację regulaminu.', welcome_new: (n) => `Witaj w MilkMi, ${n}!`,
+    auth_title: 'Jedz, zbieraj,<br><span>płać punktami.</span>', auth_lead: '10 zł wydane w Milkshakebar to 1 Milkos. Każdy Milkos to 1 zł do wydania w lokalu.',
+    auth_login: 'Logowanie', auth_register: 'Rejestracja', f_login: 'E-mail lub login', f_password: 'Hasło', auth_login_btn: 'Zaloguj się',
+    auth_forgot: 'Nie pamiętasz hasła? Poproś obsługę przy kasie o hasło tymczasowe.', f_name: 'Imię', f_email: 'E-mail',
+    f_phone: 'Telefon (po nim nabijamy Milkosy)', f_password_new: 'Hasło (min. 6 znaków)',
+    auth_consent: 'Akceptuję <a href="/privacypolicy.html">regulamin i politykę prywatności</a>.', auth_register_btn: 'Załóż konto',
+    hello: 'Dzień dobry', your_points: 'Twoje Milkosy', balance: 'Saldo do wydania', show_number: 'Mój numer do kasy',
+    q_order: 'Zamów', q_reserve: 'Rezerwuj', q_rewards: 'Nagrody', q_wallet: 'Portfel', recent: 'Ostatnio', all: 'Wszystko',
+    rewards_title: 'Wymień Milkosy', to_exchange: 'Masz do wymiany', vouchers: 'Bony do portfela',
+    wallet_title: 'Portfel', wallet_balance: 'Saldo vPLN', wallet_hint: '1 vPLN = 1 zł w lokalach Milkshakebar',
+    wallet_how: 'Aby zapłacić saldem, podaj przy kasie swój numer telefonu. Saldo doładujesz przy kasie albo wymieniając Milkosy.', history: 'Historia',
+    res_title: 'Rezerwacja stolika', zone_front: 'Sala frontowa', zone_main: 'Sala główna', zone_kids: 'Kącik dzieci', f_name_res: 'Imię i nazwisko',
+    f_phone_short: 'Telefon', f_datetime: 'Data i godzina', f_guests: 'Liczba osób', f_notes: 'Uwagi (alergie, okazja)', res_btn: 'Wyślij rezerwację', my_res: 'Moje rezerwacje',
+    profile: 'Profil', account: 'Konto', personal: 'Dane osobowe', change_pw: 'Zmień hasło', orders: 'Moje zamówienia', settings: 'Ustawienia', dark: 'Tryb ciemny',
+    language: 'Język', privacy: 'Regulamin i prywatność', logout: 'Wyloguj się', t_home: 'Start', t_rewards: 'Nagrody', t_number: 'Mój numer', t_wallet: 'Portfel', t_reserve: 'Rezerwuj',
+    number_title: 'Numer do kasy', number_say: 'Podaj ten numer przy kasie', step1: 'Przy płaceniu podaj swój numer telefonu.',
+    step3: 'Chcesz zapłacić saldem vPLN? Powiedz o tym przy kasie.', choose_loc: 'Wybierz lokal', rowy_sub: 'ul. Wydmowa 2, sezonowo', save: 'Zapisz zmiany',
+    pw_current: 'Obecne hasło', order_now: 'Zamów online',
+    step2: (z) => `Za każde ${z} zł dostajesz 1 Milkos.`,
+    rules: (z, v) => `${z} zł wydane = 1 Milkos. 1 Milkos = ${v} vPLN do wydania w lokalu.`,
+    worth: (n) => `czyli ${n} vPLN do wydania`, voucher_cost: (n) => `${n} Milkosów`, missing: (n) => `brakuje ${n}`,
+    next: (n, v) => `Do bonu ${v} zł brakuje ${n} Milkosów`, max: 'Możesz wymienić największy bon', next_chip: (v) => `Bon ${v} zł`,
+    confirm_exchange: (p, v) => `Wymienić ${p} Milkosów na ${v} zł salda?`, no_history: 'Brak aktywności. Podaj numer przy kasie, a pojawią się tu Milkosy.',
+    no_res: 'Nie masz jeszcze rezerwacji.', no_orders: 'Nie masz jeszcze zamówień.', res_sent: 'Rezerwacja wysłana. Potwierdzimy ją SMS-em lub telefonicznie.',
+    fill: 'Uzupełnij wymagane pola.', saved: 'Zapisano', offline: 'Brak połączenia z serwerem.', session_end: 'Zaloguj się ponownie.',
+    guests: (n) => `${n} ${n === 1 ? 'osoba' : (n < 5 ? 'osoby' : 'osób')}`,
+    status: { pending: 'Czeka na potwierdzenie', accepted: 'Potwierdzona', rejected: 'Odrzucona', cancelled: 'Anulowana' },
+    ostatus: { pending: 'Przyjęte', preparing: 'W przygotowaniu', ready: 'Gotowe', completed: 'Zrealizowane', cancelled: 'Anulowane' },
+    lang_name: 'Polski', loc: { slupsk: 'Słupsk, Szczecińska 17', rowy: 'Rowy, Wydmowa 2' }
+  },
+  en: {
+    f_phone_start: 'Your phone number', next: 'Next', phone_why: 'We add Milkos to your account by phone number at the till. No marketing texts.',
+    login_email: 'I have an account with e-mail or username', change: 'change', new_account: 'Create your account. It only takes a moment.', f_first_name: 'First name',
+    f_referral: 'Friend’s referral code (optional)', your_tier: 'Your level', missions: 'Missions', badges: 'Your badges', refer: 'Invite friends', birthday: 'Birthday',
+    rules_link: 'MilkMi programme rules', wallet_how2: 'Pay with your balance at the till (give your phone number) and in online orders. Top it up by exchanging Milkos or adding a gift card.',
+    gift_title: 'Gift card', gift_buy: 'Buy a card', gift_hint: 'Enter the card code and the amount goes to your vPLN balance.', gift_add: 'Add',
+    hey: 'Hi,', pts: 'pts', show_number2: 'Till number', res_title: 'Book a table', res_sub: 'Słupsk and Rowy, confirmed by notification', rewards_title2: 'What Milkos buy you', you_have: 'You have', milkos_word: 'Milkos', level: 'Level', no_missions: 'No active missions right now. Check back soon!', owner: 'Account', pay_balance: 'Pay with balance at the till:',
+    f_email_opt: 'E-mail (optional)', login_phone: 'Back to phone login', welcome_back: (h) => `Welcome back${h ? `, ${h}` : ''}!`,
+    notifications: 'Notifications', notif_sub: 'Milkos, orders, bookings', install: 'Add MilkMi to your home screen', install_sub: 'Open it like a regular app',
+    onb_title: 'Never miss your Milkos', onb_text: 'We will let you know when we add Milkos, your order is ready or your booking is confirmed.',
+    ios1: 'Tap <b>Share</b> at the bottom of Safari', ios2: 'Choose <b>Add to Home Screen</b>', ios3: 'Open <b>MilkMi</b> from your home screen and turn on notifications',
+    enable_notif: 'Turn on notifications', later: 'Maybe later', push_on: 'on', push_off: 'off', push_blocked: 'blocked', push_ios: 'add to home screen',
+    push_enabled: 'Notifications are on', push_denied: 'Notifications are blocked. Allow them for this site in your phone settings.',
+    push_unsupported: 'This browser does not support notifications.', ios_hint: 'On iPhone, notifications work after adding MilkMi to your home screen.',
+    phone_9: 'Enter a 9-digit phone number.', consent_needed: 'Please accept the terms.', welcome_new: (n) => `Welcome to MilkMi, ${n}!`,
+    auth_title: 'Eat, collect,<br><span>pay with points.</span>', auth_lead: 'Every 10 PLN spent at Milkshakebar earns 1 Milkos. Each Milkos is worth 1 PLN to spend with us.',
+    auth_login: 'Log in', auth_register: 'Sign up', f_login: 'E-mail or username', f_password: 'Password', auth_login_btn: 'Log in',
+    auth_forgot: 'Forgot your password? Ask the cashier for a temporary password.', f_name: 'First name', f_email: 'E-mail',
+    f_phone: 'Phone (we add Milkos by this number)', f_password_new: 'Password (min. 6 characters)',
+    auth_consent: 'I accept the <a href="/privacypolicy.html">terms and privacy policy</a>.', auth_register_btn: 'Create account',
+    hello: 'Hello', your_points: 'Your Milkos', balance: 'Balance to spend', show_number: 'My number for the till',
+    q_order: 'Order', q_reserve: 'Book', q_rewards: 'Rewards', q_wallet: 'Wallet', recent: 'Recent', all: 'All',
+    rewards_title: 'Exchange Milkos', to_exchange: 'Available to exchange', vouchers: 'Wallet vouchers',
+    wallet_title: 'Wallet', wallet_balance: 'vPLN balance', wallet_hint: '1 vPLN = 1 PLN at Milkshakebar',
+    wallet_how: 'To pay with your balance, give your phone number at the till. Top up at the till or by exchanging Milkos.', history: 'History',
+    res_title: 'Book a table', zone_front: 'Front room', zone_main: 'Main room', zone_kids: 'Kids corner', f_name_res: 'Full name',
+    f_phone_short: 'Phone', f_datetime: 'Date and time', f_guests: 'Guests', f_notes: 'Notes (allergies, occasion)', res_btn: 'Send booking', my_res: 'My bookings',
+    profile: 'Profile', account: 'Account', personal: 'Personal details', change_pw: 'Change password', orders: 'My orders', settings: 'Settings', dark: 'Dark mode',
+    language: 'Language', privacy: 'Terms and privacy', logout: 'Log out', t_home: 'Home', t_rewards: 'Rewards', t_number: 'My number', t_wallet: 'Wallet', t_reserve: 'Book',
+    number_title: 'Number for the till', number_say: 'Give this number at the till', step1: 'When paying, give your phone number.',
+    step3: 'Want to pay with vPLN? Tell the cashier.', choose_loc: 'Choose location', rowy_sub: 'ul. Wydmowa 2, seasonal', save: 'Save changes',
+    pw_current: 'Current password', order_now: 'Order online',
+    step2: (z) => `You get 1 Milkos for every ${z} PLN.`,
+    rules: (z, v) => `${z} PLN spent = 1 Milkos. 1 Milkos = ${v} vPLN to spend with us.`,
+    worth: (n) => `worth ${n} vPLN`, voucher_cost: (n) => `${n} Milkos`, missing: (n) => `${n} missing`,
+    next: (n, v) => `${n} Milkos to a ${v} PLN voucher`, max: 'You can redeem the biggest voucher', next_chip: (v) => `${v} PLN voucher`,
+    confirm_exchange: (p, v) => `Exchange ${p} Milkos for ${v} PLN balance?`, no_history: 'No activity yet. Give your number at the till to collect Milkos.',
+    no_res: 'No bookings yet.', no_orders: 'No orders yet.', res_sent: 'Booking sent. We will confirm by text or phone.',
+    fill: 'Please fill in the required fields.', saved: 'Saved', offline: 'No connection to the server.', session_end: 'Please log in again.',
+    guests: (n) => `${n} ${n === 1 ? 'guest' : 'guests'}`,
+    status: { pending: 'Awaiting confirmation', accepted: 'Confirmed', rejected: 'Declined', cancelled: 'Cancelled' },
+    ostatus: { pending: 'Received', preparing: 'Preparing', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
+    lang_name: 'English', loc: { slupsk: 'Słupsk, Szczecińska 17', rowy: 'Rowy, Wydmowa 2' }
+  }
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const fmt = (n) => Number(n || 0).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const prettyPhone = (p) => { const d = String(p || '').replace(/\D/g, '').slice(-9); return d.length === 9 ? `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}` : String(p || ''); };
+
+let lang = store.get(KEY_LANG) === 'en' ? 'en' : 'pl';
+let t = T[lang];
+let user = null;
+let token = store.get(KEY_TOKEN);
+let history = [];
+let loyalty = { zlotyPerPoint: 10, vplnPerPoint: 1, exchangeOptions: [10, 20, 50, 100, 200, 500] };
+let zone = 'Sala frontowa';
+let view = 'home';
+try { user = JSON.parse(store.get(KEY_USER) || 'null'); } catch (e) { user = null; }
+
+async function api(path, { method = 'GET', body } = {}) {
+  const res = await fetch(path, {
+    method,
+    headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && path !== '/api/login') { logout(true); throw new Error(t.session_end); }
+  if (!res.ok) throw Object.assign(new Error(data.message || t.offline), { status: res.status });
+  return data;
+}
+
+function toast(msg, err = false) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.toggle('err', err);
+  el.classList.add('on');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+function applyLang() {
+  t = T[lang];
+  document.documentElement.lang = lang;
+  $$('[data-i18n]').forEach((el) => { const v = t[el.dataset.i18n] ?? T.pl[el.dataset.i18n]; if (typeof v === 'string') el.textContent = v; });
+  $$('[data-i18n-html]').forEach((el) => { const v = t[el.dataset.i18nHtml] ?? T.pl[el.dataset.i18nHtml]; if (typeof v === 'string') el.innerHTML = v; });
+  $('#lang-name').textContent = t.lang_name;
+  $('#guests').innerHTML = Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}" ${i === 1 ? 'selected' : ''}>${esc(t.guests(i + 1))}</option>`).join('');
+  $('#loc-name').textContent = t.loc[store.get(KEY_LOC) === 'rowy' ? 'rowy' : 'slupsk'];
+  if (user) render();
+}
+
+function saveUser() { store.set(KEY_USER, JSON.stringify(user)); }
+
+// --- ekrany ---
+function showAuth() {
+  $('#boot').hidden = true; $('#main').hidden = true; $('#tabs').hidden = true; $('#auth').hidden = false;
+}
+function showApp() {
+  $('#boot').hidden = true; $('#auth').hidden = true; $('#main').hidden = false; $('#tabs').hidden = false;
+  render();
+  loadBanner();
+  loadMenuPics();
+}
+function go(next) {
+  view = next;
+  $$('[data-page]').forEach((s) => { s.hidden = s.dataset.page !== next; });
+  $$('#tabs [data-view]').forEach((b) => b.toggleAttribute('aria-current', b.dataset.view === next));
+  $$('#tabs [data-view]').forEach((b) => { if (b.dataset.view === next) b.setAttribute('aria-current', 'page'); });
+  window.scrollTo(0, 0);
+  if (next === 'reservation') loadReservations();
+  refresh();
+}
+
+function historyHtml(list, limit) {
+  if (!list.length) return `<div class="empty">${esc(t.no_history)}</div>`;
+  return list.slice(0, limit).map((h) => {
+    const [amount, label] = String(h.text || '').split('•').map((s) => s.trim());
+    const plus = amount.startsWith('+');
+    const isMoney = /PLN/.test(amount);
+    return `<div class="li"><span class="ico ${plus ? 'g' : ''}"><i class="fas ${isMoney ? 'fa-wallet' : (plus ? 'fa-star' : 'fa-gift')}"></i></span>
+      <span class="t">${esc(label || amount)}<small>${esc(h.date || '')}</small></span><span class="v ${plus ? 'plus' : 'minus'}">${esc(amount)}</span></div>`;
+  }).join('');
+}
+
+function render() {
+  const points = Number(user.points || 0);
+  const balance = Number(user.walletBalance || 0);
+  const options = [...loyalty.exchangeOptions].sort((a, b) => a - b);
+  const next = options.find((o) => o > points);
+  $('#hello-name').textContent = displayName();
+  $('#points').textContent = points;
+  $('#balance').textContent = fmt(balance);
+  $('#w-balance').textContent = fmt(balance);
+  const prev = [...options].reverse().find((o) => o <= points) || 0;
+  const v = loyalty.vplnPerPoint;
+  // Pasek: cała długość = następny bon, kreska = ostatni bon, który już można odebrać
+  const goal = next || options[options.length - 1] || 1;
+  $('#progress').style.width = `${Math.min(100, Math.round((points / goal) * 100))}%`;
+  const mark = $('#progress-mark');
+  mark.hidden = !(prev > 0 && next);
+  if (prev > 0 && next) mark.style.left = `${Math.round((prev / goal) * 100)}%`;
+  $('#prev-text').textContent = prev > 0 ? tr(`bon ${fmt0(prev * v)} zł gotowy`, `${fmt0(prev * v)} zł voucher ready`) : tr(`1 Milkos za każde ${loyalty.zlotyPerPoint} zł`, `1 Milkos per ${loyalty.zlotyPerPoint} zł`);
+  $('#progress-text').innerHTML = next
+    ? tr(`do ${fmt0(next * v)} zł brakuje <b>${next - points}</b>`, `<b>${next - points}</b> to ${fmt0(next * v)} zł`)
+    : esc(t.max);
+  $('#top-avatar').textContent = (displayName() || 'M').charAt(0).toUpperCase();
+  $('#history-home').innerHTML = historyHtml(history, 4);
+  $('#history-wallet').innerHTML = historyHtml(history, 20);
+
+  $('#r-points').textContent = points;
+  $('#r-worth').textContent = t.worth(fmt(points * loyalty.vplnPerPoint));
+  $('#r-rules').textContent = t.rules(loyalty.zlotyPerPoint, loyalty.vplnPerPoint);
+  // Bony pokazane jedzeniem: zdjęcie produktu z menu i ile go kupisz za bon
+  const used = new Set();
+  $('#vouchers').innerHTML = options.map((o) => {
+    const can = points >= o;
+    const value = o * loyalty.vplnPerPoint;
+    const p = pickFood(value, used);
+    const caption = p ? foodCaption(value, p) : t.voucher_cost(o);
+    const pct = Math.min(100, Math.round((points / o) * 100));
+    return `<button type="button" class="vtile ${can ? 'ok' : 'off'} ${p ? '' : 'noimg'}" data-exchange="${o}" ${can ? '' : 'aria-disabled="true"'}>
+      ${p ? `<img src="${esc(p.imageUrl)}" alt="" loading="lazy">` : ''}
+      <span class="tag">${can ? tr('Odbierz', 'Claim') : `<i class="fas fa-lock"></i>${esc(tr(`brakuje ${o - points}`, `${o - points} to go`))}`}</span>
+      <span class="in"><b>${fmt0(value)} zł</b><span>${esc(caption)}</span>${can ? '' : `<span class="vb"><i style="width:${pct}%"></i></span>`}</span>
+    </button>`;
+  }).join('');
+
+  $('#num-phone').innerHTML = prettyPhone(user.phone).split(' ').map((g) => `<span>${esc(g)}</span>`).join('');
+  $('#num-name').textContent = displayName();
+  $('#num-points').textContent = points;
+  $('#num-balance').textContent = fmt(balance);
+  $('#step2').textContent = t.step2(loyalty.zlotyPerPoint);
+  $('#avatar').textContent = (displayName() || 'M').charAt(0).toUpperCase();
+  $('#p-name').textContent = displayName();
+  $('#p-email').textContent = user.email || '';
+  const rf = $('#form-reservation');
+  if (!rf.name.value) rf.name.value = displayName();
+  if (!rf.phone.value) rf.phone.value = prettyPhone(user.phone);
+}
+
+// Dane z serwera: punkty, saldo, historia
+async function refresh() {
+  if (!user) return;
+  try {
+    const data = await api('/api/me');
+    user = { ...user, ...data.user };
+    history = data.history || [];
+    if (data.loyalty) loyalty = data.loyalty;
+    saveUser();
+    render();
+  } catch (e) { /* zostają dane z pamięci telefonu */ }
+  loadProgram();
+}
+
+let appBannerText = '';
+async function loadBanner() {
+  try {
+    const data = await fetch('/api/banners').then((r) => r.json());
+    const b = (data.data || []).find((x) => x.target === 'app');
+    const el = $('#app-bar');
+    appBannerText = b && b.isActive && b.text ? b.text : '';
+    if (appBannerText) { el.textContent = appBannerText; el.style.background = b.backgroundColor || '#FF4500'; }
+    el.hidden = !appBannerText;
+  } catch (e) { /* bez banera */ }
+  renderPromo();
+}
+
+// --- Zdjęcia z menu: kółka na Starcie, promocja i nagrody ---
+let menuPics = [];
+const productPrice = (p) => (p.variants && p.variants.length ? Math.min(...p.variants.map((x) => Number(x.price) || 0)) : Number(p.price) || 0);
+async function loadMenuPics() {
+  try {
+    const loc = store.get(KEY_LOC) === 'rowy' ? 'rowy' : 'slupsk';
+    const data = await fetch(`/api/menu?location=${loc}`).then((r) => r.json());
+    const all = (data.data || []).filter((p) => p.isAvailable !== false && p.imageUrl && productPrice(p) > 0);
+    menuPics = [...all.filter((p) => p.isBestseller), ...all.filter((p) => !p.isBestseller)];
+  } catch (e) { menuPics = []; }
+  renderStories(); renderPromo(); if (user) render();
+}
+// Do bonu dobieramy produkt, którego za tę kwotę kupisz 1–4 sztuki, za każdym razem inny
+function pickFood(value, used) {
+  if (!menuPics.length) return null;
+  const fits = menuPics.filter((p) => !used.has(p._id) && productPrice(p) <= value && value / productPrice(p) <= 4.99);
+  const affordable = menuPics.filter((x) => !used.has(x._id) && productPrice(x) <= value).sort((a, b) => productPrice(b) - productPrice(a));
+  const p = fits[0] || affordable[0] || menuPics.find((x) => !used.has(x._id)) || menuPics[0];
+  used.add(p._id);
+  return p;
+}
+function foodCaption(value, p) {
+  const n = Math.floor(value / productPrice(p));
+  if (n < 1) return tr(`${p.name} taniej o ${fmt0(value)} zł`, `${fmt0(value)} zł off ${p.name}`);
+  if (n === 1) return p.name;
+  if (n <= 4) return `${n}× ${p.name}`;
+  return tr(`${p.name} dla ${Math.min(n, 10)} osób`, `${p.name} for ${Math.min(n, 10)}`);
+}
+function renderStories() {
+  const box = $('#stories');
+  const items = [];
+  const hh = prog && prog.happyHour;
+  if (hh) items.push(`<button type="button" class="story" data-view="missions"><span class="ring"><span><i class="fas fa-bolt"></i></span></span><em>${esc(tr('Happy hour', 'Happy hour'))}</em></button>`);
+  menuPics.slice(0, 8).forEach((p, i) => items.push(`<a class="story" href="/zamow"><span class="ring ${i > 3 ? 'seen' : ''}"><span><img src="${esc(p.imageUrl)}" alt="" loading="lazy"></span></span><em>${esc(p.name)}</em></a>`));
+  box.innerHTML = items.join('');
+  box.hidden = !items.length;
+}
+function renderPromo() {
+  const p = menuPics[0];
+  const hh = prog && prog.happyHour;
+  const promo = $('#promo');
+  if (!p) { promo.hidden = true; $('#hh-banner').hidden = !hh; return; }
+  promo.hidden = false;
+  $('#promo-img').src = p.imageUrl;
+  $('#promo-title').textContent = appBannerText || tr(`${p.name}: polecamy dziś`, `${p.name}: today's pick`);
+  $('#app-bar').hidden = true; // tekst paska trafia do promocji
+  const pill = $('#promo-pill');
+  pill.hidden = !hh;
+  if (hh) pill.innerHTML = `<i class="fas fa-bolt"></i>${esc(multTxt(hh.multiplier))} ${esc(tr('Milkosy do', 'Milkos until'))} ${esc(hh.to)}`;
+  $('#hh-banner').hidden = true;
+}
+
+async function loadReservations() {
+  const box = $('#my-reservations');
+  try {
+    const data = await api('/api/me/reservations');
+    box.innerHTML = data.data.length ? data.data.map((r) => {
+      const cls = { accepted: 'green', rejected: 'red', cancelled: 'grey' }[r.status] || 'soft';
+      const when = r.datetime ? new Date(r.datetime).toLocaleString(lang === 'en' ? 'en-GB' : 'pl-PL', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+      return `<div class="li"><span class="ico"><i class="fas fa-calendar"></i></span><span class="t">${esc(when)}<small>${esc(t.guests(r.guests))}, ${esc(r.zone || '')}</small></span><span class="chip ${cls}">${esc(t.status[r.status] || r.status)}</span></div>`;
+    }).join('') : `<div class="empty">${esc(t.no_res)}</div>`;
+  } catch (e) { box.innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+async function loadOrders() {
+  const box = $('#my-orders');
+  box.innerHTML = '<div class="empty">…</div>';
+  try {
+    const data = await api('/api/me/orders');
+    box.innerHTML = data.data.length ? data.data.map((o) => `<div class="li"><span class="ico"><i class="fas fa-receipt"></i></span>
+      <span class="t">${esc(o.orderNumber)}<small>${esc(new Date(o.createdAt).toLocaleString(lang === 'en' ? 'en-GB' : 'pl-PL', { dateStyle: 'medium', timeStyle: 'short' }))}, ${esc(t.ostatus[o.status] || o.status)}</small></span>
+      <span class="v">${fmt(o.totalAmount)} zł</span></div>`).join('') : `<div class="empty">${esc(t.no_orders)}</div>`;
+  } catch (e) { box.innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+function openSheet(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (id === 'sheet-personal') {
+    const f = $('#form-personal');
+    f.name.value = user.name || user.username || ''; f.phone.value = prettyPhone(user.phone); f.email.value = user.email || '';
+    $('#personal-error').hidden = true;
+  }
+  if (id === 'sheet-password') { $('#form-password').reset(); $('#password-error').hidden = true; }
+  if (id === 'sheet-orders') loadOrders();
+  el.classList.add('open');
+  el.setAttribute('aria-hidden', 'false');
+  const btn = el.querySelector('[data-close]');
+  if (btn) btn.focus({ preventScroll: true });
+}
+function closeSheets() {
+  $$('.sheet-bg.open').forEach((el) => { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); });
+}
+
+function logout(expired) {
+  if (!expired) unsubscribePushForAccount();
+  store.del(KEY_USER); store.del(KEY_TOKEN);
+  user = null; token = null; history = [];
+  closeSheets();
+  showAuth();
+  authStep('phone');
+  if (expired) toast(t.session_end, true);
+}
+
+async function afterLogin(data) {
+  token = data.token;
+  user = data.user;
+  store.set(KEY_TOKEN, token);
+  saveUser();
+  showApp();
+  go('home');
+  if (pushState() === 'on') subscribePush(false).catch(() => {});
+  maybeOnboard();
+}
+
+// --- zdarzenia ---
+// --- logowanie krok po kroku: telefon → hasło albo nowe konto ---
+let authPhone = '';
+function authStep(step) {
+  ['phone', 'login', 'register', 'email'].forEach((s) => { $(`#step-${s}`).hidden = s !== step; });
+  $('#auth-error').hidden = true;
+  $$('.js-phone').forEach((el) => { el.textContent = prettyPhone(authPhone); });
+  const focus = { phone: '#step-phone [name=phone]', login: '#step-login [name=password]', register: '#step-register [name=name]', email: '#step-email [name=login]' }[step];
+  setTimeout(() => { const el = $(focus); if (el) el.focus(); }, 50);
+}
+
+// --- powiadomienia push i instalacja ---
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; updatePushUi(); });
+window.addEventListener('appinstalled', () => { installPrompt = null; updatePushUi(); });
+
+function urlBase64ToUint8Array(base64) {
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+  const raw = atob((base64 + padding).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+}
+function pushState() {
+  if (!pushSupported) return isIOS && !isStandalone ? 'ios' : 'unsupported';
+  return { granted: 'on', denied: 'blocked' }[Notification.permission] || 'off';
+}
+function updatePushUi() {
+  const st = pushState();
+  const pill = $('#push-status');
+  if (pill) {
+    pill.textContent = { on: t.push_on, blocked: t.push_blocked, ios: t.push_ios, unsupported: '–', off: t.push_off }[st];
+    pill.classList.toggle('on', st === 'on');
+  }
+  $('#install-row').hidden = !(installPrompt || (isIOS && !isStandalone));
+  $('#onb-ios').hidden = !(isIOS && !isStandalone);
+  $('#onb-enable').hidden = !pushSupported || st === 'on';
+  $('#onb-install').hidden = !installPrompt;
+}
+async function subscribePush(ask) {
+  if (!pushSupported) { toast(isIOS && !isStandalone ? t.ios_hint : t.push_unsupported, true); return false; }
+  const perm = ask ? await Notification.requestPermission() : Notification.permission;
+  if (perm !== 'granted') { if (ask) toast(t.push_denied, true); updatePushUi(); return false; }
+  const reg = await navigator.serviceWorker.ready;
+  const { publicKey } = await fetch('/api/push/key').then((r) => r.json());
+  if (!publicKey) return false;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
+  await api('/api/push/subscribe', { method: 'POST', body: { subscription: sub.toJSON() } });
+  updatePushUi();
+  return true;
+}
+async function unsubscribePushForAccount() {
+  try {
+    if (!pushSupported || !token) return;
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = reg && await reg.pushManager.getSubscription();
+    if (sub) await fetch('/api/push/unsubscribe', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ endpoint: sub.endpoint }) });
+  } catch (e) { /* bez znaczenia przy wylogowaniu */ }
+}
+async function install() {
+  if (installPrompt) { installPrompt.prompt(); await installPrompt.userChoice.catch(() => {}); installPrompt = null; updatePushUi(); return; }
+  openSheet('sheet-onboarding');
+}
+function maybeOnboard() {
+  if (store.get('milkmi_onboarded')) return;
+  store.set('milkmi_onboarded', '1');
+  if (pushState() === 'on') return;
+  updatePushUi();
+  setTimeout(() => openSheet('sheet-onboarding'), 600);
+}
+
+document.addEventListener('click', async (e) => {
+  const step = e.target.closest('[data-auth-step]');
+  if (step) { authStep(step.dataset.authStep); return; }
+  if (e.target.closest('#onb-enable') || e.target.closest('#push-row')) {
+    if (pushState() === 'on') { try { await api('/api/push/test', { method: 'POST', body: {} }); } catch (err) {} return; }
+    if (pushState() === 'ios') { openSheet('sheet-onboarding'); return; }
+    if (await subscribePush(true).catch(() => false)) { toast(t.push_enabled); closeSheets(); try { await api('/api/push/test', { method: 'POST', body: {} }); } catch (err) {} }
+    return;
+  }
+  if (e.target.closest('#onb-install') || e.target.closest('#install-row')) { install(); return; }
+  const pw = e.target.closest('[data-toggle-pw]');
+  if (pw) {
+    const input = pw.parentElement.querySelector('input');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    pw.querySelector('i').className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    return;
+  }
+  const v = e.target.closest('[data-view]');
+  if (v) { closeSheets(); go(v.dataset.view); return; }
+  const o = e.target.closest('[data-open]');
+  if (o) { openSheet(o.dataset.open); return; }
+  if (e.target.closest('[data-close]') || e.target.classList.contains('sheet-bg')) { closeSheets(); return; }
+  const z = e.target.closest('[data-zone]');
+  if (z) { zone = z.dataset.zone; $$('[data-zone]').forEach((b) => b.setAttribute('aria-pressed', String(b === z))); return; }
+  const loc = e.target.closest('[data-location]');
+  if (loc) { store.set(KEY_LOC, loc.dataset.location); $('#loc-name').textContent = t.loc[loc.dataset.location]; closeSheets(); loadMenuPics(); loadProgram(); return; }
+  const l = e.target.closest('[data-lang]');
+  if (l) { lang = l.dataset.lang; store.set(KEY_LANG, lang); applyLang(); closeSheets(); return; }
+  const ex = e.target.closest('[data-exchange]');
+  if (ex) {
+    const cost = Number(ex.dataset.exchange);
+    if (Number(user.points) < cost) return;
+    if (!confirm(t.confirm_exchange(cost, fmt(cost * loyalty.vplnPerPoint)))) return;
+    ex.disabled = true;
+    try {
+      const data = await api('/api/rewards/exchange', { method: 'POST', body: { pointsCost: cost } });
+      user.points = data.points; user.walletBalance = data.walletBalance; history = data.history || history;
+      saveUser(); render(); toast(data.message);
+    } catch (err) { toast(err.message, true); ex.disabled = false; }
+    return;
+  }
+  if (e.target.closest('#logout')) logout(false);
+});
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheets(); });
+
+function showAuthError(msg) { const el = $('#auth-error'); el.textContent = msg; el.hidden = false; }
+
+async function busy(form, fn) {
+  const btn = form.querySelector('[type=submit]');
+  btn.disabled = true;
+  try { await fn(); } catch (err) { showAuthError(err.message); }
+  btn.disabled = false;
+}
+
+$('#step-phone').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const digits = e.target.phone.value.replace(/\D/g, '').replace(/^(00)?48(?=\d{9}$)/, '');
+  if (digits.length !== 9) return showAuthError(t.phone_9);
+  busy(e.target, async () => {
+    const data = await api('/api/auth/check-phone', { method: 'POST', body: { phone: digits } });
+    authPhone = digits;
+    if (data.exists) { $('#welcome-back').textContent = t.welcome_back(data.hint); authStep('login'); }
+    else authStep('register');
+  });
+});
+
+$('#step-login').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!e.target.password.value) return showAuthError(t.fill);
+  busy(e.target, async () => afterLogin(await api('/api/login', { method: 'POST', body: { loginOrEmail: authPhone, password: e.target.password.value } })));
+});
+
+$('#step-register').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.name.value.trim().length < 2 || f.password.value.length < 6) return showAuthError(t.fill);
+  if (!f.consent.checked) return showAuthError(t.consent_needed);
+  busy(f, async () => {
+    const data = await api('/api/register', { method: 'POST', body: { name: f.name.value.trim(), phone: authPhone, password: f.password.value, email: f.email.value.trim(), referralCode: f.referral.value.trim() } });
+    store.del('milkmi_ref');
+    await afterLogin(data);
+    toast(t.welcome_new(data.user.name));
+  });
+});
+
+$('#step-email').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  if (!f.login.value.trim() || !f.password.value) return showAuthError(t.fill);
+  busy(f, async () => afterLogin(await api('/api/login', { method: 'POST', body: { loginOrEmail: f.login.value.trim(), password: f.password.value } })));
+});
+
+$('#form-reservation').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const body = { name: f.name.value.trim(), phone: f.phone.value.trim(), datetime: f.datetime.value, guests: Number(f.guests.value), zone, notes: f.notes.value.trim(), location: store.get(KEY_LOC) === 'rowy' ? 'rowy' : 'slupsk' };
+  if (!body.name || !body.phone || !body.datetime) return toast(t.fill, true);
+  const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    await api('/api/reservations', { method: 'POST', body });
+    toast(t.res_sent);
+    f.datetime.value = ''; f.notes.value = '';
+    loadReservations();
+  } catch (err) { toast(err.message, true); }
+  btn.disabled = false;
+});
+
+$('#form-personal').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  try {
+    const data = await api('/api/me', { method: 'PATCH', body: { name: f.name.value.trim(), phone: f.phone.value.trim(), email: f.email.value.trim() } });
+    user = { ...user, ...data.user }; saveUser(); render(); closeSheets(); toast(t.saved);
+  } catch (err) { const el = $('#personal-error'); el.textContent = err.message; el.hidden = false; }
+});
+
+$('#form-password').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  try {
+    const data = await api('/api/me/password', { method: 'POST', body: { currentPassword: f.currentPassword.value, newPassword: f.newPassword.value } });
+    closeSheets(); toast(data.message || t.saved);
+  } catch (err) { const el = $('#password-error'); el.textContent = err.message; el.hidden = false; }
+});
+
+$('#theme-switch').addEventListener('change', (e) => {
+  document.documentElement.classList.toggle('dark', e.target.checked);
+  store.set(KEY_THEME, e.target.checked ? 'dark' : 'light');
+  document.querySelector('meta[name=theme-color]').content = e.target.checked ? '#0D0D0D' : '#F4F4F0';
+});
+
+
+// --- Program MilkMi: poziom, happy hour, misje, odznaki, polecenia, urodziny, ważność, karty podarunkowe ---
+let prog = null;
+const tr = (pl, en) => (lang === 'en' ? en : pl);
+const MONTHS_PL = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const multTxt = (m) => `×${String(Number(m)).replace('.', lang === 'en' ? '.' : ',')}`;
+const dateTxt = (d) => new Date(d).toLocaleDateString(lang === 'en' ? 'en-GB' : 'pl-PL', { day: 'numeric', month: 'long' });
+
+async function loadProgram() {
+  if (!user || !token) return;
+  try {
+    const d = await api(`/api/me/program?location=${store.get(KEY_LOC) === 'rowy' ? 'rowy' : 'slupsk'}`);
+    prog = d.data;
+    renderProgram();
+  } catch (e) { /* bez sieci: zostaje to, co było */ }
+}
+
+function missionHtml(m) {
+  const pct = Math.min(100, Math.round((m.progress / m.target) * 100));
+  const unit = m.type === 'spend' ? ' zł' : '';
+  const reward = [m.rewardPoints ? `+${m.rewardPoints} Milkosów` : '', m.rewardVpln ? `+${fmt(m.rewardVpln)} vPLN` : '', m.badge ? `🏅 ${m.badge}` : ''].filter(Boolean).join(' · ');
+  const left = m.endsAt ? tr(`do ${dateTxt(m.endsAt)}`, `until ${dateTxt(m.endsAt)}`) : (m.periodDays ? tr(`w ${m.periodDays} dni`, `within ${m.periodDays} days`) : '');
+  return `<div class="mission ${m.completed ? 'done' : ''}"><span class="mi-ic">${esc(m.completed ? '✅' : (m.icon || '🏅'))}</span><div>
+    <b>${esc(m.title)}</b>${m.description ? `<small>${esc(m.description)}</small>` : ''}
+    <div class="mbar"><i style="width:${pct}%"></i></div>
+    <div class="mrow"><span>${m.completed ? tr('Zaliczone!', 'Completed!') : `${fmt0(m.progress)}${unit} / ${fmt0(m.target)}${unit}${left ? ` · ${esc(left)}` : ''}`}</span><span class="rw">${esc(reward)}</span></div></div></div>`;
+}
+const fmt0 = (n) => Number(n || 0).toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+
+function renderProgram() {
+  if (!prog) return;
+  // poziom na karcie i w zakładce Nagrody
+  const tier = prog.tier;
+  const chip = $('#tier-chip');
+  chip.hidden = !(tier && tier.current);
+  if (tier && tier.current) chip.innerHTML = `<i class="fas fa-crown"></i>${esc(tier.current.name)}${Number(tier.current.multiplier) > 1 ? ` ${multTxt(tier.current.multiplier)}` : ''}`;
+  $('#tier-box').hidden = !(tier && tier.current);
+  if (tier && tier.current) {
+    const nextMin = tier.next ? tier.next.minSpent : tier.current.minSpent;
+    const pct = tier.next ? Math.min(100, Math.round(((tier.spent - tier.current.minSpent) / (nextMin - tier.current.minSpent)) * 100)) : 100;
+    $('#tier-tile').innerHTML = `<small style="color:var(--sub);font-weight:700">${tr('Poziom', 'Level')}</small><div class="tname">${esc(tier.current.name)} <span style="color:var(--orange)">${Number(tier.current.multiplier) > 1 ? multTxt(tier.current.multiplier) : ''}</span></div>
+      <div class="tbar"><i style="width:${pct}%"></i></div>
+      <small style="color:var(--sub);font-weight:700">${tier.next
+    ? tr(`Wydano ${fmt(tier.spent)} zł w ${tier.windowMonths} mies. Do poziomu ${esc(tier.next.name)} brakuje ${fmt(tier.toNext)} zł.`, `Spent ${fmt(tier.spent)} zł in ${tier.windowMonths} months. ${fmt(tier.toNext)} zł to ${esc(tier.next.name)}.`)
+    : tr(`Najwyższy poziom. Wydano ${fmt(tier.spent)} zł w ${tier.windowMonths} mies.`, `Top level. Spent ${fmt(tier.spent)} zł in ${tier.windowMonths} months.`)}</small>
+      <div class="tier-levels">${prog.levels.map((l) => `<div class="${l.key === tier.current.key ? 'cur' : ''}"><b>${esc(l.name)}</b>${l.minSpent ? `${tr('od', 'from')} ${fmt0(l.minSpent)} zł` : tr('start', 'start')}<br>${Number(l.multiplier) > 1 ? multTxt(l.multiplier) : '×1'}</div>`).join('')}</div>`;
+  }
+  // happy hour
+  const hh = prog.happyHour;
+  $('#hh-banner').hidden = !hh;
+  if (hh) $('#hh-banner').innerHTML = `<i class="fas fa-bolt"></i><span>${esc(hh.name)}: ${tr('Milkosy', 'Milkos')} ${multTxt(hh.multiplier)} ${tr('do', 'until')} ${esc(hh.to)}</span>`;
+  // wygasanie: przypomnij, gdy zostało mniej niż 60 dni
+  const ex = prog.expiry && prog.expiry.next;
+  const soon = ex && ex.amount > 0 && (new Date(ex.at) - Date.now()) < 60 * 864e5;
+  $('#expiry-note').hidden = !soon;
+  if (soon) $('#expiry-note').innerHTML = `<i class="fas fa-hourglass-half"></i><span>${tr(`${ex.amount} Milkosów wygaśnie ${dateTxt(ex.at)}. Wymień je na vPLN w zakładce Nagrody.`, `${ex.amount} Milkos expire on ${dateTxt(ex.at)}. Exchange them for vPLN in Rewards.`)}</span>`;
+  // misje
+  const missions = prog.missions || [];
+  $('#missions-box').hidden = !missions.length;
+  $('#missions-empty').hidden = missions.length > 0;
+  $('#missions-list').innerHTML = missions.map(missionHtml).join('');
+  const open = missions.filter((m) => !m.completed).sort((a, b) => b.progress / b.target - a.progress / a.target).slice(0, 1);
+  $('#home-missions').hidden = !open.length;
+  $('#missions-home').innerHTML = open.map((m) => {
+    const segs = Math.min(10, Math.max(2, m.type === 'spend' ? 5 : m.target));
+    const on = Math.round((m.progress / m.target) * segs);
+    const reward = [m.rewardPoints ? `+${m.rewardPoints} Milkosów` : '', m.rewardVpln ? `+${fmt(m.rewardVpln)} zł` : '', m.badge ? `odznaka ${m.badge}` : ''].filter(Boolean).join(', ');
+    return `<button type="button" class="mini" data-view="missions" style="margin-top:0"><span class="mic"><i class="fas fa-fire"></i></span><span class="mt"><b>${esc(m.title)}</b><small>${fmt0(m.progress)} z ${fmt0(m.target)}${reward ? `, ${esc(reward)}` : ''}</small></span><span class="seg">${Array.from({ length: segs }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('')}</span></button>`;
+  }).join('');
+  // poziom: w Nagrodach i na ekranie numeru do kasy
+  const numTier = $('#num-tier');
+  numTier.hidden = !(tier && tier.current);
+  if (tier && tier.current) numTier.innerHTML = chip.innerHTML;
+  $('#r-tier').textContent = tier && tier.current ? tier.current.name : '–';
+  const lv = prog.levels || [];
+  const idx = tier && tier.current ? lv.findIndex((l) => l.key === tier.current.key) : -1;
+  $('#r-tier-seg').innerHTML = lv.map((l, i) => `<i class="${i <= idx ? `on${i === idx ? ' k' : ''}` : ''}"></i>`).join('');
+  renderStories(); renderPromo();
+  // odznaki
+  const badges = prog.badges || [];
+  $('#badges-box').hidden = !badges.length;
+  $('#badges-list').innerHTML = badges.map((b) => `<div class="badge-tile"><span>${esc(b.icon || '🏅')}</span><b>${esc(b.name)}</b></div>`).join('');
+  // polecenia
+  const ref = prog.referral;
+  $('#ref-box').hidden = !ref;
+  $('#ref-home').hidden = !ref;
+  if (ref) {
+    $('#ref-home-text').innerHTML = `${tr(`Poleć MilkMi: +${ref.referrerPoints} Milkosów`, `Invite friends: +${ref.referrerPoints} Milkos`)}<small>${tr(`Znajomy dostaje ${ref.refereePoints} na start`, `Your friend gets ${ref.refereePoints} to start`)}</small>`;
+    $('#ref-body').innerHTML = `<small style="color:var(--sub);font-weight:700">${tr(`Znajomy wpisuje Twój kod przy zakładaniu konta. Po jego pierwszych zakupach od ${fmt0(ref.minSpent)} zł Ty dostajesz ${ref.referrerPoints}, a on ${ref.refereePoints} Milkosów.`, `Your friend enters your code when signing up. After their first purchase of ${fmt0(ref.minSpent)} zł or more you get ${ref.referrerPoints} and they get ${ref.refereePoints} Milkos.`)}</small>
+      <div class="ref-code">${esc(ref.code || '')}</div>
+      <div class="row-btns"><button class="btn btn-sm" type="button" id="ref-share"><i class="fas fa-share-nodes"></i>${tr('Udostępnij', 'Share')}</button><button class="btn btn-sm btn-ghost" type="button" id="ref-copy"><i class="fas fa-copy"></i>${tr('Kopiuj', 'Copy')}</button></div>
+      <small style="display:block;margin-top:10px;color:var(--sub);font-weight:700;text-align:center">${tr(`Zaproszeni: ${ref.invited} · z bonusem: ${ref.rewarded}`, `Invited: ${ref.invited} · rewarded: ${ref.rewarded}`)}</small>
+      ${ref.canEnterCode ? `<form class="inline-form" id="form-ref-code" style="margin-top:14px"><input class="input" name="code" placeholder="${tr('Kod od znajomego', 'Friend’s code')}" autocomplete="off"><button class="btn btn-sm" type="submit">OK</button></form>` : ''}`;
+    const text = tr(`Dołącz do MilkMi w Milkshakebar i wpisz mój kod ${ref.code} — dostaniesz ${ref.refereePoints} Milkosów na start.`, `Join MilkMi at Milkshakebar with my code ${ref.code} and get ${ref.refereePoints} Milkos to start.`);
+    $('#ref-share').onclick = () => {
+      if (navigator.share) navigator.share({ title: 'MilkMi', text, url: ref.link }).catch(() => {});
+      else { navigator.clipboard && navigator.clipboard.writeText(`${text} ${ref.link}`); toast(tr('Skopiowano link', 'Link copied')); }
+    };
+    $('#ref-copy').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(ref.code).then(() => toast(tr('Kod skopiowany', 'Code copied'))); };
+    const rf = $('#form-ref-code');
+    if (rf) rf.onsubmit = async (e) => {
+      e.preventDefault();
+      try { const d = await api('/api/me/referral', { method: 'POST', body: { code: rf.code.value.trim() } }); toast(d.message); loadProgram(); } catch (err) { toast(err.message, true); }
+    };
+  }
+  // urodziny
+  const bd = prog.birthday;
+  $('#bd-box').hidden = !bd;
+  if (bd) {
+    const gift = [bd.vpln > 0 ? `${fmt0(bd.vpln)} zł vPLN` : '', bd.points > 0 ? `${bd.points} Milkosów` : ''].filter(Boolean).join(tr(' i ', ' and '));
+    if (bd.date) {
+      $('#bd-body').innerHTML = `<div style="display:flex;gap:12px;align-items:center"><span style="font-size:2rem">🎂</span><div><b>${bd.date.day} ${lang === 'en' ? MONTHS_EN[bd.date.month - 1] : MONTHS_PL[bd.date.month - 1]}</b><small style="display:block;color:var(--sub);font-weight:700">${tr(`W tym dniu dostaniesz ${gift || 'prezent'}.`, `On this day you get ${gift || 'a gift'}.`)}</small></div></div>`;
+    } else {
+      $('#bd-body').innerHTML = `<small style="color:var(--sub);font-weight:700">${tr(`Podaj dzień urodzin, a w swoje święto dostaniesz ${gift || 'prezent'}. Datę zapisujesz raz (prezent od 30 dni po zapisaniu).`, `Add your birthday and get ${gift || 'a gift'} on the day. You can set it once (gift available 30 days after saving).`)}</small>
+        <form class="inline-form" id="form-bd"><select class="input" name="day" style="text-transform:none" aria-label="${tr('Dzień', 'Day')}">${Array.from({ length: 31 }, (_, i) => `<option>${i + 1}</option>`).join('')}</select>
+        <select class="input" name="month" style="text-transform:none;flex:2" aria-label="${tr('Miesiąc', 'Month')}">${(lang === 'en' ? MONTHS_EN : MONTHS_PL).map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
+        <button class="btn btn-sm" type="submit">${tr('Zapisz', 'Save')}</button></form>`;
+      $('#form-bd').onsubmit = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const label = `${f.day.value} ${(lang === 'en' ? MONTHS_EN : MONTHS_PL)[f.month.value - 1]}`;
+        if (!confirm(tr(`Zapisać ${label}? Datę ustawiasz tylko raz.`, `Save ${label}? You can only set it once.`))) return;
+        try { const d = await api('/api/me/birthday', { method: 'POST', body: { day: Number(f.day.value), month: Number(f.month.value) } }); toast(d.message); loadProgram(); } catch (err) { toast(err.message, true); }
+      };
+    }
+  }
+}
+
+$('#form-gift').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  if (!f.code.value.trim()) return toast(tr('Wpisz kod karty.', 'Enter the card code.'), true);
+  const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const d = await api('/api/me/gift-cards/redeem', { method: 'POST', body: { code: f.code.value.trim() } });
+    f.reset(); toast(d.message); refresh();
+  } catch (err) { toast(err.message, true); }
+  btn.disabled = false;
+});
+
+// Link z kodem polecenia (milkshakebar.pl/app?ref=KOD): zapamiętaj i wpisz przy zakładaniu konta
+(function captureRef() {
+  try {
+    const code = new URLSearchParams(location.search).get('ref');
+    if (code) store.set('milkmi_ref', code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12));
+    const saved = store.get('milkmi_ref');
+    if (saved) $('#step-register').referral.value = saved;
+  } catch (e) { /* bez kodu */ }
+})();
+function displayName() { return user ? (user.name || user.username || '') : ''; }
+
+// --- start ---
+(async function boot() {
+  $('#theme-switch').checked = document.documentElement.classList.contains('dark');
+  applyLang();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+  try { if (!sessionStorage.getItem('milkmi_tracked')) { sessionStorage.setItem('milkmi_tracked', '1'); fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: 'app' }) }); } } catch (e) {}
+  updatePushUi();
+  fetch('/api/loyalty').then((r) => r.json()).then((d) => { if (d.data) { loyalty = d.data; if (user) render(); } }).catch(() => {});
+  if (!user || !token) { showAuth(); authStep('phone'); return; }
+
+  // Odnowienie sesji. Działa też dla klientów zalogowanych w poprzedniej wersji aplikacji.
+  try {
+    const res = await fetch('/api/session/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, email: user.email }) });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.token) {
+      token = data.token; user = { ...user, ...data.user };
+      store.set(KEY_TOKEN, token); saveUser();
+    } else if (res.status === 401 || res.status === 403) {
+      return logout(true);
+    }
+  } catch (e) { /* bez internetu: pokazujemy dane zapisane w telefonie */ }
+  showApp();
+  go('home');
+  if (location.hash === '#numer') openSheet('sheet-number');
+  if (pushState() === 'on') subscribePush(false).catch(() => {});
+  maybeOnboard();
+})();
+</script>
+</body>
+</html>
