@@ -1,0 +1,2495 @@
+{
+  "zrodlo": "Drukowana karta Milkshakebar (strona 1: jedzenie, strona 2: napoje i desery). Ceny w zł.",
+  "zestaw": {
+    "opis": "Kanapka, burger, hot-dog lub burrito z frytkami, sałatką lub gorącym chilli za 12 zł (oszczędzasz 5 zł), z lemoniadą cytrusową za 22 zł (oszczędzasz 10 zł). Zamiana na krążki cebulowe 16 zł, mini nachos 18 zł, bataty 15 zł.",
+    "cenaPodstawowa": 12,
+    "dodatki": [
+      {
+        "name": "Frytki",
+        "extra": 0
+      },
+      {
+        "name": "Sałatka",
+        "extra": 0
+      },
+      {
+        "name": "Gorące chilli",
+        "extra": 0
+      },
+      {
+        "name": "Frytki z batatów",
+        "extra": 3
+      },
+      {
+        "name": "Krążki cebulowe",
+        "extra": 4
+      },
+      {
+        "name": "Mini nachos",
+        "extra": 6
+      }
+    ],
+    "napoje": [
+      {
+        "name": "Lemoniada cytrusowa",
+        "price": 10
+      }
+    ]
+  },
+  "notatki": {
+    "burgery": "Dostępne w zestawie.",
+    "kanapki": "Dostępne w zestawie.",
+    "hotdogi": "W bagietce brioche, dostępne w zestawach.",
+    "mexico_burrito": "Dostępne w zestawie.",
+    "shakes_klasyczne": "Milkshake na włoskich lodach, 300 ml.",
+    "desery_pancakes": "Amerykańskie pancakes, 3 sztuki w porcji.",
+    "kawa": "Każdą kawę przygotujemy na mleku sojowym, owsianym lub bez laktozy. Mleko owsiane zawiera do 1,2% składników ze zbóż zawierających gluten.",
+    "smoothie": "350 ml.",
+    "proteiny": "450 ml.",
+    "soki": "350 ml."
+  },
+  "produkty": [
+    {
+      "categoryId": "burgery",
+      "name": "Prostak",
+      "description": "burger wołowy, sos burgerowy, sałata, pomidor, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 33
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 39
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Sergio",
+      "description": "burger wołowy, ser Cheddar, sos burgerowy, sałata, pomidor, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 35
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 41
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Boston",
+      "description": "burger wołowy, ser Cheddar, bekon, grillowana cebula, sos burgerowy, sałata, pomidor, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 38
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 44
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Pleśniak",
+      "description": "burger wołowy, panierowany ser Camembert, sos żurawinowy, sos burgerowy, sałata",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 43
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 49
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Surf-ser",
+      "description": "burger wołowy, bekon, panierowany ser Cheddar, karmelizowana czerwona cebula, sos truflowy, pieczarki, sałata, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 45
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 51
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Złodziej",
+      "description": "burger wołowy, chorizo, dżem z pomidorów z chilli, jalapeno, sałata, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 42
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 48
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "spicy": 2,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Missisipi",
+      "description": "burger wołowy, bekon, karmelizowana czerwona cebula, majonez sriracha, domowy sos BBQ",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 42
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 48
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Hulla cebulla",
+      "description": "burger wołowy, krążki cebulowe, dżem z pomidorów z chilli, ananas, ogórek kiszony",
+      "variants": [
+        {
+          "name": "Mały 85 g",
+          "price": 42
+        },
+        {
+          "name": "Duży 160 g",
+          "price": 48
+        }
+      ],
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Tijuana burger w tortilli",
+      "description": "burger wołowy 160 g, salsa pomidorowa, ser Cheddar, jalapeno",
+      "price": 49,
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "isNew": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Rumsztyk burger",
+      "description": "siekana ligawa wołowa 150 g, sos truflowy, karmelizowana biała cebula, ogórek kiszony",
+      "price": 57,
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Kura bez pióra",
+      "description": "grillowana pierś z kurczaka 120 g, sos burgerowy, sałata, pomidor, ogórek kiszony",
+      "price": 44,
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Bunga bunga",
+      "description": "grillowana pierś z kurczaka 120 g, ser Mozarella, suszone pomidory, pesto bazyliowe, rukola",
+      "price": 46,
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "burgery",
+      "name": "Żółtodziób",
+      "description": "panierowana pierś z kurczaka 120 g, sos tatarski, sałata, świeży ogórek",
+      "price": 44,
+      "allowSet": true,
+      "addons": [
+        {
+          "id": "burger-1",
+          "name": "Burger wołowy 85 g",
+          "price": 7
+        },
+        {
+          "id": "burger-2",
+          "name": "Burger wołowy 160 g",
+          "price": 12
+        },
+        {
+          "id": "burger-3",
+          "name": "2 sztuki bekonu",
+          "price": 5
+        },
+        {
+          "id": "burger-4",
+          "name": "Jajko sadzone",
+          "price": 2
+        },
+        {
+          "id": "burger-5",
+          "name": "3 sztuki krążków cebulowych",
+          "price": 6
+        }
+      ],
+      "pickupOnly": false,
+      "art": "burger"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Frytki 150 g",
+      "description": "",
+      "price": 16,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "frytki-1",
+          "name": "Majonez truflowy",
+          "price": 4
+        }
+      ],
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Frytki z batatów 150 g",
+      "description": "",
+      "price": 19,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Frytki z serem",
+      "description": "ser, bekon, majonez sriracha, szczypiorek",
+      "price": 31,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Krążki cebulowe, 5 szt.",
+      "description": "z sosem Sweet Chili",
+      "price": 19,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Krewetki w tempurze",
+      "description": "z sosem Sweet Chili",
+      "variants": [
+        {
+          "name": "3 szt.",
+          "price": 23
+        },
+        {
+          "name": "6 szt.",
+          "price": 41
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Nachos z serem",
+      "description": "guacamole, śmietana, salsa pomidorowa, jalapeño",
+      "price": 41,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Chilli nachos z serem",
+      "description": "guacamole, śmietana, jalapeño",
+      "price": 49,
+      "allowSet": false,
+      "isNew": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "startery",
+      "name": "Skrzydełka BBQ, 5 szt.",
+      "description": "",
+      "price": 29,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "fries"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Club sandwich",
+      "description": "chleb tostowy, grillowana pierś kurczaka (90 g), majonez, sałata, pomidor",
+      "price": 39,
+      "allowSet": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Vege club",
+      "description": "chleb tostowy, ser camembert, majonez, sałata, pomidor",
+      "price": 36,
+      "allowSet": true,
+      "isVege": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Ave-jajo",
+      "description": "chleb pszenno-żytni, guacamole, pomidor, jajko poche, szczypiorek, oliwa zielona",
+      "price": 36,
+      "allowSet": true,
+      "isNew": true,
+      "isVege": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Milano",
+      "description": "chleb pszenno-żytni, majonez truflowy, grillowana pierś z kurczaka (90 g), ser cheddar, karmelizowana cebula",
+      "price": 41,
+      "allowSet": true,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Bagietka z kurczakiem",
+      "description": "bagietka maślana, grillowana pierś z kurczaka (90 g), ser Cheddar, majonez, salsa meksykańska, awokado, pomidor",
+      "price": 43,
+      "allowSet": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "kanapki",
+      "name": "Sub-milk",
+      "description": "bagietka maślana, pieczona pierś z indyka, ser Cheddar, majonez, sałata, pomidor, pepperoni",
+      "price": 39,
+      "allowSet": true,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "sandwich"
+    },
+    {
+      "categoryId": "hotdogi",
+      "name": "Classic",
+      "description": "kiełbaska, ogórek piklowy, ketchup, prażona cebulka",
+      "price": 21,
+      "allowSet": true,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "hotdog"
+    },
+    {
+      "categoryId": "hotdogi",
+      "name": "West coast",
+      "description": "kiełbaska, bekon, majonez truflowy, karmelizowana cebula, ogórek piklowy, prażona cebulka",
+      "price": 24,
+      "allowSet": true,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "hotdog"
+    },
+    {
+      "categoryId": "hotdogi",
+      "name": "Chihuahua",
+      "description": "kiełbaska, chorizo, ser cheddar, ogórek piklowy, chilli, guacamole, nachos",
+      "price": 31,
+      "allowSet": true,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "hotdog"
+    },
+    {
+      "categoryId": "salaty",
+      "name": "Cezar",
+      "description": "sałata rzymska, sos Cezar, grzanki, pomidorki koktajlowe, parmezan",
+      "variants": [
+        {
+          "name": "z kurczakiem i bekonem",
+          "price": 49
+        },
+        {
+          "name": "z krewetkami (7 szt. 16/20)",
+          "price": 51
+        },
+        {
+          "name": "z awokado (wege)",
+          "price": 43
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "salad"
+    },
+    {
+      "categoryId": "salaty",
+      "name": "Chica",
+      "description": "mix sałat, grillowana pierś z kurczaka, smażona cebula z papryką, pomidorki koktajlowe, sos z agawy z chilli",
+      "price": 49,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "salad"
+    },
+    {
+      "categoryId": "salaty",
+      "name": "Orient express",
+      "description": "rukiew wodna, sałata rzymska, awokado, ogórek zielony, fasolka edamame, nerkowce, Aioli wasabi",
+      "price": 44,
+      "allowSet": false,
+      "isNew": true,
+      "isVege": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "salad"
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Tatar z polędwicy wołowej 100 g",
+      "description": "maślana brioche, jabłuszka kaparowe, majonez sriracha, musztarda francuska, marynowana czerwona cebula, ogórek, marynowane pieczarki, szczypiorek, oliwa zielona",
+      "price": 55,
+      "allowSet": false,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Stek z polędwicy argentyńskiej 180 g",
+      "description": "pieczone ziemniaki francuskie, mix sałat",
+      "price": 125,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "sos-1",
+          "name": "Sos z zielonego pieprzu lub borowikowy",
+          "price": 7
+        }
+      ],
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Rumsztyk wołowy 150 g",
+      "description": "kotlet wołowy z siekanej ligawy wołowej, karmelizowana cebula, pieczony ziemniak, puree z buraków",
+      "price": 59,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Sznycel wieprzowy z kością 160 g",
+      "description": "panierowany sznycel z jajkiem sadzonym, puree z marchewki, ziemniaki francuskie",
+      "price": 55,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Pierś z kurczaka sous vide 180 g",
+      "description": "delikatna pierś z kurczaka, ziemniaki francuskie, warzywa z patelni, sos salsa verde",
+      "price": 55,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "dania_glowne",
+      "name": "Żeberko wieprzowe 600 g",
+      "description": "pieczone ziemniaki, krążki cebulowe, coleslaw, kukurydza",
+      "price": 77,
+      "allowSet": false,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "pasta",
+      "name": "Arrabbiata",
+      "description": "makaron rigatoni, sos pomidorowy, cebula, czosnek, chilli, pietruszka, parmezan",
+      "variants": [
+        {
+          "name": "Klasyczna",
+          "price": 46
+        },
+        {
+          "name": "Z bekonem",
+          "price": 49
+        }
+      ],
+      "allowSet": false,
+      "isNew": true,
+      "isVege": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "pasta"
+    },
+    {
+      "categoryId": "pasta",
+      "name": "Tagliatelle z krewetkami",
+      "description": "7 krewetek 16/20, sos winno-maślany, czosnek, chilli, pomidorki koktajlowe, pietruszka, parmezan",
+      "price": 53,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "pasta"
+    },
+    {
+      "categoryId": "pasta",
+      "name": "Fisherman pasta",
+      "description": "tagliatelle z owocami morza (3 krewetki, kalmary, mule), sos z masłem homarowym, limonka",
+      "price": 69,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": false,
+      "art": "pasta"
+    },
+    {
+      "categoryId": "pasta",
+      "name": "NY Chinatown",
+      "description": "warzywa z woka w sosie sojowo-ostrygowym z makaronem orientalnym",
+      "variants": [
+        {
+          "name": "vege (z nerkowcami)",
+          "price": 41
+        },
+        {
+          "name": "z kurczakiem 90 g",
+          "price": 49
+        },
+        {
+          "name": "z polędwicą wołową 90 g",
+          "price": 57
+        },
+        {
+          "name": "z krewetkami (16/20) 7 szt.",
+          "price": 53
+        }
+      ],
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "chinatown-1",
+          "name": "Dodatkowe nerkowce 20 g",
+          "price": 8
+        }
+      ],
+      "pickupOnly": false,
+      "art": "pasta"
+    },
+    {
+      "categoryId": "mexico_tapas",
+      "name": "Skrzydełka chilli, 5 szt.",
+      "description": "",
+      "price": 29,
+      "allowSet": false,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_tapas",
+      "name": "Krewetki, chorizo, guacamole, 3 szt.",
+      "description": "",
+      "price": 28,
+      "allowSet": false,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_tapas",
+      "name": "Polędwiczki z kurczaka w panko, 3 szt.",
+      "description": "sweet chilli, BBQ, śmietana sriracha",
+      "price": 28,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_quesadillas",
+      "name": "Pollo",
+      "description": "dwie tortille, pierś z kurczaka 120 g, ser, papryka, pomidorki koktajlowe, kolendra, rukola, śmietana sriracha",
+      "price": 47,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "quesadilla"
+    },
+    {
+      "categoryId": "mexico_quesadillas",
+      "name": "Chorizo",
+      "description": "dwie tortille, chorizo, sos pomidorowy, ser, jalapeno, marynowane pomidory, kolendra, rukola, śmietana sriracha",
+      "price": 42,
+      "allowSet": false,
+      "isNew": true,
+      "spicy": 2,
+      "pickupOnly": false,
+      "art": "quesadilla"
+    },
+    {
+      "categoryId": "mexico_quesadillas",
+      "name": "Torro",
+      "description": "dwie tortille, wołowina 110 g, salsa meksykańska, ser, jalapeno, kolendra, rukola, śmietana sriracha",
+      "price": 49,
+      "allowSet": false,
+      "spicy": 2,
+      "pickupOnly": false,
+      "art": "quesadilla"
+    },
+    {
+      "categoryId": "mexico_quesadillas",
+      "name": "Camaron",
+      "description": "dwie tortille, 8 krewetek, ser, grillowana cebula i papryka, awokado, pepperoni, kolendra, rukola, śmietana",
+      "price": 53,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "quesadilla"
+    },
+    {
+      "categoryId": "mexico_quesadillas",
+      "name": "Verduras",
+      "description": "dwie tortille, grillowana cukinia i papryka, kukurydza, kolendra, rukola, śmietana sriracha",
+      "price": 43,
+      "allowSet": false,
+      "isVege": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "quesadilla"
+    },
+    {
+      "categoryId": "mexico_burrito",
+      "name": "Pollo buritto",
+      "description": "grillowana pierś z kurczaka, ryż meksykański, sałata, guacamole, salsa pomidorowa, śmietana sriracha",
+      "price": 39,
+      "allowSet": true,
+      "spicy": 1,
+      "pickupOnly": false,
+      "art": "burrito"
+    },
+    {
+      "categoryId": "mexico_burrito",
+      "name": "Torrito",
+      "description": "chilli, ryż meksykański, ser cheddar, awokado, śmietana sriracha",
+      "price": 42,
+      "allowSet": true,
+      "spicy": 2,
+      "pickupOnly": false,
+      "art": "burrito"
+    },
+    {
+      "categoryId": "mexico_fajita",
+      "name": "Fajita z kurczakiem",
+      "description": "grillowana pierś 150 g. Grillowane warzywa, ryż meksykański, chilli z wołowiną, mix sałat, tortilla, kolendra, sos śmietanowy, guacamole, salsa pomidorowa.",
+      "price": 62,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_fajita",
+      "name": "Fajita z krewetkami",
+      "description": "krewetki tygrysie 16/20, 7 szt.. Grillowane warzywa, ryż meksykański, chilli z wołowiną, mix sałat, tortilla, kolendra, sos śmietanowy, guacamole, salsa pomidorowa.",
+      "price": 73,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_fajita",
+      "name": "Fajita z polędwicą wołową",
+      "description": "polędwica wołowa 150 g. Grillowane warzywa, ryż meksykański, chilli z wołowiną, mix sałat, tortilla, kolendra, sos śmietanowy, guacamole, salsa pomidorowa.",
+      "price": 81,
+      "allowSet": false,
+      "spicy": 1,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "mexico_fajita",
+      "name": "Fajita surf & turf",
+      "description": "polędwica i krewetki. Grillowane warzywa, ryż meksykański, chilli z wołowiną, mix sałat, tortilla, kolendra, sos śmietanowy, guacamole, salsa pomidorowa.",
+      "price": 91,
+      "allowSet": false,
+      "isNew": true,
+      "spicy": 1,
+      "pickupOnly": false
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Śmietankowy",
+      "description": "",
+      "price": 19,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Nesquik",
+      "description": "",
+      "price": 21,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Kakaowy",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Masło orzechowe",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Słony karmel",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Chałwa",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Kit Kat",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Krówka",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Daim",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Milky Way",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Oreo",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_klasyczne",
+      "name": "Snickers",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Banan + malina",
+      "description": "",
+      "price": 28,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Mango + marakuja",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Kinder Bueno + malina",
+      "description": "",
+      "price": 30,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Oreo + masło orzechowe",
+      "description": "",
+      "price": 30,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Kawa + słony karmel",
+      "description": "",
+      "price": 30,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_best",
+      "name": "Smoothie owocowe + Snickers",
+      "description": "",
+      "price": 30,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Bananowy",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Czerwona porzeczka",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Malinowy",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Mango",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Marakuja",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Borówka",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_owocowe",
+      "name": "Smoothie owocowe",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Cookie Monster",
+      "description": "shake Oreo, czekolada, masło orzechowe, sos czekoladowy i M&M's",
+      "price": 37,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Gonzo",
+      "description": "shake kawowy, słony karmel, Daim, sos czekoladowy, orzechy i bita śmietana",
+      "price": 37,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Pistachio",
+      "description": "shake pistacjowy, prażone pistacje, sos czekoladowy, orzechy i bita śmietana",
+      "price": 37,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Lotus",
+      "description": "shake Lotus, sos z czarnej porzeczki, sos czekoladowy, pokruszone ciastka Lotus i bita śmietana",
+      "price": 37,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Cheesecake",
+      "description": "shake sernikowy z truskawkami, serek Philadelphia, kruszonka, sos truskawkowy i bita śmietana",
+      "price": 37,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "shakes_vip",
+      "name": "Cinnamon Bun",
+      "description": "shake cynamonowy, syrop cynamonowy, sos czekoladowy, orzechy i bita śmietana",
+      "price": 37,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "shake"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Klasyczne z bitą śmietaną 150 g",
+      "description": "",
+      "price": 15,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Z Nutellą 150 g",
+      "description": "",
+      "price": 20,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Ze słonymi pistacjami i malinami",
+      "description": "",
+      "price": 19,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Ze słonym karmelem i orzeszkami",
+      "description": "",
+      "price": 15,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Z M&M's",
+      "description": "",
+      "price": 22,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_wloskie",
+      "name": "Z musem owocowym",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "lody-1",
+          "name": "Dodatkowa bita śmietana",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "cone"
+    },
+    {
+      "categoryId": "desery_lodowe",
+      "name": "Fruit Ale",
+      "description": "lody, mus owocowy, świeże truskawki, świeże owoce, bita śmietana",
+      "price": 39,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "sundae"
+    },
+    {
+      "categoryId": "desery_lodowe",
+      "name": "Hot Strawberry",
+      "description": "lody, mus owocowy, beza, truskawki, świeże truskawki, bita śmietana",
+      "price": 39,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "sundae"
+    },
+    {
+      "categoryId": "desery_lodowe",
+      "name": "Chocolate Dream",
+      "description": "lody, Nutella, wiórki czekoladowe, bita śmietana, Kinder Bueno",
+      "price": 43,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "sundae"
+    },
+    {
+      "categoryId": "desery_gofry",
+      "name": "American",
+      "description": "pieczony gofr z cynamonem i domową kruszonką",
+      "variants": [
+        {
+          "name": "Mały",
+          "price": 17
+        },
+        {
+          "name": "Średni",
+          "price": 29
+        },
+        {
+          "name": "Cały",
+          "price": 55
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "waffle"
+    },
+    {
+      "categoryId": "desery_gofry",
+      "name": "Lotus",
+      "description": "krem mascarpone, ciastka Lotus, masło z ciastek, kruszonka Lotus",
+      "variants": [
+        {
+          "name": "Mały",
+          "price": 17
+        },
+        {
+          "name": "Średni",
+          "price": 30
+        },
+        {
+          "name": "Cały",
+          "price": 55
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "waffle"
+    },
+    {
+      "categoryId": "desery_gofry",
+      "name": "Cheesecake",
+      "description": "krem Philadelphia, kruszonka z ciastek, sos truskawkowy, domowa kruszonka",
+      "variants": [
+        {
+          "name": "Mały",
+          "price": 17
+        },
+        {
+          "name": "Średni",
+          "price": 30
+        },
+        {
+          "name": "Cały",
+          "price": 55
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "waffle"
+    },
+    {
+      "categoryId": "desery_gofry",
+      "name": "Pistachio Love",
+      "description": "z kremem pistacjowym i truskawkami",
+      "variants": [
+        {
+          "name": "Mały",
+          "price": 19
+        },
+        {
+          "name": "Średni",
+          "price": 34
+        },
+        {
+          "name": "Cały",
+          "price": 59
+        }
+      ],
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "waffle"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z syropem klonowym",
+      "description": "",
+      "price": 29,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z musem owocowym i sosem truskawkowym",
+      "description": "",
+      "price": 36,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z Nutellą i truskawkami",
+      "description": "",
+      "price": 36,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z Kinder Bueno i malinami",
+      "description": "",
+      "price": 39,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z kremem pistacjowym i truskawkami",
+      "description": "",
+      "price": 42,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Z kremem matcha i świeżymi owocami",
+      "description": "",
+      "price": 39,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_pancakes",
+      "name": "Hello USA",
+      "description": "pancakes z syropem klonowym, chrupiący bekon i dwa jajka sadzone",
+      "price": 39,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "pancake"
+    },
+    {
+      "categoryId": "desery_churros",
+      "name": "Churros meksykańskie z cukrem cynamonowym",
+      "description": "z sosem czekoladowo-orzechowym i sosem truskawkowym",
+      "variants": [
+        {
+          "name": "6 szt.",
+          "price": 34
+        },
+        {
+          "name": "12 szt.",
+          "price": 59
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "churros"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Espresso 35 ml",
+      "description": "",
+      "price": 11,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Podwójne espresso 70 ml",
+      "description": "",
+      "price": 16,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Americano",
+      "description": "",
+      "variants": [
+        {
+          "name": "200 ml",
+          "price": 12
+        },
+        {
+          "name": "300 ml",
+          "price": 17
+        }
+      ],
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Flat White",
+      "description": "",
+      "variants": [
+        {
+          "name": "200 ml",
+          "price": 12
+        },
+        {
+          "name": "300 ml",
+          "price": 17
+        }
+      ],
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Latte",
+      "description": "",
+      "variants": [
+        {
+          "name": "200 ml",
+          "price": 13
+        },
+        {
+          "name": "300 ml",
+          "price": 18
+        }
+      ],
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Cappuccino",
+      "description": "",
+      "variants": [
+        {
+          "name": "200 ml",
+          "price": 13
+        },
+        {
+          "name": "300 ml",
+          "price": 18
+        }
+      ],
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Kawa z mlekiem 300 ml",
+      "description": "",
+      "price": 13,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa",
+      "name": "Kawa mrożona 300 ml",
+      "description": "",
+      "price": 11,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "kawa-1",
+          "name": "Dodatkowe espresso",
+          "price": 5
+        },
+        {
+          "id": "kawa-2",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true,
+      "art": "coffee"
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Frappe 400 ml",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Frappe ze słonym karmelem 400 ml",
+      "description": "",
+      "price": 27,
+      "allowSet": false,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Iced Latte 400 ml",
+      "description": "",
+      "price": 22,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Tonic Espresso",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Affogato 250 ml",
+      "description": "espresso z lodami",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Cherry Affogato 250 ml",
+      "description": "espresso z lodami wiśniowymi, bitą śmietaną i syropem wiśniowym",
+      "price": 25,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "kawa_mrozona",
+      "name": "Pistachio Affogato 250 ml",
+      "description": "espresso z lodami, bitą śmietaną i kremem pistacjowym",
+      "price": 27,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Matcha Latte 300 ml",
+      "description": "",
+      "price": 23,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Iced Matcha Latte 400 ml",
+      "description": "",
+      "price": 25,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Ube Latte 400 ml",
+      "description": "",
+      "price": 27,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Iced Ube Latte 400 ml",
+      "description": "",
+      "price": 27,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Iced Matcha Latte z tonikiem 400 ml",
+      "description": "",
+      "price": 30,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Blue Matcha Latte 400 ml",
+      "description": "",
+      "price": 29,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "isNew": true,
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "matcha",
+      "name": "Iced Blue Matcha Latte 400 ml",
+      "description": "",
+      "price": 29,
+      "allowSet": false,
+      "addons": [
+        {
+          "id": "matcha-1",
+          "name": "Puree z marakui",
+          "price": 5
+        },
+        {
+          "id": "matcha-2",
+          "name": "Puree z mango",
+          "price": 5
+        },
+        {
+          "id": "matcha-3",
+          "name": "Puree truskawkowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-4",
+          "name": "Puree malinowe",
+          "price": 5
+        },
+        {
+          "id": "matcha-5",
+          "name": "Mleko roślinne Alpro",
+          "price": 3
+        }
+      ],
+      "pickupOnly": true
+    },
+    {
+      "categoryId": "herbata",
+      "name": "Zielona 300 ml",
+      "description": "",
+      "price": 15,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "herbata",
+      "name": "English Breakfast 300 ml",
+      "description": "",
+      "price": 15,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "herbata",
+      "name": "Korzenna 400 ml",
+      "description": "czarna herbata, miód, imbir, pomarańcza, goździki, cynamon",
+      "price": 23,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "herbata",
+      "name": "Klonowo-jabłkowa 400 ml",
+      "description": "czarna herbata, jabłko, syrop klonowy, pomarańcza, goździki, imbir, cynamon",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "herbata",
+      "name": "Very Cranberry 400 ml",
+      "description": "czarna herbata, syrop klonowy, pomarańcza, żurawina, truskawki, syrop żurawinowy",
+      "price": 22,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "herbata",
+      "name": "Herbata mrożona 400 ml",
+      "description": "",
+      "price": 26,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "tea"
+    },
+    {
+      "categoryId": "smoothie",
+      "name": "Green",
+      "description": "szpinak, kiwi, pomarańcza, gruszka",
+      "price": 29,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": true,
+      "art": "smoothie"
+    },
+    {
+      "categoryId": "smoothie",
+      "name": "Yellow",
+      "description": "banan, jabłko, ananas, mango",
+      "price": 29,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": true,
+      "art": "smoothie"
+    },
+    {
+      "categoryId": "smoothie",
+      "name": "Red",
+      "description": "truskawka, malina, banan, ananas",
+      "price": 29,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": true,
+      "art": "smoothie"
+    },
+    {
+      "categoryId": "smoothie",
+      "name": "Purple",
+      "description": "czarna porzeczka, truskawka, borówka, banan",
+      "price": 29,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": true,
+      "art": "smoothie"
+    },
+    {
+      "categoryId": "proteiny",
+      "name": "Berry Muffin",
+      "description": "mleko kokosowe (200 ml), owoce jagodowe, białko serwatkowe, masło orzechowe. 354 kcal: 24 g białka, 41 g węglowodanów (w tym 3 g cukru), 11 g tłuszczu",
+      "price": 32,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "protein"
+    },
+    {
+      "categoryId": "proteiny",
+      "name": "Caramel",
+      "description": "banan, ananas, mango, białko serwatkowe, mleko 1,5%, ekstrakt waniliowy, sok z cytryny",
+      "price": 29,
+      "allowSet": false,
+      "isNew": true,
+      "pickupOnly": true,
+      "art": "protein"
+    },
+    {
+      "categoryId": "proteiny",
+      "name": "Vegan Oat",
+      "description": "płatki owsiane, mleko owsiane Alpro, białko wegańskie, miód, cynamon, orzechy",
+      "price": 29,
+      "allowSet": false,
+      "isVege": true,
+      "pickupOnly": true,
+      "art": "protein"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Pomarańcza",
+      "description": "",
+      "price": 20,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Grejpfrut",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Pomarańcza-grejpfrut",
+      "description": "",
+      "price": 22,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Jabłko",
+      "description": "",
+      "price": 20,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Marchew-jabłko-pomarańcza",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "soki",
+      "name": "Burak-jabłko-pomarańcza-seler",
+      "description": "",
+      "price": 24,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "juice"
+    },
+    {
+      "categoryId": "lemoniady",
+      "name": "Lemoniada arbuzowa",
+      "description": "",
+      "variants": [
+        {
+          "name": "400 ml",
+          "price": 18
+        },
+        {
+          "name": "1200 ml",
+          "price": 35
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "lemoniady",
+      "name": "Lemoniada Fruit Smoothie",
+      "description": "",
+      "variants": [
+        {
+          "name": "400 ml",
+          "price": 18
+        },
+        {
+          "name": "1200 ml",
+          "price": 35
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "lemoniady",
+      "name": "Lemoniada ananasowa",
+      "description": "",
+      "variants": [
+        {
+          "name": "400 ml",
+          "price": 18
+        },
+        {
+          "name": "1200 ml",
+          "price": 35
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "lemoniady",
+      "name": "Lemoniada malinowa",
+      "description": "",
+      "variants": [
+        {
+          "name": "400 ml",
+          "price": 18
+        },
+        {
+          "name": "1200 ml",
+          "price": 35
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "lemoniady",
+      "name": "Lemoniada malinowa na ciepło",
+      "description": "",
+      "variants": [
+        {
+          "name": "400 ml",
+          "price": 18
+        },
+        {
+          "name": "1200 ml",
+          "price": 35
+        }
+      ],
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "napoje",
+      "name": "Woda z kranu 300 ml",
+      "description": "",
+      "price": 0,
+      "allowSet": false,
+      "pickupOnly": true,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "napoje",
+      "name": "Woda niegazowana 500 ml",
+      "description": "",
+      "price": 8,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "napoje",
+      "name": "Woda gazowana 500 ml",
+      "description": "",
+      "price": 8,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "napoje",
+      "name": "Pepsi 330 ml",
+      "description": "",
+      "price": 10,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "lemonade"
+    },
+    {
+      "categoryId": "napoje",
+      "name": "Pepsi Max 330 ml",
+      "description": "",
+      "price": 10,
+      "allowSet": false,
+      "pickupOnly": false,
+      "art": "lemonade"
+    }
+  ]
+}

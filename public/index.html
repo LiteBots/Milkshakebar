@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Milkshakebar Słupsk: shake, burgery i desery | zamów online</title>
+  <meta name="description" content="Milkshakebar w Słupsku (ul. Szczecińska 17) i latem w Rowach. Shake na włoskich lodach, burgery, tex-mex i desery. Zamów online, zarezerwuj stolik, zbieraj Milkosy w MilkMi.">
+  <meta name="theme-color" content="#F4F4F0">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root { --orange: #FF4500; --orange-deep: #C83600; --orange-soft: #FFE8DC; --paper: #F4F4F0; --white: #FFF; --ink: #121212; --sub: #5C5C5C; --line: #E3E3DE; --green: #0F8A5F; --green-soft: #E3F5EC; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+    body { font: 500 16px/1.5 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    .brand { font-weight: 900; letter-spacing: -.04em; font-size: 1.6rem; text-decoration: none; }
+    .brand b { color: var(--orange); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 13px 24px; border-radius: 99px; font-weight: 800; font-size: .95rem; text-decoration: none; border: 0; cursor: pointer; white-space: nowrap; }
+    .btn-o { background: var(--orange); color: #fff; }
+    .btn-d { background: var(--ink); color: #fff; }
+    .btn-w { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px; border-radius: 99px; background: #fff; border: 1px solid var(--line); font-size: .85rem; font-weight: 700; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    .dot.off { background: #C62828; box-shadow: 0 0 0 3px #FDECEC; }
+
+    .bar { color: #fff; text-align: center; padding: 10px 16px; font-size: .9rem; font-weight: 700; }
+    header { position: sticky; top: 0; z-index: 30; background: rgba(244,244,240,.92); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .nav { display: flex; align-items: center; gap: 26px; height: 74px; }
+    .nav ul { display: flex; gap: 24px; list-style: none; font-weight: 700; font-size: .94rem; margin-left: 10px; }
+    .nav ul a { text-decoration: none; }
+    .nav ul a:hover { color: var(--orange-deep); }
+    .nav .sp { flex: 1; }
+
+    .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; padding: 60px 0 52px; }
+    .hero h1 { font-size: clamp(3rem, 6vw, 5rem); line-height: .98; font-weight: 900; letter-spacing: -.05em; margin: 18px 0 20px; }
+    .hero h1 span { color: var(--orange); }
+    .lead { font-size: 1.15rem; color: var(--sub); max-width: 36ch; margin-bottom: 28px; }
+    .acts { display: flex; gap: 12px; flex-wrap: wrap; }
+    .meta { display: flex; gap: 22px; margin-top: 28px; color: var(--sub); font-size: .9rem; font-weight: 600; flex-wrap: wrap; }
+    .meta i { color: var(--orange); margin-right: 6px; }
+    .stage { position: relative; height: 540px; border-radius: 36px; background: var(--orange); overflow: hidden; }
+    .ring { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); }
+    .phone { position: absolute; right: 50%; transform: translateX(50%) rotate(4deg); top: 46px; width: 270px; height: 540px; border-radius: 42px; background: #111; padding: 10px; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+    .scr { height: 100%; border-radius: 34px; background: var(--paper); overflow: hidden; padding: 34px 14px 14px; font-size: .78rem; }
+    .mcard { position: relative; overflow: hidden; background: var(--ink); color: #fff; border-radius: 20px; padding: 16px; }
+    .mcard::after { content: ""; position: absolute; right: -50px; top: -50px; width: 120px; height: 120px; border-radius: 50%; background: var(--orange); }
+    .mcard small { color: #b0b0b0; font-weight: 600; position: relative; z-index: 1; }
+    .mcard .pts { font-size: 2rem; font-weight: 900; letter-spacing: -.04em; position: relative; z-index: 1; }
+    .mbtn { margin-top: 10px; background: var(--orange); color: #fff; border-radius: 14px; padding: 12px; font-weight: 800; text-align: center; }
+    .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .mgrid div { background: #fff; border-radius: 14px; padding: 12px; font-weight: 800; }
+    .mgrid i { display: block; color: var(--orange); margin-bottom: 8px; }
+
+    .quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 96px; }
+    .quick a { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 20px; text-decoration: none; transition: border-color .15s; }
+    .quick a:hover { border-color: var(--orange); }
+    .quick i { width: 44px; height: 44px; border-radius: 14px; background: var(--orange-soft); color: var(--orange-deep); display: grid; place-items: center; font-size: 1.15rem; margin-bottom: 14px; }
+    .quick b { display: block; font-size: 1.04rem; }
+    .quick span { color: var(--sub); font-size: .87rem; }
+
+    section.s { margin-bottom: 96px; scroll-margin-top: 90px; }
+    .sh { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+    .sh h2 { font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -.04em; line-height: 1.05; }
+    .sh p { color: var(--sub); max-width: 52ch; margin-top: 8px; }
+    .sh a { font-weight: 800; white-space: nowrap; }
+
+    .best { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .prod { background: #fff; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); display: flex; flex-direction: column; text-decoration: none; }
+    .prod img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #ECEBE6; }
+    .prod .in { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+    .prod h3 { font-size: 1.12rem; font-weight: 800; }
+    .prod p { color: var(--sub); font-size: .86rem; margin: 4px 0 14px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .prod .ft { display: flex; justify-content: space-between; align-items: center; }
+    .prod .pr { font-weight: 900; font-size: 1.12rem; }
+    .prod .add { width: 40px; height: 40px; border-radius: 50%; background: var(--orange); color: #fff; display: grid; place-items: center; }
+    .tag { display: inline-block; font-size: .72rem; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: var(--ink); color: #fff; margin-bottom: 8px; align-self: flex-start; }
+
+    .app { background: var(--ink); color: #fff; border-radius: 40px; padding: 56px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+    .app h2 { font-size: clamp(2.2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -.04em; line-height: 1.02; margin-top: 16px; }
+    .app h2 span { color: var(--orange); }
+    .app > div > p { color: #bdbdbd; margin: 14px 0 24px; font-size: 1.05rem; max-width: 46ch; }
+    .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
+    .feat div { background: #1E1E1E; border-radius: 20px; padding: 16px; }
+    .feat i { color: var(--orange); font-size: 1.2rem; margin-bottom: 10px; display: block; }
+    .feat b { display: block; }
+    .feat span { color: #a9a9a9; font-size: .86rem; }
+    .calc { background: #1E1E1E; border-radius: 26px; padding: 26px; }
+    .calc h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 14px; }
+    .calc input[type=range] { width: 100%; accent-color: var(--orange); }
+    .calc .out { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-top: 18px; text-align: center; }
+    .calc .out b { display: block; font-size: 2rem; font-weight: 900; letter-spacing: -.03em; }
+    .calc .out small { color: #a9a9a9; font-weight: 700; }
+    .calc .out i { color: var(--orange); }
+    .calc .spent { font-size: 1.05rem; font-weight: 800; margin-top: 6px; }
+
+    .booking { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .box { background: #fff; border-radius: 30px; padding: 36px; border: 1px solid var(--line); }
+    .box h2 { font-size: 2.2rem; font-weight: 900; letter-spacing: -.04em; line-height: 1.05; margin: 12px 0 8px; }
+    .box ul { list-style: none; margin: 18px 0 0; display: grid; gap: 10px; }
+    .box li { display: flex; gap: 12px; font-weight: 600; }
+    .box li i { color: var(--orange); margin-top: 4px; }
+    .field { display: block; margin-bottom: 12px; }
+    .field > span { display: block; font-size: .84rem; font-weight: 700; margin-bottom: 5px; }
+    .input { width: 100%; min-height: 50px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); }
+    .input:focus { outline: 2px solid var(--orange); border-color: transparent; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .msg { border-radius: 14px; padding: 12px 14px; font-weight: 700; margin-top: 12px; }
+    .msg.ok { background: var(--green-soft); color: var(--green); }
+    .msg.err { background: #FDECEC; color: #C62828; }
+
+    .locs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .loc { background: #fff; border-radius: 30px; border: 1px solid var(--line); padding: 30px; display: flex; flex-direction: column; }
+    .loc h3 { font-size: 1.7rem; font-weight: 900; letter-spacing: -.03em; margin: 12px 0 2px; }
+    .loc .addr { color: var(--sub); }
+    .loc table { width: 100%; margin: 18px 0; font-size: .92rem; border-collapse: collapse; }
+    .loc td { padding: 6px 0; border-bottom: 1px solid #EFEEE9; }
+    .loc td:last-child { text-align: right; font-weight: 800; }
+    .loc tr.today td { color: var(--orange-deep); }
+    .loc .acts { margin-top: auto; }
+
+    .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+    details { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 18px 22px; }
+    summary { font-weight: 800; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 1.3rem; line-height: 1; color: var(--orange); }
+    details[open] summary::after { content: "–"; }
+    details p { color: var(--sub); margin-top: 10px; }
+
+    footer { background: var(--ink); color: #fff; padding: 64px 0 34px; margin-top: 30px; }
+    .news { display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; align-items: center; background: var(--orange); border-radius: 30px; padding: 32px 36px; margin-bottom: 52px; }
+    .news h3 { font-size: 1.8rem; font-weight: 900; letter-spacing: -.03em; }
+    .news p { opacity: .92; }
+    .news-row { display: flex; gap: 8px; }
+    .news-row .input { background: #fff; border: 0; color: var(--ink); }
+    .news-consent { display: flex; gap: 10px; align-items: flex-start; font-size: .8rem; margin-top: 10px; cursor: pointer; }
+    .news-consent input { width: 18px; height: 18px; flex: none; margin-top: 2px; accent-color: var(--ink); }
+    @media (max-width: 760px) { .news { grid-template-columns: 1fr; padding: 24px; } .news-row { flex-direction: column; } }
+    .fgrid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    .fgrid h4 { font-size: .95rem; margin-bottom: 14px; }
+    .fgrid ul { list-style: none; }
+    .fgrid li { margin-bottom: 9px; }
+    .fgrid li a { color: #b5b5b5; text-decoration: none; }
+    .fgrid li a:hover { color: #fff; }
+    .fgrid p { color: #b5b5b5; margin: 10px 0 18px; max-width: 36ch; }
+    .soc { display: flex; gap: 10px; }
+    .soc a { width: 44px; height: 44px; border-radius: 50%; background: #222; display: grid; place-items: center; text-decoration: none; }
+    .soc a:hover { background: var(--orange); }
+    .fb { border-top: 1px solid #2A2A2A; margin-top: 40px; padding-top: 22px; color: #8A8A8A; font-size: .86rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+    /* Hero: pomarańczowy blok z mlekiem spływającym z góry (ten sam motyw co karta w MilkMi) */
+    .hero2 { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; background: var(--orange); color: #fff; border-radius: 40px; padding: 110px 56px 56px; margin: 22px 0 28px; overflow: hidden; }
+    .hero2 .drip { position: absolute; left: 0; top: 0; width: 100%; height: 88px; display: block; }
+    .hero2 > div { position: relative; }
+    .hero2 .pill { background: #fff; border: 0; color: var(--ink); }
+    .hero2 h1 { font-size: clamp(2.7rem, 5.6vw, 4.8rem); line-height: .98; font-weight: 900; letter-spacing: -.055em; margin: 18px 0 18px; max-width: 12ch; }
+    .hero2 .lead { color: #FFE6DA; font-size: 1.12rem; max-width: 40ch; margin-bottom: 26px; }
+    .hero2 .btn-w { border: 0; }
+    .hero2 .facts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+    .hero2 .facts span { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.16); border-radius: 99px; padding: 8px 14px; font-size: .88rem; font-weight: 700; }
+    .h2r { position: relative; min-height: 420px; }
+    .hpic { position: absolute; inset: 0 0 60px 40px; border-radius: 30px; overflow: hidden; background: #C83600; display: block; box-shadow: 0 30px 60px -30px rgba(0,0,0,.45); }
+    .hpic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hpic .hlabel { position: absolute; top: 16px; right: 16px; background: #fff; color: var(--ink); border-radius: 18px; padding: 10px 14px; text-align: right; }
+    .hpic .hlabel b { display: block; font-size: 1rem; font-weight: 800; }
+    .hpic .hlabel span { font-size: .85rem; font-weight: 700; color: var(--orange-deep); }
+    .hcard { position: absolute; left: 0; bottom: 0; width: 280px; background: var(--ink); color: #fff; border-radius: 26px; padding: 20px; text-decoration: none; box-shadow: 0 24px 50px -24px rgba(0,0,0,.6); }
+    .hero2 .h2r:not(.has-pic) .hcard { position: relative; width: 100%; max-width: 380px; margin: 0 auto; }
+    .hc-top { display: flex; justify-content: space-between; align-items: center; font-size: .82rem; color: #B0B0AB; font-weight: 700; }
+    .hc-top b { color: #fff; font-size: 1.05rem; letter-spacing: -.03em; }
+    .hc-pts { display: block; font-size: 3.4rem; font-weight: 900; letter-spacing: -.06em; line-height: 1; margin-top: 10px; }
+    .hc-pts small { font-size: .95rem; letter-spacing: 0; margin-left: 4px; color: #B0B0AB; }
+    .hc-bar { display: block; height: 8px; border-radius: 99px; background: rgba(255,255,255,.16); margin: 12px 0 10px; overflow: hidden; }
+    .hc-bar i { display: block; width: 78%; height: 100%; background: var(--orange); border-radius: 99px; }
+    .hc-foot { font-size: .82rem; color: #D6D5CF; font-weight: 600; }
+    @media (max-width: 980px) {
+      .hero2 { grid-template-columns: 1fr; padding: 90px 28px 32px; border-radius: 32px; gap: 28px; }
+      .h2r { min-height: 340px; }
+    }
+    @media (max-width: 560px) {
+      .hero2 { padding: 72px 20px 24px; margin-top: 14px; }
+      .hero2 .drip { height: 60px; }
+      .hero2 .acts .btn { flex: 1 1 100%; }
+      .h2r { min-height: 300px; }
+      .hpic { inset: 0 0 70px 0; }
+      .hcard { width: 78%; }
+    }
+    @media (max-width: 980px) {
+      .nav ul { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 30px 0 36px; gap: 28px; }
+      .stage { height: 460px; }
+      .phone { width: 236px; height: 470px; top: 40px; }
+      .quick { grid-template-columns: 1fr 1fr; margin-bottom: 64px; }
+      .best { grid-template-columns: 1fr 1fr; }
+      .app, .booking, .locs, .faq { grid-template-columns: 1fr; }
+      .app { padding: 30px 22px; border-radius: 30px; }
+      .fgrid { grid-template-columns: 1fr 1fr; gap: 26px; }
+      .fgrid > div:first-child { grid-column: 1 / -1; }
+      section.s { margin-bottom: 64px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 0 16px; }
+      .nav { height: 64px; gap: 10px; }
+      .nav .hide-sm { display: none; }
+      .acts .btn { flex: 1 1 100%; }
+      .best { grid-template-columns: 1fr; }
+      .sh { display: block; }
+      .sh a { display: inline-block; margin-top: 10px; }
+      .feat, .g2 { grid-template-columns: 1fr; }
+      .box, .loc { padding: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+<div class="bar" id="web-bar" hidden></div>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">Milkshakebar<b>.</b></a>
+    <ul>
+      <li><a href="/menu">Menu</a></li>
+      <li><a href="/zamow">Zamów</a></li>
+      <li><a href="#rezerwacja">Rezerwacje</a></li>
+      <li><a href="/milkmi">MilkMi</a></li>
+      <li><a href="#lokale">Lokale</a></li>
+      <li><a href="/karty-podarunkowe">Karty podarunkowe</a></li>
+    </ul>
+    <span class="sp"></span>
+    <a class="btn btn-w hide-sm" href="/app"><i class="fas fa-user"></i>MilkMi</a>
+    <a class="btn btn-o" href="/zamow"><i class="fas fa-bag-shopping"></i>Zamów online</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero2">
+    <svg class="drip" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1200V26C1180 26 1172 34 1172 48C1172 70 1150 70 1150 48C1150 34 1140 26 1110 26C1070 26 1062 36 1062 56C1062 84 1036 84 1036 56C1036 38 1024 26 990 26C950 26 944 32 944 42C944 58 924 58 924 42C924 32 914 26 880 26C832 26 824 38 824 60C824 88 794 88 794 60C794 40 784 26 742 26C700 26 692 32 692 44C692 62 670 62 670 44C670 32 660 26 620 26C574 26 566 36 566 54C566 80 540 80 540 54C540 36 528 26 490 26C450 26 442 32 442 42C442 58 420 58 420 42C420 32 410 26 370 26C324 26 316 40 316 62C316 90 286 90 286 62C286 40 276 26 236 26C196 26 188 32 188 44C188 62 166 62 166 44C166 32 156 26 120 26C84 26 76 36 76 52C76 76 52 76 52 52C52 36 42 26 0 26Z" fill="#F4F4F0"/></svg>
+    <div class="h2l">
+      <span class="pill" id="open-pill"><span class="dot"></span><span>Słupsk, ul. Szczecińska 17</span></span>
+      <h1>Shake na włoskich lodach w Słupsku</h1>
+      <p class="lead">Do tego burgery, tex-mex i gofry. Zamów z odbiorem, zarezerwuj stolik albo zbieraj Milkosy w aplikacji MilkMi.</p>
+      <div class="acts">
+        <a class="btn btn-w" href="/zamow"><i class="fas fa-bag-shopping"></i>Zamów online</a>
+        <a class="btn btn-d" href="#rezerwacja"><i class="fas fa-calendar-check"></i>Zarezerwuj stolik</a>
+      </div>
+      <div class="facts"><span><i class="fas fa-store"></i>Odbiór bez czekania</span><span><i class="fas fa-star"></i>1 Milkos za każde 10 zł</span><span><i class="fas fa-umbrella-beach"></i>Latem także w Rowach</span></div>
+    </div>
+    <div class="h2r">
+      <a class="hpic" id="hero-pic" href="/zamow" hidden><img id="hero-img" alt=""><span class="hlabel"><b id="hero-name"></b><span id="hero-price"></span></span></a>
+      <a class="hcard" href="/app">
+        <span class="hc-top"><b>MilkMi</b><span>Twoje Milkosy</span></span>
+        <span class="hc-pts">78<small>pkt</small></span>
+        <span class="hc-bar"><i></i></span>
+        <span class="hc-foot">10 zł = 1 Milkos, 1 Milkos = 1 zł do wydania</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="quick">
+    <a href="/zamow"><i class="fas fa-store"></i><b>Zamów z odbiorem</b><span>Całe menu, odbierasz w lokalu</span></a>
+    <a href="#rezerwacja"><i class="fas fa-calendar-check"></i><b>Rezerwacja</b><span>Stolik dla siebie i znajomych</span></a>
+    <a href="/app"><i class="fas fa-star"></i><b>MilkMi</b><span>Milkosy i saldo do wydania</span></a>
+    <a href="/menu"><i class="fas fa-book-open"></i><b>Menu</b><span>Shake, burgery, desery, kawa</span></a>
+  </div>
+
+  <section class="s" id="bestsellery" hidden>
+    <div class="sh"><div><h2>Najczęściej zamawiane</h2><p>Pozycje z naszego menu. Zamów online i odbierz w lokalu.</p></div><a href="/zamow">Zamów online <i class="fas fa-arrow-right"></i></a></div>
+    <div class="best" id="best"></div>
+  </section>
+
+  <section class="s app" id="milkmi">
+    <div>
+      <span class="pill" style="background:#1E1E1E;border-color:#2C2C2C;color:#fff"><i class="fas fa-mobile-screen" style="color:var(--orange)"></i>Aplikacja MilkMi</span>
+      <h2>Jedz, zbieraj, <span>płać punktami.</span></h2>
+      <p>Przy kasie podajesz numer telefonu i dostajesz Milkosy. Wymieniasz je na saldo vPLN i płacisz nim w lokalu.</p>
+      <div class="feat">
+        <div><i class="fas fa-star"></i><b>Milkosy</b><span id="rule-earn">1 Milkos za każde 10 zł</span></div>
+        <div><i class="fas fa-wallet"></i><b>Portfel vPLN</b><span id="rule-spend">1 Milkos = 1 zł do wydania</span></div>
+        <div><i class="fas fa-calendar-check"></i><b>Rezerwacje</b><span>Stolik i status w aplikacji</span></div>
+        <div><i class="fas fa-mobile-screen-button"></i><b>Bez karty</b><span>Wystarczy Twój numer telefonu</span></div>
+      </div>
+      <a class="btn btn-o" href="/app"><i class="fas fa-arrow-right"></i>Załóż konto w MilkMi</a>
+      <a class="btn btn-w" href="/milkmi" style="margin-left:8px">Poziomy, misje i nagrody</a>
+    </div>
+    <div class="calc">
+      <h3>Ile odzyskasz?</h3>
+      <label for="spend" style="color:#bdbdbd;font-weight:700;font-size:.9rem">Wydajesz w Milkshakebar</label>
+      <input id="spend" type="range" min="50" max="2000" step="10" value="1000">
+      <div class="spent" id="spent">1000 zł</div>
+      <div class="out"><div><b id="calc-pts">100</b><small>Milkosów</small></div><i class="fas fa-arrow-right fa-lg"></i><div><b id="calc-zl">100 zł</b><small>do wydania</small></div></div>
+    </div>
+  </section>
+
+  <section class="s booking" id="rezerwacja">
+    <div class="box">
+      <span class="pill"><i class="fas fa-calendar-check" style="color:var(--orange)"></i>Rezerwacje i urodziny</span>
+      <h2>Zarezerwuj stolik.</h2>
+      <p style="color:var(--sub)">Potwierdzimy rezerwację telefonicznie lub SMS-em. Planujesz urodziny dziecka albo większą imprezę? Napisz w uwagach.</p>
+      <ul>
+        <li><i class="fas fa-check"></i>Sala frontowa, sala główna albo kącik dla dzieci</li>
+        <li><i class="fas fa-check"></i>Do 20 osób przez formularz, większe grupy telefonicznie</li>
+        <li><i class="fas fa-check"></i>Z kontem MilkMi widzisz status rezerwacji w aplikacji</li>
+      </ul>
+    </div>
+    <form class="box" id="res-form" novalidate>
+      <div class="g2">
+        <label class="field"><span>Imię i nazwisko</span><input class="input" name="name" autocomplete="name" required></label>
+        <label class="field"><span>Telefon</span><input class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></label>
+      </div>
+      <div class="g2">
+        <label class="field"><span>Data i godzina</span><input class="input" name="datetime" type="datetime-local" required></label>
+        <label class="field"><span>Liczba osób</span><select class="input" name="guests" id="guests"></select></label>
+      </div>
+      <div class="g2">
+        <label class="field"><span>Lokal</span><select class="input" name="location"><option value="slupsk">Słupsk</option><option value="rowy">Rowy (sezonowo)</option></select></label>
+        <label class="field"><span>Strefa</span><select class="input" name="zone"><option>Sala frontowa</option><option>Sala główna</option><option>Przy kąciku dla dzieci</option></select></label>
+      </div>
+      <label class="field"><span>Uwagi (alergie, okazja)</span><textarea class="input" name="notes" rows="2" maxlength="500"></textarea></label>
+      <button class="btn btn-o" type="submit" style="width:100%"><i class="fas fa-paper-plane"></i>Wyślij rezerwację</button>
+      <div id="res-msg" class="msg" hidden></div>
+    </form>
+  </section>
+
+  <section class="s" id="lokale">
+    <div class="sh"><div><h2>Nasze lokale</h2></div></div>
+    <div class="locs">
+      <div class="loc"><span class="pill" id="status-slupsk"><span class="dot"></span><span>Godziny otwarcia</span></span><h3><a href="/slupsk" style="text-decoration:none">Słupsk</a></h3><p class="addr">ul. Szczecińska 17, 76-200 Słupsk</p>
+        <table id="hours-slupsk"></table>
+        <div class="acts"><a class="btn btn-w" href="https://www.google.com/maps/search/?api=1&query=Szczeci%C5%84ska+17+S%C5%82upsk" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i>Prowadź w Mapach Google</a></div></div>
+      <div class="loc"><span class="pill" id="status-rowy"><span class="dot"></span><span>Sezonowo</span></span><h3><a href="/rowy" style="text-decoration:none">Rowy</a></h3><p class="addr">ul. Wydmowa 2 (deptak), 76-212 Rowy</p>
+        <table id="hours-rowy"></table>
+        <div class="acts"><a class="btn btn-w" href="https://www.google.com/maps/search/?api=1&query=Wydmowa+2+Rowy" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i>Prowadź w Mapach Google</a></div></div>
+    </div>
+  </section>
+
+  <section class="s">
+    <div class="sh"><div><h2>Pytania</h2></div><a href="https://www.google.com/maps/search/?api=1&query=Milkshakebar+Szczeci%C5%84ska+17+S%C5%82upsk" target="_blank" rel="noopener">Opinie gości w Google <i class="fas fa-arrow-right"></i></a></div>
+    <div class="faq">
+      <details><summary>Czy shake można zamówić z dostawą?</summary><p>Shake, lody i część deserów wydajemy tylko przy odbiorze osobistym, bo w drodze by się rozpuściły. Zamawiarka pokaże, co jest dostępne w dostawie.</p></details>
+      <details><summary>Jak działają Milkosy?</summary><p>Za każde 10 zł wydane w lokalu lub w zamówieniu online dostajesz 1 Milkos. W aplikacji wymieniasz Milkosy na saldo vPLN: 1 Milkos to 1 zł do wydania w lokalu.</p></details>
+      <details><summary>Jak dostać Milkosy przy kasie?</summary><p>Załóż konto w aplikacji MilkMi i przy płaceniu podaj swój numer telefonu. Kasjer nabije Milkosy na Twoje konto.</p></details>
+      <details><summary>Gdzie znajdę alergeny?</summary><p>Zapytaj obsługę w lokalu. Przy zamówieniu online wpisz alergie w uwagach, a przygotujemy danie z uwzględnieniem Twoich potrzeb.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <form class="news" id="news-form" novalidate>
+      <div><h3>Nowości prosto na maila</h3><p>Nowe smaki, promocje i start sezonu w Rowach. Bez spamu.</p></div>
+      <div class="news-fields">
+        <div class="news-row"><input class="input" name="email" type="email" autocomplete="email" placeholder="Twój e-mail" required aria-label="E-mail"><button class="btn btn-d" type="submit">Zapisz się</button></div>
+        <label class="news-consent"><input type="checkbox" name="consent" required> Zgadzam się na otrzymywanie informacji handlowych od Milkshakebar na podany e-mail. Zgodę mogę wycofać w każdej chwili.</label>
+        <div id="news-msg" class="msg" hidden></div>
+      </div>
+    </form>
+    <div class="fgrid">
+      <div><span class="brand" style="color:#fff">Milkshakebar<b>.</b></span><p>The Legendary Milkshake Bar. Słupsk, ul. Szczecińska 17, a latem także Rowy.</p>
+        <div class="soc">
+          <a href="https://www.facebook.com/milkshakebar" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/milkshake_slupsk" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@milkshake.bar.sup" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div></div>
+      <div><h4>Jedzenie</h4><ul><li><a href="/menu">Menu</a></li><li><a href="/menu/shake">Shake</a></li><li><a href="/menu/burgery">Burgery</a></li><li><a href="/menu/desery">Desery</a></li><li><a href="/zamow">Zamów online</a></li><li><a href="/dostawa">Dostawa i odbiór</a></li></ul></div>
+      <div><h4>Dla gości</h4><ul><li><a href="#rezerwacja">Rezerwacje</a></li><li><a href="/milkmi">Program MilkMi</a></li><li><a href="/karty-podarunkowe">Karty podarunkowe</a></li><li><a href="/slupsk">Lokal Słupsk</a></li><li><a href="/rowy">Lokal Rowy</a></li></ul></div>
+      <div><h4>Informacje</h4><ul><li><a href="/regulamin-milkmi">Regulamin MilkMi</a></li><li><a href="/privacypolicy.html">Polityka prywatności</a></li><li><a href="/cookies">Cookies</a></li><li><a href="/menu.pdf">Alergeny i menu (PDF)</a></li></ul></div>
+    </div>
+    <div class="fb"><span>© <span id="year"></span> Milkshakebar</span><span>Słupsk, ul. Szczecińska 17</span><a class="velio" href="https://www.velioagency.pl" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:#92929C;text-decoration:none;"><svg viewBox="264 359 896 737" width="19" height="16" role="img" aria-label="VELIO" style="flex:none"><path fill="#F2F2F4" d="M264 359h211l237 500v237z"/><path fill="#755CFF" d="M948 359h212L712 1096V859z"/></svg><span>Designed &amp; Developed by VELIO</span></a></div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = (n) => `${Number(n || 0).toLocaleString('pl-PL', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} zł`;
+const DAYS = [['mon', 'Poniedziałek'], ['tue', 'Wtorek'], ['wed', 'Środa'], ['thu', 'Czwartek'], ['fri', 'Piątek'], ['sat', 'Sobota'], ['sun', 'Niedziela']];
+let loyalty = { zlotyPerPoint: 10, vplnPerPoint: 1 };
+
+$('#year').textContent = new Date().getFullYear();
+$('#guests').innerHTML = Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}" ${i === 1 ? 'selected' : ''}>${i + 1} ${i === 0 ? 'osoba' : (i < 4 ? 'osoby' : 'osób')}</option>`).join('');
+
+function calc() {
+  const spend = Number($('#spend').value);
+  const pts = Math.floor(spend / loyalty.zlotyPerPoint);
+  $('#spent').textContent = `${spend} zł`;
+  $('#calc-pts').textContent = pts;
+  $('#calc-zl').textContent = money(pts * loyalty.vplnPerPoint);
+}
+$('#spend').addEventListener('input', calc);
+
+const todayKey = DAYS[(new Date().getDay() + 6) % 7][0];
+function renderHours(loc, data) {
+  const table = $(`#hours-${loc}`);
+  const pill = $(`#status-${loc}`);
+  if (!data) { table.innerHTML = '<tr><td>Godziny wkrótce</td><td></td></tr>'; return; }
+  table.innerHTML = DAYS.map(([k, n]) => {
+    const d = data[k] || {};
+    return `<tr class="${k === todayKey ? 'today' : ''}"><td>${n}</td><td>${d.isOpen ? `${esc(d.from)} – ${esc(d.to)}` : 'Zamknięte'}</td></tr>`;
+  }).join('');
+  const today = data[todayKey] || {};
+  const now = new Date(); const hm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const open = today.isOpen && hm >= today.from && hm < today.to;
+  const anyOpen = DAYS.some(([k]) => data[k] && data[k].isOpen);
+  pill.innerHTML = `<span class="dot ${open ? '' : 'off'}"></span><span>${open ? `Otwarte do ${esc(today.to)}` : (anyOpen ? (today.isOpen && hm < today.from ? `Otwieramy o ${esc(today.from)}` : 'Teraz zamknięte') : 'Poza sezonem')}</span>`;
+  if (loc === 'slupsk') $('#open-pill').innerHTML = `<span class="dot ${open ? '' : 'off'}"></span><span>${open ? `Otwarte dziś do ${esc(today.to)}` : 'Teraz zamknięte'}, ul. Szczecińska 17</span>`;
+}
+
+async function load() {
+  const get = (u) => fetch(u).then((r) => r.json()).catch(() => ({}));
+  const [banners, hs, hr, menu, loy] = await Promise.all([get('/api/banners'), get('/api/hours?location=slupsk'), get('/api/hours?location=rowy'), get('/api/menu?location=slupsk'), get('/api/loyalty')]);
+  const web = (banners.data || []).find((b) => b.target === 'web');
+  if (web && web.isActive && web.text) { const bar = $('#web-bar'); bar.textContent = web.text; bar.style.background = web.backgroundColor || '#FF4500'; bar.hidden = false; }
+  renderHours('slupsk', hs.success ? hs.data : null);
+  renderHours('rowy', hr.success ? hr.data : null);
+  if (loy.data) {
+    loyalty = loy.data;
+    $('#rule-earn').textContent = `1 Milkos za każde ${loyalty.zlotyPerPoint} zł`;
+    $('#rule-spend').textContent = `1 Milkos = ${money(loyalty.vplnPerPoint)} do wydania`;
+  }
+  calc();
+  const best = (menu.data || []).filter((p) => p.isBestseller && p.isAvailable !== false).slice(0, 8);
+  if (best.length) {
+    $('#best').innerHTML = best.map((p) => {
+      const price = p.hasVariants && p.variants && p.variants.length ? `od ${money(Math.min(...p.variants.map((v) => v.price)))}` : money(p.price);
+      return `<a class="prod" href="/zamow"><img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy"><div class="in">${p.pickupOnly ? '<span class="tag">Tylko odbiór</span>' : ''}
+        <h3>${esc(p.name)}</h3><p>${esc(p.description || '')}</p><div class="ft"><span class="pr">${price}</span><span class="add"><i class="fas fa-plus"></i></span></div></div></a>`;
+    }).join('');
+    $('#bestsellery').hidden = false;
+  }
+  // Zdjęcie w hero: pierwszy bestseller ze zdjęciem (najlepiej shake), z nazwą i ceną
+  const pics = (menu.data || []).filter((p) => p.isAvailable !== false && p.imageUrl);
+  const hero = pics.find((p) => p.isBestseller && /shake/i.test(`${p.categoryId} ${p.name}`)) || pics.find((p) => p.isBestseller) || pics[0];
+  if (hero) {
+    $('#hero-img').src = hero.imageUrl;
+    $('#hero-img').alt = hero.name;
+    $('#hero-name').textContent = hero.name;
+    $('#hero-price').textContent = hero.hasVariants && hero.variants && hero.variants.length ? `od ${money(Math.min(...hero.variants.map((v) => v.price)))}` : money(hero.price);
+    $('#hero-pic').hidden = false;
+    $('.h2r').classList.add('has-pic');
+  }
+}
+load();
+
+// Odsłona strony (licznik dzienny, bez ciasteczek i danych osobowych)
+fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: 'home' }) }).catch(() => {});
+
+$('#news-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const msg = $('#news-msg');
+  msg.hidden = false;
+  if (!f.consent.checked) { msg.className = 'msg err'; msg.textContent = 'Zaznacz zgodę, żeby zapisać się do newslettera.'; return; }
+  try {
+    const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: f.email.value.trim(), consent: true }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || 'Nie udało się zapisać.');
+    msg.className = 'msg ok'; msg.textContent = data.message; f.reset();
+  } catch (err) { msg.className = 'msg err'; msg.textContent = err.message; }
+});
+
+$('#res-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const msg = $('#res-msg');
+  const body = { name: f.name.value.trim(), phone: f.phone.value.trim(), datetime: f.datetime.value, guests: Number(f.guests.value), zone: f.zone.value, notes: f.notes.value.trim(), location: f.location.value };
+  if (!body.name || !body.phone || !body.datetime) { msg.className = 'msg err'; msg.textContent = 'Uzupełnij imię, telefon oraz datę i godzinę.'; msg.hidden = false; return; }
+  const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const res = await fetch('/api/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) throw new Error(data.message || 'Nie udało się wysłać rezerwacji.');
+    msg.className = 'msg ok'; msg.textContent = 'Dziękujemy! Rezerwacja trafiła do lokalu. Potwierdzimy ją telefonicznie lub SMS-em.';
+    f.reset(); $('#guests').value = '2';
+  } catch (err) { msg.className = 'msg err'; msg.textContent = `${err.message} Możesz też zadzwonić do lokalu.`; }
+  msg.hidden = false; btn.disabled = false;
+});
+</script>
+</body>
+</html>
